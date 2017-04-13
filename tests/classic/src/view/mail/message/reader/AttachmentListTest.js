@@ -63,11 +63,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.AttachmentListTest', function
 
         for (var i = 0, len = tests.length; i < len; i++) {
             t.expect(
-                view.displayButtonType(tests[i]['editMode'], 'REMOVE')
+                view.displayButtonType('REMOVE')
             ).toBe(tests[i]['expectREMOVE']);
 
             t.expect(
-                view.displayButtonType(tests[i]['editMode'], 'DOWNLOAD')
+                view.displayButtonType('DOWNLOAD')
             ).toBe(tests[i]['expectDOWNLOAD']);
         }
     });

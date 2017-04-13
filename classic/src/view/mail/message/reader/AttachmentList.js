@@ -39,7 +39,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.AttachmentList', {
     /**
      * @inheritdoc
      */
-    displayButtonType : function(editMode, type) {
+    displayButtonType : function(type) {
         return type === 'DOWNLOAD';
     }
 
