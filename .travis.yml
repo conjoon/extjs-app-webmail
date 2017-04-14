@@ -33,6 +33,10 @@ before_script:
   - "cp $TRAVIS_BUILD_DIR/. $CN_WORKSPACE/packages/local/$CN_PACKAGE -R"
 
 # add requirements before building
+## lib-cn_core
+  - "cd /tmp && wget  -O lib-cn_core.zip https://github.com/conjoon/lib-cn_core/archive/master.zip"
+  - "unzip lib-cn_core.zip -d $CN_WORKSPACE/packages/local/"
+  - "mv $CN_WORKSPACE/packages/local/lib-cn_core-master $CN_WORKSPACE/packages/local/lib-cn_core"
 ## lib-cn_comp
   - "cd /tmp && wget  -O lib-cn_comp.zip https://github.com/conjoon/lib-cn_comp/archive/master.zip"
   - "unzip lib-cn_comp.zip -d $CN_WORKSPACE/packages/local/"
