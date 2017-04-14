@@ -30,6 +30,17 @@
     "type": "code",
 
     /**
+     * "sencha package build" will not work if either "toolkit" is omitted or
+     * if "builds" is not specified. When adding the modern toolkit later on,
+     * make sure to adjust the output directory.
+     */
+    "builds": {
+        "classic": {
+            "toolkit": "classic"
+        }
+    },
+
+    /**
      * The author of the package.
      *
      * Required only if you are distributing this package through a Sencha Cmd repository,
