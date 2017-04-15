@@ -48,7 +48,17 @@ describe('conjoon.cn_mail.view.mail.message.editor.HtmlEditorTest', function(t) 
         t.expect(view.alias).toContain('widget.cn_mail-mailmessageeditorhtmleditor');
 
         t.expect(view.down('cn_comp-formfieldfilebutton')).toBeTruthy();
+    });
 
+
+    /**
+     * @see https://github.com/conjoon/app-cn_mail/issues/2
+     */
+    t.it("Should fix conjoon/app-cn_mail/issues/2", function(t) {
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.HtmlEditor', viewConfig);
+
+        t.expect(view.down('cn_comp-formfieldfilebutton').tooltip).toBeDefined();
     });
 
 });
