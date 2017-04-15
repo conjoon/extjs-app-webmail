@@ -91,21 +91,26 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(view.down('#subjectField') instanceof Ext.form.field.Text).toBe(true);
         t.expect(view.down('cn_mail-mailmessageeditorhtmleditor') instanceof conjoon.cn_mail.view.mail.message.editor.HtmlEditor).toBe(true);
 
+        t.expect(view.down('#attachmentListWrap') instanceof Ext.Container).toBe(true);
+
         t.expect(view.down('cn_mail-mailmessageeditorattachmentlist').getEditMode()).toBe('CREATE');
         t.expect(view.editMode).toBe('CREATE');
 
     });
 
+    /**
+     * since conjoon/app-cn_mail/1 the attachmentList is always visible
+     */
     t.it("Should create with empty messageItem and show/hide attachmentList properly", function(t) {
         view = createWithViewConfig(viewConfig);
 
         // wait for bindings
         t.waitForMs(500, function() {
-            t.expect(view.down('cn_mail-mailmessageeditorattachmentlist').isHidden()).toBe(true);
+            t.expect(view.down('cn_mail-mailmessageeditorattachmentlist').isHidden()).toBe(false);
             view.down('cn_mail-mailmessageeditorattachmentlist').getStore().add({text : 'dummfile'});
             t.expect(view.down('cn_mail-mailmessageeditorattachmentlist').isHidden()).toBe(false);
             view.down('cn_mail-mailmessageeditorattachmentlist').getStore().removeAll();
-            t.expect(view.down('cn_mail-mailmessageeditorattachmentlist').isHidden()).toBe(true);
+            t.expect(view.down('cn_mail-mailmessageeditorattachmentlist').isHidden()).toBe(false);
         });
     });
 

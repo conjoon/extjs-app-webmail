@@ -32,12 +32,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     alias : 'controller.cn_mail-mailmessageeditorviewcontroller',
 
     control : {
-
-        'cn_mail-mailmessageeditorattachmentlist' : {
-            'itemremove' : 'onAttachmentListItemRemove',
-            'itemadd'    : 'onAttachmentListItemAdd'
-        },
-
         'cn_mail-mailmessageeditorhtmleditor > toolbar > cn_comp-formfieldfilebutton' : {
             change : 'onFormFileButtonChange'
         },
@@ -55,37 +49,150 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         }
     },
 
+    /**
+     * Helper to indicate the number of times the attachmentlistWrap was entered/
+     * leaved during the drag/drop process to properly add/remove styles.
+     * @type {Integer=0} dragEnterCount
+     * @private
+     */
+    dragEnterCount : 0,
+
 
     /**
-     * Callback for the view's embedded AttachmentList and its itemremove event.
-     * Will hide the AttachmentList if there are no more attachments to display.
-     *
-     * @param records
-     * @param index
-     * @param item
-     * @param view
-     * @param eOpts
+     * Makes sure #installDragDropListeners is called as soon as the controller's
+     * editor was rendered.
      */
-    onAttachmentListItemRemove : function(records, index, item, view, eOpts) {
-        if (view.getStore().getRange().length === 0) {
-            view.setHidden(true);
+    init : function() {
+        var me   = this,
+            view = me.getView();
+        view.on('afterrender', me.installDragDropListeners, me, {single : true});
+    },
+
+
+    /**
+     * Helper method to register the drag & drop listeners to the embedded
+     * container wrapping the AttachmentList.
+     *
+     * @private
+     */
+    installDragDropListeners : function() {
+        var me             = this,
+            view           = me.getView(),
+            attachmentWrap = view.down('#attachmentListWrap').el;
+
+        view.mon(
+            attachmentWrap, 'dragenter', me.onAttachmentListWrapDragEnter, me);
+        view.mon(
+            attachmentWrap, 'dragleave', me.onAttachmentListWrapDragLeave, me);
+        view.mon(
+            attachmentWrap, 'dragend',   me.onAttachmentListWrapDragEnd,   me);
+        view.mon(
+            attachmentWrap, 'drop',      me.onAttachmentListWrapDrop,      me);
+    },
+
+
+    /**
+     * Helper function to add/remove the "hover" css class of the
+     * attachmentListWrap.
+     *
+     * @param {Boolean} isHover true to add the css class, false to remove it.
+     * @param {Boolean} forceReset true to reset #dragEnterCount to 0
+     */
+    registerAttachmentListWrapEnter : function(isHover, forceReset) {
+        var me   = this,
+            view = me.getView();
+
+        if (isHover) {
+            me.dragEnterCount++;
+        } else {
+            me.dragEnterCount--;
+        }
+
+        me.dragEnterCount = me.dragEnterCount < 0 || forceReset === true
+                            ? 0
+                            : me.dragEnterCount;
+
+        view.down('#attachmentListWrap').el[
+            me.dragEnterCount ? 'addCls' : 'removeCls'
+        ]('hover')
+    },
+
+
+    /**
+     * Callback for the dragenter event of the attachmentListWrap.
+     * Makes sure the hoverAttachmentListWrap is being called.
+     *
+     * @param {Ext.util.Event} e
+     */
+    onAttachmentListWrapDragEnter : function(e) {
+        e.preventDefault();
+
+        var me = this;
+        me.registerAttachmentListWrapEnter(true);
+    },
+
+
+    /**
+     * Callback for the dragleave event of the attachmentListWrap.
+     * Makes sure the hoverAttachmentListWrap is being called if,
+     * and only if dragEnterCount is equal or less than 0.
+     *
+     * @param {Ext.util.Event} e
+     */
+    onAttachmentListWrapDragLeave : function(e) {
+        e.preventDefault();
+
+        var me = this;
+        me.registerAttachmentListWrapEnter(false);
+    },
+
+
+    /**
+     * Callback for the attachmentListWrap's dragend event.
+     *
+     * @param {Ext.util.Event} e
+     */
+    onAttachmentListWrapDragEnd : function(e) {
+        e.preventDefault();
+
+        var me = this;
+        me.registerAttachmentListWrapEnter(false, true);
+    },
+
+
+    /**
+     * Callback for the attachmentListWrap's drop event.
+     *
+     * @param {Ext.util.Event} e
+     */
+    onAttachmentListWrapDrop : function(e) {
+        e.preventDefault();
+
+        var me           = this,
+            dataTransfer = e.event.dataTransfer;
+
+        me.registerAttachmentListWrapEnter(false, true);
+
+        if (dataTransfer && dataTransfer.files) {
+            me.addAttachmentsFromFileList(dataTransfer.files);
         }
     },
 
 
     /**
-     * Callback for the view's embedded AttachmentList and its itemadd event.
-     * Will show the AttachmentList to make sure attachments can be managed.
+     * Adds the files available in fileList to the editor#s attachmentList.
      *
-     * @param records
-     * @param index
-     * @param item
-     * @param view
-     * @param eOpts
+     * @param {FileList} fileList
+     *
+     * @private
      */
-    onAttachmentListItemAdd : function(records, index, item, view, eOpts) {
-        if (view.getStore().getRange().length !== 0) {
-            view.setHidden(false);
+    addAttachmentsFromFileList : function(fileList) {
+        var me             = this,
+            view           = me.getView(),
+            attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
+
+        for (var i = 0, len = fileList.length; i < len; i++) {
+            attachmentList.addAttachment(fileList[i]);
         }
     },
 
@@ -101,15 +208,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @see conjoon.cn_mail.view.mail.message.editor.AttachmentList#addAttachment
      */
     onFormFileButtonChange : function(fileButton, evt, value, fileList) {
-
-        var me             = this,
-            view           = me.getView(),
-            attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
-
-        for (var i = 0, len = fileList.length; i < len; i++) {
-            attachmentList.addAttachment(fileList[i]);
-        }
+        var me = this;
+        me.addAttachmentsFromFileList(fileList);
     },
+
 
     /**
      * Delegates showing the CC/BCC fields to the view.

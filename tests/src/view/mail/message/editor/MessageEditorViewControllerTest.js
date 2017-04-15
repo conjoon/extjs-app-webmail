@@ -68,6 +68,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
     });
 
 
+    /**
+     * remove/add listener where removed for conjoon/app-cn_mail/1
+     */
     t.it("Should register and catch the events properly", function(t) {
 
         // the itemremove event fires directly when the view was created.
@@ -99,7 +102,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             });
 
         t.waitForMs(500, function() {
-            t.expect(itemremove).toBe(0);
+            t.expect(itemremove).toBe(-1);
             t.expect(itemadd).toBe(0);
             t.expect(formFileButtonChange).toBe(0);
             t.expect(showCcBccButtonClick).toBe(0);
@@ -113,8 +116,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view.down('#sendButton').fireEvent('click');
             view.down('#saveButton').fireEvent('click');
 
-            t.expect(itemremove).toBe(1);
-            t.expect(itemadd).toBe(1);
+            t.expect(itemremove).toBe(-1);
+            t.expect(itemadd).toBe(0);
             t.expect(formFileButtonChange).toBe(1);
             t.expect(showCcBccButtonClick).toBe(1);
             t.expect(sendButtonClick).toBe(1);
@@ -124,69 +127,27 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
     });
 
+    /**
+     * onAttachmentListItemRemove() removed for conjoon/app-cn_mail/1
+     */
     t.it("Should make sure that onAttachmentListItemRemove works properly", function(t) {
 
         controller = Ext.create(
             'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
             });
 
-        view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                controller : controller,
-                renderTo : document.body
-            });
-
-        t.waitForMs(500, function() {
-            var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
-            attachmentList.addAttachment(createFile());
-
-            t.expect(attachmentList.isHidden()).toBe(false);
-            attachmentList.getStore().suspendEvents();
-            attachmentList.getStore().removeAll();
-            attachmentList.getStore().resumeEvents();
-
-            //records, index, item, view, eOpts
-            t.waitForMs(500, function() {
-                t.expect(attachmentList.isHidden()).toBe(false);
-                controller.onAttachmentListItemRemove([], 0, null, attachmentList);
-
-                t.waitForMs(500, function() {
-                    t.expect(attachmentList.isHidden()).toBe(true);
-                });
-            });
-        });
+        t.expect(controller.onAttachmentListItemRemove).toBeUndefined();
     });
 
-
+    /**
+     * onAttachmentListItemAdd() removed for conjoon/app-cn_mail/1
+     */
     t.it("Should make sure that onAttachmentListItemAdd works properly", function(t) {
         controller = Ext.create(
             'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
             });
-        view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                controller : controller,
-                renderTo : document.body
-            });
 
-        t.waitForMs(500, function() {
-            var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
-
-            t.expect(attachmentList.isHidden()).toBe(true);
-
-            attachmentList.suspendEvents();
-            attachmentList.addAttachment(createFile());
-            attachmentList.getStore().resumeEvents();
-
-            //records, index, item, view, eOpts
-            t.waitForMs(500, function() {
-                t.expect(attachmentList.isHidden()).toBe(true);
-                controller.onAttachmentListItemAdd([], 0, null, attachmentList);
-
-                t.waitForMs(500, function() {
-                    t.expect(attachmentList.isHidden()).toBe(false);
-                });
-            });
-        });
+        t.expect(controller.onAttachmentListItemAdd).toBeUndefined();
     });
 
 
@@ -256,4 +217,91 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
         t.fail();
     });
+
+
+    /**
+     * conjoon/app-cn_mail/1
+     */
+    t.it("Should test properly changes for conjoon/app-cn_mail/1", function(t){
+        controller = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+            });
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                controller : controller,
+                renderTo   : document.body
+            });
+
+        var wrap  = view.down('#attachmentListWrap').el,
+            event = {
+                preventDefault : Ext.emptyFn,
+                event          : {}
+            },
+            expectCountAndHover = function(t, count, hover) {
+                if (hover) {
+                    t.expect(wrap.dom.className).toContain('hover');
+                } else {
+                    t.expect(wrap.dom.className).not.toContain('hover');
+                }
+
+                t.expect(controller.dragEnterCount).toBe(count);
+            };
+
+        // dragenter, dragleave, dragend
+        t.expect(controller.dragEnterCount).toBe(0);
+        wrap.fireEvent('dragenter', event);
+        expectCountAndHover(t, 1, true);
+        wrap.fireEvent('dragenter', event);
+        expectCountAndHover(t, 2, true);
+        wrap.fireEvent('dragenter', event);
+        expectCountAndHover(t, 3, true);
+        wrap.fireEvent('dragenter', event);
+        expectCountAndHover(t, 4, true);
+        wrap.fireEvent('dragleave', event);
+        expectCountAndHover(t, 3, true);
+        wrap.fireEvent('dragleave', event);
+        expectCountAndHover(t, 2, true);
+        wrap.fireEvent('dragend', event);
+        expectCountAndHover(t, 0, false);
+
+        // registerAttachmentListWrapEnter
+        controller.registerAttachmentListWrapEnter(true);
+        expectCountAndHover(t, 1, true);
+        controller.dragEnterCount = 8970;
+        controller.registerAttachmentListWrapEnter(false, true);
+        expectCountAndHover(t, 0, false);
+        controller.dragEnterCount = -8970;
+        wrap.fireEvent('drop', event);
+        expectCountAndHover(t, 0, false);
+
+        controller.dragEnterCount = 0;
+        controller.onAttachmentListWrapDragEnter(event);
+        expectCountAndHover(t, 1, true);
+        controller.onAttachmentListWrapDragLeave(event);
+        expectCountAndHover(t, 0, false);
+        controller.dragEnterCount = 9890;
+        controller.onAttachmentListWrapDragEnd(event);
+        expectCountAndHover(t, 0, false);
+        controller.dragEnterCount = 9890;
+        controller.onAttachmentListWrapDrop(event);
+        expectCountAndHover(t, 0, false);
+
+        // wait for viewmodel bindings
+        t.waitForMs(500, function() {
+            var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
+            t.expect(attachmentList.getStore().getRange().length).toBe(0);
+            controller.addAttachmentsFromFileList([createFile()]);
+            t.expect(attachmentList.getStore().getRange().length).toBe(1);
+
+            attachmentList.getStore().removeAll();
+
+            event.event.dataTransfer = {files : [createFile()]};
+            t.expect(attachmentList.getStore().getRange().length).toBe(0);
+            controller.onAttachmentListWrapDrop(event);
+            t.expect(attachmentList.getStore().getRange().length).toBe(1);
+        });
+
+
+    });
+    
 });

@@ -231,12 +231,30 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                 value : '{messageDraft.messageBody.textHtml}'
             }
         }, {
-            xtype      : 'cn_mail-mailmessageeditorattachmentlist',
-            width      : 228,
-            scrollable : 'y',
-            bind       : {
-                store  : '{messageDraft.attachments}'
-            }
+            xtype      : 'container',
+            itemId     : 'attachmentListWrap',
+            cls        : 'attachmentlist-wrap',
+            layout     : 'fit',
+            width      : 230,
+            margin     : '0 0 0 10',
+            items      : [{
+                xtype  : 'box',
+                autoEl : {
+                    tag  : 'div',
+                    cls  : 'dropzone-text',
+                    html : 'Attach files by dragging and dropping them here.'
+                }
+            }, {
+                flex : 1,
+                xtype      : 'cn_mail-mailmessageeditorattachmentlist',
+                reference  : 'cn_mail_ref_mailmessageeditorattachmentlist',
+                margin     : '10 0 10 0',
+                width      : 228,
+                scrollable : 'y',
+                bind       : {
+                    store  : '{messageDraft.attachments}'
+                }
+            }]
         }]
     }],
 
