@@ -75,7 +75,6 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailMessageViewFor}
      */
     onReadMessageRoute : function(messageId) {
-
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
@@ -99,11 +98,55 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     postLaunchHook : function() {
         return {
-            navigation : [{
+            navigation  : [{
                 text    : 'Email',
                 route   : 'cn_mail/home',
                 view    : 'conjoon.cn_mail.view.mail.MailDesktopView',
-                iconCls : 'x-fa fa-send'
+                iconCls : 'x-fa fa-send',
+                nodeNav : [{
+                    xtype   : 'button',
+                    iconCls : 'x-fa fa-plus',
+                    tooltip : {
+                        title : 'Create new message',
+                        text  : 'Opens the editor for writing a new message.'
+                    }
+                }, {
+                    xtype : 'tbseparator'
+                }, {
+                    xtype    : 'button',
+                    iconCls  : 'x-fa fa-mail-reply',
+                    disabled : true,
+                    tooltip  : {
+                        title : 'Reply to message',
+                        text  : 'Opens the editor for replying to the sender of the selected message.'
+                    }
+                }, {
+                    xtype    : 'button',
+                    iconCls  :'x-fa fa-mail-reply-all',
+                    disabled : true,
+                    tooltip  : {
+                        title : 'Reply all to message',
+                        text  : 'Opens the editor for replying to all recipients/senders of the selected message.'
+                    }
+                }, {
+                    xtype    : 'button',
+                    iconCls  : 'x-fa fa-mail-forward',
+                    disabled : true,
+                    tooltip  : {
+                        title : 'Forward message',
+                        text  : 'Opens the editor for forwarding the selected message.'
+                    }
+                }, {
+                    xtype : 'tbseparator'
+                }, {
+                    xtype    : 'button',
+                    iconCls  : 'x-fa fa-edit',
+                    disabled : true,
+                    tooltip  : {
+                        title : 'Edit message draft',
+                        text  : 'Opens the editor for editing the selected message draft.'
+                    }
+                }]
             }]
         };
     },
@@ -115,18 +158,13 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @return {conjoon.cn_mail.view.mail.MailDesktopView}
      */
     getMainPackageView : function() {
-        var me       = this,
-            app      = me.getApplication(),
-            /**
-             * guaranteed to be of type conjoon.cn_comp.container.Viewport
-             * which allows for calling addViewForHash
-             */
-            appView = app.getMainView();
+        var me  = this,
+            app = me.getApplication();
 
         /**
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
          */
-        return appView.addViewForHash('cn_mail/home');
+        return app.activateViewForHash('cn_mail/home');
     }
 
 
