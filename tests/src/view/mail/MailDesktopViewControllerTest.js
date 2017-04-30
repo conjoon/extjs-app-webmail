@@ -195,12 +195,32 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
                 });
             });
-
-
         });
-
-
     });
 
 
+    t.it("showMailEditor()", function(t) {
+
+        var panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                width    : 800,
+                height   : 600,
+                renderTo : document.body
+            }),
+            ctrl  = panel.getController(),
+            queryRes, editor;
+
+        queryRes = Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel);
+        t.expect(queryRes.length).toBe(0);
+
+        editor = ctrl.showMailEditor();
+        t.isInstanceOf(editor, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor');
+        t.expect(Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel)[0]).toBe(editor);
+
+        t.expect(Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel).length).toBe(1);
+        ctrl.showMailEditor();
+        t.expect(Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel).length).toBe(2);
+
+        panel.destroy();
+        panel = null;
+    });
 });

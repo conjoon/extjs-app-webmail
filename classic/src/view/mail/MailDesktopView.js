@@ -75,12 +75,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
     /**
      * Creates and shows a new mail editor instance for writing an email message.
      *
+     * @return conjoon.cn_mail.view.mail.message.MessageEditor
+     *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailEditor}
      */
     showMailEditor : function() {
         var me = this;
 
-        me.getController().showMailEditor();
+        return me.getController().showMailEditor();
     }
 
 

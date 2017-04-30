@@ -31,11 +31,13 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         }
     });
 
+
     t.it("Should create the Controller", function(t) {
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         t.expect(packageCtrl instanceof conjoon.cn_core.app.PackageController).toBe(true);
 
     });
+
 
     t.it("postLaunchHook should return valid object", function(t) {
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
@@ -43,14 +45,74 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         var ret = packageCtrl.postLaunchHook();
 
 
-        t.expect(ret).toEqual({
-            navigation : [{
-                text    : 'Email',
-                route   : 'cn_mail/home',
-                view    : 'conjoon.cn_mail.view.mail.MailDesktopView',
-                iconCls : 'x-fa fa-send'
-            }]
-        });
+        t.isObject(ret)
+
+    });
+
+
+    t.it("onComposeMessageRoute()", function(t) {
+
+        var SHOWN   = 0,
+            CN_HREF = 'foo';
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMainPackageView = function() {
+            return {
+                getActiveTab : function() {
+                    return {
+                        cn_href : CN_HREF
+                    };
+                },
+                showMailEditor : function() {
+                    SHOWN++;
+                }
+            }
+        };
+
+        t.expect(SHOWN).toBe(0);
+        packageCtrl.onComposeMessageRoute();
+        t.expect(SHOWN).toBe(1);
+        packageCtrl.onComposeMessageRoute();
+        t.expect(SHOWN).toBe(2);
+
+        CN_HREF = 'cn_mail/message/compose';
+
+        t.expect(SHOWN).toBe(2);
+        packageCtrl.onComposeMessageRoute();
+        t.expect(SHOWN).toBe(2);
+        packageCtrl.onComposeMessageRoute();
+        t.expect(SHOWN).toBe(2);
+
+    });
+
+
+    t.it("onMessageComposeButtonClick()", function(t) {
+
+        var SHOWN       = 0,
+            REDIRECT_TO = true;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.redirectTo = function() {
+            return REDIRECT_TO;
+        };
+        packageCtrl.getMainPackageView = function() {
+            return {
+                showMailEditor : function() {
+                    SHOWN++;
+                }
+            }
+        };
+
+        t.expect(SHOWN).toBe(0);
+        packageCtrl.onMessageComposeButtonClick();
+        t.expect(SHOWN).toBe(0);
+
+        REDIRECT_TO = false;
+
+        packageCtrl.onMessageComposeButtonClick();
+        t.expect(SHOWN).toBe(1);
+        packageCtrl.onMessageComposeButtonClick();
+        t.expect(SHOWN).toBe(2);
 
     });
 

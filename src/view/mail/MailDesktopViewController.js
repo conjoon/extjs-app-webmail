@@ -59,8 +59,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     mailInboxView : null,
 
     /**
-     * Creates a new mail editor for writing an email message.
+     * Creates a new mail editor for writing an email message, adding the
+     * cn_href-property 'cn_mail/message/compose' to the tab.
      *
+     * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      */
     showMailEditor : function() {
         var me      = this,
@@ -68,10 +70,13 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             newView;
 
         newView = view.add({
-            xtype : 'cn_mail-mailmessageeditor'
+            xtype   : 'cn_mail-mailmessageeditor',
+            cn_href : 'cn_mail/message/compose'
         });
 
         view.setActiveTab(newView);
+
+        return newView;
     },
 
     /**
@@ -165,7 +170,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         var me = this;
 
         if (newCard.cn_href){
-            me.redirectTo(newCard.cn_href);
+            Ext.History.add(newCard.cn_href);
         }
 
     }

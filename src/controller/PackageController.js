@@ -50,9 +50,15 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     ],
 
     routes : {
-        'cn_mail/message/compose'  : 'onComposeMessageRoute',
-        'cn_mail/message/read/:id' : 'onReadMessageRoute',
-        'cn_mail/home'             : 'onHomeTabRoute'
+       'cn_mail/message/compose'  : 'onComposeMessageRoute',
+       'cn_mail/message/read/:id' : 'onReadMessageRoute',
+       'cn_mail/home'             : 'onHomeTabRoute'
+    },
+
+    control : {
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavCreateMessage' : {
+            click : 'onMessageComposeButtonClick'
+        }
     },
 
 
@@ -68,7 +74,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     /**
-     * Action for the cn_mail/message/read/:idroute.
+     * Action for the cn_mail/message/read/:id route.
      *
      * @param messageId
      *
@@ -83,13 +89,40 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     /**
-     * Action for cn_mail/message/compose
+     * Action for cn_mail/message/compose.
+     * Will check if the current active tab is already a tab representing the
+     * route 'cn_mail/message/compose'. If that is the case, we assume that the
+     * current target cor the tab change was indeed an already opened MessageEditor
+     * and we wil not open a new one.
      */
     onComposeMessageRoute : function() {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
+        if (mailDesktopView.getActiveTab().cn_href == 'cn_mail/message/compose') {
+            return;
+        }
+
         mailDesktopView.showMailEditor();
+    },
+
+
+    /**
+     * Callback for the node navigation's "create new message button"
+     * Will redirect to cn_mail/message/compose, triggering the routing. If
+     * routing was not triggered since the route was already active, a new
+     * MessageEditor will be created manually.
+     *
+     * @param {Ext.Button} btn
+     */
+    onMessageComposeButtonClick : function(btn) {
+        var me = this,
+            mailDesktopView;
+
+        if (!me.redirectTo('cn_mail/message/compose')) {
+            mailDesktopView = me.getMainPackageView();
+            mailDesktopView.showMailEditor();
+        }
     },
 
 
@@ -109,7 +142,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                     tooltip : {
                         title : 'Create new message',
                         text  : 'Opens the editor for writing a new message.'
-                    }
+                    },
+                    itemId : 'cn_mail-nodeNavCreateMessage'
                 }, {
                     xtype : 'tbseparator'
                 }, {
@@ -166,9 +200,5 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
          */
         return app.activateViewForHash('cn_mail/home');
     }
-
-
-
-
 
 });

@@ -163,7 +163,9 @@ harness.start({
                             'classic/src/view/mail/message/reader/MessageViewTest.js'
                         ]}
                 ]
-            }]
+            },
+            'classic/src/view/mail/MailDesktopViewTest.js',
+            ]
         }]
     }]
 });
