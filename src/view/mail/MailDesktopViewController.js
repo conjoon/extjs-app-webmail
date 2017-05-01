@@ -59,29 +59,40 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     mailInboxView : null,
 
     /**
+     * Used to compute valid itemIds for MessageEditor tabs, which can be valid
+     * in case routing ids with special characters (e.g. mailto-links) appear.
+     * @private
+     */
+    editorIdMap : null,
+
+
+    /**
      * Creates a new mail editor for writing an email message, adding the
      * cn_href-property 'cn_mail/message/compose/[id]' to the tab.
+     * This controller method distinguishes between to datatypes specified with
+     * id: Number and String. If id is a number, it is assumed that a regular,
+     * blank composer instance should be opened. If id is a string, it is assumed
+     * that the passed id is part of the value of the mailto: protocol, and the
+     * created MessageEitor will be adjusted to hold the information as specified
+     * in the string.
      *
-     * @param {String} id an id to be able to track this MessageEditor later on
+     * @param {Number/String} id an id to be able to track this MessageEditor later on
      * when routing is triggered
      *
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      *
-     * @throws if no valid id was specified
+     * @throws if no valid id was specified (bubbles exceptions from
+     * #getItemIdForMessageEditor and #getCnHrefForMessageEditor)
      */
     showMailEditor : function(id) {
         var me      = this,
             view    = me.getView(),
-            cn_href = 'cn_mail/message/compose/' + id,
-            itemId  = 'cn_mail-mailmessageeditor-' + id,
-            newView = view.down('#' + itemId);
+            newView, cn_href, itemId;
 
-        if (!id) {
-            Ext.raise({
-                id  : id,
-                msg : "\"id\" is not a valid value"
-            })
-        }
+        itemId  = me.getItemIdForMessageEditor(id);
+        cn_href = me.getCnHrefForMessageEditor(id);
+
+        newView = view.down('#' + itemId);
 
         if (!newView) {
             newView = view.add({
@@ -189,7 +200,66 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (newCard.cn_href){
             Ext.History.add(newCard.cn_href);
         }
+    },
 
+
+    /**
+     * Computes a valid itemId to use with an MessageEdit instance. This is needed
+     * since id might be string containing special chars.
+     * This method is guaranteed one and the same id for one and the same specified
+     * id during the lifetime of this instance. ids so not persist over sessions.
+     *
+     * @param {String} id
+     *
+     * @return {String}
+     *
+     * @private
+     */
+    getItemIdForMessageEditor : function(id) {
+
+        var me, newId;
+
+        if (!id || (!Ext.isString(id) && !Ext.isNumber(id))) {
+            Ext.raise({
+                id  : id,
+                msg : "\"id\" is not a valid value"
+            })
+        }
+
+        me    = this;
+        newId = 'cn_mail-mailmessageeditor-' + Ext.id();
+
+        if (!me.editorIdMap) {
+            me.editorIdMap = {};
+        }
+
+        if (!me.editorIdMap[id]) {
+            me.editorIdMap[id] = newId;
+        }
+
+        return  me.editorIdMap[id];
+    },
+
+
+    /**
+     * Returns a cn_href value to use with a MessageEditor for proper routing.
+     *
+     * @param {Mixed} id
+     *
+     * @return {String}
+     *
+     * @private
+     */
+    getCnHrefForMessageEditor : function(id) {
+
+        if (!id || (!Ext.isString(id) && !Ext.isNumber(id))) {
+            Ext.raise({
+                id  : id,
+                msg : "\"id\" is not a valid value"
+            })
+        }
+
+        return 'cn_mail/message/compose/' + id
     }
 
 });

@@ -55,8 +55,8 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
     t.it("Should create the ViewController and run basic checks", function(t) {
         var viewController = Ext.create(
-                'conjoon.cn_mail.view.mail.MailDesktopViewController'
-            );
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
 
         t.expect(viewController.alias).toContain('controller.cn_mail-maildesktopviewcontroller');
         t.expect(viewController instanceof Ext.app.ViewController).toBe(true);
@@ -199,6 +199,88 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
     });
 
 
+    t.it("getItemIdForMessageEditor()", function(t) {
+        var ctrl = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        ), exc, e, tests, res, results = [];
+
+        tests = [{
+            expected : 'Exception'
+        }, {
+            value    : 8797
+        }, {
+            value    : "8797dssdggddsg"
+        }, {
+            value    : false,
+            expected : 'Exception'
+        }, {
+            value    : {},
+            expected : 'Exception'
+        }];
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            exc = e = undefined;
+            if (tests[i].expected == 'Exception') {
+                try{ctrl.getItemIdForMessageEditor(tests[i].value);}catch(e){
+                    exc = e;
+                }
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toContain("valid value");
+            } else {
+                res = ctrl.getItemIdForMessageEditor(tests[i].value);
+                t.expect(res.indexOf('cn_mail-mailmessageeditor-')).toBe(0);
+                results[i] = res;
+            }
+        }
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            if (tests[i].expected == 'Exception') {
+                continue;
+            } else {
+                t.expect(ctrl.getItemIdForMessageEditor(tests[i].value)
+                ).toBe(results[i]);
+            }
+        }
+    });
+
+
+    t.it("getCnHrefForMessageEditor()", function(t) {
+        var ctrl = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        ), exc, e, tests;
+
+        tests = [{
+            expected : 'Exception'
+        }, {
+            value    : 8797,
+            expected : 'cn_mail/message/compose/8797'
+        }, {
+            value    : "8797dssdggddsg",
+            expected : 'cn_mail/message/compose/8797dssdggddsg'
+        }, {
+            value    : false,
+            expected : 'Exception'
+        }, {
+            value    : {},
+            expected : 'Exception'
+        }];
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            exc = e = undefined;
+            if (tests[i].expected == 'Exception') {
+                try{ctrl.getCnHrefForMessageEditor(tests[i].value);}catch(e){
+                    exc = e;
+                }
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toContain("valid value");
+            } else {
+                t.expect(ctrl.getCnHrefForMessageEditor(tests[i].value)).toBe(
+                    tests[i].expected);
+            }
+        }
+    });
+
+
     t.it("showMailEditor()", function(t) {
 
         var panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
@@ -210,6 +292,14 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             queryRes, editor, exc, e, editor2;
 
         try {ctrl.showMailEditor();}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("valid value");
+
+        try {ctrl.showMailEditor(true);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("valid value");
+
+        try {ctrl.showMailEditor(false);}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toContain("valid value");
 
@@ -227,6 +317,17 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         editor2 = ctrl.showMailEditor(1);
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
         t.expect(editor2).toBe(editor);
+
+        editor = ctrl.showMailEditor('test');
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(3);
+
+        editor2 = ctrl.showMailEditor('test1');
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
+        t.expect(editor).not.toBe(editor2);
+
+        editor2 = ctrl.showMailEditor('test');
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
+        t.expect(editor).toBe(editor2);
 
         panel.destroy();
         panel = null;

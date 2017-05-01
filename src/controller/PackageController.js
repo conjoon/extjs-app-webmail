@@ -50,13 +50,25 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     ],
 
     routes : {
-       'cn_mail/message/compose/:id'  : {
-           action     : 'onComposeMessageRoute',
-           conditions : {
-               ':id' : '([0-9]+)'
-           },
-           before : 'onBeforePackageRoute'
-       },
+
+        // route for generic compser instances
+        'cn_mail/message/compose/:id'  : {
+            action     : 'onComposeMessageRoute',
+            conditions : {
+                ':id' : '([0-9]+$)'
+            },
+            before : 'onBeforePackageRoute'
+        },
+
+        // route for "mailto"
+        'cn_mail/message/compose/mailto%3A:id'  : {
+            action     : 'onComposeMailtoMessageRoute',
+            conditions : {
+                ':id' : '(.+)'
+            },
+            before : 'onBeforePackageRoute'
+        },
+
        'cn_mail/message/read/:id' : 'onReadMessageRoute',
        'cn_mail/home'             : 'onHomeTabRoute'
     },
@@ -100,12 +112,30 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id to be able to track this MessageEditor instance
      */
     onComposeMessageRoute : function(id) {
+
         var me              = this,
             mailDesktopView = me.getMainPackageView();
+
+        id = me.prepareIdForComposeRoute(id);
 
         mailDesktopView.showMailEditor(id);
     },
 
+
+    /**
+     * Action for cn_mail/message/compose/mailto%3A[id].
+     *
+     * @param {String} id the id to be able to track this MessageEditor instance
+     */
+    onComposeMailtoMessageRoute : function(id) {
+
+        var me              = this,
+            mailDesktopView = me.getMainPackageView();
+
+        id = me.prepareIdForComposeRoute(id, true);
+
+        mailDesktopView.showMailEditor(id);
+    },
 
     /**
      * Callback for the node navigation's "create new message button"
@@ -180,6 +210,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         };
     },
 
+
     /**
      * Returns the main view for this package and creates it if not already
      * available.
@@ -194,6 +225,37 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
          */
         return app.activateViewForHash('cn_mail/home');
+    },
+
+
+    /**
+     * Parses the specified string. Returns an integer if the string contained
+     * only digits, or the string itself with a trailing "mailto3%A".
+     *
+     * @param {String} id
+     *
+     * @returns {Number/String/*}
+     *
+     * @private
+     */
+    prepareIdForComposeRoute : function(id, isMailto) {
+
+        if (Ext.isString(id)) {
+            if (isMailto !== true) {
+                if ((/^\d+$/).test(id)) {
+                    id = parseInt(id, 10);
+                } else {
+                    Ext.raise({
+                        id  : id,
+                        msg : "Unexpected value for \"id\""
+                    })
+                }
+            } else {
+                id = 'mailto%3A' + id;
+            }
+        }
+
+        return id;
     }
 
 });

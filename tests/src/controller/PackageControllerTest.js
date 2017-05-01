@@ -105,4 +105,49 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(SHOWN).toBe(3);
     });
 
+
+    t.it("prepareIdForComposeRoute()", function(t) {
+
+        var tests, exc, e;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        tests = [{
+            args     : ["8797"],
+            expected : 8797
+        }, {
+            args     : ["8797dssdggddsg", true],
+            expected : "mailto%3A8797dssdggddsg"
+        }, {
+            args     : [false],
+            expected : false
+        }, {
+            args     : [123],
+            expected : 123
+        }, {
+            args     : ["sdsfsfsf"],
+            expected : "Exception"
+        }];
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            exc = e = undefined;
+            if (tests[i].expected == "Exception") {
+                try {
+                    packageCtrl.prepareIdForComposeRoute.apply(
+                        packageCtrl, tests[i].args)
+                } catch(e) {
+                    exc = e;
+                }
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toContain("Unexpected value");
+
+            } else {
+                t.expect(
+                    packageCtrl.prepareIdForComposeRoute.apply(
+                        packageCtrl, tests[i].args)
+                ).toBe(tests[i].expected);
+            }
+        }
+    });
+
 });
