@@ -96,6 +96,11 @@ harness.start({
                 }]
             }]
         }, {
+            group : 'text',
+            items : [
+                'src/text/QueryStringParserTest.js'
+            ]
+        }, {
             group : 'view',
             items : [{
                 group : 'mail',
@@ -147,7 +152,7 @@ harness.start({
                 ]
             }, {
                 group : 'message',
-                items : [,
+                items : [
                     'classic/src/view/mail/message/AbstractAttachmentListTest.js',
                     'classic/src/view/mail/message/MessageGridTest.js', {
                         group : 'editor',
@@ -164,7 +169,7 @@ harness.start({
                         ]}
                 ]
             },
-            'classic/src/view/mail/MailDesktopViewTest.js',
+            'classic/src/view/mail/MailDesktopViewTest.js'
             ]
         }]
     }]
