@@ -58,13 +58,16 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
         view = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
 
-        t.isCalledNTimes('showMailEditor', view.getController(), 2);
+        t.isCalledNTimes('showMailEditor', view.getController(), 3);
 
-        editor1 = view.showMailEditor();
+        editor1 = view.showMailEditor(1);
         t.isInstanceOf(editor1, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor')
 
-        editor2 = view.showMailEditor();
+        editor2 = view.showMailEditor(2);
         t.expect(editor1).not.toBe(editor2);
+
+        editor2 = view.showMailEditor(1);
+        t.expect(editor1).toBe(editor2);
 
     });
 

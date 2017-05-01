@@ -207,18 +207,26 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                 renderTo : document.body
             }),
             ctrl  = panel.getController(),
-            queryRes, editor;
+            queryRes, editor, exc, e, editor2;
 
-        queryRes = Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel);
+        try {ctrl.showMailEditor();}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("valid value");
+
+        queryRes = Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel);
         t.expect(queryRes.length).toBe(0);
 
-        editor = ctrl.showMailEditor();
+        editor = ctrl.showMailEditor(1);
         t.isInstanceOf(editor, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor');
-        t.expect(Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel)[0]).toBe(editor);
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel)[0]).toBe(editor);
 
-        t.expect(Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel).length).toBe(1);
-        ctrl.showMailEditor();
-        t.expect(Ext.ComponentQuery.query('panel[cn_href=cn_mail/message/compose]', panel).length).toBe(2);
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(1);
+        ctrl.showMailEditor(2);
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
+
+        editor2 = ctrl.showMailEditor(1);
+        t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
+        t.expect(editor2).toBe(editor);
 
         panel.destroy();
         panel = null;

@@ -50,7 +50,13 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     ],
 
     routes : {
-       'cn_mail/message/compose'  : 'onComposeMessageRoute',
+       'cn_mail/message/compose/:id'  : {
+           action     : 'onComposeMessageRoute',
+           conditions : {
+               ':id' : '([0-9]+)'
+           },
+           before : 'onBeforePackageRoute'
+       },
        'cn_mail/message/read/:id' : 'onReadMessageRoute',
        'cn_mail/home'             : 'onHomeTabRoute'
     },
@@ -90,39 +96,28 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
     /**
      * Action for cn_mail/message/compose.
-     * Will check if the current active tab is already a tab representing the
-     * route 'cn_mail/message/compose'. If that is the case, we assume that the
-     * current target cor the tab change was indeed an already opened MessageEditor
-     * and we wil not open a new one.
+     *
+     * @param {String} id the id to be able to track this MessageEditor instance
      */
-    onComposeMessageRoute : function() {
+    onComposeMessageRoute : function(id) {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        if (mailDesktopView.getActiveTab().cn_href == 'cn_mail/message/compose') {
-            return;
-        }
-
-        mailDesktopView.showMailEditor();
+        mailDesktopView.showMailEditor(id);
     },
 
 
     /**
      * Callback for the node navigation's "create new message button"
-     * Will redirect to cn_mail/message/compose, triggering the routing. If
-     * routing was not triggered since the route was already active, a new
-     * MessageEditor will be created manually.
+     * Will redirect to cn_mail/message/compose/[autoId], triggering the routing.
      *
      * @param {Ext.Button} btn
      */
     onMessageComposeButtonClick : function(btn) {
-        var me = this,
-            mailDesktopView;
-
-        if (!me.redirectTo('cn_mail/message/compose')) {
+        var me              = this,
             mailDesktopView = me.getMainPackageView();
-            mailDesktopView.showMailEditor();
-        }
+
+        mailDesktopView.showMailEditor(Ext.id().split('-').pop());
     },
 
 

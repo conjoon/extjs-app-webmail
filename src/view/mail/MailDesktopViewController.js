@@ -60,19 +60,36 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
     /**
      * Creates a new mail editor for writing an email message, adding the
-     * cn_href-property 'cn_mail/message/compose' to the tab.
+     * cn_href-property 'cn_mail/message/compose/[id]' to the tab.
+     *
+     * @param {String} id an id to be able to track this MessageEditor later on
+     * when routing is triggered
      *
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
+     *
+     * @throws if no valid id was specified
      */
-    showMailEditor : function() {
+    showMailEditor : function(id) {
         var me      = this,
             view    = me.getView(),
-            newView;
+            cn_href = 'cn_mail/message/compose/' + id,
+            itemId  = 'cn_mail-mailmessageeditor-' + id,
+            newView = view.down('#' + itemId);
 
-        newView = view.add({
-            xtype   : 'cn_mail-mailmessageeditor',
-            cn_href : 'cn_mail/message/compose'
-        });
+        if (!id) {
+            Ext.raise({
+                id  : id,
+                msg : "\"id\" is not a valid value"
+            })
+        }
+
+        if (!newView) {
+            newView = view.add({
+                xtype   : 'cn_mail-mailmessageeditor',
+                itemId  : itemId,
+                cn_href : cn_href
+            });
+        }
 
         view.setActiveTab(newView);
 

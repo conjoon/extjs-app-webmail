@@ -75,14 +75,17 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
     /**
      * Creates and shows a new mail editor instance for writing an email message.
      *
+     * @param {String} id an id to be able to track this MessageEditor later on
+     * when routing is triggered
+     *
      * @return conjoon.cn_mail.view.mail.message.MessageEditor
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailEditor}
      */
-    showMailEditor : function() {
+    showMailEditor : function(id) {
         var me = this;
 
-        return me.getController().showMailEditor();
+        return me.getController().showMailEditor(id);
     }
 
 

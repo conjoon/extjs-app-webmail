@@ -75,26 +75,19 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         packageCtrl.onComposeMessageRoute();
         t.expect(SHOWN).toBe(2);
 
-        CN_HREF = 'cn_mail/message/compose';
-
-        t.expect(SHOWN).toBe(2);
         packageCtrl.onComposeMessageRoute();
-        t.expect(SHOWN).toBe(2);
+        t.expect(SHOWN).toBe(3);
         packageCtrl.onComposeMessageRoute();
-        t.expect(SHOWN).toBe(2);
+        t.expect(SHOWN).toBe(4);
 
     });
 
 
     t.it("onMessageComposeButtonClick()", function(t) {
 
-        var SHOWN       = 0,
-            REDIRECT_TO = true;
+        var SHOWN = 0;
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        packageCtrl.redirectTo = function() {
-            return REDIRECT_TO;
-        };
         packageCtrl.getMainPackageView = function() {
             return {
                 showMailEditor : function() {
@@ -105,15 +98,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
         t.expect(SHOWN).toBe(0);
         packageCtrl.onMessageComposeButtonClick();
-        t.expect(SHOWN).toBe(0);
-
-        REDIRECT_TO = false;
-
-        packageCtrl.onMessageComposeButtonClick();
         t.expect(SHOWN).toBe(1);
         packageCtrl.onMessageComposeButtonClick();
         t.expect(SHOWN).toBe(2);
-
+        packageCtrl.onMessageComposeButtonClick();
+        t.expect(SHOWN).toBe(3);
     });
 
 });
