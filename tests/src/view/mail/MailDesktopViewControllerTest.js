@@ -52,6 +52,57 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
     });
 
+    t.it("showMailEditor()", function(t) {
+
+        var ctrl = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        ), exc, e, tests, test;
+
+        try{ctrl.createMessageDraftConfigFromString(2);}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain('seems to be malformed');
+
+        tests = [{
+            value    : 'mailto:test@domain.tld',
+            expected : {to : [{name : 'test@domain.tld', address : 'test@domain.tld'}]}
+        }, {
+            value    : 'mailto:',
+            expected : {}
+        }, {
+            value    : 'maito:',
+            expected : 'Exception'
+        },{
+            value    : 'mailto%3Atest1@domain.tld',
+            expected :{to : [{name : 'test1@domain.tld', address : 'test1@domain.tld'}]}
+        }, {
+            value    : 'mailto%3Aaddress1@domain1.tld1,address2@domain2.tld2?subject=registerProtocolHandler()%20FTW!&body=Check%20out%20what%20I%20learned%20at%20http%3A%2F%2Fupdates.html5rocks.com%2F2012%2F02%2FGetting-Gmail-to-handle-all-mailto-links-with-registerProtocolHandler%0A%0APlus%2C%20flawless%20handling%20of%20the%20subject%20and%20body%20parameters.%20Bonus%20from%20RFC%202368!',
+            expected : {
+                to          : [{name : 'address1@domain1.tld1', address : 'address1@domain1.tld1'}, {name : 'address2@domain2.tld2', address : 'address2@domain2.tld2'}],
+                subject     : 'registerProtocolHandler() FTW!',
+                messageBody : {
+                    textHtml : 'Check out what I learned at http://updates.html5rocks.com/2012/02/Getting-Gmail-to-handle-all-mailto-links-with-registerProtocolHandler\n\nPlus, flawless handling of the subject and body parameters. Bonus from RFC 2368!'
+                }
+            }
+        }];
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            test = tests[i];
+            if (test.expected == 'Exception') {
+                exc = e = undefined;
+                try{ctrl.createMessageDraftConfigFromString(test.value);}catch(e){exc=e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toContain('seems to be malformed');
+            } else {
+
+                t.isInstanceOf(ctrl.createMessageDraftConfigFromString(test.value), 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+                t.expect(ctrl.createMessageDraftConfigFromString(test.value).toObject()).toEqual(
+                    test.expected
+                );
+            }
+
+        }
+    });
+
 
     t.it("Should create the ViewController and run basic checks", function(t) {
         var viewController = Ext.create(
@@ -318,18 +369,21 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
         t.expect(editor2).toBe(editor);
 
-        editor = ctrl.showMailEditor('test');
+        editor = ctrl.showMailEditor('mailto:test@domain.tld');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(3);
 
-        editor2 = ctrl.showMailEditor('test1');
+        editor2 = ctrl.showMailEditor('mailto:new_test@domain.tld');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
         t.expect(editor).not.toBe(editor2);
 
-        editor2 = ctrl.showMailEditor('test');
+        editor2 = ctrl.showMailEditor('mailto:test@domain.tld');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
         t.expect(editor).toBe(editor2);
 
         panel.destroy();
         panel = null;
     });
+
+
+
 });

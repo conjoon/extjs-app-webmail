@@ -34,7 +34,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.view.mail.message.reader.MessageView',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
         'conjoon.cn_mail.model.mail.message.MessageItem',
-        'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel'
+        'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
+        'conjoon.cn_mail.text.QueryStringParser',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -65,6 +67,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     editorIdMap : null,
 
+    /**
+     * @type {conjoon.cn_mail.text.QueryStringParser}
+     * @private
+     */
+    parser : null,
+
 
     /**
      * Creates a new mail editor for writing an email message, adding the
@@ -77,7 +85,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * in the string.
      *
      * @param {Number/String} id an id to be able to track this MessageEditor later on
-     * when routing is triggered
+     * when routing is triggered. if id is a string, it is assumed it follows the
+     * syntax of the mailto scheme (including protocol), and mights still be
+     * uri encoded.
      *
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      *
@@ -87,25 +97,33 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     showMailEditor : function(id) {
         var me      = this,
             view    = me.getView(),
-            newView, cn_href, itemId;
+            newView, cn_href, itemId,
+            initialConfig = {
+                messageDraft : null
+            };
 
         itemId  = me.getItemIdForMessageEditor(id);
         cn_href = me.getCnHrefForMessageEditor(id);
 
+        if (Ext.isString(id)) {
+            initialConfig.messageDraft = me.createMessageDraftConfigFromString(id);
+        }
+
         newView = view.down('#' + itemId);
 
         if (!newView) {
-            newView = view.add({
+            newView = view.add(Ext.apply(initialConfig, {
                 xtype   : 'cn_mail-mailmessageeditor',
                 itemId  : itemId,
                 cn_href : cn_href
-            });
+            }));
         }
 
         view.setActiveTab(newView);
 
         return newView;
     },
+
 
     /**
      * Tries to find an existing MessageView opened in the view and focus it,
@@ -260,6 +278,87 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         return 'cn_mail/message/compose/' + id
-    }
+    },
 
+
+    /**
+     * Helper function to make sure that the id of the cn_mail/message/compose/mailto...
+     * fragment is parsed properly and returned as a MessageDraftConfig object.
+     * If the mailto contains a body-param, this body param will be saved
+     * under textHtml in the resulting MessageDraftConfig object.
+     *
+     * @param {String} id
+     *
+     * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig}
+     *
+     * @throws if id is not a string or was malformed.
+     *
+     * @private
+     */
+    createMessageDraftConfigFromString : function(id) {
+
+        var me        = this,
+            encodedId = decodeURIComponent(id + ''),
+            pos, addresses, res, tmpId;
+
+        if (Ext.String.startsWith(encodedId, 'mailto:', true)) {
+            encodedId = encodedId.substring(7);
+        } else {
+            Ext.raise({
+                id  : id,
+                msg : "\"id\" seems to be malformed"
+            })
+        }
+
+        addresses = '';
+
+        if ((pos = encodedId.indexOf('?')) !== -1) {
+            addresses = encodedId.substring(0, pos).split(',');
+            encodedId = encodedId.substring(pos);
+        } else {
+            addresses = encodedId ? encodedId.split(',') : [];
+            encodedId = "";
+        }
+
+        if (encodedId == "") {
+            if (addresses && addresses.length) {
+                return Ext.create(
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+                    to : addresses
+                });
+            }
+            return Ext.create(
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+        }
+
+        if (!me.parser) {
+            me.parser = Ext.create('conjoon.cn_mail.text.QueryStringParser');
+        }
+        res = me.parser.parse(encodedId);
+
+        for (var i in res) {
+            if (!res.hasOwnProperty(i)) {
+                continue;
+            }
+            while (true) {
+                tmpId = decodeURIComponent(res[i]);
+                if (!tmpId || (tmpId === res[i])) {
+                    break;
+                }
+                res[i] = tmpId;
+            }
+        }
+
+        if (res.hasOwnProperty('body')) {
+            res.textHtml = res.body;
+            delete res.body;
+        }
+
+        return Ext.create(
+            'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+            Ext.apply({
+                to : addresses
+            }, res)
+        );
+    }
 });
