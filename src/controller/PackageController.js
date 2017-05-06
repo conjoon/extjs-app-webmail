@@ -147,7 +147,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.showMailEditor(Ext.id().split('-').pop());
+        mailDesktopView.showMailEditor(
+            me.prepareIdForComposeRoute(Ext.id().split('-').pop())
+        );
     },
 
 
