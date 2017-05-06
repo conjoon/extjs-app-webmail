@@ -110,6 +110,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
         'conjoon.cn_mail.view.mail.message.editor.HtmlEditor',
         'conjoon.cn_mail.view.mail.message.editor.AddressField',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.model.mail.message.EmailAddress',
         'conjoon.cn_mail.data.mail.BaseSchema',
         'conjoon.cn_core.data.Session',
@@ -270,6 +271,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     constructor : function(config) {
 
+        var messageDraft,
+            draftConfig = {
+                type   : 'MessageDraft'
+            };
+
         config = Ext.apply(config || {}, {
             editMode : 'CREATE'
         });
@@ -279,50 +285,39 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             batchVisitorClassName : 'conjoon.cn_core.data.session.SplitBatchVisitor'
         });
 
-
-        if (config.messageConfig && config.viewModel) {
+        if (config.messageDraft && config.viewModel) {
             Ext.raise({
                 source : Ext.getClassName(this),
                 msg    : 'Can only set messageConfig or viewModel, not both.'
             })
         }
 
-        if (config.messageConfig) {
-            var c = config.messageConfig;
+        if (config.messageDraft) {
 
-            if (c.to) {
-                // create draft with to address
-                var to = c.to;
-                if (c.to instanceof conjoon.cn_mail.model.mail.message.EmailAddress) {
-                    to = [Ext.copy({}, c.to.data, 'name,address')];
-                }
-                config.viewModel = {
-                    type  : 'cn_mail-mailmessageeditorviewmodel',
-                    links : {
-                        messageDraft : {
-                            type   : 'MessageDraft',
-                            create : {
-                                to : to
-                            }
-                        }
-                    }
-                };
-            } else if (c.id) {
+            messageDraft = config.messageDraft;
+
+            if (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig) {
+                draftConfig.create = messageDraft.toObject();
+            } else if (Ext.isNumber(messageDraft)) {
                 config.editMode = 'EDIT';
-                // load MessageDraft if id was specified
-                config.viewModel = {
-                    type  : 'cn_mail-mailmessageeditorviewmodel',
-                    links : {
-                        messageDraft : {
-                            type   : 'MessageDraft',
-                            id     : c.id
-                        }
-                    }
-                };
+                draftConfig.id  = messageDraft;
+            } else {
+                Ext.raise({
+                    messageDraft : messageDraft,
+                    msg          : "unexpected value for \"messageDraft\""
+                });
             }
-        };
 
-        delete config.messageConfig;
+            config.viewModel = {
+                type  : 'cn_mail-mailmessageeditorviewmodel',
+                links : {
+                    messageDraft : draftConfig
+                }
+            };
+        }
+
+
+        delete config.messageDraft;
 
         this.callParent(arguments);
     },

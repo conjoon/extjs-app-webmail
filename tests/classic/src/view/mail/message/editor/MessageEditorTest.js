@@ -35,8 +35,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorTest', function(
         createWithMessageConfig = function(msgConfig) {
             return Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    renderTo : document.body,
-                    messageConfig : msgConfig
+                    renderTo     : document.body,
+                    messageDraft : msgConfig
                 });
         },
         checkConstructorCreateWithAddress = function(address, t, view) {
@@ -127,12 +127,13 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 // | CONSTRUCTOR CHECKS
 // +---------------------------------------------------------------------------
     t.it("Should create empty message with specified to-address (string)", function(t) {
+        var messageDraftConfig = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+            to : 'name@domain.tld'
+        });
         view = createWithViewConfig({
             editMode : 'EDIT',
             renderTo : document.body,
-            messageConfig : {
-                to : 'name@domain.tld'
-            }
+            messageDraft : messageDraftConfig
         });
 
         t.waitForMs(500, function() {
@@ -141,9 +142,10 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     });
 
     t.it("Should create empty message with specified to-address (array, 1)", function(t) {
-        view = createWithMessageConfig({
+        var messageDraftConfig = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
             to : [{name : 'Peter', address : 'name@domain.tld'}]
         });
+        view = createWithMessageConfig(messageDraftConfig);
 
         t.waitForMs(500, function() {
             checkConstructorCreateWithAddress(['name@domain.tld'], t, view);
@@ -151,11 +153,13 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     });
 
     t.it("Should create empty message with specified to-address (array, 2)", function(t) {
-        view = createWithMessageConfig({
+        var messageDraftConfig = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
             to : [
                 {name : 'Peter', address : 'name@domain.tld'},
                 {name : 'Peter2', address : 'name2@domain.tld'}
-        ]});
+            ]
+        });
+        view = createWithMessageConfig(messageDraftConfig);
 
         t.waitForMs(500, function() {
             checkConstructorCreateWithAddress(
@@ -164,31 +168,18 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     });
 
 
-    t.it("Should create empty message with specified to-address (EmailAddress)", function(t) {
-        view = createWithMessageConfig({
-            to : Ext.create(
-                'conjoon.cn_mail.model.mail.message.EmailAddress',
-                {address : 'name3@domain.tld'}
-            )
+    t.it("Should throw exception when called with viewModel and messageDraft", function(t) {
+        var messageDraftConfig = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+            to : [
+                {name : 'Peter', address : 'name@domain.tld'},
+                {name : 'Peter2', address : 'name2@domain.tld'}
+            ]
         });
-
-        t.waitForMs(500, function() {
-            checkConstructorCreateWithAddress(
-                ['name3@domain.tld'], t, view);
-        });
-    });
-
-
-    t.it("Should throw exception when called with viewModel and messageConfig", function(t) {
-
         var exc = undefined;
         try {
             view = createWithViewConfig({
                 viewModel : {data : {foo : 'bar'}},
-                messageConfig : {to : Ext.create(
-                    'conjoon.cn_mail.model.mail.message.EmailAddress',
-                    {address : 'name3@domain.tld'}
-                )}
+                messageDraft : messageDraftConfig
             });
         } catch (e) {
             exc = e;
@@ -213,6 +204,31 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(exc).toBeUndefined();
     });
 
+    t.it("Should create message with to, cc, bcc, subject and textHtml", function(t) {
+        var messageDraftConfig = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+            to : [
+                {name : 'Peter', address : 'name@domain.tld'},
+                {name : 'Peter2', address : 'name2@domain.tld'}
+            ],
+            cc       : 'cc@ccdomain.tld',
+            bcc      : 'bcc@bccdomain.tld',
+            subject  : 'foo',
+            textHtml : 'bar'
+        });
+        view = createWithMessageConfig(messageDraftConfig);
+
+        t.waitForMs(500, function() {
+            t.expect(view.down('cn_mail-mailmessageeditorhtmleditor').getValue()).toBe('bar');
+
+            t.expect(view.down('#toField').getValue()).toEqual(['name@domain.tld', 'name2@domain.tld']);
+
+            expectCcsHidden(false, t, view);
+
+            t.expect(view.down('#ccField').getValue()).toEqual(['cc@ccdomain.tld']);
+            t.expect(view.down('#bccField').getValue()).toEqual(['bcc@bccdomain.tld']);
+            t.expect(view.down('#subjectField').getValue()).toBe('foo');
+        });
+    });
 
 // +---------------------------------------------------------------------------
 // | initComponent Check
@@ -268,7 +284,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 // +---------------------------------------------------------------------------
 
         t.it("Should load message from backend", function(t) {
-            view = createWithMessageConfig({id : 1});
+            view = createWithMessageConfig(1);
 
             t.waitForMs(500, function() {
                 t.expect(view.editMode).toBe('EDIT');
@@ -286,7 +302,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
 
         t.it("Should load message from backend and not hide cc/bcc if fields are cleared", function(t) {
-            view = createWithMessageConfig({id : 1});
+            view = createWithMessageConfig(1);
 
             t.waitForMs(500, function() {
                 t.expect(view.editMode).toBe('EDIT');
@@ -311,7 +327,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
 
         t.it("Should load message from backend and showHide ccbcc button depending on the values of the cc bcc fields", function(t) {
-            view = createWithMessageConfig({id : 1});
+            view = createWithMessageConfig(1);
 
             t.waitForMs(500, function() {
                 t.expect(view.editMode).toBe('EDIT');
@@ -334,7 +350,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("Should load message from backend, cc and bcc field hidden", function(t) {
 
-        view = createWithMessageConfig({id : 2});
+        view = createWithMessageConfig(2);
 
         t.waitForMs(500, function() {
             expectCcsHidden(true, t, view);

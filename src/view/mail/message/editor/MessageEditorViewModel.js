@@ -131,11 +131,20 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      */
     constructor : function(config) {
 
+        var me, addressFormulas, messageBody;
+
         config = config || {};
 
-        var me              = this,
-            addressFormulas = me.createAddressFormulas();
+        me              = this;
+        addressFormulas = me.createAddressFormulas();
+        messageBody     = conjoon.cn_core.Util.unchain(
+            'links.messageDraft.create.messageBody', config
+        );
 
+        // intentionally remove reference, see below
+        if (messageBody) {
+            delete config.links.messageDraft.create.messageBody;
+        }
 
         if (!conjoon.cn_core.Util.unchain('links.messageDraft', config)) {
             Ext.apply(config, {
@@ -157,9 +166,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          * @extjs 6.2.0 GPL
          * @see https://www.sencha.com/forum/showthread.php?332062-Form-field-not-updated-with-bind-of-association-which-is-empty
          */
+        // if the messageDraft has no id, we assume the messageBody does not exist.
+        // we initialize it by hand here, considering above mentioned bug in 6.2.
+        // The messageBody might be initialized with some values as specified
+        // in the constructor's config-argument
         if (!conjoon.cn_core.Util.unchain('links.messageDraft.id', config)) {
             me.set('messageDraft.messageBody',
-                me.getSession().createRecord('MessageBody', {})
+                me.getSession().createRecord('MessageBody', messageBody || {})
             );
         }
     },
