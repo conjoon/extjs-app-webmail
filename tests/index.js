@@ -52,7 +52,15 @@ harness.start({
             group : 'data',
             items : [{
                 group : 'mail',
-                items : [
+                items : [{
+                    group : 'message',
+                    items : [{
+                        group : 'editor',
+                        items : [
+                            'src/data/mail/message/editor/MessageDraftConfigTest.js'
+                        ]
+                    }]
+                },
                     'src/data/mail/BaseSchemaTest.js'
                 ]
             }]
