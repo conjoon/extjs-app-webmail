@@ -39,7 +39,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
         name :'id',
         type : 'string'
     },{
-        name : 'text',
+        name : 'textPlain',
         type : 'string'
     }, {
         name : 'textHtml',
