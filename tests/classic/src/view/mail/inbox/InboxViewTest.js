@@ -91,22 +91,24 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
 
             t.waitForMs(500, function(){
-                var mailFolder = tree.getStore().getAt(0);
+                var mailFolder = tree.getStore().getAt(0),
+                   unreadCount =  mailFolder.get('unreadCount');
 
-                t.expect(mailFolder.get('unreadCount')).toBe(3787);
+                t.expect(unreadCount).not.toBe(0);
                 tree.getSelectionModel().select(mailFolder);
 
                 t.waitForMs(750, function(){
 
                     var messageItem = grid.getStore().getAt(0);
                     t.expect(grid.getStore().getTotalCount()).not.toBe(0);
+                    messageItem.set('isRead', false);
                     t.expect(messageItem.get('isRead')).toBe(false);
                     grid.getSelectionModel().select(messageItem);
 
                     t.waitForMs(500, function(){
                         t.expect(messageView.getViewModel().get('messageItem')).toBe(messageItem);
 
-                        t.expect(mailFolder.get('unreadCount')).toBe(3786);
+                        t.expect(mailFolder.get('unreadCount')).toBe(unreadCount - 1);
                     });
 
                 });
