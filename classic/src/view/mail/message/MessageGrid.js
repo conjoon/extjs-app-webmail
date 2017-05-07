@@ -78,7 +78,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     }, {
         dataIndex : 'to',
         text      : 'To',
-        width     : 240
+        width     : 240,
+        renderer  : function(value) {
+            var names = [];
+            for (var i = 0, len = value.length; i < len; i++) {
+                names.push(value[i].name);
+            }
+            return names.join(', ');
+        }
     }, {
         dataIndex : 'from',
         text      : 'From',
@@ -88,6 +95,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         align     : 'right',
         text      : 'Date',
         width     : 140
+    }, {
+        dataIndex : 'size',
+        align     : 'right',
+        text      : 'Size',
+        width     : 80
     }]
 
 });

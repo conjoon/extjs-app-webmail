@@ -35,6 +35,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
+
+    buildRandomSizeInBytes : function() {
+        var me = this;
+
+        return me.buildRandomNumber(1, 10000000);
+    },
+
     buildRandomDate : function() {
         var me = this,
             d  = me.buildRandomNumber(1, 31),
@@ -116,7 +123,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 // leave first one as unread for tests
                 isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 date           : me.buildRandomDate(),
-                hasAttachments : i == 0 || i % 2 == 0
+                hasAttachments : i == 0 || i % 2 == 0,
+                size           : me.buildRandomSizeInBytes()
             }, baseMessageItems[i]));
         }
 
