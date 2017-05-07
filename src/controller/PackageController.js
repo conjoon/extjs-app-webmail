@@ -68,14 +68,96 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             },
             before : 'onBeforePackageRoute'
         },
-
+       'cn_mail/message/edit/:id' : 'onEditMessageRoute',
        'cn_mail/message/read/:id' : 'onReadMessageRoute',
        'cn_mail/home'             : 'onHomeTabRoute'
     },
 
     control : {
+        'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree' : {
+            selectionchange : 'onMailFolderTreeSelectionChange'
+        },
+        'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > cn_mail-mailmessagegrid' : {
+            deselect : 'onMailMessageGridDeselect',
+            select   : 'onMailMessageGridSelect'
+        },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavCreateMessage' : {
             click : 'onMessageComposeButtonClick'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage' : {
+            click : 'onMessageEditButtonClick'
+        }
+    },
+
+    refs : [{
+        ref      : 'mailMessageGrid',
+        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > cn_mail-mailmessagegrid'
+    }, {
+        ref      : 'mailFolderTree',
+        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree'
+    }, {
+        ref      : 'navigationToolbar',
+        selector : 'cn_treenavviewport-tbar'
+    }],
+
+
+    /**
+     * Callback for the MailFolderTree#s selectionchange event.
+     * Will make sure that the listeners for the MessageGrid are properly
+     * registered based on the currently selected node.
+     *
+     * @param {conjoon.cn_mail.view.mail.folder.MailFolderTree} treeListe
+     * @param {conjoon.cn_mail.model.mail.folder.MailFolder[]} records
+     *
+     * @throws if this method was not called with exactly one record in records,
+     * or if the mailMessageGrid was not found
+     */
+    onMailFolderTreeSelectionChange : function(treeList, records) {
+
+        var me          = this,
+            messageGrid = me.getMailMessageGrid();
+
+        if (records.length !== 1) {
+            Ext.raise({
+                records : records,
+                msg     : "unexpected multiple records"
+            });
+        }
+
+        messageGrid.getSelectionModel().deselectAll();
+    },
+
+
+    /**
+     * Callback for the MessageGrid's deselect event. Makes sure that editor-
+     * related controls are disabled.
+     *
+     * @param selectionModel
+     * @param record
+     */
+    onMailMessageGridDeselect : function(selectionModel, record) {
+
+        var me = this;
+
+        me.getNavigationToolbar().down('#cn_mail-nodeNavEditMessage').setDisabled(true);
+   },
+
+
+    /**
+     * Callback for the MessageGrid's select event. Makes sure that editor-
+     * related controls are enabled.
+     *
+     * @param selectionModel
+     * @param record
+     */
+    onMailMessageGridSelect : function(selectionModel, record) {
+
+        var me             = this,
+            mailFolderTree = me.getMailFolderTree(),
+            selectedNodes  = mailFolderTree.getSelection();
+
+        if (selectedNodes[0].get('type') === 'DRAFT') {
+            me.getNavigationToolbar().down('#cn_mail-nodeNavEditMessage').setDisabled(false);
         }
     },
 
@@ -116,9 +198,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        id = me.prepareIdForComposeRoute(id);
-
-        mailDesktopView.showMailEditor(id);
+        mailDesktopView.showMailEditor(id, 'compose');
     },
 
 
@@ -132,14 +212,14 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        id = me.prepareIdForComposeRoute(id, true);
+        id = 'mailto%3A'  + id;
 
-        mailDesktopView.showMailEditor(id);
+        mailDesktopView.showMailEditor(id, 'compose');
     },
 
+
     /**
-     * Callback for the node navigation's "create new message button"
-     * Will redirect to cn_mail/message/compose/[autoId], triggering the routing.
+     * Callback for the node navigation's "create new message button".
      *
      * @param {Ext.Button} btn
      */
@@ -148,8 +228,38 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             mailDesktopView = me.getMainPackageView();
 
         mailDesktopView.showMailEditor(
-            me.prepareIdForComposeRoute(Ext.id().split('-').pop())
+            Ext.id().split('-').pop(),
+            'compose'
         );
+    },
+
+
+    /**
+     * Action for cn_mail/message/edit.
+     *
+     * @param {String} id the id of the message to edit
+     */
+    onEditMessageRoute : function(id) {
+
+        var me              = this,
+            mailDesktopView = me.getMainPackageView();
+
+        mailDesktopView.showMailEditor(id, 'edit');
+    },
+
+
+    /**
+     * Callback for the node navigation's "edit message button".
+     *
+     * @param {Ext.Button} btn
+     */
+    onMessageEditButtonClick : function(btn) {
+        var me              = this,
+            mailDesktopView = me.getMainPackageView(),
+            sel             = me.getMailMessageGrid().getSelection(),
+            id              = sel[0].getId();
+
+        mailDesktopView.showMailEditor(id, 'edit');
     },
 
 
@@ -202,6 +312,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 }, {
                     xtype    : 'button',
                     iconCls  : 'x-fa fa-edit',
+                    itemId   : 'cn_mail-nodeNavEditMessage',
                     disabled : true,
                     tooltip  : {
                         title : 'Edit message draft',
@@ -227,37 +338,6 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
          */
         return app.activateViewForHash('cn_mail/home');
-    },
-
-
-    /**
-     * Parses the specified string. Returns an integer if the string contained
-     * only digits, or the string itself with a trailing "mailto3%A".
-     *
-     * @param {String} id
-     *
-     * @returns {Number/String/*}
-     *
-     * @private
-     */
-    prepareIdForComposeRoute : function(id, isMailto) {
-
-        if (Ext.isString(id)) {
-            if (isMailto !== true) {
-                if ((/^\d+$/).test(id)) {
-                    id = parseInt(id, 10);
-                } else {
-                    Ext.raise({
-                        id  : id,
-                        msg : "Unexpected value for \"id\""
-                    })
-                }
-            } else {
-                id = 'mailto%3A' + id;
-            }
-        }
-
-        return id;
     }
 
 });

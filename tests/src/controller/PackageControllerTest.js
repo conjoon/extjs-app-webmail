@@ -106,48 +106,178 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     });
 
 
-    t.it("prepareIdForComposeRoute()", function(t) {
+    t.it("onEditMessageRoute()", function(t) {
 
-        var tests, exc, e;
+        var SHOWN   = 0,
+            CN_HREF = 'foo';
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-
-        tests = [{
-            args     : ["8797"],
-            expected : 8797
-        }, {
-            args     : ["8797dssdggddsg", true],
-            expected : "mailto%3A8797dssdggddsg"
-        }, {
-            args     : [false],
-            expected : false
-        }, {
-            args     : [123],
-            expected : 123
-        }, {
-            args     : ["sdsfsfsf"],
-            expected : "Exception"
-        }];
-
-        for (var i = 0, len = tests.length; i < len; i++) {
-            exc = e = undefined;
-            if (tests[i].expected == "Exception") {
-                try {
-                    packageCtrl.prepareIdForComposeRoute.apply(
-                        packageCtrl, tests[i].args)
-                } catch(e) {
-                    exc = e;
+        packageCtrl.getMainPackageView = function() {
+            return {
+                getActiveTab : function() {
+                    return {
+                        cn_href : CN_HREF
+                    };
+                },
+                showMailEditor : function() {
+                    SHOWN++;
                 }
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toContain("Unexpected value");
-
-            } else {
-                t.expect(
-                    packageCtrl.prepareIdForComposeRoute.apply(
-                        packageCtrl, tests[i].args)
-                ).toBe(tests[i].expected);
             }
-        }
+        };
+
+        t.expect(SHOWN).toBe(0);
+        packageCtrl.onEditMessageRoute();
+        t.expect(SHOWN).toBe(1);
+        packageCtrl.onEditMessageRoute();
+        t.expect(SHOWN).toBe(2);
+
+        packageCtrl.onEditMessageRoute();
+        t.expect(SHOWN).toBe(3);
+        packageCtrl.onEditMessageRoute();
+        t.expect(SHOWN).toBe(4);
     });
+
+
+    t.it("onMessageEditButtonClick()", function(t) {
+        var SHOWN = 0;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMailMessageGrid = function() {
+
+            return {
+                getSelection : function() {
+
+                    return [{
+                        getId : function() {
+                            return 1;
+                        }
+                    }]
+
+                }
+            };
+
+        };
+        packageCtrl.getMainPackageView = function() {
+            return {
+                showMailEditor : function() {
+                    SHOWN++;
+                }
+            }
+        };
+
+        t.expect(SHOWN).toBe(0);
+        packageCtrl.onMessageEditButtonClick();
+        t.expect(SHOWN).toBe(1);
+        packageCtrl.onMessageEditButtonClick();
+        t.expect(SHOWN).toBe(2);
+        packageCtrl.onMessageEditButtonClick();
+        t.expect(SHOWN).toBe(3);
+    });
+
+
+    t.it('onMailFolderTreeSelectionChange()', function(t) {
+
+        var DESELECTED = 0, exc, e;
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMailMessageGrid = function() {
+            return {
+                getSelectionModel : function() {
+                    return {
+                        deselectAll : function() {
+                            DESELECTED++;
+                        }
+                    }
+                }
+            };
+        };
+
+        try {packageCtrl.onMailFolderTreeSelectionChange(null, [1, 2]);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("unexpected multiple records")
+
+        t.expect(DESELECTED).toBe(0);
+        packageCtrl.onMailFolderTreeSelectionChange(null, [1]);
+        t.expect(DESELECTED).toBe(1);
+
+    });
+
+
+    t.it('onMailMessageGridDeselect()', function(t) {
+        var DISABLED = 0;
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getNavigationToolbar = function() {
+            return {
+                down : function(id) {
+                    if (id === '#cn_mail-nodeNavEditMessage') {
+                        return {
+                            setDisabled : function(doIt) {
+                                if (doIt === true) {
+                                    DISABLED++;
+                                }
+                            }
+                        }
+                    }
+                    return {
+                        setDisabled : Ext.emptyFn
+                    }
+
+                }
+            };
+        };
+
+
+        t.expect(DISABLED).toBe(0);
+        packageCtrl.onMailMessageGridDeselect();
+        t.expect(DISABLED).toBe(1);
+
+    });
+
+    t.it('onMailMessageGridSelect()', function(t) {
+        var ENABLED = 0;
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getNavigationToolbar = function() {
+            return {
+                down : function(id) {
+                    if (id === '#cn_mail-nodeNavEditMessage') {
+                        return {
+                            setDisabled : function(doIt) {
+                                if (doIt === false) {
+                                    ENABLED++;
+                                }
+                            }
+                        }
+                    }
+                    return {
+                        setDisabled : Ext.emptyFn
+                    }
+
+                }
+            };
+        };
+        packageCtrl.getMailFolderTree = function() {
+
+            return {
+                getSelection : function() {
+
+                    return [{
+                        get: function(name) {
+                            if (name === 'type') {
+                                return 'DRAFT';
+                            }
+                            return null;
+                        }
+                    }]
+
+                }
+            };
+
+        }
+
+        t.expect(ENABLED).toBe(0);
+        packageCtrl.onMailMessageGridSelect();
+        t.expect(ENABLED).toBe(1);
+
+    });
+
 
 });

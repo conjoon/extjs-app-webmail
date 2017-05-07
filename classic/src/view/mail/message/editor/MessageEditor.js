@@ -119,6 +119,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     alias : 'widget.cn_mail-mailmessageeditor',
 
+    statics : {
+        /**
+         * @type {String} MODE_EDIT
+         */
+        MODE_EDIT : 'EDIT',
+
+        /**
+         * @type {String} MODE_CREATE
+         */
+        MODE_CREATE : 'CREATE'
+    },
+
     controller : 'cn_mail-mailmessageeditorviewcontroller',
 
     viewModel : 'cn_mail-mailmessageeditorviewmodel',
@@ -267,18 +279,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * type conjoon.cn_core.Session with a conjoon.cn_core.session.BatchVisitor.
      *
      * @throws if both viewModel and messageConfig want to be configured when
-     * creating an instance of this class
+     * creating an instance of this class, or if editMode was not specified.
      */
     constructor : function(config) {
 
-        var messageDraft,
+        var me         = this,
             draftConfig = {
                 type   : 'MessageDraft'
-            };
+            },
+            messageDraft;
 
-        config = Ext.apply(config || {}, {
-            editMode : 'CREATE'
-        });
+        if ([me.statics().MODE_EDIT, me.statics().MODE_CREATE].indexOf(config.editMode) === -1) {
+            Ext.raise({
+                editMode : config.editMode,
+                msg      : "\"editMode\" is invalid"
+            });
+        }
 
         config.session = Ext.create('conjoon.cn_core.data.Session', {
             schema                : 'cn_mail-mailbaseschema',
@@ -292,29 +308,44 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             })
         }
 
-        if (config.messageDraft) {
+        messageDraft = config.messageDraft;
 
-            messageDraft = config.messageDraft;
+        switch (config.editMode) {
 
-            if (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig) {
-                draftConfig.create = messageDraft.toObject();
-            } else if (Ext.isNumber(messageDraft)) {
-                config.editMode = 'EDIT';
-                draftConfig.id  = messageDraft;
-            } else {
+            case me.statics().MODE_CREATE:
+                messageDraft       = config.messageDraft;
+                draftConfig.create = messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
+                                     ? messageDraft.toObject()
+                                     : true;
+                break;
+
+            case me.statics().MODE_EDIT:
+                messageDraft = config.messageDraft;
+                if (!messageDraft || Ext.isObject(messageDraft)) {
+                    Ext.raise({
+                        messageDraft : messageDraft,
+                        editMode     : config.editMode,
+                        msg          : "unexpected value for \"messageDraft\""
+                    });
+                }
+                draftConfig.id = messageDraft;
+                break;
+
+            default:
                 Ext.raise({
+                    editMode     : config.editMode,
                     messageDraft : messageDraft,
                     msg          : "unexpected value for \"messageDraft\""
                 });
-            }
-
-            config.viewModel = {
-                type  : 'cn_mail-mailmessageeditorviewmodel',
-                links : {
-                    messageDraft : draftConfig
-                }
-            };
         }
+
+        config.viewModel = {
+            type  : 'cn_mail-mailmessageeditorviewmodel',
+            links : {
+                messageDraft : draftConfig
+            }
+        };
+
 
 
         delete config.messageDraft;
@@ -370,7 +401,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     showCcBccFields : function(show) {
         var me   = this,
-           show = show === undefined ? true : show;
+            show = show === undefined ? true : show;
 
         me.down('#ccField').setHidden(!show);
         me.down('#bccField').setHidden(!show);

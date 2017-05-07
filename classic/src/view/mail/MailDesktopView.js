@@ -77,15 +77,17 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @param {String} id an id to be able to track this MessageEditor later on
      * when routing is triggered
+     * @param {String} type the context in which the MessageEditor is opened in
+     * (edit, compose...)
      *
      * @return conjoon.cn_mail.view.mail.message.MessageEditor
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailEditor}
      */
-    showMailEditor : function(id) {
+    showMailEditor : function(id, type) {
         var me = this;
 
-        return me.getController().showMailEditor(id);
+        return me.getController().showMailEditor(id, type);
     }
 
 

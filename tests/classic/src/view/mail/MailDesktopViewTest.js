@@ -53,22 +53,35 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
 
     t.it("showMailEditor()", function(t) {
+        var exc, e;
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
+
+        try{view.showMailEditor(1)}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain('is not a valid value');
+
+    });
+
+    t.it("showMailEditor()", function(t) {
         var editor1, editor2;
 
         view = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
 
-        t.isCalledNTimes('showMailEditor', view.getController(), 3);
+        t.isCalledNTimes('showMailEditor', view.getController(), 4);
 
-        editor1 = view.showMailEditor(1);
+        editor1 = view.showMailEditor(1, 'edit');
         t.isInstanceOf(editor1, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor')
 
-        editor2 = view.showMailEditor(2);
+        editor2 = view.showMailEditor(2, 'edit');
         t.expect(editor1).not.toBe(editor2);
 
-        editor2 = view.showMailEditor(1);
+        editor2 = view.showMailEditor(1, 'edit');
         t.expect(editor1).toBe(editor2);
 
+        t.expect(view.showMailEditor(1, 'compose')).not.toBe(editor1);
     });
 
 });

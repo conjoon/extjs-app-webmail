@@ -85,28 +85,36 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * in the string.
      *
      * @param {Number/String} id an id to be able to track this MessageEditor later on
-     * when routing is triggered. if id is a string, it is assumed it follows the
-     * syntax of the mailto scheme (including protocol), and mights still be
-     * uri encoded.
+     * when routing is triggered. if id is a string, it is assumed to be either
+     * a key for the message to edit or it follows the syntax of the mailto scheme
+     * (including protocol), and mights still be uri encoded.
+     * @param {String} type The context in which the mail editor was opened in
+     * (edit/compose)
+     *
      *
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      *
      * @throws if no valid id was specified (bubbles exceptions from
      * #getItemIdForMessageEditor and #getCnHrefForMessageEditor)
      */
-    showMailEditor : function(id) {
+    showMailEditor : function(id, type) {
         var me      = this,
             view    = me.getView(),
             newView, cn_href, itemId,
             initialConfig = {
                 messageDraft : null
-            };
+            },
+            MessageEditor = conjoon.cn_mail.view.mail.message.editor.MessageEditor;
 
-        itemId  = me.getItemIdForMessageEditor(id);
-        cn_href = me.getCnHrefForMessageEditor(id);
+        itemId  = me.getItemIdForMessageEditor(id, type);
+        cn_href = me.getCnHrefForMessageEditor(id, type);
 
-        if (Ext.isString(id)) {
-            initialConfig.messageDraft = me.createMessageDraftConfigFromString(id);
+        if (type === 'edit') {
+            initialConfig.messageDraft = id;
+            initialConfig.editMode     = MessageEditor.MODE_EDIT;
+        } else {
+            initialConfig.messageDraft = me.createMessageDraftConfig(id);
+            initialConfig.editMode     = MessageEditor.MODE_CREATE;
         }
 
         newView = view.down('#' + itemId);
@@ -228,12 +236,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * id during the lifetime of this instance. ids so not persist over sessions.
      *
      * @param {String} id
+     * @param {String} type the context in which the mail editor was opened in
      *
      * @return {String}
      *
      * @private
+     *
+     * @throws if id or type is not valid
      */
-    getItemIdForMessageEditor : function(id) {
+    getItemIdForMessageEditor : function(id, type) {
 
         var me, newId;
 
@@ -244,12 +255,23 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             })
         }
 
+        if (['edit', 'compose'].indexOf(type) === -1) {
+            Ext.raise({
+                type  : type,
+                msg : "\"type\" is not a valid value"
+            })
+        }
+
+
         me    = this;
-        newId = 'cn_mail-mailmessageeditor-' + Ext.id();
+        newId = 'cn_mail-mailmessageeditor-' + type + '-' + Ext.id();
 
         if (!me.editorIdMap) {
             me.editorIdMap = {};
         }
+
+        id = type + id;
+
 
         if (!me.editorIdMap[id]) {
             me.editorIdMap[id] = newId;
@@ -263,12 +285,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * Returns a cn_href value to use with a MessageEditor for proper routing.
      *
      * @param {Mixed} id
+     * @param {String} type the context in which the mail editor was opened in
      *
      * @return {String}
      *
      * @private
+     *
+     * @throws if id or type is not valid
      */
-    getCnHrefForMessageEditor : function(id) {
+    getCnHrefForMessageEditor : function(id, type) {
 
         if (!id || (!Ext.isString(id) && !Ext.isNumber(id))) {
             Ext.raise({
@@ -277,25 +302,39 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             })
         }
 
-        return 'cn_mail/message/compose/' + id
+        if (['edit', 'compose'].indexOf(type) === -1) {
+            Ext.raise({
+                type  : type,
+                msg : "\"type\" is not a valid value"
+            })
+        }
+
+        switch (type) {
+            case 'edit':
+                return 'cn_mail/message/edit/' + id;
+            default :
+                return 'cn_mail/message/compose/' + id
+        }
+
     },
 
 
     /**
      * Helper function to make sure that the id of the cn_mail/message/compose/mailto...
      * fragment is parsed properly and returned as a MessageDraftConfig object.
+     * If "mailto" was not found at the start of the passed argument, the argument is
+     * returned.
      * If the mailto contains a body-param, this body param will be saved
      * under textHtml in the resulting MessageDraftConfig object.
      *
      * @param {String} id
      *
-     * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig}
-     *
-     * @throws if id is not a string or was malformed.
+     * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig/Mixed}
+
      *
      * @private
      */
-    createMessageDraftConfigFromString : function(id) {
+    createMessageDraftConfig : function(id) {
 
         var me        = this,
             encodedId = decodeURIComponent(id + ''),
@@ -304,10 +343,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (Ext.String.startsWith(encodedId, 'mailto:', true)) {
             encodedId = encodedId.substring(7);
         } else {
-            Ext.raise({
-                id  : id,
-                msg : "\"id\" seems to be malformed"
-            })
+            return id;
         }
 
         addresses = '';

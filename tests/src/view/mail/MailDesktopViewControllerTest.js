@@ -58,9 +58,8 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
         ), exc, e, tests, test;
 
-        try{ctrl.createMessageDraftConfigFromString(2);}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toContain('seems to be malformed');
+        t.expect(ctrl.createMessageDraftConfig(2)).toBe(2);
+        t.expect(ctrl.createMessageDraftConfig("jhkjhkj")).toBe("jhkjhkj");
 
         tests = [{
             value    : 'mailto:test@domain.tld',
@@ -70,7 +69,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             expected : {}
         }, {
             value    : 'maito:',
-            expected : 'Exception'
+            expected : 'maito:'
         },{
             value    : 'mailto%3Atest1@domain.tld',
             expected :{to : [{name : 'test1@domain.tld', address : 'test1@domain.tld'}]}
@@ -87,15 +86,12 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
         for (var i = 0, len = tests.length; i < len; i++) {
             test = tests[i];
-            if (test.expected == 'Exception') {
-                exc = e = undefined;
-                try{ctrl.createMessageDraftConfigFromString(test.value);}catch(e){exc=e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toContain('seems to be malformed');
+            if (!Ext.isObject(test.expected)) {
+                t.expect(ctrl.createMessageDraftConfig(test.value)).toBe(test.expected);
             } else {
 
-                t.isInstanceOf(ctrl.createMessageDraftConfigFromString(test.value), 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
-                t.expect(ctrl.createMessageDraftConfigFromString(test.value).toObject()).toEqual(
+                t.isInstanceOf(ctrl.createMessageDraftConfig(test.value), 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+                t.expect(ctrl.createMessageDraftConfig(test.value).toObject()).toEqual(
                     test.expected
                 );
             }
@@ -256,30 +252,33 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         ), exc, e, tests, res, results = [];
 
         tests = [{
+            args     : [2],
             expected : 'Exception'
         }, {
-            value    : 8797
+            args     : [8797, 'edit'],
+            expected : 'cn_mail-mailmessageeditor-edit-8797'
         }, {
-            value    : "8797dssdggddsg"
+            args     : ['8797dssdggddsg', 'compose'],
+            expected : 'cn_mail-mailmessageeditor-compose-8797dssdggddsg'
         }, {
-            value    : false,
+            args     : [false],
             expected : 'Exception'
         }, {
-            value    : {},
+            args     : [{}],
             expected : 'Exception'
         }];
 
         for (var i = 0, len = tests.length; i < len; i++) {
             exc = e = undefined;
             if (tests[i].expected == 'Exception') {
-                try{ctrl.getItemIdForMessageEditor(tests[i].value);}catch(e){
+                try{ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args);}catch(e){
                     exc = e;
                 }
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg).toContain("valid value");
             } else {
-                res = ctrl.getItemIdForMessageEditor(tests[i].value);
-                t.expect(res.indexOf('cn_mail-mailmessageeditor-')).toBe(0);
+                res = ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args);
+                t.expect(res).toContain('cn_mail-mailmessageeditor-' + tests[i].args[1]);
                 results[i] = res;
             }
         }
@@ -288,7 +287,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             if (tests[i].expected == 'Exception') {
                 continue;
             } else {
-                t.expect(ctrl.getItemIdForMessageEditor(tests[i].value)
+                t.expect(ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args)
                 ).toBe(results[i]);
             }
         }
@@ -301,31 +300,35 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         ), exc, e, tests;
 
         tests = [{
+            args     : [8797],
             expected : 'Exception'
         }, {
-            value    : 8797,
+            args     : [8797, 'compose'],
             expected : 'cn_mail/message/compose/8797'
         }, {
-            value    : "8797dssdggddsg",
+            args     : [8797, 'edit'],
+            expected : 'cn_mail/message/edit/8797'
+        }, {
+            args     : ["8797dssdggddsg", 'compose'],
             expected : 'cn_mail/message/compose/8797dssdggddsg'
         }, {
-            value    : false,
+            args     : [false],
             expected : 'Exception'
         }, {
-            value    : {},
+            args     : [{}],
             expected : 'Exception'
         }];
 
         for (var i = 0, len = tests.length; i < len; i++) {
             exc = e = undefined;
             if (tests[i].expected == 'Exception') {
-                try{ctrl.getCnHrefForMessageEditor(tests[i].value);}catch(e){
+                try{ctrl.getCnHrefForMessageEditor.apply(ctrl, tests[i].args);}catch(e){
                     exc = e;
                 }
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg).toContain("valid value");
             } else {
-                t.expect(ctrl.getCnHrefForMessageEditor(tests[i].value)).toBe(
+                t.expect(ctrl.getCnHrefForMessageEditor.apply(ctrl, tests[i].args)).toBe(
                     tests[i].expected);
             }
         }
@@ -357,28 +360,32 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         queryRes = Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel);
         t.expect(queryRes.length).toBe(0);
 
-        editor = ctrl.showMailEditor(1);
+        editor = ctrl.showMailEditor(1, 'edit');
         t.isInstanceOf(editor, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel)[0]).toBe(editor);
 
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(1);
-        ctrl.showMailEditor(2);
+        ctrl.showMailEditor(2, 'edit');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
 
-        editor2 = ctrl.showMailEditor(1);
+        editor2 = ctrl.showMailEditor(1, 'edit');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
         t.expect(editor2).toBe(editor);
 
-        editor = ctrl.showMailEditor('mailto:test@domain.tld');
+        editor = ctrl.showMailEditor('mailto:test@domain.tld', 'compose');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(3);
 
-        editor2 = ctrl.showMailEditor('mailto:new_test@domain.tld');
+        editor2 = ctrl.showMailEditor('mailto:new_test@domain.tld', 'compose');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
         t.expect(editor).not.toBe(editor2);
 
-        editor2 = ctrl.showMailEditor('mailto:test@domain.tld');
+        editor2 = ctrl.showMailEditor('mailto:test@domain.tld', 'compose');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
         t.expect(editor).toBe(editor2);
+
+        editor  = ctrl.showMailEditor(111, 'edit');
+        editor2 = ctrl.showMailEditor(111, 'compose');
+        t.expect(editor).not.toBe(editor2);
 
         panel.destroy();
         panel = null;
