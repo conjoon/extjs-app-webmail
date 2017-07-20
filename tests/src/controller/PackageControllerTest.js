@@ -280,4 +280,52 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     });
 
 
+    t.it('onReadingPaneCheckChange()', function(t) {
+        var DIRECTION = null,
+            menuItem1 = {getItemId : function() {return 'right'}},
+            menuItem2 = {getItemId : function() {return 'bottom'}},
+            menuItem3 = {getItemId : function() {return 'hide';}};
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMailInboxView = function() {
+            return {
+                toggleReadingPane : function(dir) {
+                    DIRECTION = dir;
+                }
+            };
+        };
+
+
+        t.expect(DIRECTION).toBe(null);
+        packageCtrl.onReadingPaneCheckChange(menuItem1, false);
+        t.expect(DIRECTION).toBe(null);
+        packageCtrl.onReadingPaneCheckChange(menuItem1, true);
+        t.expect(DIRECTION).toBe('right');
+        packageCtrl.onReadingPaneCheckChange(menuItem2, true);
+        t.expect(DIRECTION).toBe('bottom');
+        packageCtrl.onReadingPaneCheckChange(menuItem3, true);
+        t.expect(DIRECTION).toBeUndefined();
+    });
+
+
+    t.it('onToggleListViewButtonClick()', function(t) {
+
+        var ENABLED;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMailMessageGrid = function() {
+            return {
+                enableRowPreview : function(pressed) {
+                    ENABLED = pressed;
+                }
+            };
+        };
+
+        t.expect(ENABLED).toBeUndefined();
+        packageCtrl.onToggleListViewButtonClick(null, true);
+        t.expect(ENABLED).toBe(false);
+        packageCtrl.onToggleListViewButtonClick(null, false);
+        t.expect(ENABLED).toBe(true);
+    })
+
 });

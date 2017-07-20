@@ -86,10 +86,20 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage' : {
             click : 'onMessageEditButtonClick'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane > menu > menucheckitem' : {
+            checkchange : 'onReadingPaneCheckChange'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleList' : {
+            toggle : 'onToggleListViewButtonClick'
         }
+
     },
 
     refs : [{
+        ref      : 'mailInboxView',
+        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview'
+    }, {
         ref      : 'mailMessageGrid',
         selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > cn_mail-mailmessagegrid'
     }, {
@@ -99,6 +109,55 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         ref      : 'navigationToolbar',
         selector : 'cn_treenavviewport-tbar'
     }],
+
+
+    /**
+     * Callback for the toggle event of the cn_mail-nodeNavToggleList button.
+     * Will delegate to {conjoon.cn_mail.view.mail.message.MessageGrid#toggleGridView}
+     *
+     * @param {Ext.Button} btn
+     * @param {Boolean}    pressed
+     */
+    onToggleListViewButtonClick : function(btn, pressed) {
+
+        var me          = this,
+            messageGrid = me.getMailMessageGrid();
+
+        messageGrid.enableRowPreview(!pressed);
+    },
+
+
+    /**
+     * Callback for the reading-pane menu's menuitems' checkchange event.
+     * Will delegate to {conjoon.cn_mail.view.mail.inbox.InboxView#toggleReadingPane}
+     *
+     * @param {Ext.menu.CheckItem} menuItem
+     * @param {boolean}            checked
+     */
+    onReadingPaneCheckChange : function(menuItem, checked) {
+
+        // exit if checked is set to false. There will
+        // follow an immediate call to this method with the
+        // menuItem that was set to true instead
+        if (!checked) {
+            return;
+        }
+
+        var me            = this,
+            mailInboxView = me.getMailInboxView(),
+            menuItem      = menuItem.getItemId();
+
+
+        switch (menuItem) {
+            case 'right':
+                return mailInboxView.toggleReadingPane('right');
+            case 'bottom':
+                return mailInboxView.toggleReadingPane('bottom');
+            case 'hide':
+                return mailInboxView.toggleReadingPane();
+        }
+
+    },
 
 
     /**
@@ -308,8 +367,6 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                         text  : 'Opens the editor for forwarding the selected message.'
                     }
                 }, {
-                    xtype : 'tbseparator'
-                }, {
                     xtype    : 'button',
                     iconCls  : 'x-fa fa-edit',
                     itemId   : 'cn_mail-nodeNavEditMessage',
@@ -318,6 +375,46 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                         title : 'Edit message draft',
                         text  : 'Opens the editor for editing the selected message draft.'
                     }
+                }, {
+                    xtype : 'tbseparator'
+                }, {
+                    xtype        : 'button',
+                    iconCls      : 'x-fa fa-list',
+                    cls          : 'toggleGridViewBtn',
+                    itemId       : 'cn_mail-nodeNavToggleList',
+                    enableToggle : true,
+                    tooltip      : {
+                        title : 'Switch message list view',
+                        text  : 'Switches between the message grid\'s preview- and detail-view.'
+                    }
+                }, {
+                    xtype    : 'button',
+                    iconCls  : 'x-fa fa-columns',
+                    itemId   : 'cn_mail-nodeNavReadingPane',
+                    tooltip  : {
+                        title : 'Change reading pane position',
+                        text  : 'Switch the position of the reading pane or hide it.'
+                    },
+                    menu : [{
+                        iconCls : 'x-fa fa-toggle-right',
+                        text    : 'Right',
+                        itemId  : 'right',
+                        checked : true,
+                        xtype   : 'menucheckitem',
+                        group   : 'cn_mail-nodeNavReadingPaneRGroup'
+                    }, {
+                        iconCls : 'x-fa fa-toggle-down',
+                        text    : 'Bottom',
+                        itemId  : 'bottom',
+                        xtype   : 'menucheckitem',
+                        group   : 'cn_mail-nodeNavReadingPaneRGroup'
+                    }, {
+                        iconCls : 'x-fa fa-close',
+                        text    : 'Hidden',
+                        itemId  : 'hide',
+                        xtype   : 'menucheckitem',
+                        group   : 'cn_mail-nodeNavReadingPaneRGroup'
+                    }]
                 }]
             }]
         };
