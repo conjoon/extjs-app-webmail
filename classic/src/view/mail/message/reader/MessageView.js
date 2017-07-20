@@ -54,7 +54,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         type : 'cn_mail-mailmessagereadermessageviewmodel'
     },
 
-    margin : '0 5 14 0',
     split  : true,
     cls    : 'cn_mail-mailmessagereadermessageview shadow-panel',
     flex   : 1,

@@ -36,7 +36,7 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
     alias : 'widget.cn_mail-mailfoldertree',
 
     width  : 240,
-    margin : '0 0 14 0',
+
     cls    : 'cn_mail-mailfoldertree',
 
     useArrows   : true,

@@ -109,6 +109,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                         t.expect(messageView.getViewModel().get('messageItem')).toBe(messageItem);
 
                         t.expect(mailFolder.get('unreadCount')).toBe(unreadCount - 1);
+                        view.destroy();
                     });
 
                 });
@@ -125,6 +126,36 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
         });
 
     });
+
+    t.it("toggleReadingPane()", function(t) {
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+        var messageView = view.down('cn_mail-mailmessagereadermessageview'),
+            bodyLayout  = view.down('#cn_mail-mailInboxViewPanelBody').getLayout();
+
+        t.expect(messageView.isVisible()).toBe(true);
+        t.expect(bodyLayout.getVertical()).toBe(false);
+
+        view.toggleReadingPane('bottom');
+        t.expect(messageView.isVisible()).toBe(true);
+        t.expect(bodyLayout.getVertical()).toBe(true);
+
+        view.toggleReadingPane('right');
+        t.expect(messageView.isVisible()).toBe(true);
+        t.expect(bodyLayout.getVertical()).toBe(false);
+
+        view.toggleReadingPane();
+        t.expect(messageView.isVisible()).toBe(false);
+
+        view.toggleReadingPane('bottom');
+        t.expect(messageView.isVisible()).toBe(true);
+        t.expect(bodyLayout.getVertical()).toBe(true);
+
+
+        view.destroy();
+    });
+
 
 
 

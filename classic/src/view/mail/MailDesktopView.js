@@ -53,6 +53,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
     maxTabWidth : 240,
 
     items : [{
+        margin  : '12 0 0 0',
         xtype   : 'cn_mail-mailinboxview',
         cn_href : 'cn_mail/home'
     }],

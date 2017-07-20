@@ -65,6 +65,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
     items: [{
         xtype     : 'cn_mail-mailfoldertree',
+        margin    : '0 0 5 0',
         reference : 'cn_mail_ref_mailfoldertree',
         bind      : {
             store : '{cn_mail-mailfoldertreestore}'
@@ -72,28 +73,80 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
     },{
         split   : true,
         xtype   : 'panel',
+        itemId  : 'cn_mail-mailInboxViewPanelBody',
         flex    : 1,
         bodyCls : 'cn_mail-panel-body',
         layout  : {
-            type            : 'vbox',
+            type            : 'hbox',
             enableSplitters : true,
             align           : 'stretch'
         },
         items : [{
+            flex      : 1,
+            margin    : '0 0 5 0',
             xtype     : 'cn_mail-mailmessagegrid',
             reference : 'cn_mail_ref_mailmessagegrid',
             bind      : {
                 store : '{cn_mail-mailmessageitemstore}'
             }
         }, {
+            flex   : 1,
             xtype  : 'cn_mail-mailmessagereadermessageview',
+            margin : '0 5 5 0',
             header : false,
             bind   : {
-               messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
+                messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }
 
         }]
-    }]
+    }],
+
+
+    /**
+     * Toggles the position of the reading pane, based on the passed argument.
+     * Valid arguments are 'right', 'bottom' or falsy  values.
+     *
+     * @param {String|Boolean} position right to display the reading pane on the
+     * right, bottom for bottom position and falsy for hiding the reading pane.
+     */
+    toggleReadingPane : function(position) {
+
+        var me          = this,
+            position    = position === 'right' || position === 'bottom'
+                          ? position
+                          : false,
+            orientation = position === 'right' ? 'vertical' : 'horizontal',
+            collapseDir = position === 'right' ? 'left'     : 'bottom',
+            panelBody   = me.down('#cn_mail-mailInboxViewPanelBody'),
+            readingPane = panelBody.down('cn_mail-mailmessagereadermessageview'),
+            messageGrid = panelBody.down('cn_mail-mailmessagegrid');
+
+        if (!position) {
+            messageGrid.setMargin('0 5 5 0');
+            readingPane.hide();
+            return;
+        }
+
+        readingPane.show();
+
+        readingPane.splitter.destroy();
+
+        readingPane.splitter          = null;
+        readingPane.collapseDirection = collapseDir;
+
+        panelBody.getLayout().setVertical(position !== 'right');
+        panelBody.getLayout().insertSplitter(
+            readingPane, 1, false, {collapseTarget : 'next'}
+        );
+        readingPane.splitter.setOrientation(orientation);
+        panelBody.updateLayout();
+
+        if (position === 'right') {
+            messageGrid.setMargin('0 0 5 0');
+        } else {
+            messageGrid.setMargin('0 5 0 0');
+        }
+    }
 
 
 });

@@ -122,6 +122,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (!newView) {
             newView = view.add(Ext.apply(initialConfig, {
                 xtype   : 'cn_mail-mailmessageeditor',
+                margin  : '12 5 5 0',
                 itemId  : itemId,
                 cn_href : cn_href
             }));
@@ -158,7 +159,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             newView = view.add({
                 xtype   : 'cn_mail-mailmessagereadermessageview',
                 itemId  : itemId,
-                cn_href : 'cn_mail/message/read/'  + messageId
+                cn_href : 'cn_mail/message/read/'  + messageId,
+                margin  : '12 5 5 0'
             });
 
            if (recInd > -1) {

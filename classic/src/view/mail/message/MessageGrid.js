@@ -38,8 +38,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     cls   : 'cn_mail-mailmessagegrid shadow-panel',
 
-    margin : '0 5 0 0',
-
     flex : 1,
 
     headerBorders : false,
