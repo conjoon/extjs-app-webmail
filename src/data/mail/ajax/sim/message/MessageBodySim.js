@@ -27,38 +27,12 @@
 Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
     requires : [
-        'conjoon.cn_mail.data.mail.ajax.sim.Init'
+        'conjoon.cn_mail.data.mail.ajax.sim.Init',
+        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable'
+
     ]
 
 }, function() {
-
-    var messages = [
-        "<ul><li>Lorem ipsum dolor sit amet, consectetuer adipiscing  elit. Aenean commodo ligula eget dolor. Aenean massa.</li><li>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.</li> <li>Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</li> <li>In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.</li></ul>",
-        "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa <strong>strong</strong>. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede <a class=\"external ext\" href=\"#\">link</a> mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.</p>",
-        "<blockquote> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa <strong>strong</strong>. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In <em>em</em> enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam <a class=\"external ext\" href=\"#\">link</a> dictum felis eu pede mollis pretium. </blockquote>"
-
-    ];
-
-    var messageBodies = [],
-        getRandom    = function(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        };
-
-    var largestId = 0;
-
-    if (messageBodies.length == 0) {
-        for (var i = 1; i < 100; i++) {
-            messageBodies.push({
-                id          : '' +  i,
-                text        : messages[getRandom(0, 1)],
-                textHtml    : messages[getRandom(0, 1)] + messages[getRandom(1, 2)] + messages[getRandom(0, 2)]
-            });
-        }
-    }
-
-    largestId = i;
-
-
 
     Ext.ux.ajax.SimManager.register({
         type : 'json',
@@ -69,12 +43,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
             console.log("PUT MessageBody", ctx.xhr.options.jsonData);
 
-            var me = this,
-                ret = {};
-
-            var messageBody = Ext.Array.findBy(messageBodies, function(messageBody) {
-                return messageBody.id === '' + ctx.xhr.options.jsonData.id;
-            });
+            var me          = this,
+                ret         = {},
+                messageBody = {};
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -82,6 +53,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                 }
                 messageBody[i] = ctx.xhr.options.jsonData[i];
             }
+
+            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                .updateMessageBody(ctx.xhr.options.jsonData.id, messageBody);
+
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
@@ -100,7 +75,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
             var me    = this,
                 body  = {},
                 ret   = {},
-                id    = ++largestId + '';
+                newRec;
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -110,13 +85,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                 body[i] = ctx.xhr.options.jsonData[i];
             }
 
-            body.id = id;
+            newRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                     .createMessageBody(body);
 
-            messageBodies.push(body);
 
             ret.responseText = Ext.JSON.encode({
-                id : id,
-                success :true
+                id      : newRec.id,
+                success : true
             });
 
             Ext.Array.forEach(me.responseProps, function (prop) {
@@ -135,13 +110,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
                 id = parseInt(idPart.substring(1), 10);
 
-                console.log("GET MessageBody", id);
+                return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                       .getMessageBody(id);
 
-                return Ext.Array.findBy(messageBodies, function(messageBody) {
-                    return messageBody.id === '' + id;
-                });
             } else {
-                return messageBodies;
+                return [{textHtml : 'NOT IMPLEMENTED'}];
             }
         }
     });

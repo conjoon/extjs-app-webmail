@@ -27,14 +27,20 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
     singleton : true,
 
+    requires : [
+        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable'
+    ],
+
+    messageBodies : null,
+
     messageItems : null,
 
     baseMessageItems : null,
 
+
     buildRandomNumber : function(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
-
 
     buildRandomSizeInBytes : function() {
         var me = this;
@@ -42,15 +48,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return me.buildRandomNumber(1, 10000000);
     },
 
-    buildRandomPreviewText : function() {
-        var me       = this,
-            messages = [
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing  elit. Aenean commodo ligula eget dolor. Aenean massa.",
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean",
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget "
-        ];
+    buildPreviewText : function(id) {
+        var me = this;
 
-        return messages[me.buildRandomNumber(0, 2)];
+        return me.getMessageBody(id).textPlain.substring(0, 200);
     },
 
     buildRandomDate : function() {
@@ -84,6 +85,78 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             address : 'name1' + type + '@domain1.tld'
         }]
 
+    },
+
+    createMessageBody : function(data) {
+
+        var me  = this,
+            inc = 0;
+
+        if (!me.messageBodies) {
+            me.messageBodies = {};
+        }
+
+        for (var i in me.messageBodies) {
+            if (!me.messageBodies.hasOwnProperty(i)) {
+                continue;
+            }
+            if (parseInt(i, 10) > inc) {
+                inc = parseInt(i, 10);
+            }
+        }
+
+        inc++;
+
+        me.messageBodies[inc] = Ext.applyIf({id : inc}, data);
+
+        return me.messageBodies[inc];
+    },
+
+    updateMessageBody : function(id, data) {
+
+        var me      = this,
+            message = me.getMessageBody(id);
+
+        // just in case
+        delete data.id;
+
+        if (!data.textPlain) {
+            data.textPlain = Ext.util.Format.stripTags(data.textHtml);
+        }
+
+        Ext.apply(message, data);
+        me.messageBodies[id] = message;
+
+        return message;
+    },
+
+    getMessageBody : function(id) {
+
+        var me = this,
+            message;
+
+        if (!me.messageBodies) {
+            me.messageBodies = {};
+        }
+        if (me.messageBodies[id]) {
+            return me.messageBodies[id];
+        }
+
+        var messages = [
+            "<ul><li>Blindtext - Lorem ipsum dolor sit amet, consectetuer adipiscing  elit. Aenean commodo ligula eget dolor. Aenean massa.</li><li>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.</li> <li>Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</li> <li>In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.</li></ul>",
+            "<p>Text here: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa <strong>strong</strong>. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede <a class=\"external ext\" href=\"#\">link</a> mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.</p>",
+            "<blockquote>Following news! Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa <strong>strong</strong>. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In <em>em</em> enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam <a class=\"external ext\" href=\"#\">link</a> dictum felis eu pede mollis pretium. </blockquote>"
+        ];
+
+        message = messages[(parseInt(id, 10) % messages.length)];
+
+        me.messageBodies[id] = {
+            id        : id,
+            textHtml  : message,
+            textPlain : Ext.util.Format.stripTags(message)
+        };
+
+        return me.messageBodies[id];
     },
 
     getNextMessageDraftKey : function() {
@@ -121,10 +194,17 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     getMessageItems : function() {
 
         var me               = this,
+            AttachmentTable  = conjoon.cn_mail.data.mail.ajax.sim.message
+                               .AttachmentTable,
             baseMessageItems = me.buildBaseMessageItems(),
             messageItems     = subjects = sender = [];
 
         if (me.messageItems) {
+            for (var i = 0, len = me.messageItems.length; i < len; i++) {
+                me.messageItems[i].previewText    = me.buildPreviewText(baseMessageItems[i].id);
+                me.messageItems[i].hasAttachments = AttachmentTable.getAttachments(baseMessageItems[i].id)
+                                                    ? 1 : 0;
+            }
             return me.messageItems;
         }
 
@@ -134,9 +214,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 // leave first one as unread for tests
                 isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 date           : me.buildRandomDate(),
-                hasAttachments : i == 0 || i % 2 == 0,
+                hasAttachments : AttachmentTable.getAttachments(baseMessageItems[i].id) ? 1 : 0,
                 size           : me.buildRandomSizeInBytes(),
-                previewText    : me.buildRandomPreviewText()
+                previewText    : me.buildPreviewText(baseMessageItems[i].id)
             }, baseMessageItems[i]));
         }
 
