@@ -187,10 +187,28 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
                 t.expect(view.down('cn_mail-mailmessagereaderattachmentlist').isHidden()).toBe(true);
             });
 
+        });
+
+
+        t.it("Should show/hide emptyMsgBox", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.expect(view.down('#emptyMsgBox').isVisible()).toBe(true);
+            t.expect(view.down('#msgHeaderContainer').isVisible()).toBe(false);
+            t.expect(view.down('#msgBodyContainer').isVisible()).toBe(false);
+
+            view.setMessageItem(createMessageItem());
+
+            t.waitForMs(500, function(){
+                t.expect(view.down('#emptyMsgBox').isVisible()).toBe(false);
+                t.expect(view.down('#msgHeaderContainer').isVisible()).toBe(true);
+                t.expect(view.down('#msgBodyContainer').isVisible()).toBe(true);
+            });
 
 
         });
-
 
     });
 });

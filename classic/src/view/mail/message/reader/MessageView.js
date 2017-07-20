@@ -68,11 +68,38 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     closable : true,
 
     items : [{
+        flex   : 1,
+        xtype  : 'box',
+        hidden : false,
+        bind : {
+            hidden : '{messageItem}'
+        },
+        itemId : 'emptyMsgBox',
+        autoEl : {
+            tag : 'div',
+            children : [{
+                tag  : 'div',
+                cls  : 'emptyMessage',
+                children : [{
+                    tag : 'div',
+                    cls : 'fa fa-envelope-o icon'
+                }, {
+                    tag  : 'div',
+                    html : 'Select a message to read it.'
+                }]
+            }]
+        }
+    }, {
         xtype  : 'container',
+        itemId : 'msgHeaderContainer',
         cls    : 'cn_mail-header',
         height : 96,
         layout : {
             type  : 'hbox'
+        },
+        hidden : true,
+        bind   : {
+            hidden : '{!messageItem}'
         },
         items: [{
             xtype  : 'box',
@@ -100,11 +127,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
         }]
     }, {
-        xtype : 'container',
-        flex : 1,
-
+        xtype  : 'container',
+        flex   : 1,
+        hidden : true,
+        bind   : {
+            hidden : '{!messageItem}'
+        },
+        itemId     : 'msgBodyContainer',
         scrollable : 'y',
-
         layout : {
             type  : 'hbox',
             align : 'stretchmax'
