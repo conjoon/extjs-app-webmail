@@ -30,6 +30,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     extend : 'Ext.grid.Panel',
 
+    requires : [
+        'conjoon.cn_comp.grid.feature.RowBodySwitch'
+    ],
+
     alias : 'widget.cn_mail-mailmessagegrid',
 
     cls   : 'cn_mail-mailmessagegrid shadow-panel',
@@ -41,6 +45,36 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     headerBorders : false,
     rowLines      : false,
 
+
+    features : [{
+        ftype              : 'cn_comp-gridfeature-rowbodyswitch',
+        enableCls          : 'previewEnabled',
+        disableCls         : 'previewDisabled',
+        id                 : 'cn_mail-mailMessageFeature-messagePreview',
+        getAdditionalData  : function (data, idx, record, orig) {
+
+            var me = this;
+
+            if (me.disabled) {
+                return undefined;
+            }
+
+            return {
+                rowBody : '<div class="subject '+ (!record.get('isRead') ? 'unread' : '')+'">' + record.get("subject") + '</div>' +
+                           '<div class="previewText">' + record.get("previewText") + '</div>',
+                rowBodyCls : 'cn_mail-mailmessagepreviewfeature'
+            };
+        },
+        previewColumnConfig : {
+            'isRead'         : {visible : false},
+            'subject'        : {visible : false},
+            'to'             : {visible : false},
+            'from'           : {flex : 1},
+            'date'           : {},
+            'hasAttachments' : {},
+            'size'           : {visible : false}
+        }
+    }],
 
     viewConfig : {
         markDirty   : false,
@@ -89,7 +123,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     }, {
         dataIndex : 'from',
         text      : 'From',
-        width     : 140
+        width     : 140,
+        renderer  : function(value, meta, record, rowIndex, colIndex, store, view) {
+
+            var feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+
+            if (!feature.disabled) {
+                meta.tdCls += 'previewLarge';
+            }
+
+            return value;
+        }
     }, {
         dataIndex : 'date',
         align     : 'right',
@@ -100,6 +144,29 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         align     : 'right',
         text      : 'Size',
         width     : 80
-    }]
+    }],
+
+
+    /**
+     * Allows to switch between preview- and detail view, whereas the detail
+     * view is a regular gridpanel view with column headers and table cells,
+     * and the preview view uses the {conjoon.cn_comp.grid.feature.RowBodySwitch}.
+     *
+     * @param {Boolean} enable true to switch to the grid view, falsy to
+     * switch to preview mode.
+     */
+    enableRowPreview : function(enable) {
+
+        var me      = this,
+            enable  = enable === undefined ? true : !!enable,
+            view    = me.getView(),
+            feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+
+        if (enable) {
+            feature.enable();
+        } else {
+            feature.disable();
+        }
+    }
 
 });

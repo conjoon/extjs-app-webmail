@@ -46,6 +46,27 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         t.expect(grid instanceof Ext.grid.Panel).toBeTruthy();
 
         t.expect(grid.alias).toContain('widget.cn_mail-mailmessagegrid');
+
+        var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+        t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowBodySwitch');
+        t.expect(feature.disabled).toBeFalsy()
+    });
+
+
+    t.it("enableRowPreview()", function(t) {
+        grid = Ext.create(
+            'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
+        var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+
+        t.expect(feature.disabled).toBe(false);
+        grid.enableRowPreview(false);
+        t.expect(feature.disabled).toBe(true);
+        grid.enableRowPreview();
+        t.expect(feature.disabled).toBe(false);
+        grid.enableRowPreview(false)
+        t.expect(feature.disabled).toBe(true);
+        grid.enableRowPreview(true);;
+        t.expect(feature.disabled).toBe(false);
     });
 
 });
