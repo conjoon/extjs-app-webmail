@@ -56,6 +56,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
         name : 'from',
         type : 'string'
     }, {
+        name : 'previewText',
+        type : 'string'
+    }, {
         name    : 'size',
         type    : 'cn_core-datafieldfilesize',
         persist : false

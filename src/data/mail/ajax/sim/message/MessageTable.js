@@ -42,6 +42,17 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return me.buildRandomNumber(1, 10000000);
     },
 
+    buildRandomPreviewText : function() {
+        var me       = this,
+            messages = [
+            "Lorem ipsum dolor sit amet, consectetuer adipiscing  elit. Aenean commodo ligula eget dolor. Aenean massa.",
+            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean",
+            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget "
+        ];
+
+        return messages[me.buildRandomNumber(0, 2)];
+    },
+
     buildRandomDate : function() {
         var me = this,
             d  = me.buildRandomNumber(1, 31),
@@ -124,7 +135,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 date           : me.buildRandomDate(),
                 hasAttachments : i == 0 || i % 2 == 0,
-                size           : me.buildRandomSizeInBytes()
+                size           : me.buildRandomSizeInBytes(),
+                previewText    : me.buildRandomPreviewText()
             }, baseMessageItems[i]));
         }
 
