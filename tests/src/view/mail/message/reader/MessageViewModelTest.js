@@ -175,7 +175,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
                 t.expect(viewModel.get('messageItem').getId()).toBe('2');
                 t.expect(viewModel.get('messageItem').getMessageBody()).toBe(null);
-                t.expect(viewModel.get('messageBody')).toEqual({});
+                t.expect(viewModel.get('messageBody')).toEqual(null);
             });
 
         });
@@ -183,6 +183,57 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
     })});
 
+    t.it("formula.getIndicatorText", function(t) {
 
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        console.log(viewModel.formulas);
+        var MESSAGEBODY = false,
+            MESSAGEITEM = false,
+            formulas    = viewModel.getFormulas(),
+            get         = function(key) {
+                switch (key) {
+                    case 'messageBody':
+                        return MESSAGEBODY;
+                    case 'messageItem':
+                        return MESSAGEITEM;
+                }
+            }
+
+        t.expect(formulas.getIndicatorText(get)).toContain('Select');
+        MESSAGEITEM = true;
+        t.expect(formulas.getIndicatorText(get)).toContain('Loading');
+        MESSAGEBODY = true;
+        t.expect(formulas.getIndicatorText(get)).toBe("");
+
+
+    });
+
+
+    t.it("formula.getIndicatorIcon", function(t) {
+
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        console.log(viewModel.formulas);
+        var MESSAGEBODY = false,
+            MESSAGEITEM = false,
+            formulas    = viewModel.getFormulas(),
+            get         = function(key) {
+                switch (key) {
+                    case 'messageBody':
+                        return MESSAGEBODY;
+                    case 'messageItem':
+                        return MESSAGEITEM;
+                }
+            }
+
+        t.expect(formulas.getIndicatorIcon(get)).toBeTruthy();
+        MESSAGEITEM = true;
+        t.expect(formulas.getIndicatorIcon(get)).toBeTruthy();
+        MESSAGEBODY = true;
+        t.expect(formulas.getIndicatorText(get)).toBe("");
+
+
+    });
 
 });

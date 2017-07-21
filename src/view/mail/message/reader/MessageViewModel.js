@@ -53,6 +53,43 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
      */
     abortedRequestMap : null,
 
+    formulas : {
+
+        /**
+         * Returns the text to display in the MessageView depending on the
+         * availability of a MessageItem and a MessageBody. If a MessageItem
+         * is available but no MessageBody, this formula assumes that a
+         * MessageBody is currently being loaded.
+         *
+         * @param {Function} get
+         *
+         * @return {String}
+         *
+         * @see getIndicatorIcon
+         */
+        getIndicatorText : function(get) {
+
+            return !get('messageBody') && !get('messageItem')
+                   ? 'Select a message to read it.'
+                   : get('messageItem') && !get('messageBody')
+                     ? 'Loading message...'
+                     : ''
+
+        },
+
+
+        getIndicatorIcon : function(get) {
+
+            return !get('messageBody') && !get('messageItem')
+                ? 'fa-envelope-o'
+                : get('messageItem') && !get('messageBody')
+                ? 'fa-spin fa-spinner'
+                : ''
+        }
+
+    },
+
+
     /**
      * Sets the message item for this view, or null to clear the view.
      * Once the message was loaded into the view, the associated messageItem's
@@ -73,6 +110,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     setMessageItem : function(messageItem) {
 
         var me = this;
+
+        me.messageBodyLoaded(null, null);
 
         if (messageItem &&
             !(messageItem instanceof conjoon.cn_mail.model.mail.message.MessageItem)) {
@@ -148,7 +187,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
             if (!record) {
                 // set to null or any, mark messageBody empty in view
-                me.set('messageBody', {});
+                me.set('messageBody', null);
                 return;
             }
 

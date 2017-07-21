@@ -67,28 +67,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     closable : true,
 
     items : [{
-        flex   : 1,
-        xtype  : 'box',
-        hidden : false,
-        bind : {
-            hidden : '{messageItem}'
-        },
-        itemId : 'emptyMsgBox',
-        autoEl : {
-            tag : 'div',
-            children : [{
-                tag  : 'div',
-                cls  : 'emptyMessage',
-                children : [{
-                    tag : 'div',
-                    cls : 'fa fa-envelope-o icon'
-                }, {
-                    tag  : 'div',
-                    html : 'Select a message to read it.'
-                }]
-            }]
-        }
-    }, {
         xtype  : 'container',
         itemId : 'msgHeaderContainer',
         cls    : 'cn_mail-header',
@@ -126,11 +104,29 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
         }]
     }, {
+        flex   : 1,
+        xtype  : 'box',
+        hidden : false,
+        bind : {
+            hidden : '{messageItem && messageBody}',
+            data   : {
+                indicatorText : '{getIndicatorText}',
+                indicatorIcon : '{getIndicatorIcon}'
+            }
+        },
+        itemId : 'msgIndicatorBox',
+        tpl: [
+            '<div class="messageIndicator">',
+            '<div class="fa {indicatorIcon} icon"></div>',
+            '<div>{indicatorText}</div>',
+            '</div>'
+        ]
+    }, {
         xtype  : 'container',
         flex   : 1,
         hidden : true,
         bind   : {
-            hidden : '{!messageItem}'
+            hidden : '{!messageBody}'
         },
         itemId     : 'msgBodyContainer',
         scrollable : 'y',

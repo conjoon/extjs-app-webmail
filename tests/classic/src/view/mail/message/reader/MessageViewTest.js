@@ -24,16 +24,23 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
     var view,
         viewConfig,
-        createMessageItem = function() {
-            var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id             : 1,
-                    messageBodyId  : 1,
-                    subject        : 'SUBJECT',
-                    from           : 'FROM',
-                    date           : 'DATE',
-                    isRead         : false,
-                    hasAttachments : true
-                });
+        createMessageItem = function(withMessageBody) {
+
+            var conf = {
+                id             : 1,
+                messageBodyId  : 1,
+                subject        : 'SUBJECT',
+                from           : 'FROM',
+                date           : 'DATE',
+                isRead         : false,
+                hasAttachments : true
+            };
+
+            if (withMessageBody === false) {
+                delete conf.messageBodyId;
+            }
+
+            var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', conf);
 
             return messageItem;
         },
@@ -190,21 +197,29 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
         });
 
 
-        t.it("Should show/hide emptyMsgBox", function(t) {
+        t.it("Should show/hide msgIndicatorBox", function(t) {
 
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
-            t.expect(view.down('#emptyMsgBox').isVisible()).toBe(true);
+            t.expect(view.down('#msgIndicatorBox').isVisible()).toBe(true);
             t.expect(view.down('#msgHeaderContainer').isVisible()).toBe(false);
             t.expect(view.down('#msgBodyContainer').isVisible()).toBe(false);
 
             view.setMessageItem(createMessageItem());
 
             t.waitForMs(500, function(){
-                t.expect(view.down('#emptyMsgBox').isVisible()).toBe(false);
+                t.expect(view.down('#msgIndicatorBox').isVisible()).toBe(false);
                 t.expect(view.down('#msgHeaderContainer').isVisible()).toBe(true);
                 t.expect(view.down('#msgBodyContainer').isVisible()).toBe(true);
+
+                view.setMessageItem(createMessageItem(false));
+
+                t.waitForMs(500, function(){
+                    t.expect(view.down('#msgIndicatorBox').isVisible()).toBe(true);
+                    t.expect(view.down('#msgHeaderContainer').isVisible()).toBe(true);
+                    t.expect(view.down('#msgBodyContainer').isVisible()).toBe(false);
+                });
             });
 
 
