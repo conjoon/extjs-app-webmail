@@ -34,7 +34,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.Init', {
     constructor: function() {
 
         Ext.ux.ajax.SimManager.init({
-
+            delay : 300,
             defaultSimlet : null
         });
 

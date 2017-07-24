@@ -39,7 +39,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
         url  : /cn_mail\/MessageItem(\/\d+)?/,
 
         doPut : function(ctx) {
-
+console.log("PUT", "MessageItem", ctx)
             var me           = this,
                 ret          = {},
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,

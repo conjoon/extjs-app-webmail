@@ -109,7 +109,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
             if (idPart) {
 
                 id = parseInt(idPart.substring(1), 10);
-
+                console.log("GET", "MessageBody for id", id, new Date());
                 return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
                        .getMessageBody(id);
 

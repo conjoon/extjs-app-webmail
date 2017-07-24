@@ -109,8 +109,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
                 filters = Ext.decode(filters);
                 id      = filters[0].value;
                 attachments = AttachmentTable.getAttachments(id);
-
-
+                console.log("GET", "Attachments for Message id", id, new Date());
                 return attachments;
             } else {
                 return [{text : "NOT SUPPORTED"}];
