@@ -101,13 +101,22 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview'
     }, {
         ref      : 'mailMessageGrid',
-        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > cn_mail-mailmessagegrid'
+        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid'
+    }, {
+        ref      : 'gridContainer',
+        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegridcontainer'
     }, {
         ref      : 'mailFolderTree',
         selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree'
     }, {
         ref      : 'navigationToolbar',
         selector : 'cn_treenavviewport-tbar'
+    }, {
+        ref      : 'toggleGridListButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleList'
+    }, {
+        ref      : 'switchReadingPaneButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane'
     }],
 
 
@@ -176,12 +185,15 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         var me          = this,
             messageGrid = me.getMailMessageGrid();
 
-        if (records.length !== 1) {
+        if (records.length > 1) {
             Ext.raise({
                 records : records,
                 msg     : "unexpected multiple records"
             });
         }
+
+        me.getSwitchReadingPaneButton().setDisabled(records.length <= 0)
+        me.getToggleGridListButton().setDisabled(records.length <= 0);
 
         messageGrid.getSelectionModel().deselectAll();
     },
@@ -380,6 +392,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 }, {
                     xtype        : 'button',
                     iconCls      : 'x-fa fa-list',
+                    disabled     : true,
                     cls          : 'toggleGridViewBtn',
                     itemId       : 'cn_mail-nodeNavToggleList',
                     enableToggle : true,
@@ -389,6 +402,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                     }
                 }, {
                     xtype    : 'button',
+                    disabled : true,
                     iconCls  : 'x-fa fa-columns',
                     itemId   : 'cn_mail-nodeNavReadingPane',
                     tooltip  : {

@@ -177,8 +177,22 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
     t.it('onMailFolderTreeSelectionChange()', function(t) {
 
-        var DESELECTED = 0, exc, e;
+        var DESELECTED = 0, exc, e, READINGPANEDISABLED, TOGGLEGRIDDISABLED;
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getSwitchReadingPaneButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    READINGPANEDISABLED = disabled;
+                }
+            };
+        };
+        packageCtrl.getToggleGridListButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    TOGGLEGRIDDISABLED = disabled;
+                }
+            };
+        };
         packageCtrl.getMailMessageGrid = function() {
             return {
                 getSelectionModel : function() {
@@ -195,9 +209,16 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected multiple records")
 
+        t.expect(READINGPANEDISABLED).toBeUndefined();
+        t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
         t.expect(DESELECTED).toBe(0);
         packageCtrl.onMailFolderTreeSelectionChange(null, [1]);
         t.expect(DESELECTED).toBe(1);
+        t.expect(READINGPANEDISABLED).toBe(false);
+        t.expect(TOGGLEGRIDDISABLED).toBe(false);
+        packageCtrl.onMailFolderTreeSelectionChange(null, []);
+        t.expect(READINGPANEDISABLED).toBe(true);
+        t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
     });
 

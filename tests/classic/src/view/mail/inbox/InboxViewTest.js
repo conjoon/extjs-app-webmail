@@ -66,6 +66,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
         t.expect(view.getSession()).toBeFalsy();
 
         t.expect(view.down('cn_mail-mailfoldertree') instanceof conjoon.cn_mail.view.mail.folder.MailFolderTree).toBe(true);
+        t.expect(view.down('#cn_mail-mailmessagegridcontainer') instanceof Ext.Container).toBe(true);
         t.expect(view.down('cn_mail-mailmessagegrid') instanceof conjoon.cn_mail.view.mail.message.MessageGrid).toBe(true);
         t.expect(view.down('cn_mail-mailmessagereadermessageview') instanceof conjoon.cn_mail.view.mail.message.reader.MessageView).toBe(true);
 
@@ -81,46 +82,49 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
             view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
 
-            var grid        = view.down('cn_mail-mailmessagegrid'),
-                tree        = view.down('cn_mail-mailfoldertree'),
-                messageView = view.down('cn_mail-mailmessagereadermessageview');
+            var grid           = view.down('cn_mail-mailmessagegrid'),
+                tree           = view.down('cn_mail-mailfoldertree'),
+                gridMessageBox = view.down('#msgIndicatorBox'),
+                messageView    = view.down('cn_mail-mailmessagereadermessageview');
 
             t.expect(tree.getStore().getRange().length).toBe(0);
             t.expect(grid.getStore().getRange().length).toBe(0);
             t.expect(messageView.getViewModel().get('messageItem')).toBeFalsy();
 
-
             t.waitForMs(500, function(){
-                var mailFolder = tree.getStore().getAt(0),
-                   unreadCount =  mailFolder.get('unreadCount');
+                t.expect(messageView.isVisible()).toBe(false);
+                t.expect(gridMessageBox.isVisible()).toBe(true);
+                t.expect(grid.isVisible()).toBe(false);
 
-                t.expect(unreadCount).not.toBe(0);
-                tree.getSelectionModel().select(mailFolder);
+                t.waitForMs(500, function(){
+                    var mailFolder = tree.getStore().getAt(0),
+                        unreadCount =  mailFolder.get('unreadCount');
 
-                t.waitForMs(750, function(){
+                    t.expect(unreadCount).not.toBe(0);
+                    tree.getSelectionModel().select(mailFolder);
 
-                    var messageItem = grid.getStore().getAt(0);
-                    t.expect(grid.getStore().getTotalCount()).not.toBe(0);
-                    messageItem.set('isRead', false);
-                    t.expect(messageItem.get('isRead')).toBe(false);
-                    grid.getSelectionModel().select(messageItem);
+                    t.waitForMs(750, function(){
 
-                    t.waitForMs(500, function(){
-                        t.expect(messageView.getViewModel().get('messageItem')).toBe(messageItem);
+                        t.expect(messageView.isVisible()).toBe(true);
+                        t.expect(gridMessageBox.isVisible()).toBe(false);
+                        t.expect(grid.isVisible()).toBe(true);
 
-                        t.expect(mailFolder.get('unreadCount')).toBe(unreadCount - 1);
-                        view.destroy();
+                        var messageItem = grid.getStore().getAt(0);
+                        t.expect(grid.getStore().getTotalCount()).not.toBe(0);
+                        messageItem.set('isRead', false);
+                        t.expect(messageItem.get('isRead')).toBe(false);
+                        grid.getSelectionModel().select(messageItem);
+
+                        t.waitForMs(500, function(){
+                            t.expect(messageView.getViewModel().get('messageItem')).toBe(messageItem);
+
+                            t.expect(mailFolder.get('unreadCount')).toBe(unreadCount - 1);
+                            view.destroy();
+                        });
+
                     });
-
                 });
             });
-
-
-
-
-
-
-
 
 
         });

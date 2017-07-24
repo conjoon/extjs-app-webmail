@@ -36,7 +36,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     alias : 'widget.cn_mail-mailmessagegrid',
 
-    cls   : 'cn_mail-mailmessagegrid shadow-panel',
+    cls   : 'cn_mail-mailmessagegrid',
 
     flex : 1,
 

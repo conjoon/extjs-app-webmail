@@ -82,19 +82,49 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             align           : 'stretch'
         },
         items : [{
-            flex      : 1,
-            margin    : '0 0 5 0',
-            xtype     : 'cn_mail-mailmessagegrid',
-            reference : 'cn_mail_ref_mailmessagegrid',
-            bind      : {
-                store : '{cn_mail-mailmessageitemstore}'
-            }
-        }, {
+            xtype  : 'container',
+            itemId : 'cn_mail-mailmessagegridcontainer',
+            cls    : 'messageGridContainer shadow-panel',
+            margin : '0 0 5 0',
+            layout : {
+                type  : 'vbox',
+                align : 'stretch'
+            },
+            flex   : 1,
+            items : [{
+                flex   : 1,
+                xtype  : 'box',
+                hidden : false,
+                bind      : {
+                    hidden : '{cn_mail_ref_mailfoldertree.selection}'
+                },
+                data   : {
+                    indicatorIcon : 'fa-folder-o',
+                    indicatorText : 'Select a folder to view its contents.'
+                },
+                itemId : 'msgIndicatorBox',
+                tpl: [
+                    '<div class="messageIndicator">',
+                    '<div class="fa {indicatorIcon} icon"></div>',
+                    '<div>{indicatorText}</div>',
+                    '</div>'
+                ]
+            }, {
+                flex      : 1,
+                hidden    : true,
+                xtype     : 'cn_mail-mailmessagegrid',
+                reference : 'cn_mail_ref_mailmessagegrid',
+                bind      : {
+                    hidden : '{!cn_mail_ref_mailfoldertree.selection}',
+                    store  : '{cn_mail-mailmessageitemstore}'
+                }
+        }]}, {
             flex   : 1,
             xtype  : 'cn_mail-mailmessagereadermessageview',
             margin : '0 5 5 0',
             header : false,
             bind   : {
+                hidden      : '{!cn_mail_ref_mailfoldertree.selection}',
                 messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }
 
@@ -111,18 +141,18 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      */
     toggleReadingPane : function(position) {
 
-        var me          = this,
-            position    = position === 'right' || position === 'bottom'
-                          ? position
-                          : false,
-            orientation = position === 'right' ? 'vertical' : 'horizontal',
-            collapseDir = position === 'right' ? 'left'     : 'bottom',
-            panelBody   = me.down('#cn_mail-mailInboxViewPanelBody'),
-            readingPane = panelBody.down('cn_mail-mailmessagereadermessageview'),
-            messageGrid = panelBody.down('cn_mail-mailmessagegrid');
+        var me            = this,
+            position      = position === 'right' || position === 'bottom'
+                            ? position
+                            : false,
+            orientation   = position === 'right' ? 'vertical' : 'horizontal',
+            collapseDir   = position === 'right' ? 'left'     : 'bottom',
+            panelBody     = me.down('#cn_mail-mailInboxViewPanelBody'),
+            readingPane   = panelBody.down('cn_mail-mailmessagereadermessageview'),
+            gridContainer = panelBody.down('#cn_mail-mailmessagegridcontainer');
 
         if (!position) {
-            messageGrid.setMargin('0 5 5 0');
+            gridContainer.setMargin('0 5 5 0');
             readingPane.hide();
             return;
         }
@@ -142,9 +172,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         panelBody.updateLayout();
 
         if (position === 'right') {
-            messageGrid.setMargin('0 0 5 0');
+            gridContainer.setMargin('0 0 5 0');
         } else {
-            messageGrid.setMargin('0 5 0 0');
+            gridContainer.setMargin('0 5 0 0');
         }
     }
 
