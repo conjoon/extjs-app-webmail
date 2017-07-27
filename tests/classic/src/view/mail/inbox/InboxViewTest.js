@@ -79,7 +79,9 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     t.it("Should select folder and messageItem properly create and show the inbox view along with default config checks", function(t) {
 
         t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
-
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
             view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
 
             var grid           = view.down('cn_mail-mailmessagegrid'),

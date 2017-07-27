@@ -85,7 +85,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             xtype  : 'container',
             itemId : 'cn_mail-mailmessagegridcontainer',
             cls    : 'messageGridContainer shadow-panel',
-            margin : '0 0 5 0',
+            bind   : {
+                margin : '{!cn_mail_ref_mailfoldertree.selection ? "0 5 5 0" : "0 0 5 0"}'
+            },
             layout : {
                 type  : 'vbox',
                 align : 'stretch'
@@ -115,6 +117,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 xtype     : 'cn_mail-mailmessagegrid',
                 reference : 'cn_mail_ref_mailmessagegrid',
                 bind      : {
+                    title  : '{cn_mail_ref_mailfoldertree.selection.text}',
                     hidden : '{!cn_mail_ref_mailfoldertree.selection}',
                     store  : '{cn_mail-mailmessageitemstore}'
                 }
