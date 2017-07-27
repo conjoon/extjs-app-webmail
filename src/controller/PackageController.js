@@ -92,8 +92,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleList' : {
             toggle : 'onToggleListViewButtonClick'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleFolder' : {
+            toggle : 'onToggleFolderViewButtonClick'
         }
-
     },
 
     refs : [{
@@ -118,6 +120,27 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         ref      : 'switchReadingPaneButton',
         selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane'
     }],
+
+
+    /**
+     * Callback for the toggle event of the cn_mail-nodeNavToggleFolder button.
+     * Will show/hide the mailFolderTree.
+     *
+     * @param {Ext.Button} btn
+     * @param {Boolean}    pressed
+     */
+    onToggleFolderViewButtonClick : function(btn, pressed) {
+
+        var me         = this,
+            mailFolder = me.getMailFolderTree();
+
+        if (pressed) {
+            mailFolder.show();
+        } else {
+            mailFolder.hide();
+        }
+
+    },
 
 
     /**
@@ -389,6 +412,18 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                     }
                 }, {
                     xtype : 'tbseparator'
+                }, {
+                    xtype        : 'button',
+                    iconCls      : 'x-fa fa-folder-o',
+                    disabled     : false,
+                    cls          : 'toggleFolderViewBtn',
+                    itemId       : 'cn_mail-nodeNavToggleFolder',
+                    enableToggle : true,
+                    pressed      : true,
+                    tooltip      : {
+                        title : 'Hide/ show Mail Folder',
+                        text  : 'Hides or shows the Mail Folder tree.'
+                    }
                 }, {
                     xtype        : 'button',
                     iconCls      : 'x-fa fa-list',

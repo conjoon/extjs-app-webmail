@@ -347,6 +347,31 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(ENABLED).toBe(false);
         packageCtrl.onToggleListViewButtonClick(null, false);
         t.expect(ENABLED).toBe(true);
-    })
+    });
+
+
+    t.it('onToggleFolderViewButtonClick()', function(t) {
+
+        var HIDDEN;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMailFolderTree = function() {
+            return {
+                show : function() {
+                    HIDDEN = false;
+                },
+                hide : function() {
+                    HIDDEN = true;
+                }
+            };
+        };
+
+        t.expect(HIDDEN).toBeUndefined();
+        packageCtrl.onToggleFolderViewButtonClick(null, true);
+        t.expect(HIDDEN).toBe(false);
+        packageCtrl.onToggleFolderViewButtonClick(null, false);
+        t.expect(HIDDEN).toBe(true);
+
+    });
 
 });
