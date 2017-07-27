@@ -69,6 +69,10 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
 
         t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function() {
 
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
             viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
 
 
