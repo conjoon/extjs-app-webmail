@@ -29,11 +29,12 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         createMessageItem = function() {
 
             var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id            : 1,
-                    messageBodyId : 2,
-                    subject       : 'SUBJECT',
-                    from          : 'FROM',
-                    date          : 'DATE'
+                    id             : 1,
+                    messageBodyId  : 2,
+                    subject        : 'SUBJECT',
+                    from           : 'FROM',
+                    date           : 'DATE',
+                    hasAttachments : true
                 });
 
             return messageItem;
@@ -83,27 +84,31 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 view : view
             });
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 500
+            });
+
             viewModel.setMessageItem(createMessageItem());
 
-            t.expect(viewModel.currentLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
-            t.expect(viewModel.currentLoadOperation.messageBodyId).toBe('2');
-            t.expect(viewModel.currentLoadOperation.loadOperation.isRunning()).toBe(true);
+            t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
+            t.expect(viewModel.bodyLoadOperation.messageBodyId).toBe('2');
+            t.expect(viewModel.bodyLoadOperation.loadOperation.isRunning()).toBe(true);
 
             t.expect(wasCalled).toBe(false);
-
             t.waitForMs(1500, function() {
-                t.expect(viewModel.currentLoadOperation).toBe(null);
+                t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.expect(wasCalled).toBe(true);
-
                 t.expect(viewModel.get('messageBody').get('id')).toBe('2');
                 t.expect(viewModel.get('messageBody').get('textHtml')).toBeTruthy();
-                t.expect(viewModel.get('messageItem').getMessageBody()).toBe(viewModel.get('messageBody'));
+                // we are working with cloned messageItem for the assoziations
+                t.expect(viewModel.get('messageItem').getMessageBody()).not.toBe(viewModel.get('messageBody'));
             });
 
         });
 
-        t.it("3. Should abort loading the messageBody ad reload later on properly", function(t) {
+        t.it("3. Should abort loading the messageBody and reload later on properly", function(t) {
 
             var view = Ext.create('Ext.Component', {
                 listeners : {
@@ -123,12 +128,12 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             viewModel.setMessageItem(createMessageItem());
 
             t.waitForMs(500, function() {
-                t.expect(viewModel.currentLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
-                t.expect(viewModel.currentLoadOperation.loadOperation.isRunning()).toBe(true);
+                t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
+                t.expect(viewModel.bodyLoadOperation.loadOperation.isRunning()).toBe(true);
                 t.expect(viewModel.abortedRequestMap).toEqual({});
                 viewModel.abortMessageBodyLoad();
                 t.expect(viewModel.abortedRequestMap).toEqual({'2' : true});
-                t.expect(viewModel.currentLoadOperation).toBe(null);
+                t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.waitForMs(1000, function() {
                     t.expect(viewModel.get('messageItem')).not.toBe(null);
@@ -149,7 +154,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                     viewModel.setMessageItem(createMessageItem());
                     t.waitForMs(500, function() {
                         t.expect(viewModel.abortedRequestMap).toEqual({});
-                        t.expect(viewModel.get('messageItem').getMessageBody().get('textHtml')).not.toBe('');
+                        t.expect(viewModel.get('messageBody').get('textHtml')).not.toBe('');
                     });
 
                 });
@@ -171,7 +176,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
 
             t.waitForMs(1500, function() {
-                t.expect(viewModel.currentLoadOperation).toBe(null);
+                t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.expect(viewModel.get('messageItem').getId()).toBe('2');
                 t.expect(viewModel.get('messageItem').getMessageBody()).toBe(null);
@@ -181,13 +186,84 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         });
 
 
-    })});
+        t.it("5. MessageItem's MessageBody/Attachments should not be loaded for the same Reference", function(t) {
+
+            var wasCalled = false,
+                view      = Ext.create('Ext.Component');
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
+                view : view
+            });
+            Ext.ux.ajax.SimManager.init({
+                delay: 100
+            });
+            viewModel.setMessageItem(createMessageItem());
+
+            t.waitForMs(1500, function() {
+                t.expect(viewModel.bodyLoadOperation).toBe(null);
+
+                t.expect(viewModel.get('messageBody')).toBeTruthy();
+                t.expect(viewModel.get('attachments')).toBeTruthy();
+
+                t.expect(viewModel.get('messageBody')).not.toBe(viewModel.get('messageItem').getMessageBody());
+                // attachment store of original mesage item should not have been
+                // loaded, allthough we have access to attachment data. In
+                // this case, its from the internally cloned messageItem
+                t.expect(viewModel.get('messageItem').attachments().isLoaded()).toBe(false);
+
+
+            });
+
+        });
+
+
+        t.it("6. Should abort loading the attachments and reload later on properly", function(t) {
+
+            var view = Ext.create('Ext.Component');
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
+                view : view
+            });
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1000
+            });
+
+            viewModel.setMessageItem(createMessageItem());
+
+            t.waitForMs(500, function() {
+                t.expect(viewModel.attachmentsLoadOperation instanceof Ext.data.operation.Read).toBe(true);
+                t.expect(viewModel.attachmentsLoadOperation.isRunning()).toBe(true);
+                viewModel.abortMessageAttachmentsLoad();
+                t.expect(viewModel.attachmentsLoadOperation).toBe(null);
+
+                t.waitForMs(1000, function() {
+                    t.expect(viewModel.get('messageItem')).not.toBe(null);
+                    t.expect(viewModel.get('messageItem').get('id')).toBe('1');
+                    t.expect(viewModel.get('attachments')).toEqual([]);
+
+                    Ext.ux.ajax.SimManager.init({
+                        delay: 100
+                    });
+
+                    // and trigger reload
+                    viewModel.setMessageItem(createMessageItem());
+                    t.waitForMs(500, function() {
+                        t.expect(viewModel.abortedRequestMap).toEqual({});
+                        t.expect(viewModel.get('attachments')).not.toEqual([]);
+                    });
+
+                });
+
+            });
+
+        });
+
 
     t.it("formula.getIndicatorText", function(t) {
 
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
-        console.log(viewModel.formulas);
         var MESSAGEBODY = false,
             MESSAGEITEM = false,
             formulas    = viewModel.getFormulas(),
@@ -211,10 +287,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
 
     t.it("formula.getIndicatorIcon", function(t) {
-
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
-        console.log(viewModel.formulas);
         var MESSAGEBODY = false,
             MESSAGEITEM = false,
             formulas    = viewModel.getFormulas(),
@@ -232,8 +306,49 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         t.expect(formulas.getIndicatorIcon(get)).toBeTruthy();
         MESSAGEBODY = true;
         t.expect(formulas.getIndicatorText(get)).toBe("");
+    });
 
+
+    t.it("stores.attachmentStore", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        viewModel.set('attachments', []);
+
+        t.waitForMs(500, function() {
+            t.expect(viewModel.getStore('attachmentStore')).toBeDefined();
+            t.expect(viewModel.getStore('attachmentStore').model.$className).toBe('conjoon.cn_mail.model.mail.message.ItemAttachment');
+        });
+    });
+
+
+    t.it("data.isLoading", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        t.expect(viewModel.get('isLoading')).toBe(false);
+    });
+
+
+    t.it("formulas.getTitle", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
+            view : Ext.create('Ext.Component')
+        });
+
+        t.waitForMs(500, function() {
+            viewModel.set('isLoading', true);
+
+            t.expect(viewModel.getFormulas().getTitle.apply(viewModel, [viewModel.get.bind(viewModel)]).toLowerCase()).toContain('loading');
+
+            viewModel.setMessageItem(createMessageItem());
+            viewModel.set('isLoading', false);
+
+            t.waitForMs(1500, function() {
+                t.expect(viewModel.getFormulas().getTitle.apply(viewModel, [viewModel.get.bind(viewModel)])).toBe('SUBJECT');
+            });
+        });
 
     });
 
+})});
+
 });
+

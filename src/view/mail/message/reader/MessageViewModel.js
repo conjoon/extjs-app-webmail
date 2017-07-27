@@ -34,6 +34,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
     extend : 'Ext.app.ViewModel',
 
+    requires : [
+        'conjoon.cn_mail.model.mail.message.ItemAttachment'
+    ],
+
     alias : 'viewmodel.cn_mail-mailmessagereadermessageviewmodel',
 
     /**
@@ -42,18 +46,64 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
      * @type {Ext.data.operation.Read}
      * @private
      */
-    currentLoadOperation : null,
+    bodyLoadOperation : null,
+
+    /**
+     * The current load operation of the {@link conjoon.cn_mail.model.mail.message.ItemAttachment},
+     * if any.
+     * @type {Ext.data.operation.Read}
+     * @private
+     */
+    attachmentsLoadOperation : null,
 
     /**
      * A map of messageBodyIds which were loaded but where the load process was
      * cancelled. This is so the loader knows when it has to set the "reload"
-     * options.
+     * options to force reloading the association.
      * Once successfully loaded, the loaded id will be removed from the map.
      * @private
      */
     abortedRequestMap : null,
 
+    data : {
+
+        /**
+         * Should be set to true whenever a MessageItem is currently loaded
+         * before assigning it to this vm's nessageItem property.
+         */
+        isLoading : false,
+
+        messageItem : null
+    },
+
+    stores : {
+        attachmentStore : {
+            model : 'conjoon.cn_mail.model.mail.message.ItemAttachment',
+            data  : '{attachments}'
+        }
+    },
+
     formulas : {
+
+        /**
+         * Returns the title for the view.
+         *
+         * @param get
+         *
+         * @return {String}
+         */
+        getTitle : function(get) {
+
+            var isLoading   = get('isLoading'),
+                messageItem = get('messageItem');
+
+            return isLoading
+                   ? "Loading..."
+                   : messageItem
+                    ? messageItem.get('subject')
+                    : "";
+
+        },
 
         /**
          * Returns the text to display in the MessageView depending on the
@@ -70,7 +120,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         getIndicatorText : function(get) {
 
             return !get('messageBody') && !get('messageItem')
-                   ? 'Select a message to read it.'
+                   ? 'Select a message for reading.'
                    : get('messageItem') && !get('messageBody')
                      ? 'Loading message...'
                      : ''
@@ -78,6 +128,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         },
 
 
+        /**
+         * Returns the icon to display in the MessageView depending on the
+         * availability of a MessageItem and a MessageBody. If a MessageItem
+         * is available but no MessageBody, this formula assumes that a
+         * MessageBody is currently being loaded.
+         *
+         * @param {Function} get
+         *
+         * @return {String}
+         *
+         * @see getIndicatorText
+         */
         getIndicatorIcon : function(get) {
 
             return !get('messageBody') && !get('messageItem')
@@ -109,9 +171,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
      */
     setMessageItem : function(messageItem) {
 
-        var me = this;
+        var me = this,
+            clonedItem;
 
-        me.messageBodyLoaded(null, null);
+        // manually set the messageBody and attachments-data to null/ empty array
+        // to make sure the view is updated if needed
+        me.set('messageBody', null);
+        me.set('attachments', []);
 
         if (messageItem &&
             !(messageItem instanceof conjoon.cn_mail.model.mail.message.MessageItem)) {
@@ -121,69 +187,178 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             });
         }
 
-        if (!me.abortedRequestMap) {
-            me.abortedRequestMap = {};
-        }
-
-        if (me.currentLoadOperation) {
-            me.abortMessageBodyLoad();
-        }
-
         me.set('messageItem', messageItem);
 
         if (messageItem) {
-
-            /**
-             * @bug
-             * @see https://www.sencha.com/forum/showthread.php?336578-6-2-1-Ext-data-Model-load-scope-parameters-not-considered-iterating-extra-callbacks&p=1174274#post1174274
-             */
-            var ret = messageItem.getMessageBody({
-                reload  : me.abortedRequestMap[messageItem.get('messageBodyId')] === true,
-                success : function(record, operation){
-                    me.messageBodyLoaded(record, operation, messageItem);
-                }
-            });
-
-            if (!ret) {
-                me.messageBodyLoaded(null, null);
-                return;
-            }
-
-            if (ret.loadOperation) {
-                me.currentLoadOperation = {
-                    messageBodyId : messageItem.get('messageBodyId'),
-                    loadOperation : ret.loadOperation
-                }
-            }
-
-
+            // we are working on a copy of the messageItem record to make sure
+            // the passed messageiItem does not get its body and attachments loaded
+            // to keep memory footprint low
+            clonedItem = messageItem.clone();
+            me.loadMessageBodyFor(clonedItem);
+            me.loadAttachmentsFor(clonedItem);
         } else {
             me.messageBodyLoaded(null, null);
         }
 
     },
 
+
+    /**
+     * Loads the messageBody for the specified MessageItem.
+     * Makes sure any ongoing current load operation for the MessageBody is aborted.
+     * Forces to reload the MessageBody if necessary.
+     * Note: The MessageItem passed to this method must not necessarily be the
+     * exact same instance of the MessageItem the ViewModel uses for its binding.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     *
+     * @private
+     */
+    loadMessageBodyFor : function(messageItem) {
+
+        var me = this,
+            ret;
+
+        if (!me.abortedRequestMap) {
+            me.abortedRequestMap = {};
+        }
+
+        if (me.bodyLoadOperation) {
+            me.abortMessageBodyLoad();
+        }
+
+        /**
+         * @bug
+         * @see https://www.sencha.com/forum/showthread.php?336578-6-2-1-Ext-data-Model-load-scope-parameters-not-considered-iterating-extra-callbacks&p=1174274#post1174274
+         */
+        ret = messageItem.getMessageBody({
+            reload  : me.abortedRequestMap[messageItem.get('messageBodyId')] === true,
+            success : function(record, operation){
+                me.messageBodyLoaded(record, operation);
+            }
+        });
+
+        if (!ret) {
+            me.messageBodyLoaded(null, null);
+            return;
+        }
+
+        if (ret.loadOperation) {
+            me.bodyLoadOperation = {
+                messageBodyId   : messageItem.get('messageBodyId'),
+                loadOperation   : ret.loadOperation
+            }
+        }
+    },
+
+
+    /**
+     * Loads the attachments for the specified MessageItem.
+     * Makes sure any ongoing current load operation for the Attachments is aborted.
+     * Note: The MessageItem passed to this method must not necessarily be the
+     * exact same instance of the MessageItem the ViewModel uses for its binding.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     *
+     * @private
+     */
+    loadAttachmentsFor : function(messageItem) {
+
+        var me = this;
+
+        if (me.attachmentsLoadOperation) {
+            me.abortMessageAttachmentsLoad();
+        }
+
+        if (messageItem.get('hasAttachments')) {
+            messageItem.attachments().on(
+                'beforeload', me.onBeforeAttachmentsLoad, me, {single : true}
+            );
+            messageItem.attachments().load({
+                callback : me.messageAttachmentsLoaded,
+                scope    : me
+            });
+        }
+    },
+
+
     privates : {
 
+        /**
+         * Aborts any currently active attachment-store load operation.
+         * @private
+         */
+        abortMessageAttachmentsLoad : function() {
 
+            var me = this;
+
+            if (me.attachmentsLoadOperation) {
+                me.attachmentsLoadOperation.abort();
+                me.attachmentsLoadOperation = null;
+            }
+
+        },
+
+
+        /**
+         * Callback for the attachments-store load operation.
+         * @private
+         */
+        messageAttachmentsLoaded : function(records, operation, success) {
+
+            var me = this;
+
+            me.attachmentsLoadOperation = null;
+
+            if (success !== true) {
+                return;
+            }
+
+            me.set('attachments', records);
+        },
+
+
+        /**
+         * Callback for the attachments-store beforeload event. Makes sure the
+         * associated operation is available for aborting it, if necessary.
+         * @private
+         */
+        onBeforeAttachmentsLoad : function(store, operation) {
+
+            var me = this;
+
+            me.attachmentsLoadOperation = operation;
+
+        },
+
+
+        /**
+         * Aborts the current actove loading of the MessageBody.
+         * @private
+         */
         abortMessageBodyLoad : function() {
 
             var me                   = this,
-                currentLoadOperation = me.currentLoadOperation;
+                bodyLoadOperation = me.bodyLoadOperation;
 
-            if (currentLoadOperation.loadOperation && currentLoadOperation.loadOperation.isRunning()) {
-                currentLoadOperation.loadOperation.abort();
-                me.abortedRequestMap[currentLoadOperation.messageBodyId] = true;
+            if (bodyLoadOperation.loadOperation && bodyLoadOperation.loadOperation.isRunning()) {
+                bodyLoadOperation.loadOperation.abort();
+                me.abortedRequestMap[bodyLoadOperation.messageBodyId] = true;
             }
 
-            me.currentLoadOperation = null;
+            me.bodyLoadOperation = null;
         },
 
+
+        /**
+         * Callback for the MessageBody's load event.
+         * @private
+         */
         messageBodyLoaded : function(record, operation) {
             var me   = this,
                 item = me.get('messageItem');
 
-            me.currentLoadOperation = null;
+            me.bodyLoadOperation = null;
 
             if (!record) {
                 // set to null or any, mark messageBody empty in view
@@ -210,6 +385,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
         },
 
+
+        /**
+         * Delegates to the view and advises to fire the cn_mail-mailmessageitemread
+         * event.
+         * @param record
+         * @param operation
+         *
+         * @private
+         */
         triggerMessageItemRead : function(record, operation) {
 
             var me   = this,
