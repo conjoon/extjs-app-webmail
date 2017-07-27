@@ -97,7 +97,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
     },
 
     getAttachments : function(messageItemId) {
-
         var me         = this,
             attachments = null,
             rec;
@@ -110,12 +109,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             return me.attachments[messageItemId];
         }
 
-        if (!me.getRandom(0, 1)) {
-            me.attachments[messageItemId] = null;
-            return me.attachments[messageItemId];
+        if (messageItemId != 1) {
+            if (!me.getRandom(0, 1)) {
+                me.attachments[messageItemId] = null;
+                return me.attachments[messageItemId];
+            }
         }
 
-        for (var i = 0, len = me.getRandom(0, 5); i < len; i++) {
+        for (var i = 0, len = me.getRandom(1, 5); i < len; i++) {
             if (!attachments) {
                 attachments = [];
             }
