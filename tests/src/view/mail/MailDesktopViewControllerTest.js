@@ -52,6 +52,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
     });
 
+
     t.it("showMailEditor()", function(t) {
 
         var ctrl = Ext.create(
@@ -186,8 +187,12 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
     t.it("Should make sure that showMailMessageViewFor works properly", function(t) {
 
-
         t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
 
             var panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
                     width    : 800,
@@ -206,6 +211,9 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                     store = panel.down('cn_mail-mailmessagegrid').getStore();
                     rec   = store.getAt(0);
                     rec2  = store.getAt(1);
+
+                    t.expect(rec).toBeTruthy();
+                    t.expect(rec2).toBeTruthy();
 
                     t.expect(rec.get('id')).toBe(rec.get('id') + '');
 

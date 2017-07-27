@@ -65,6 +65,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
             view = null;
         }
 
+        viewConfig = {};
+
     });
 
     t.beforeEach(function() {
@@ -82,6 +84,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+
+        Ext.ux.ajax.SimManager.init({
+            delay : 1
+        });
+
 
         t.it("Should create and show the view along with default config checks", function(t) {
             view = Ext.create(
@@ -220,6 +227,25 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
                     t.expect(view.down('#msgHeaderContainer').isVisible()).toBe(true);
                     t.expect(view.down('#msgBodyContainer').isVisible()).toBe(false);
                 });
+            });
+        });
+
+
+        t.it("loadMessageItem()", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.expect(view.getViewModel().get('messageItem')).toBeFalsy();
+
+            t.isCalledNTimes('setMessageItem', view.getViewModel(), 1);
+
+            view.loadMessageItem(1);
+
+            t.expect(view.getViewModel().get('isLoading')).toBe(true);
+
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('messageItem')).toBeTruthy();
             });
 
 

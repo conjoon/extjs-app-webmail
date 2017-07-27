@@ -33,7 +33,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     requires : [
         'conjoon.cn_mail.model.mail.message.MessageItem',
         'conjoon.cn_mail.view.mail.message.reader.MessageViewModel',
-        'conjoon.cn_mail.view.mail.message.reader.AttachmentList'
+        'conjoon.cn_mail.view.mail.message.reader.AttachmentList',
+        'conjoon.cn_mail.model.mail.message.MessageItem'
     ],
 
     alias : 'widget.cn_mail-mailmessagereadermessageview',
@@ -41,7 +42,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     /**
      * @event cn_mail-messageitemread
      * Fires when a MessageItem isRead property was changed and successfully saved,
-     * most likely due to loading into this view..
+     * most likely due to loading into this view.
      * @param {Array|conjoon.cn_mail.model.mail.message.MessageItem} item
      */
 
@@ -59,10 +60,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     flex   : 1,
 
     bind : {
-        title : '{messageItem.subject}'
+        title   : '{getTitle}',
+        iconCls : '{isLoading ? "fa fa-spin fa-spinner" : "fa fa-envelope-o"}'
     },
-
-    iconCls  : 'fa fa-envelope-o',
 
     closable : true,
 
@@ -95,7 +95,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                     hasAttachments : '{messageItem.hasAttachments}'
                 }
             },
-            padding: 10,
             tpl: [
                 '<div class="from">{from}</div>',
                 '<div class="subject"><tpl if="hasAttachments"><span class="fa fa-paperclip"></span></tpl> {subject}</div>',
@@ -146,7 +145,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             width  : 248,
             hidden : true,
             bind : {
-                store  : '{messageItem.attachments}',
+                store  : '{attachmentStore}',
                 hidden : '{!messageItem.hasAttachments}'
             }
         }]
@@ -165,7 +164,49 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
         var me = this;
 
-        me.getViewModel().setMessageItem(messageItem);
+        me.getViewModel().setMessageItem(
+            messageItem ? messageItem : null
+        );
+    },
+
+
+    /**
+     * Loads the MessageItem with the specified id into this view.
+     *
+     * @param {String} messageId
+     *
+     * @see onMessageItemLoad
+     */
+    loadMessageItem : function(messageId) {
+
+        var me = this,
+            vm = me.getViewModel();
+
+        vm.set('isLoading', true);
+
+        conjoon.cn_mail.model.mail.message.MessageItem.load(messageId, {
+            success : me.onMessageItemLoaded,
+            scope   : me
+        });
+    },
+
+
+    privates : {
+
+        /**
+         * Callback for the load-event of a MessageItem, registered by #loadMessageItem
+         * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+         */
+        onMessageItemLoaded : function(messageItem) {
+
+            var me = this,
+                vm = me.getViewModel();
+
+            me.setMessageItem(messageItem);
+            vm.set('isLoading', false);
+
+        }
+
     }
 
 

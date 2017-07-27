@@ -33,7 +33,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     requires : [
         'conjoon.cn_mail.view.mail.message.reader.MessageView',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
-        'conjoon.cn_mail.model.mail.message.MessageItem',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
         'conjoon.cn_mail.text.QueryStringParser',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
@@ -167,11 +166,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 newView.setMessageItem(store.getAt(recInd));
            } else {
                 // most likely opened via deeplinking
-                conjoon.cn_mail.model.mail.message.MessageItem.load(messageId, {
-                    success : function(record) {
-                        newView.setMessageItem(record);
-                    }
-                });
+                newView.loadMessageItem(messageId);
             }
         }
 
