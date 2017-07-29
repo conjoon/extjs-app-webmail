@@ -66,26 +66,26 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
 
         doPost : function(ctx) {
 
-            console.log("POST Attachment", ctx.xhr.options.formData.entries());
+            console.log("POST Attachment", ctx.xhr.options.records[0].data);
 
             var me         = this,
                 attachment = {},
                 rec        = {},
                 ret        = {};
 
-            for (var i in ctx.xhr.options.jsonData) {
-                if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
+            for (var i in ctx.xhr.options.records[0].data) {
+                if (!ctx.xhr.options.records[0].data.hasOwnProperty(i)) {
                     continue;
                 }
 
-                attachment[i] = ctx.xhr.options.jsonData[i];
+                attachment[i] = ctx.xhr.options.records[0].data[i];
             }
 
             rec = AttachmentTable.createAttachment(attachment);
 
             ret.responseText = Ext.JSON.encode({
-                id : rec.id,
-                success :true
+                id      : rec.id,
+                success : true
             });
 
             Ext.Array.forEach(me.responseProps, function (prop) {
