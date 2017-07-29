@@ -92,6 +92,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         var me  = this,
             inc = 0;
 
+        // make sure alls message items are initialized along withh their
+        // messagebodies
+        me.getMessageItems();
+
         if (!me.messageBodies) {
             me.messageBodies = {};
         }
@@ -224,6 +228,47 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     },
 
 
+    createMessageDraft : function(draftData) {
+
+        var me            = this,
+            id            = me.getNextMessageDraftKey(),
+            mailFolderId  = '4',
+            messageDrafts = me.getMessageDrafts(),
+            messageItems  = me.getMessageItems();
+
+        //manually fake attachments and messageBody
+        conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.attachments[id] = null;
+        if (!me.messageBodies || !me.messageBodies[id]) {
+            me.getMessageBody(id);
+            me.messageBodies[id] = {textPlain : "", textHtml : ""};
+        }
+
+        messageDrafts.push(Ext.apply(draftData, {
+            id           : id,
+            mailFolderId : mailFolderId,
+            isRead       : false
+        }));
+
+        messageItems.push(Ext.apply(draftData, {
+            id           : id,
+            mailFolderId : mailFolderId,
+            isRead       : false
+        }));
+
+        me.baseMessageItems.push(Ext.apply(draftData, {
+            id           : id,
+            mailFolderId : mailFolderId
+        }));
+
+
+        // re init
+        me.getMessageItems();
+        me.getMessageDrafts();
+
+        return messageDrafts[messageDrafts.length - 1];
+    },
+
+
     updateAllItemData : function(id, values) {
         var me     = this,
             draft  = me.getMessageDraft(id),
@@ -237,6 +282,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             item = dataItems[i];
 
             for (var prop in values) {
+
                 if (!item.hasOwnProperty(prop)) {
                     continue;
                 }

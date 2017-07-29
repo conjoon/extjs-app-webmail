@@ -73,9 +73,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             var me            = this,
                 draft         = {},
                 ret           = {},
-                MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                messageDrafts = MessageTable.getMessageDrafts();
-                id            = MessageTable.getNextMessageDraftKey();
+                MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -89,13 +87,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 }
             }
 
-            draft.id = id;
-            draft.mailFolderId  = '4';
-            messageDrafts.push(draft);
+            draft = MessageTable.createMessageDraft(draft);
 
             ret.responseText = Ext.JSON.encode({
-                id            : id,
-                mailFolderId  : '4',
+                id            : draft.id,
+                mailFolderId  : draft.mailFolderId,
                 success       : true
             });
 

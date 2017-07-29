@@ -85,6 +85,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                 body[i] = ctx.xhr.options.jsonData[i];
             }
 
+            if (!body.textPlain && body.textHtml) {
+                body.textPlain = Ext.util.Format.stripTags(body.textHtml);
+            } else {
+                body.textHtml = body.textPlain;
+            }
+
             newRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
                      .createMessageBody(body);
 
