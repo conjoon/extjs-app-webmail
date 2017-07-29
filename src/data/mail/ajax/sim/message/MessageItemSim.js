@@ -39,25 +39,20 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
         url  : /cn_mail\/MessageItem(\/\d+)?/,
 
         doPut : function(ctx) {
-console.log("PUT", "MessageItem", ctx)
+
             var me           = this,
                 ret          = {},
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                messageItems = MessageTable.getMessageItems();
-
-            var messageItem = Ext.Array.findBy(
-                messageItems,
-                function(messageItem) {
-                    return messageItem.id === '' + ctx.xhr.options.jsonData.id;
-                }
-            );
+                values       = {};
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
                     continue;
                 }
-                messageItem[i] = ctx.xhr.options.jsonData[i];
+                values[i] = ctx.xhr.options.jsonData[i];
             }
+
+            MessageTable.updateMessageItem(ctx.xhr.options.jsonData.id, values);
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
@@ -88,12 +83,14 @@ console.log("PUT", "MessageItem", ctx)
             } else if (filters) {
                 filters = Ext.decode(filters);
                 id      = filters[0].value;
-                return Ext.Array.filter(
+                var items = Ext.Array.filter(
                     messageItems,
                     function(messageItem) {
                         return messageItem.mailFolderId === id;
                     }
                 );
+
+                return items;
             } else {
                 return messageItems;
             }

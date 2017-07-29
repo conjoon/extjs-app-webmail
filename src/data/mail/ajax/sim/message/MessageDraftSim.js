@@ -45,18 +45,16 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             var me            = this,
                 ret           = {},
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                messageDrafts = MessageTable.getMessageDrafts();
-
-            var draft = Ext.Array.findBy(messageDrafts, function(draft) {
-                return draft.id === '' + ctx.xhr.options.jsonData.id;
-            });
+                values        = {};
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
                     continue;
                 }
-                messageDrafts[i] = ctx.xhr.options.jsonData[i];
+                values[i] = ctx.xhr.options.jsonData[i];
             }
+
+            MessageTable.updateMessageDraft(ctx.xhr.options.jsonData.id, values);
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
@@ -116,22 +114,20 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 filters = ctx.params.filter,
                 id,
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                messageDrafts = MessageTable.getMessageDrafts();
+                messageDrafts;
 
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
-                return Ext.Array.findBy(messageDrafts, function(draft) {
-                    return draft.id === '' + id;
-                });
+                return MessageTable.getMessageDraft(id);
             } else if (filters) {
-
+                messageDrafts = MessageTable.getMessageDrafts();
                 filters = Ext.decode(filters);
                 id      = filters[0].value;
                 return Ext.Array.filter(messageDrafts, function(draft) {
                     return draft.mailFolderId === id;
                 });
             } else {
-                return messageItems;
+                return MessageTable.getMessageDrafts();
             }
         }
     });

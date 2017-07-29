@@ -65,7 +65,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             me.attachments = {};
         }
 
-
         for (var i in me.attachments) {
             if (!me.attachments.hasOwnProperty(i)) {
                 continue;
@@ -91,8 +90,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
         if (messageItemId) {
             me.attachments[messageItemId].splice(a, 1);
+            if (me.attachments[messageItemId].length == 0) {
+                me.attachments[messageItemId] = null;
+            }
         }
-
 
     },
 

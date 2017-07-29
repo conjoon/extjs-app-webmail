@@ -165,6 +165,21 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return (me.getMessageDrafts().length + 1) + '';
     },
 
+
+    getMessageDraft : function(id) {
+        var me     = this,
+            drafts = me.getMessageDrafts();
+
+        for (var i = 0, len = drafts.length; i < len; i++) {
+            if (drafts[i]['id'] == id) {
+                return drafts[i];
+            }
+        }
+
+        return null;
+    },
+
+
     getMessageDrafts : function() {
 
         var me               = this,
@@ -190,6 +205,74 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         return me.messageDrafts;
     },
+
+
+    updateMessageDraft : function(id, values) {
+
+        var me = this;
+
+        me.updateAllItemData(id, values);
+
+    },
+
+
+    updateMessageItem : function(id, values) {
+
+        var me = this;
+
+        me.updateAllItemData(id, values);
+    },
+
+
+    updateAllItemData : function(id, values) {
+        var me     = this,
+            draft  = me.getMessageDraft(id),
+            item   = me.getMessageItem(id),
+            dataItems = [draft, item],
+            dataItems, item;
+
+
+        for (var i = 0, len = dataItems.length; i < len; i++) {
+
+            item = dataItems[i];
+
+            for (var prop in values) {
+                if (!item.hasOwnProperty(prop)) {
+                    continue;
+                }
+
+                switch (prop) {
+                    case 'to':
+                    case 'cc':
+                    case 'bcc':
+                        if (Ext.isString(values[prop]))
+                        item[prop] = Ext.JSON.decode(values[prop]);
+                        break;
+                    default:
+                        item[prop] = values[prop];
+                        break;
+                }
+
+
+            }
+
+        }
+    },
+
+
+    getMessageItem : function(id) {
+        var me    = this,
+            items = me.getMessageItems();
+
+        for (var i = 0, len = items.length; i < len; i++) {
+            if (items[i]['id'] == id) {
+                return items[i];
+            }
+        }
+
+        return null;
+    },
+
 
     getMessageItems : function() {
 
