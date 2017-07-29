@@ -77,7 +77,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree' : {
             selectionchange : 'onMailFolderTreeSelectionChange'
         },
-        'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > cn_mail-mailmessagegrid' : {
+        'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid' : {
             deselect : 'onMailMessageGridDeselect',
             select   : 'onMailMessageGridSelect'
         },

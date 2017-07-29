@@ -42,7 +42,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *  embedded in this controller's view. Makes sure the associated folder
      *  get notified of the message items and their current isRead state by calling
      *  {@link conjoon.cn_mail.view.mail.inbox.InboxViewModel#updateUnreadMessageCount}.
-     *  The updateUnreadMessageCount will conly be called if the computed number
+     *  The updateUnreadMessageCount will only be called if the computed number
      *  of read/unread messages is anything but 0.
      *
      * @param {Array|conjoon.cn_mail.model.mail.message.reader.MessageItem} messageItemRecords
