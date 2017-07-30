@@ -35,7 +35,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     extend : 'Ext.app.ViewModel',
 
     requires : [
-        'conjoon.cn_mail.model.mail.message.ItemAttachment'
+        'conjoon.cn_mail.model.mail.message.ItemAttachment',
+        'conjoon.cn_mail.model.mail.message.MessageDraft'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessagereadermessageviewmodel',
@@ -128,6 +129,68 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 ? 'fa-spin fa-spinner'
                 : ''
         }
+
+    },
+
+
+    /**
+     * Updates this view models data with the data found in the passed
+     * MessageDraft.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     *
+     * @throws if messageDraft is not an instance of {conjoon.cn_mail.model.mail.message.MessageDraft},
+     * or if there is currently not a messageItem available, or if the id of the
+     * MessageDraft does not equal to the id of the messageItem.
+     */
+    updateMessageItem : function(messageDraft) {
+
+        var me             = this,
+            messageItem    = me.get('messageItem'),
+            newAttachments = [],
+            messageBody, attachments;
+
+        if (!messageItem) {
+            Ext.raise({
+                msg         : 'There is currently no messageItem available.',
+                cls         : Ext.getClassName(me),
+                messageItem : me.get('messageItem')
+            });
+        }
+        if (!(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
+            Ext.raise({
+                msg          : 'messageDraft must be an instance of \'conjoon.cn_mail.model.mail.message.MessageDraft\'',
+                cls          : Ext.getClassName(me),
+                messageDraft : messageDraft
+            });
+        }
+        if (messageDraft.getId() !== messageItem.getId()) {
+            Ext.raise({
+                msg          : 'The id of the messageDraft is not the id of the messageItem',
+                cls          : Ext.getClassName(me),
+                messageDraft : messageDraft,
+                messageItem  : messageItem
+            });
+        }
+
+        attachments = messageDraft.attachments().getRange();
+        messageBody = messageDraft.getMessageBody().copy();
+
+        // clone attachments to make sure no references are passed
+        for (var i = 0, len = attachments.length; i < len; i++) {
+            newAttachments.push(attachments[i].copy());
+        }
+
+        messageItem.set({
+            date           : messageDraft.get('date'),
+            subject        : messageDraft.get('subject'),
+            hasAttachments : attachments.length > 0,
+            previewText    : messageBody.get('textPlain')
+        });
+        messageItem.commit();
+
+        me.set('attachments', newAttachments);
+        me.set('messageBody', messageBody);
 
     },
 

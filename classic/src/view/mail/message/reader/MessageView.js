@@ -198,6 +198,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     },
 
 
+    /**
+     * Updates this message item with teh data from the specified MessageDraft.
+     * This method should be called whenever a MessageDraft was updated to make
+     * sure the changes are reflected in this view.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     *
+     * @throws if the specified argument is not an instance of
+     * {conjoon.cn_mail.model.mail.message.MessageDraft}, or if there is currently
+     * not a messageItem available, or if the id of the
+     * MessageDraft does not equal to the id of the messageItem.
+     */
+    updateMessageItem : function(messageDraft) {
+        var me = this;
+
+        me.getViewModel().updateMessageItem(messageDraft);
+    },
+
+
     privates : {
 
         /**

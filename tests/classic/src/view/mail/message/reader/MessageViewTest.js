@@ -232,9 +232,10 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
 
         t.it("loadMessageItem()", function(t) {
-
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.expect(view.getTitle().toLowerCase()).toContain('loading');
 
             t.expect(view.getViewModel().get('messageItem')).toBeFalsy();
 
@@ -245,11 +246,30 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
             t.expect(view.getViewModel().get('isLoading')).toBe(true);
 
             t.waitForMs(500, function() {
+                t.expect(view.getTitle()).toBe(view.getViewModel().get('messageItem.subject'));
                 t.expect(view.getViewModel().get('messageItem')).toBeTruthy();
+            });
+        });
+
+
+        t.it("updateMessageItem()", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.isCalledNTimes('updateMessageItem', view.getViewModel(), 1);
+
+            view.loadMessageItem(1);
+
+            t.waitForMs(500, function() {
+                try{
+                    view.updateMessageItem({});
+                } catch (e) {}
             });
 
 
         });
+
 
     });
 });

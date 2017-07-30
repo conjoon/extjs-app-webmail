@@ -62,6 +62,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function () {
 
+
         t.it("1. Should create the ViewModel", function(t) {
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
             t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
@@ -328,24 +329,78 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
-    t.it("formulas.getTitle", function(t) {
+    t.it("updateMessageItem()", function(t) {
+
+        Ext.ux.ajax.SimManager.init({
+            delay : 1
+        });
+
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             view : Ext.create('Ext.Component')
         });
 
-        t.waitForMs(500, function() {
-            viewModel.set('isLoading', true);
+        var messageItem = createMessageItem(),
+            viewModelItem,
+            messageDraft, exc, e;
 
-            t.expect(viewModel.getFormulas().getTitle.apply(viewModel, [viewModel.get.bind(viewModel)]).toLowerCase()).toContain('loading');
-
-            viewModel.setMessageItem(createMessageItem());
-            viewModel.set('isLoading', false);
-
-            t.waitForMs(1500, function() {
-                t.expect(viewModel.getFormulas().getTitle.apply(viewModel, [viewModel.get.bind(viewModel)])).toBe('SUBJECT');
-            });
+        messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            id      : 1,
+            subject : 'subject',
+            date    : '2017-07-30 23:45:00'
         });
 
+        messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+            text : 'myAttachment'
+        }));
+
+        messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+            textHtml  : 'Html text',
+            textPlain : 'Plain Text'
+        }));
+
+        try {viewModel.updateMessageItem(messageDraft);} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('no messageitem available');
+
+        viewModel.setMessageItem(createMessageItem());
+
+        t.waitForMs(500, function() {
+
+            try {viewModel.updateMessageItem({});} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+
+            try {viewModel.updateMessageItem(messageDraft.copy(1000000));} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('is not the id of');
+
+            viewModelItem = viewModel.get('messageItem');
+
+            t.expect(viewModelItem.get('subject')).toBe(messageItem.get('subject'));
+            t.expect(viewModelItem.get('date')).toBe(messageItem.get('date'));
+            t.expect(viewModelItem.get('previewText')).toBe(messageItem.get('previewText'));
+            t.expect(viewModelItem.get('hasAttachments')).toBe(messageItem.get('hasAttachments'));
+
+            viewModel.updateMessageItem(messageDraft);
+
+            t.expect(viewModelItem.get('subject')).toBe(messageDraft.get('subject'));
+            t.expect(viewModelItem.get('date')).toBe(messageDraft.get('date'));
+            t.expect(viewModelItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
+            t.expect(viewModelItem.get('hasAttachments')).toBe(true);
+
+
+            t.expect(viewModel.get('messageBody')).toBeTruthy();
+
+            var attachments = viewModel.get('attachments');
+
+            t.expect(viewModel.get('attachments')[0].data).toEqual(messageDraft.attachments().getRange()[0].data);
+            t.expect(viewModel.get('attachments')[0]).not.toBe(messageDraft.attachments().getRange()[0]);
+
+            t.expect(viewModel.get('messageBody')).not.toBe(messageDraft.getMessageBody());
+            t.expect(viewModel.get('messageBody').data).toEqual(messageDraft.getMessageBody().data);
+
+            t.expect(viewModelItem.dirty).toBe(false);
+        });
     });
 
 })});
