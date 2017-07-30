@@ -86,26 +86,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     formulas : {
 
         /**
-         * Returns the title for the view.
-         *
-         * @param get
-         *
-         * @return {String}
-         */
-        getTitle : function(get) {
-
-            var isLoading   = get('isLoading'),
-                messageItem = get('messageItem');
-
-            return isLoading
-                   ? "Loading..."
-                   : messageItem
-                    ? messageItem.get('subject')
-                    : "";
-
-        },
-
-        /**
          * Returns the text to display in the MessageView depending on the
          * availability of a MessageItem and a MessageBody. If a MessageItem
          * is available but no MessageBody, this formula assumes that a

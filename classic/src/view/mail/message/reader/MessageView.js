@@ -59,8 +59,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     cls    : 'cn_mail-mailmessagereadermessageview shadow-panel',
     flex   : 1,
 
+    /**
+     * @i18n
+     */
+    title : 'Loading...',
+
+    iconCls : 'fa fa-spin fa-spinner',
+
     bind : {
-        title   : '{getTitle}',
+        title   : '{isLoading ? "Loading..." : messageItem.subject}',
         iconCls : '{isLoading ? "fa fa-spin fa-spinner" : "fa fa-envelope-o"}'
     },
 
