@@ -105,6 +105,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     extend : 'Ext.form.Panel',
 
     requires : [
+        'conjoon.cn_comp.component.LoadMask',
         'conjoon.cn_mail.view.mail.message.editor.AttachmentList',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
@@ -135,6 +136,45 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     viewModel : 'cn_mail-mailmessageeditorviewmodel',
 
+    /**
+     * Gets fired when a save of the MessageDraft was initiated and the associated
+     * saveBatch is about to get processed.
+     * @event cn_mail-mailmessagebeforesave
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.Batch} batch The batch that was generated for processing
+     */
+
+    /**
+     * Gets fired when a save of the MessageDraft was initiated and a single
+     * operation completes.
+     * @event cn_mail-mailmessagesaveoperationcomplete
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation The operation that was
+     * completed
+     */
+
+    /**
+     * Gets fired when a save of the MessageDraft was initiated and a single
+     * operation triggered an exception.
+     * @event cn_mail-mailmessagesaveoperationexception
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation The operation that caused
+     * the exception
+     */
+
+    /**
+     * Gets fired when a save of the MessageDraft was initiated and all individual
+     * operations were processed successfully.
+     * @event cn_mail-mailmessagesavecomplete
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation The last operation that
+     * was processed.
+     */
+
     layout : {
         type  : 'vbox',
         align : 'stretch'
@@ -146,10 +186,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     cls    : 'cn_mail-mailmessageeditor shadow-panel',
 
-    iconCls  : 'fa fa-edit',
+    /**
+     * @i18n
+     */
+    title : 'Loading...',
+
+    iconCls : "fa fa-spin fa-spinner",
 
     bind : {
-        title : '{getSubject}'
+        closable : '{isSaving ? false : true}',
+        title    : '{getSubject}',
+        iconCls  : '{getSubject && !isSaving ? "fa fa-edit" : "fa fa-spin fa-spinner"}'
     },
 
     closable : true,
@@ -162,6 +209,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * {@link conjoon.cn_mail.view.mail.message.AttachmentList}
      */
     editMode : 'CREATE',
+
+    /**
+     * Mask to indicate that the oomponent's input is currently blocked due to
+     * a user triggered save process
+     * @private {conjoon.cn_comp.component.LoadMask} busyMask
+     * @see setBusy
+     */
+    busyMask : null,
 
     buttons : [{
         text   : 'Save',
@@ -195,7 +250,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             bind   : {
                 hidden : '{isCcOrBccValueSet}'
             }
-    }]}, {
+        }]}, {
         xtype       : 'cn_mail-mailmessageeditoraddressfield',
         emptyText   : 'Cc',
         itemId      : 'ccField',
@@ -315,8 +370,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             case me.statics().MODE_CREATE:
                 messageDraft       = config.messageDraft;
                 draftConfig.create = messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
-                                     ? messageDraft.toObject()
-                                     : true;
+                    ? messageDraft.toObject()
+                    : true;
                 break;
 
             case me.statics().MODE_EDIT:
@@ -405,6 +460,63 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         me.down('#ccField').setHidden(!show);
         me.down('#bccField').setHidden(!show);
+
+        return this;
+    },
+
+
+    /**
+     * Updates this editor's view to indicate that it is currently busy saving
+     * data. The indicator is represented by a conjoon.cn_comp.component.LoadMask.
+     *
+     * @param {String|Object|Boolean} msg false to hide any currently active
+     * indicator, a string containing a message to display or an object containing
+     * a msg and a progress property to be applied to the generated
+     * conjoon.cn_comp.component.LoadMask
+     *
+     * @return this
+     *
+     * @see #busyMask
+     */
+    setBusy : function(msg) {
+
+        var me       = this,
+            mask     = me.busyMask,
+            progress = Ext.isObject(msg) ? msg.progress : undefined,
+            msg      = Ext.isObject(msg) ? msg.msg      : msg;
+
+        if (msg === false && !mask) {
+            return this;
+        }
+
+        if (!mask && msg !== false) {
+            mask = Ext.create('conjoon.cn_comp.component.LoadMask', {
+                msg       : 'Saving Mail',
+                msgAction : 'Stand by...',
+                glyphCls  : 'fa fa-envelope',
+                target    : me
+            });
+            me.busyMask = mask;
+        }
+
+        if (msg === false) {
+            mask.hide();
+            return this;
+        }
+
+        if (mask.isHidden()) {
+            if (progress === undefined) {
+                mask.loopProgress();
+            }
+
+            mask.show();
+        }
+
+        if (progress !== undefined) {
+            mask.updateProgress(progress);
+        }
+
+        mask.updateActionMsg(msg);
 
         return this;
     }

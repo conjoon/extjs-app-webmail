@@ -64,6 +64,10 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorTest', function(
 
 t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
+    Ext.ux.ajax.SimManager.init({
+        delay: 1
+    });
+
 
 // +---------------------------------------------------------------------------
 // | BASIC BEHAVIOR
@@ -283,9 +287,9 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     });
 
 
-// +---------------------------------------------------------------------------
-// | CC / BCC FIELD BEHAVIOR
-// +---------------------------------------------------------------------------
+//  +---------------------------------------------------------------------------
+//  | CC / BCC FIELD BEHAVIOR
+//  +---------------------------------------------------------------------------
 
         t.it("Should load message from backend", function(t) {
             view = createWithMessageConfig(1, 'EDIT');
@@ -383,6 +387,66 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             });
 
         });
+    });
+
+
+    t.it("closable mvvm", function(t) {
+        view = createWithViewConfig(viewConfig);
+        t.waitForMs(200, function() {
+            t.expect(view.getClosable()).toBe(true);
+
+            view.getViewModel().set('isSaving', true);
+
+            t.waitForMs(200, function() {
+                t.expect(view.getClosable()).toBe(false);
+            })
+        });
+    });
+
+
+    t.it("iconCls mvvm", function(t) {
+        view = createWithViewConfig(viewConfig);
+        t.waitForMs(200, function() {
+            var iconCls = view.getIconCls();
+
+            t.expect(iconCls).toBeTruthy();
+
+            view.getViewModel().set('isSaving', true);
+
+            t.waitForMs(200, function() {
+                t.expect(view.getIconCls()).not.toBe(iconCls);
+            })
+        });
+    });
+
+
+    t.it("setBusy()", function(t) {
+        view = createWithViewConfig(viewConfig);
+
+        t.expect(view.busyMask).toBeFalsy();
+
+        t.expect(view.setBusy(false)).toBe(view);
+        t.expect(view.busyMask).toBeFalsy();
+
+        t.expect(view.setBusy('text')).toBe(view);
+        t.expect(view.busyMask).toBeTruthy();
+        t.expect(view.busyMask.isHidden()).toBe(false);
+
+        t.expect(view.setBusy(false)).toBe(view);
+        t.expect(view.busyMask).toBeTruthy();
+        t.expect(view.busyMask.isHidden()).toBe(true);
+
+        t.isCalledNTimes('loopProgress',    view.busyMask, 1);
+        t.isCalledNTimes('updateActionMsg', view.busyMask, 2);
+        t.isCalledNTimes('updateProgress',  view.busyMask, 1);
+
+        t.expect(view.setBusy('text')).toBe(view);
+        t.expect(view.busyMask).toBeTruthy();
+        t.expect(view.busyMask.isHidden()).toBe(false);
+
+        t.expect(view.setBusy({msg : 'text', progress : 1})).toBe(view);
+        t.expect(view.busyMask).toBeTruthy();
+        t.expect(view.busyMask.isHidden()).toBe(false);
     });
 
 });

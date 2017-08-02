@@ -46,6 +46,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
         '#saveButton' : {
             click : 'onSaveButtonClick'
+        },
+        'cn_mail-mailmessageeditor' : {
+            'cn_mail-mailmessagesaveoperationcomplete'  : 'onMailMessageSaveOperationComplete',
+            'cn_mail-mailmessagesaveoperationexception' : 'onMailMessageSaveOperationException',
+            'cn_mail-mailmessagesavecomplete'           : 'onMailMessageSaveComplete',
+            'cn_mail-mailmessagebeforesave'             : 'onMailMessageBeforeSave'
         }
     },
 
@@ -228,6 +234,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
     /**
+     * @param {Ext.Button} btn
+     */
+    onSendButtonClick : function(btn) {
+        Ext.raise({
+            msg : "Not implemented yet."
+        })
+    },
+
+
+    /**
      * Saves the current MessageDraft.
      *
      * @param {Ext.Button} btn
@@ -236,135 +252,167 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
         var me           = this,
             view         = me.getView(),
-            vm           = view.getViewModel();
+            vm           = view.getViewModel(),
             session      = view.getSession(),
-            messageDraft = vm.get('messageDraft');
-
-
-        var saveBatch = session.getSaveBatch();
+            messageDraft = vm.get('messageDraft'),
+            saveBatch    = session.getSaveBatch(),
+            operations;
 
         if (saveBatch) {
 
-            var operations = saveBatch.getOperations();
+            // set the date to the current client date
+            // this might get likely converted to UTC on the backend
+            // this update might not make it into the server request
+            // since the savebatch was already generated. It is mandatory
+            // to update the message items date whenever a change occurs in
+            // // any association of the messageDraft.
+            messageDraft.set('date', new Date());
+            saveBatch.setPauseOnException(true);
+            operations = saveBatch.getOperations();
 
             for (var i = 0, len = operations.length; i < len; i++) {
                 if (operations[i].getAction() == 'create' &&
                     operations[i].entityType.entityName == 'DraftAttachment') {
-                    operations[i].setProgressCallback(function() {
-                        console.log("!!! PROGRESS", arguments);
-                    });
+                    // tbd
                 }
             }
-            //return;
-            saveBatch.on('exception', function() {
-                console.log("exception", arguments);
+
+            saveBatch.on({
+                exception : function(batch, operation) {
+                    view.fireEvent('cn_mail-mailmessagesaveoperationexception', view, messageDraft, operation);
+                },
+                operationcomplete : function(batch, operation) {
+                    view.fireEvent('cn_mail-mailmessagesaveoperationcomplete', view, messageDraft, operation);
+                },
+                complete : function(batch, operation) {
+                    view.fireEvent('cn_mail-mailmessagesavecomplete', view, messageDraft, operation);
+                },
+                scope             : view,
+                single            : true
             });
-            saveBatch.on('complete', function() {
-                console.log("complete, message saved in folder id", messageDraft.get('mailFolderId'));
-            });
+
+            view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft);
             saveBatch.start();
         }
-
-
     },
 
 
     /**
+     * Callback for a single operation's complete event.
      *
-     * @param btn
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation
      */
-    onSendButtonClick : function(btn) {
+    onMailMessageSaveOperationComplete : function(editor, messageDraft, operation) {
 
-        /*Ext.raise({
-            source : Ext.getClassName(this),
-            msg    : 'Not implemented yet'
-        });*/
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
 
-        var me             = this,
-            view           = me.getView(),
-            attachmentList = view.down('cn_mail-mailmessageattachmentlist'),
-            store          = attachmentList.getStore(),
-            recs           = store.getRange(),
-            file,
-            xhr;
+        me.setViewBusy(operation);
+    },
 
-        if (!attachmentList.hasLocalFiles()) {
-            Ext.raise({
-                msg    : "localFileList is empty",
-                source : Ext.getClassName(this)
-            })
+
+    /**
+     * Callback for a single operation's exception event.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation
+     */
+    onMailMessageSaveOperationException : function(editor, messageDraft, operation) {
+        // tbd return value is only for tests
+        return false;
+    },
+
+
+    /**
+     * Callback for a successfull processing of a complete batch.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     *      * @param {Ext.data.operation.Operation} operation
+     */
+    onMailMessageSaveComplete : function(editor, messageDraft, operation) {
+
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
+
+        me.setViewBusy(operation, 1);
+
+        Ext.Function.defer(me.endBusyState, 750, me);
+    },
+
+
+    /**
+     * Callback for this view's beforesave event.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+    onMailMessageBeforeSave : function(editor, messageDraft) {
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
+
+        vm.set('isSaving', true);
+        /**
+         * @i18n
+         */
+        view.setBusy('Stand by...');
+    },
+
+
+    privates : {
+
+
+        /**
+         * Helper function to finish the busy state of the MailEditor.
+         *
+         * @param operation
+         * @param progress
+         *
+         * @private
+         */
+        endBusyState : function() {
+            var me   = this,
+                view = me.getView(),
+                vm   = view.getViewModel();
+
+            vm.set('isSaving', false);
+            view.setBusy(false);
+        },
+
+
+        /**
+         * Helper function to update the view's busy state.
+         *
+         * @param operation
+         * @param progress
+         *
+         * @private
+         */
+        setViewBusy : function(operation, progress) {
+
+            var me   = this,
+                view = me.getView();
+
+            view.setBusy({
+                /**
+                 * @i18n
+                 */
+                msg : Ext.String.format("{1} {0}.",
+                    operation.getAction() == 'destroy'
+                        ? 'removed'
+                        : 'saved',
+                    operation.entityType.entityName
+                ),
+                progress : progress
+            });
         }
 
-        // Don't even start if file is missing
-        for (var i = 0, len = recs.length; i < len; i++) {
-            file = attachmentList.getLocalFileObject(recs[i].get('localId'));
 
-            if (!file) {
-                Ext.raise({
-                    msg    : "localFileList missing info for file " + recs[i].get('localId'),
-                    source : Ext.getClassName(this)
-                })
-            }
-        }
-
-        for (var i = 0, len = recs.length; i < len; i++) {
-            file = attachmentList.getLocalFileObject(recs[i].get('localId'));
-
-            var fd = new FormData();
-            fd.append("file", file);
-            fd.append("messageId", "101");
-
-             Ext.Ajax.request({
-                 url : 'someurl.php',
-                 /*params : {
-                     messageId : 101
-                 },*/
-                 jsonData : false,
-                 rawData : fd
-             });
-
-            /*var request = {
-             url: 'http://localhost/scout/webroot/img/pic/getfile.php',
-             method: 'POST',
-             xhr2: true,
-             requestHeader:{
-
-             },
-             progress:progressIndicator,
-             success: function(response) {
-             var out = Ext.getCmp("output");
-             response = Ext.JSON.decode(response.responseText, true);
-             out.setHtml(response.message);
-             },
-             failure: function(response) {
-             var out = Ext.getCmp("output");
-             out.setHtml(response.message);
-             }
-             };
-
-
-             Ext.Viewport.add(progressIndicator);
-             var files = input.dom.files;
-
-             if (files.length) {
-             request.binaryData = files[0];
-             console.log(request.binaryData.name);
-             console.log(request);
-             request.setRequestHeader("X-File-Name", request.binaryData.name);
-             Ext.Ajax.request(request);
-             }else {
-             Ext.Msg.alert("Please Select a JPG");
-             }*/
-return;
-            xhr  = new XMLHttpRequest();
-
-            var fd = new FormData();
-            fd.append("file", file);
-             fd.append("messageId", "101");
-            var xhr = new XMLHttpRequest();
-            // start upload
-            xhr.open("POST", 'someurl.php', true);
-            xhr.send(fd);//Ext.apply({file : file}, recs[i].data));
-        }
     }
 });
