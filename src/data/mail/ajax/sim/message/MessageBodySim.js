@@ -43,9 +43,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
             console.log("PUT MessageBody", ctx.xhr.options.jsonData);
 
-            var me          = this,
-                ret         = {},
-                messageBody = {};
+            var me           = this,
+                ret          = {},
+                messageBody  = {},
+                MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -54,7 +55,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                 messageBody[i] = ctx.xhr.options.jsonData[i];
             }
 
-            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+            MessageTable
                 .updateMessageBody(ctx.xhr.options.jsonData.id, messageBody);
 
 
@@ -63,7 +64,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                     ret[prop] = me[prop];
                 }
             });
-
+            ret.responseText = Ext.JSON.encode(MessageTable.getMessageBody(ctx.xhr.options.jsonData.id));
+            //Ext.apply(ret, MessageTable.getMessageBody(ctx.xhr.options.jsonData.id));
             return ret;
 
         },

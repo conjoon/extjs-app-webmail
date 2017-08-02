@@ -52,6 +52,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         attachmentData.id = ++me.largestAttachmentId;
         me.attachments[messageItemId].push(attachmentData);
 
+        conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.updateAllItemData(messageItemId, {});
+
         return attachmentData;
     },
 
@@ -89,6 +91,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         }
 
         if (messageItemId) {
+            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.updateAllItemData(messageItemId, {});
             me.attachments[messageItemId].splice(a, 1);
             if (me.attachments[messageItemId].length == 0) {
                 me.attachments[messageItemId] = null;

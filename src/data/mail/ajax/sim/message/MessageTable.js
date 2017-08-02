@@ -66,8 +66,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             };
 
         return Ext.String.format(
-            "{0}.{1}.{2} {3}:{4}",
-            pad(d), pad(m), y, pad(h), pad(i)
+            "{0}-{1}-{2} {3}:{4}",
+            y, pad(m), pad(d), pad(h), pad(i)
         );
     },
 
@@ -130,6 +130,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         Ext.apply(message, data);
         me.messageBodies[id] = message;
+
+        // force to refresh the date
+        me.updateAllItemData(id, {});
 
         return message;
     },
@@ -234,7 +237,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             id            = me.getNextMessageDraftKey(),
             mailFolderId  = '4',
             messageDrafts = me.getMessageDrafts(),
-            messageItems  = me.getMessageItems();
+            messageItems  = me.getMessageItems(),
+            date          = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
 
         //manually fake attachments and messageBody
         conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.attachments[id] = null;
@@ -246,18 +250,21 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         messageDrafts.push(Ext.apply(draftData, {
             id           : id,
             mailFolderId : mailFolderId,
-            isRead       : false
+            isRead       : false,
+            date         : date
         }));
 
         messageItems.push(Ext.apply(draftData, {
             id           : id,
             mailFolderId : mailFolderId,
-            isRead       : false
+            isRead       : false,
+            date         : date
         }));
 
         me.baseMessageItems.push(Ext.apply(draftData, {
             id           : id,
-            mailFolderId : mailFolderId
+            mailFolderId : mailFolderId,
+            date         : date
         }));
 
 
@@ -280,6 +287,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         for (var i = 0, len = dataItems.length; i < len; i++) {
 
             item = dataItems[i];
+
+            item['date'] = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
 
             for (var prop in values) {
 
@@ -342,7 +351,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             messageItems.push(Ext.apply({
                 // leave first one as unread for tests
                 isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
-                date           : me.buildRandomDate(),
                 hasAttachments : AttachmentTable.getAttachments(baseMessageItems[i].id) ? 1 : 0,
                 size           : me.buildRandomSizeInBytes(),
                 previewText    : me.buildPreviewText(baseMessageItems[i].id)
@@ -384,6 +392,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
             baseMessageItems.push({
                 id            : (i + 1) + '',
+                date           : me.buildRandomDate(),
                 // leave first one as unread for tests
                 subject        : subjects[me.buildRandomNumber(0, 5)],
                 from           : sender[me.buildRandomNumber(0, 5)],
