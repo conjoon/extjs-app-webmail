@@ -87,6 +87,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 }
             }
 
+            if (draft['subject'] === 'TESTFAIL') {
+                ret.responseText = Ext.JSON.encode({
+                    success : false
+                });
+                return ret;
+
+            }
+
             draft = MessageTable.createMessageDraft(draft);
 
             ret.responseText = Ext.JSON.encode({
