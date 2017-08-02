@@ -63,7 +63,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
                '<div class="attachmenticon fa fa-download"></div>',
                '<div class="linkcont">',
                   '<div class="filename">{text}</div>',
-                  '<div class="filesize">{size}</div>',
+                  '<div class="filesize">{[Ext.util.Format.fileSize(values.size)]}</div>',
                   '<div class="attachmentaction">',
                    '<tpl if="this.displayButtonType(\'DOWNLOAD\')">',
                         '<a role="link" href="{downloadUrl}" class="downloadbutton fa fa-arrow-down" download="{text}"></a>',

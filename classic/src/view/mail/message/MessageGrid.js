@@ -134,6 +134,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         }
     }, {
         dataIndex : 'date',
+        xtype     : 'datecolumn',
+        format    : 'd.m.Y H:i',
         align     : 'right',
         text      : 'Date',
         width     : 140
@@ -141,7 +143,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         dataIndex : 'size',
         align     : 'right',
         text      : 'Size',
-        width     : 80
+        width     : 80,
+        renderer  : Ext.util.Format.fileSize
     }],
 
 

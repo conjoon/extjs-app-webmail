@@ -87,6 +87,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     formulas : {
 
         /**
+         * Returns the date of the message item in the date format "d.m.Y H:i"
+         *
+         * @param {Function} get
+         *
+         *  @returns {*}
+         */
+        getFormattedDate : function(get) {
+            return Ext.util.Format.date(get('messageItem.date'), "d.m.Y H:i");
+        },
+
+        /**
          * Returns the text to display in the MessageView depending on the
          * availability of a MessageItem and a MessageBody. If a MessageItem
          * is available but no MessageBody, this formula assumes that a
@@ -136,7 +147,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     /**
      * Updates this view models data with the data found in the passed
      * MessageDraft.
-     *
+     * This method will also take care of re-calculating the size of the
+     * MessageDraft given its attachments and its body-data.
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @throws if messageDraft is not an instance of {conjoon.cn_mail.model.mail.message.MessageDraft},
@@ -148,6 +160,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         var me             = this,
             messageItem    = me.get('messageItem'),
             newAttachments = [],
+            size           = 0,
             messageBody, attachments;
 
         if (!messageItem) {
@@ -176,16 +189,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         attachments = messageDraft.attachments().getRange();
         messageBody = messageDraft.getMessageBody().copy();
 
+        size += messageBody.get('textPlain').length;
+        size += messageBody.get('textHtml').length;
+
         // clone attachments to make sure no references are passed
         for (var i = 0, len = attachments.length; i < len; i++) {
             newAttachments.push(attachments[i].copy());
+            size += attachments[i].get('size')
         }
 
         messageItem.set({
             date           : messageDraft.get('date'),
+            to             : messageDraft.get('to'),
             subject        : messageDraft.get('subject'),
             hasAttachments : attachments.length > 0,
-            previewText    : messageBody.get('textPlain')
+            previewText    : messageBody.get('textPlain'),
+            size           : size
         });
         messageItem.commit();
 

@@ -52,7 +52,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
         type : 'string'
     }, {
         name : 'date',
-        type : 'string'
+        type : 'date'
     }, {
         name : 'mailFolderId',
         type : 'string'

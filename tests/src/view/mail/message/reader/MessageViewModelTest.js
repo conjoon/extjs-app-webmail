@@ -31,9 +31,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                     id             : 1,
                     messageBodyId  : 2,
+                    size           : 400,
                     subject        : 'SUBJECT',
                     from           : 'FROM',
                     date           : 'DATE',
+                    to             : 'TO',
                     hasAttachments : true
                 });
 
@@ -346,7 +348,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
             id      : 1,
             subject : 'subject',
-            date    : '2017-07-30 23:45:00'
+            date    : '2017-07-30 23:45:00',
+            to      : 'test@testdomain.tld'
         });
 
         messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
@@ -376,10 +379,12 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
             viewModelItem = viewModel.get('messageItem');
 
+            t.expect(viewModelItem.get('size')).toBe(messageItem.get('size'));
             t.expect(viewModelItem.get('subject')).toBe(messageItem.get('subject'));
             t.expect(viewModelItem.get('date')).toBe(messageItem.get('date'));
             t.expect(viewModelItem.get('previewText')).toBe(messageItem.get('previewText'));
             t.expect(viewModelItem.get('hasAttachments')).toBe(messageItem.get('hasAttachments'));
+            t.expect(viewModelItem.get('to')).toEqual(messageItem.get('to'));
 
             viewModel.updateMessageItem(messageDraft);
 
@@ -388,6 +393,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.expect(viewModelItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
             t.expect(viewModelItem.get('hasAttachments')).toBe(true);
 
+            t.expect(viewModelItem.get('size')).toBeGreaterThan(0);
+            t.expect(viewModelItem.get('size')).not.toBe(messageItem.get('size'));
+
+            t.expect(viewModelItem.get('to')).not.toBe(messageDraft.get('to'));
+            t.expect(viewModelItem.get('to')).toEqual(messageDraft.get('to'));
 
             t.expect(viewModel.get('messageBody')).toBeTruthy();
 
@@ -403,7 +413,25 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         });
     });
 
-})});
+
+    t.it("formula.getFormattedDate", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        var MESSAGEBODY = false,
+            MESSAGEITEM = false,
+            date        = new Date(),
+            expected    = Ext.util.Format.date(date, "d.m.Y H:i"),
+            formulas    = viewModel.getFormulas(),
+            get         = function() {
+                return date
+            };
+
+        t.expect(formulas.getFormattedDate(get)).toBe(expected);
+    });
+
+
+
+    })});
 
 });
 

@@ -44,7 +44,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractAttachment', {
         type : 'string'
     }, {
         name    : 'size',
-        type    : 'cn_core-datafieldfilesize',
+        type    : 'int',
         persist : false
     }, {
         /**
