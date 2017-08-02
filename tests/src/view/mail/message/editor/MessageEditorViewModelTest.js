@@ -44,6 +44,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function(){
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
 
         t.it("Should create the ViewModel", function(t) {
             viewModel = createWithSession();
@@ -51,6 +54,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
             t.expect(viewModel.emptySubjectText).toBeDefined();
             t.expect(viewModel.alias).toContain('viewmodel.cn_mail-mailmessageeditorviewmodel');
+
+            t.expect(viewModel.get('isSaving')).toBe(false);
 
             t.waitForMs(500, function() {
                 var formulas = viewModel.getFormulas(),

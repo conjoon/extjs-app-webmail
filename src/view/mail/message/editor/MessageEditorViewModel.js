@@ -43,9 +43,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
     /**
      * Default empty subject text for messages.
+     * @i18n
      * @private
      */
     emptySubjectText : '(No subject)',
+
+    data : {
+        isSaving : false
+    },
 
     formulas : {
 
@@ -176,8 +181,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             );
         }
     },
-
-
 
 
     privates : {
