@@ -173,6 +173,29 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Ext.data.operation.Operation} operation The last operation that
      * was processed.
+     * @param {Boolean} isSending Whether the save process is part of an ongoing
+     * send-process of the message.
+     */
+
+    /**
+     * Gets fired when a MessageDraft is about to get sent.
+     * @event cn_mail-mailmessagebeforesend
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+
+    /**
+     * Gets fired when a MessageDraft was successfully sent.
+     * @event cn_mail-mailmessagesendcomplete
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+
+    /**
+     * Gets fired when sending a MessageDraft caused an exxception.
+     * @event cn_mail-mailmessagesendexception
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      */
 
     layout : {
@@ -469,54 +492,71 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * Updates this editor's view to indicate that it is currently busy saving
      * data. The indicator is represented by a conjoon.cn_comp.component.LoadMask.
      *
-     * @param {String|Object|Boolean} msg false to hide any currently active
-     * indicator, a string containing a message to display or an object containing
-     * a msg and a progress property to be applied to the generated
-     * conjoon.cn_comp.component.LoadMask
+     * @param {Object|Boolean} conf false to hide any currently active
+     * indicator, or an object containing properties to configure the texts to
+     * show for the generated conjoon.cn_comp.component.LoadMask
      *
      * @return this
      *
      * @see #busyMask
+     *
+     * @throws if conf is neither boolean nor an Object
      */
-    setBusy : function(msg) {
+    setBusy : function(conf) {
 
-        var me       = this,
-            mask     = me.busyMask,
-            progress = Ext.isObject(msg) ? msg.progress : undefined,
-            msg      = Ext.isObject(msg) ? msg.msg      : msg;
+        var me        = this,
+            mask      = me.busyMask,
+            hide      = conf === false,
+            progress  = !hide ? conf.progress  : undefined,
+            msg       = !hide ? conf.msg       : undefined,
+            msgAction = !hide ? conf.msgAction : undefined;
 
-        if (msg === false && !mask) {
+        if (conf !== false && !Ext.isObject(conf)) {
+            Ext.raise({
+                conf : conf,
+                cls  : Ext.getClassName(me),
+                msg  : 'Argument "conf" must either be boolean=false or an ' +
+                       'object suiting configuration options for ' +
+                       'conjoon.cn_comp.component.LoadMask'
+            });
+        }
+
+        if (hide && !mask) {
             return this;
         }
 
-        if (!mask && msg !== false) {
+        if (!mask && !hide) {
             mask = Ext.create('conjoon.cn_comp.component.LoadMask', {
-                msg       : 'Saving Mail',
-                msgAction : 'Stand by...',
+                msg       : msg,
+                msgAction : msgAction,
                 glyphCls  : 'fa fa-envelope',
                 target    : me
             });
             me.busyMask = mask;
         }
 
-        if (msg === false) {
+        if (hide) {
             mask.hide();
             return this;
         }
 
-        if (mask.isHidden()) {
-            if (progress === undefined) {
-                mask.loopProgress();
-            }
+        mask.show();
 
-            mask.show();
+        if (progress === undefined) {
+            mask.loopProgress();
         }
 
         if (progress !== undefined) {
             mask.updateProgress(progress);
         }
 
-        mask.updateActionMsg(msg);
+        if (msgAction !== undefined) {
+            mask.updateActionMsg(msgAction);
+        }
+
+        if (msg !== undefined) {
+            mask.updateMsg(msg);
+        }
 
         return this;
     }

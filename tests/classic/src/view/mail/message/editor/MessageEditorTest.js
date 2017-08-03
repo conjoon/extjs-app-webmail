@@ -428,7 +428,17 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(view.setBusy(false)).toBe(view);
         t.expect(view.busyMask).toBeFalsy();
 
-        t.expect(view.setBusy('text')).toBe(view);
+        var exc, e;
+        try {
+            view.setBusy('text');
+        } catch(e) {
+            exc = e;
+        }
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain('must either be');
+
+        view.setBusy({msgAction : 'foo'});
+        t.isInstanceOf(view.busyMask, 'conjoon.cn_comp.component.LoadMask');
         t.expect(view.busyMask).toBeTruthy();
         t.expect(view.busyMask.isHidden()).toBe(false);
 
@@ -436,15 +446,17 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(view.busyMask).toBeTruthy();
         t.expect(view.busyMask.isHidden()).toBe(true);
 
-        t.isCalledNTimes('loopProgress',    view.busyMask, 1);
+        t.isCalledNTimes('loopProgress',    view.busyMask, 2);
         t.isCalledNTimes('updateActionMsg', view.busyMask, 2);
         t.isCalledNTimes('updateProgress',  view.busyMask, 1);
+        t.isCalledNTimes('updateMsg',       view.busyMask, 1);
 
-        t.expect(view.setBusy('text')).toBe(view);
+        t.expect(view.setBusy({msgAction : 'text'})).toBe(view);
         t.expect(view.busyMask).toBeTruthy();
         t.expect(view.busyMask.isHidden()).toBe(false);
 
-        t.expect(view.setBusy({msg : 'text', progress : 1})).toBe(view);
+        t.expect(view.setBusy({msg : 'text'})).toBe(view);
+        t.expect(view.setBusy({msgAction : 'text', progress : 1})).toBe(view);
         t.expect(view.busyMask).toBeTruthy();
         t.expect(view.busyMask.isHidden()).toBe(false);
     });
