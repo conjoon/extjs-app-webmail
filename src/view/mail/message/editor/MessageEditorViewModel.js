@@ -49,7 +49,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     emptySubjectText : '(No subject)',
 
     data : {
-        isSaving : false
+        /**
+         * Set to true to indicate that the view is busy saving a message.
+         */
+        isSaving : false,
+
+        /**
+         * Set to true to indicate that the view is busy sending a message.
+         */
+        isSending : false
     },
 
     formulas : {

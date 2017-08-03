@@ -396,9 +396,20 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             t.expect(view.getClosable()).toBe(true);
 
             view.getViewModel().set('isSaving', true);
-
             t.waitForMs(200, function() {
                 t.expect(view.getClosable()).toBe(false);
+                view.getViewModel().set('isSaving', false);
+                t.waitForMs(200, function() {
+                    t.expect(view.getClosable()).toBe(true);
+                    view.getViewModel().set('isSending', true);
+                    t.waitForMs(200, function() {
+                        t.expect(view.getClosable()).toBe(false);
+                        view.getViewModel().set('isSending', false);
+                        t.waitForMs(200, function() {
+                            t.expect(view.getClosable()).toBe(true);
+                        })
+                    })
+                })
             })
         });
     });
@@ -412,9 +423,20 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             t.expect(iconCls).toBeTruthy();
 
             view.getViewModel().set('isSaving', true);
-
             t.waitForMs(200, function() {
                 t.expect(view.getIconCls()).not.toBe(iconCls);
+                view.getViewModel().set('isSaving', false);
+                t.waitForMs(200, function() {
+                    t.expect(view.getIconCls()).toBe(iconCls);
+                    view.getViewModel().set('isSending', true);
+                    t.waitForMs(200, function() {
+                        t.expect(view.getIconCls()).not.toBe(iconCls);
+                        view.getViewModel().set('isSending', false);
+                        t.waitForMs(200, function() {
+                            t.expect(view.getIconCls()).toBe(iconCls);
+                        })
+                    })
+                })
             })
         });
     });

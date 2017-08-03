@@ -217,9 +217,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     iconCls : "fa fa-spin fa-spinner",
 
     bind : {
-        closable : '{isSaving ? false : true}',
+        closable : '{isSaving || isSending ? false : true}',
         title    : '{getSubject}',
-        iconCls  : '{getSubject && !isSaving ? "fa fa-edit" : "fa fa-spin fa-spinner"}'
+        iconCls  : '{getSubject && !isSaving && !isSending ? "fa fa-edit" : "fa fa-spin fa-spinner"}'
     },
 
     closable : true,
