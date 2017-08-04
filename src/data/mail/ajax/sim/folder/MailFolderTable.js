@@ -21,16 +21,32 @@
  */
 
 /**
- * This is a dummy class that takes care of requiring all sim definitions
- * from the data.mail.ajax.sim namespace for local development.
+ *
  */
-Ext.define('conjoon.cn_mail.data.mail.PackageSim', {
-    requires: [
-        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim',
-        'conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim'
-    ]
+Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderTable', {
+
+    singleton : true,
+
+    requires : [
+
+    ],
+
+    getFolderIdForType : function(type) {
+
+        var me = this;
+
+        switch (type) {
+            case 'SENT':
+                return '2';
+        }
+
+        Ext.raise({
+            type : type,
+            msg  : "Unknown FolderType",
+            cls  : Ext.getClassName(me)
+        });
+    }
+
+
+
 });
