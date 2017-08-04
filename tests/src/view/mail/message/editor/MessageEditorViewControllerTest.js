@@ -44,7 +44,6 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         if (view) {
             view.destroy();
             view = null;
-            controller = null;
         }
 
         if (controller) {
@@ -116,6 +115,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     editMode   : 'CREATE'
                 });
 
+            t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
+
             t.waitForMs(500, function() {
                 t.expect(itemremove).toBe(-1);
                 t.expect(itemadd).toBe(0);
@@ -137,6 +138,11 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 t.expect(showCcBccButtonClick).toBe(1);
                 t.expect(sendButtonClick).toBe(1);
                 t.expect(saveButtonClick).toBe(1);
+
+                // destroy the view here so it's part of the test and
+                // onMailMessageEditorBeforeDestroy can be observed
+                view.destroy();
+                view = null;
             });
 
 
@@ -207,23 +213,6 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 t.expect(view.down('#ccField').isHidden()).toBe(true);
                 t.expect(view.down('#bccField').isHidden()).toBe(true);
             });
-        });
-
-
-        t.it("Should make sure that onSendButtonClick works properly", function(t) {
-            controller = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
-                });
-
-            var exc = undefined;
-            try {
-                controller.onSendButtonClick();
-            } catch (e) {
-                exc = e;
-            }
-
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toContain('Not implemented yet');
         });
 
 
@@ -314,6 +303,104 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         });
 
 
+        t.it("endBusyState()", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            view.getViewModel().set('isSaving',  true);
+            view.getViewModel().set('isSending', true);
+            view.setBusy({msg : 'foo'});
+
+            t.expect(view.busyMask.isHidden()).toBe(false);
+            controller.endBusyState('saving');
+
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('isSaving')).toBe(false);
+                t.expect(view.getViewModel().get('isSending')).toBe(true);
+
+                t.expect(view.busyMask.isHidden()).toBe(true);
+
+                view.setBusy({msg : 'foo'});
+                controller.endBusyState('sending');
+
+                t.waitForMs(500, function() {
+                    t.expect(view.getViewModel().get('isSending')).toBe(false);
+                    t.expect(view.busyMask.isHidden()).toBe(true);
+
+                    var exc, e;
+                    try{
+                        controller.endBusyState();
+                    } catch (e) {
+                        exc = e;
+                    }
+                    t.expect(exc).toBeDefined();
+                    t.expect(exc.msg).toContain("Unknown");
+
+                });
+            });
+        });
+
+
+        t.it("setViewBusy()", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            t.isCalledNTimes('setBusy', view, 2);
+            t.expect(view.busyMask).toBeFalsy();
+            controller.setViewBusy(createOperation());
+
+            t.expect(view.busyMask).toBeTruthy();
+            t.expect(view.busyMask.isHidden()).toBe(false);
+            t.expect(view.busyMask.waitTimer).toBeTruthy();
+
+            controller.setViewBusy(createOperation(), 1);
+            t.expect(view.busyMask.waitTimer).toBeFalsy();
+        });
+
+
+        t.it("onMailMessageEditorBeforeDestroy()", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            // dummy
+            view.setBusy({msg : 'foo'});
+
+            t.expect(controller.deferTimers).toBeDefined();
+            controller.deferTimers['test'] = 456;
+            t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
+            t.expect(view.busyMask).toBeDefined();
+            t.isCalledNTimes('destroy', view.busyMask, 1);
+
+            controller.onMailMessageEditorBeforeDestroy();
+
+            t.expect(controller.deferTimers['test']).toBeUndefined();
+        });
+
+
+// +----------------------------------------------------------------------------
+// | SAVING
+// +----------------------------------------------------------------------------
         t.it("Should make sure that onSaveButtonClick works properly", function(t) {
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
@@ -336,7 +423,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller.onSaveButtonClick();
 
             t.waitForMs(1500, function() {
-                    // give enough time for the tests to finish
+                // give enough time for the tests to finish
             });
         });
 
@@ -366,54 +453,6 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 // give enough time for the tests to finish
             });
 
-        });
-
-
-        t.it("endBusyState()", function(t) {
-            controller = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
-                });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
-
-            view.getViewModel().set('isSaving', true);
-            view.setBusy("test");
-
-            t.expect(view.busyMask.isHidden()).toBe(false);
-            controller.endBusyState();
-
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('isSaving')).toBe(false);
-                t.expect(view.busyMask.isHidden()).toBe(true);
-            });
-        });
-
-
-        t.it("setViewBusy()", function(t) {
-            controller = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
-                });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
-
-            t.isCalledNTimes('setBusy', view, 2);
-            t.expect(view.busyMask).toBeFalsy();
-            controller.setViewBusy(createOperation());
-
-            t.expect(view.busyMask).toBeTruthy();
-            t.expect(view.busyMask.isHidden()).toBe(false);
-            t.expect(view.busyMask.waitTimer).toBeTruthy();
-
-            controller.setViewBusy(createOperation(), 1);
-            t.expect(view.busyMask.waitTimer).toBeFalsy();
         });
 
 
@@ -481,6 +520,134 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             t.waitForMs(1500, function() {
                 // 1500 for delay for endBusyState
                 t.expect(view.getViewModel().get('isSaving')).toBe(false);
+            });
+        });
+
+
+// +----------------------------------------------------------------------------
+// | SENDING
+// +----------------------------------------------------------------------------
+        t.it("Should make sure that onSendButtonClick works properly", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            view.down('#subjectField').setValue('SEND');
+            view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+
+            t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
+            t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
+            t.isCalledNTimes('onMailMessageSendComplete',           controller, 1);
+            t.isCalledNTimes('onMailMessageSendException',          controller, 0);
+
+            controller.onSendButtonClick();
+
+            // send / save both add defers with each appr. 750 ms
+            // wait long enough here
+            t.waitForMs(3000, function() {
+                // give enough time for the tests to finish
+            });
+        });
+
+
+        t.it("Should make sure that onSendButtonClick works properly with exception", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            view.down('#subjectField').setValue('SENDFAIL');
+            view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+
+            t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
+            t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
+            t.isCalledNTimes('onMailMessageSendComplete',           controller, 0);
+            t.isCalledNTimes('onMailMessageSendException',          controller, 1);
+
+            controller.onSendButtonClick();
+
+            // send / save both add defers with each appr. 750 ms
+            // wait long enough here
+            t.waitForMs(3000, function() {
+                t.expect(view.getViewModel()).toBeDefined();
+            });
+        });
+
+
+        t.it("onMailMessageSendException()", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+            });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+            });
+
+            controller.onMailMessageSendException();
+
+            t.waitForMs(1500, function() {
+                t.expect(view.busyMask.isHidden()).toBe(true);
+                t.expect(view.getViewModel().get('isSending')).toBe(false);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSend()", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            controller.onMailMessageBeforeSend();
+
+            t.waitForMs(500, function() {
+                t.expect(view.busyMask.isHidden()).toBe(false);
+                t.expect(view.getViewModel().get('isSending')).toBe(true);
+            });
+        });
+
+
+        t.it("onMailMessageSendComplete()", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            controller.onMailMessageSendComplete();
+
+            t.waitForMs(1500, function() {
+                // 1500 for delay for endBusyState
+                t.expect(view.busyMask.isHidden()).toBe(true);
+                t.expect(view.getViewModel().get('isSending')).toBe(false);
             });
         });
 

@@ -48,12 +48,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             click : 'onSaveButtonClick'
         },
         'cn_mail-mailmessageeditor' : {
+            beforedestroy                               : 'onMailMessageEditorBeforeDestroy',
             'cn_mail-mailmessagesaveoperationcomplete'  : 'onMailMessageSaveOperationComplete',
             'cn_mail-mailmessagesaveoperationexception' : 'onMailMessageSaveOperationException',
             'cn_mail-mailmessagesavecomplete'           : 'onMailMessageSaveComplete',
-            'cn_mail-mailmessagebeforesave'             : 'onMailMessageBeforeSave'
+            'cn_mail-mailmessagebeforesave'             : 'onMailMessageBeforeSave',
+            'cn_mail-mailmessagebeforesend'             : 'onMailMessageBeforeSend',
+            'cn_mail-mailmessagesendcomplete'           : 'onMailMessageSendComplete',
+            'cn_mail-mailmessagesendexception'          : 'onMailMessageSendException'
         }
     },
+
+    /**
+     * @parivate
+     */
+    deferTimers : null,
 
     /**
      * Helper to indicate the number of times the attachmentlistWrap was entered/
@@ -71,7 +80,33 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     init : function() {
         var me   = this,
             view = me.getView();
+
+        me.deferTimers = {};
         view.on('afterrender', me.installDragDropListeners, me, {single : true});
+    },
+
+
+    /**
+     * Callback for the MailMessageEditor's destroy event. Clears the defer timers.
+     *
+     */
+    onMailMessageEditorBeforeDestroy : function() {
+        var me   = this,
+            view = me.getView();
+
+        for (var i in me.deferTimers) {
+            if (!me.deferTimers.hasOwnProperty(i)) {
+                continue;
+            }
+
+            window.clearTimeout(me.deferTimers[i]);
+            delete me.deferTimers[i];
+        }
+
+        if (view.busyMask) {
+            view.busyMask.destroy();
+            view.busyMask = null;
+        }
     },
 
 
@@ -237,9 +272,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {Ext.Button} btn
      */
     onSendButtonClick : function(btn) {
-        Ext.raise({
-            msg : "Not implemented yet."
-        })
+
+        var me = this;
+
+        me.configureAndStartSaveBatch(true);
     },
 
 
@@ -250,50 +286,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      */
     onSaveButtonClick : function(btn) {
 
-        var me           = this,
-            view         = me.getView(),
-            vm           = view.getViewModel(),
-            session      = view.getSession(),
-            messageDraft = vm.get('messageDraft'),
-            saveBatch    = session.getSaveBatch(),
-            operations;
+        var me = this;
 
-        if (saveBatch) {
-
-            // set the date to the current client date
-            // this might get likely converted to UTC on the backend
-            // this update might not make it into the server request
-            // since the savebatch was already generated. It is mandatory
-            // to update the message items date whenever a change occurs in
-            // // any association of the messageDraft.
-            messageDraft.set('date', new Date());
-            saveBatch.setPauseOnException(true);
-            operations = saveBatch.getOperations();
-
-            for (var i = 0, len = operations.length; i < len; i++) {
-                if (operations[i].getAction() == 'create' &&
-                    operations[i].entityType.entityName == 'DraftAttachment') {
-                    // tbd
-                }
-            }
-
-            saveBatch.on({
-                exception : function(batch, operation) {
-                    view.fireEvent('cn_mail-mailmessagesaveoperationexception', view, messageDraft, operation);
-                },
-                operationcomplete : function(batch, operation) {
-                    view.fireEvent('cn_mail-mailmessagesaveoperationcomplete', view, messageDraft, operation);
-                },
-                complete : function(batch, operation) {
-                    view.fireEvent('cn_mail-mailmessagesavecomplete', view, messageDraft, operation);
-                },
-                scope             : view,
-                single            : true
-            });
-
-            view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft);
-            saveBatch.start();
-        }
+        me.configureAndStartSaveBatch();
     },
 
 
@@ -329,20 +324,31 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
     /**
      * Callback for a successfull processing of a complete batch.
+     * Will trigger #sendMessage as soon as the operation completes.
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-     *      * @param {Ext.data.operation.Operation} operation
+     * @param {Ext.data.operation.Operation} operation
+     * @param {Boolean} isSending
      */
-    onMailMessageSaveComplete : function(editor, messageDraft, operation) {
+    onMailMessageSaveComplete : function(editor, messageDraft, operation, isSending) {
 
         var me   = this,
-            view = me.getView(),
-            vm   = view.getViewModel();
+            view = me.getView();
 
         me.setViewBusy(operation, 1);
 
-        Ext.Function.defer(me.endBusyState, 750, me);
+        if (isSending !== true) {
+            me.deferTimers['savecomplete'] = Ext.Function.defer(
+                me.endBusyState, 750, me, ['saving']);
+        } else {
+            me.deferTimers['savecompletesend'] = Ext.Function.defer(function() {
+                var me = this;
+                me.endBusyState('saving');
+                me.sendMessage();
+            }, 750, me);
+        }
+
     },
 
 
@@ -358,30 +364,203 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             vm   = view.getViewModel();
 
         vm.set('isSaving', true);
+
         /**
          * @i18n
          */
-        view.setBusy('Stand by...');
+        view.setBusy({msg : 'Saving Mail', msgAction : 'Stand by...'});
+    },
+
+
+    /**
+     * Callback for the view's beforesend event.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+    onMailMessageBeforeSend : function(editor, messagDraft) {
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
+
+        vm.set('isSending', true);
+
+        /**
+         * @i18n
+         */
+        view.setBusy({msg : 'Sending Mail', msgAction : 'Please wait...'});
+    },
+
+
+    /**
+     * Callback for the view's sendcomplete event.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+    onMailMessageSendComplete : function(editor, messagDraft) {
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
+
+        /**
+         * @i18n
+         */
+        view.setBusy({msgAction : 'Message sent successfully.', progress : 1});
+        me.deferTimers['sendcomplete'] = Ext.Function.defer(
+            me.endBusyState, 750, me, ['sending']);
+    },
+
+    /**
+     * Callback for the view's sendexception event.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+    onMailMessageSendException : function(editor, messageDraft) {
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
+
+        vm.set('isSending', false);
+
+        /**
+         * @i18n
+         */
+        view.setBusy({msgAction : 'Error :(', progress : 1});
+        me.deferTimers['sendexception'] = Ext.Function.defer(
+            me.endBusyState, 750, me, ['sending']);
     },
 
 
     privates : {
 
+        /**
+         * Sends the current MessageDraft and fires the events
+         * cn_mail-mailmessagebeforesend and cn_mail-mailmessagesendcomplete (or
+         * cn_mail-mailmessagesendexception if the send-process was not successfull).
+         * This method is part of a callback that gets called by onMailMessageSaveComplete,
+         * if the save process was part of a request to send teh MessageDraft.
+         *
+         * @private
+         */
+        sendMessage : function() {
+
+            var me           = this,
+                view         = me.getView(),
+                vm           = view.getViewModel(),
+                messageDraft = vm.get('messageDraft');
+
+            if (messageDraft.dirty || messageDraft.phantom) {
+                Ext.raise({
+                    msg : "Cannot send MessageDraft: Needs to get saved before.",
+                    cls : Ext.getClassName(me)
+                })
+            }
+
+            view.fireEvent('cn_mail-mailmessagebeforesend', view, messageDraft);
+
+            Ext.Ajax.request({
+                url    : './cn_mail/SendMessage',
+                params : {
+                    id : messageDraft.get('id')
+                }
+            }).then(
+                function(response, opts) {
+                    view.fireEvent('cn_mail-mailmessagesendcomplete', view, messageDraft);
+                },
+                function(response, opts) {
+                    view.fireEvent('cn_mail-mailmessagesendexception', view, messageDraft);
+
+                }
+            );
+        },
+
+
+        /**
+         * Configures and starts the save batch of the session of the MessageEditor.
+         *
+         * @param {Boolean} isSend true to indicate that this operation requested
+         * is a "send" operation of the MessageDraft. This will additionally trigger
+         * the send-process once the draft was successfully saved.
+         *
+         * @private
+         */
+        configureAndStartSaveBatch : function(isSend) {
+
+            var me           = this,
+                view         = me.getView(),
+                vm           = view.getViewModel(),
+                session      = view.getSession(),
+                messageDraft = vm.get('messageDraft'),
+                saveBatch;
+
+            // will trigger a save in the case the date value changes.
+            messageDraft.set('date', new Date());
+
+            saveBatch = session.getSaveBatch();
+
+            saveBatch.setPauseOnException(true);
+
+            saveBatch.on({
+                exception : function(batch, operation) {
+                    view.fireEvent('cn_mail-mailmessagesaveoperationexception',
+                        view, messageDraft, operation);
+                },
+                operationcomplete : function(batch, operation) {
+                    view.fireEvent('cn_mail-mailmessagesaveoperationcomplete',
+                        view, messageDraft, operation);
+                },
+                scope  : view,
+                single : true
+            });
+
+
+            saveBatch.on('complete', function(batch, operation) {
+                view.fireEvent(
+                    'cn_mail-mailmessagesavecomplete',
+                    view, messageDraft,
+                    operation,
+                    isSend === true
+                );
+            }, view, {single : true});
+
+            view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft);
+            saveBatch.start();
+        },
+
 
         /**
          * Helper function to finish the busy state of the MailEditor.
          *
-         * @param operation
-         * @param progress
+         * @param {String} type The type of the busy-operation, i.e. 'sending'
+         * or 'saving'
          *
          * @private
+         *
+         * @throws if type doe snot equal to 'sending' or 'saving'
          */
-        endBusyState : function() {
+        endBusyState : function(type) {
+
             var me   = this,
                 view = me.getView(),
                 vm   = view.getViewModel();
 
-            vm.set('isSaving', false);
+            switch (type) {
+                case 'sending':
+                    vm.set('isSending', false);
+                    break;
+                case 'saving':
+                    vm.set('isSaving', false);
+                    break;
+                default:
+                    Ext.raise({
+                        msg  : 'Unknown busy type.',
+                        type : type,
+                        cls  : Ext.getClassName(me)
+                    })
+            }
+
             view.setBusy(false);
         },
 
@@ -389,8 +568,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         /**
          * Helper function to update the view's busy state.
          *
-         * @param operation
-         * @param progress
+         * @param {Ext.data.operatin.Operation} operation
+         * @param {Number} progress
          *
          * @private
          */
@@ -403,11 +582,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 /**
                  * @i18n
                  */
-                msg : Ext.String.format("{1} {0}.",
-                    operation.getAction() == 'destroy'
-                        ? 'removed'
-                        : 'saved',
-                    operation.entityType.entityName
+                msgAction : Ext.String.format("{1} {0}.",
+                            operation.getAction() == 'destroy'
+                                                     ? 'removed'
+                                                     : 'saved',
+                            operation.entityType.entityName
                 ),
                 progress : progress
             });
