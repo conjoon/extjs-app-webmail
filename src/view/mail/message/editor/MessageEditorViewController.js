@@ -408,7 +408,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         view.setBusy({msgAction : 'Message sent successfully.', progress : 1});
         me.deferTimers['sendcomplete'] = Ext.Function.defer(
-            me.endBusyState, 750, me, ['sending']);
+            view.close, 1000, view);
     },
 
     /**

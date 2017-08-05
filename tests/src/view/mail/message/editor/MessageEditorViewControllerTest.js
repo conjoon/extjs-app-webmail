@@ -642,12 +642,11 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     editMode   : 'CREATE'
                 });
 
+            t.isCalledNTimes('close', view, 1);
             controller.onMailMessageSendComplete();
 
             t.waitForMs(1500, function() {
                 // 1500 for delay for endBusyState
-                t.expect(view.busyMask.isHidden()).toBe(true);
-                t.expect(view.getViewModel().get('isSending')).toBe(false);
             });
         });
 
