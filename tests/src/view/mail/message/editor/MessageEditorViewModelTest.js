@@ -57,6 +57,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             t.expect(viewModel.get('isSaving')).toBe(false);
             t.expect(viewModel.get('isSending')).toBe(false);
+            t.expect(viewModel.get('isSubjectRequired')).toBe(true);
 
             t.waitForMs(500, function() {
                 var formulas = viewModel.getFormulas(),

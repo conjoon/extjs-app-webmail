@@ -57,7 +57,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         /**
          * Set to true to indicate that the view is busy sending a message.
          */
-        isSending : false
+        isSending : false,
+
+        /**
+         * The view will set this to false if the user does not wish to specify
+         * a subject, even if a prompt requested one.
+         */
+        isSubjectRequired : true
     },
 
     formulas : {
