@@ -140,10 +140,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     /**
      * Gets fired when a save of the MessageDraft was initiated and the associated
      * saveBatch is about to get processed.
+     * This event is canceable. Return "false" in any attached listener to cancel
+     * saving the message.
      * @event cn_mail-mailmessagebeforesave
      * @param this
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-     * @param {Ext.data.Batch} batch The batch that was generated for processing
+     * @param {Boolean} isSending Whether the save process is part of an ongoing
+     * send-process of the message.
      */
 
     /**
@@ -570,14 +573,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * recipient. Will focus the toField afterwards and change the icon of
      * the editor to signal that user interaction is necessary.
      *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      */
-    showAddressMissingNotice : function() {
+    showAddressMissingNotice : function(messageDraft) {
 
         /**
          * @i18n
          */
         var me = this,
-            myMask, icolCls;
+            myMask, iconCls;
 
         // notify any pending states here to flush so we can change the
         // view's state and be sure not to interfere with any vm setting
@@ -604,6 +608,62 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         me.setClosable(false);
 
         myMask.show();
+    },
+
+
+    /**
+     * Shows a notice that the MessageDraft being edited misses a subject field.
+     * The ui shows a textfield and a ok and cancel button using a
+     * conjoon.cn_comp.component.MessageMask. Clicking ok will add the specified
+     * subject to the editor and reset the close- and icon-state, as clicking
+     * "cancel" does, w/o setting a subject for the editor.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Function} An optional additional callback which gets called AFTER
+     * the subject of the editor has been set to the specified value. The
+     * callback gets called in the scope of the MessageEditor.
+     */
+    showSubjectMissingNotice : function(messageDraft, callback) {
+
+        /**
+         * @i18n
+         */
+        var me        = this,
+            viewModel = me.getViewModel(),
+            myMask, iconCls;
+
+        // notify any pending states here to flush so we can change the
+        // view's state and be sure not to interfere with any vm setting
+        me.getViewModel().notify();
+
+        iconCls = me.getIconCls();
+
+        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+            title    : "Subject Missing",
+            message  : "If you wish, you can specify a subject here before leaving it empty.",
+            target   : me,
+            buttons  : conjoon.cn_comp.component.MessageMask.OKCANCEL,
+            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            input    : {emptyText : 'Subject'},
+            callback : function(btnAction, value) {
+                var me = this;
+                if (btnAction == 'okButton') {
+                    messageDraft.set('subject', value);
+                }
+                me.setClosable(true);
+                me.setIconCls(iconCls);
+                if (callback) {
+                    callback.apply(me, [btnAction, value]);
+                }
+            },
+            scope : me
+        });
+
+        me.setIconCls('fa fa-question-circle');
+        me.setClosable(false);
+
+        myMask.show();
     }
+
 
 });

@@ -521,5 +521,76 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     });
 
+
+    t.it("showSubjectMissingNotice()", function(t) {
+        view = createWithViewConfig(viewConfig);
+
+        view.getViewModel().notify();
+
+        var VALUE, BUTTONID, SCOPE,
+            iconCls = view.getIconCls(),
+            func    = function(btnId, value) {
+                SCOPE    = this;
+                VALUE    = value;
+                BUTTONID = btnId;
+            };
+        t.expect(view.getClosable()).toBe(true);
+
+        view.showSubjectMissingNotice(view.getViewModel().get('messageDraft'), func);
+
+        var okButton     = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom),
+            cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom),
+            mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom),
+            inputField   = Ext.dom.Query.select("input[type=text]", mask);
+
+        t.expect(mask.length).toBe(1);
+        t.expect(okButton.length).toBe(1);
+        t.expect(okButton[0].parentNode.style.display).not.toBe('none');
+        t.expect(cancelButton.length).toBe(1);
+        t.expect(cancelButton[0].parentNode.style.display).not.toBe('none');
+        t.expect(inputField.length).toBe(1);
+        t.expect(inputField.length).toBe(1);
+        t.expect(inputField[0].value).toBeFalsy();
+
+        t.expect(view.getIconCls()).not.toBe(iconCls);
+        t.expect(view.getClosable()).toBe(false);
+
+        // OKBUTTON
+        inputField[0].value = 'foobar';
+        t.click(okButton[0]);
+
+        t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+        t.expect(view.getIconCls()).toBe(iconCls);
+        t.expect(view.getClosable()).toBe(true);
+
+        t.expect(VALUE).toBe('foobar');
+        t.expect(BUTTONID).toBe('okButton');
+        t.expect(SCOPE).toBe(view);
+        view.getViewModel().notify();
+        t.expect(view.down('#subjectField').getValue()).toBe('foobar');
+
+        // CANCELBUTTON
+        VALUE    = "";
+        BUTTONID = "";
+        view.showSubjectMissingNotice(view.getViewModel().get('messageDraft'), func);
+
+        cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom);
+        mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+        inputField   = Ext.dom.Query.select("input[type=text]", mask);
+
+        inputField[0].value = 'SNAFU';
+        t.click(cancelButton[0]);
+
+        t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+        t.expect(view.getIconCls()).toBe(iconCls);
+        t.expect(view.getClosable()).toBe(true);
+
+        t.expect(VALUE).toBe('SNAFU');
+        t.expect(BUTTONID).toBe('cancelButton');
+        view.getViewModel().notify();
+        t.expect(view.down('#subjectField').getValue()).not.toBe("SNAFU");
+
+    });
+
 });
 });
