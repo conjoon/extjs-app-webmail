@@ -494,9 +494,140 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
 
             t.isCalledNTimes('setBusy', view, 1);
+            view.getViewModel().get('messageDraft').set('subject', 'foo');
             controller.onMailMessageBeforeSave(
                 view, view.getViewModel().get('messageDraft'), createOperation());
             t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('isSaving')).toBe(true);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSave() - cancelled", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+
+            controller.onMailMessageBeforeSave(
+                view, view.getViewModel().get('messageDraft'), createOperation());
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('isSaving')).toBe(false);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSave() - isSubjectRequired == false", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            view.getViewModel().set('isSubjectRequired', false);
+            view.getViewModel().notify();
+
+            t.isntCalled('showSubjectMissingNotice', view);
+            t.isCalledNTimes('setBusy', view, 1);
+
+            controller.onMailMessageBeforeSave(
+                view, view.getViewModel().get('messageDraft'), createOperation());
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('isSaving')).toBe(true);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSave() - cancelled - cancelButton click", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+            controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), createOperation());
+
+            var cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom),
+                mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+
+            t.click(cancelButton[0]);
+
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('subject')).toBeFalsy();
+                t.expect(view.getViewModel().get('isSubjectRequired')).toBe(true);
+                t.expect(view.getViewModel().get('isSaving')).toBe(false);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSave() - cancelled - okButton click / empty subject", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+            controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), createOperation());
+
+            var okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom),
+                mask     = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+
+            t.click(okButton[0]);
+
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('subject')).toBeFalsy();
+                t.expect(view.getViewModel().get('isSubjectRequired')).toBe(false);
+                t.expect(view.getViewModel().get('isSaving')).toBe(true);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSave() - cancelled - okButton click / subject specified", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+            controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), createOperation());
+
+            var okButton   = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom),
+                mask       = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom),
+                inputField = Ext.dom.Query.select("input[type=text]", mask);
+
+            inputField[0].value = 'foo';
+
+            t.click(okButton[0]);
+
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('messageDraft').get('subject')).toBe('foo');
+                t.expect(view.getViewModel().get('isSubjectRequired')).toBe(true);
                 t.expect(view.getViewModel().get('isSaving')).toBe(true);
             });
         });

@@ -354,15 +354,43 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
     /**
      * Callback for this view's beforesave event.
+     * If the viewModel's isSubjectRequired is set to true and the subject is
+     * empty, the saveing process will be cancelled and the user is prompted
+     * for a subject. If it's still empty, isSubjectRequired will be set to false
+     * and the process will be triggered again. The controller will not ask for a
+     * subject then.
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Boolean} true if the event is part of a "send" process, i.e. the
+     * message is currently being saved before it gets send.
      */
-    onMailMessageBeforeSave : function(editor, messageDraft) {
+    onMailMessageBeforeSave : function(editor, messageDraft, isSending) {
         var me   = this,
             view = me.getView(),
             vm   = view.getViewModel();
 
+        if (!Ext.String.trim(messageDraft.get('subject')) &&
+            vm.get('isSubjectRequired') === true) {
+            view.showSubjectMissingNotice(messageDraft, Ext.Function.bindCallback(
+                function(isSending, viewModel, buttonId, value) {
+                    var me = this;
+
+                    if (buttonId !== 'okButton') {
+                        return;
+                    }
+
+                    if (!Ext.String.trim(value)) {
+                        viewModel.set('isSubjectRequired', false);
+                    }
+
+                    me.configureAndStartSaveBatch(isSending);
+                },
+                me,
+                [isSending, vm]
+            ));
+            return false;
+        }
         vm.set('isSaving', true);
 
         /**
@@ -390,7 +418,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             !messageDraft.get('cc').length &&
             !messageDraft.get('bcc').length) {
 
-            view.showAddressMissingNotice();
+            view.showAddressMissingNotice(messageDraft);
             return false;
         }
 
@@ -541,7 +569,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 );
             }, view, {single : true});
 
-            view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft);
+            if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true) === false) {
+                return false;
+            }
             saveBatch.start();
         },
 
