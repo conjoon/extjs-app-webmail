@@ -483,5 +483,43 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(view.busyMask.isHidden()).toBe(false);
     });
 
+
+    t.it("showAddressMissingNotice()", function(t) {
+        view = createWithViewConfig(viewConfig);
+
+        view.getViewModel().notify();
+
+        var iconCls = view.getIconCls();
+
+        t.expect(view.getClosable()).toBe(true);
+
+        view.down('#subjectField').focus();
+        t.expect(view.down('#subjectField').hasFocus).toBe(true);
+
+        view.showAddressMissingNotice();
+
+        var okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom);
+
+        var mask = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+
+        t.expect(mask.length).toBe(1);
+        t.expect(okButton.length).toBe(1);
+        t.expect(okButton[0].parentNode.style.display).not.toBe('none');
+
+        t.expect(view.getIconCls()).not.toBe(iconCls);
+        t.expect(view.getClosable()).toBe(false);
+
+        t.click(okButton[0]);
+
+        t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+
+        t.expect(view.getIconCls()).toBe(iconCls);
+        t.expect(view.getClosable()).toBe(true);
+
+        t.expect(view.down('#toField').hasFocus).toBe(true);
+
+
+    });
+
 });
 });

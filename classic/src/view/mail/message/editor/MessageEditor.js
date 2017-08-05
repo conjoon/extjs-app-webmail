@@ -115,7 +115,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.model.mail.message.EmailAddress',
         'conjoon.cn_mail.data.mail.BaseSchema',
         'conjoon.cn_core.data.Session',
-        'conjoon.cn_core.data.session.SplitBatchVisitor'
+        'conjoon.cn_core.data.session.SplitBatchVisitor',
+        'conjoon.cn_comp.component.MessageMask'
     ],
 
     alias : 'widget.cn_mail-mailmessageeditor',
@@ -179,6 +180,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     /**
      * Gets fired when a MessageDraft is about to get sent.
+     * This event is canceable. Return "false" in any attached listener to cancel
+     * sending the message.
      * @event cn_mail-mailmessagebeforesend
      * @param this
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
@@ -559,6 +562,48 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         }
 
         return this;
+    },
+
+
+    /**
+     * Shows a notice that the MessageDraft being edited misses at least one
+     * recipient. Will focus the toField afterwards and change the icon of
+     * the editor to signal that user interaction is necessary.
+     *
+     */
+    showAddressMissingNotice : function() {
+
+        /**
+         * @i18n
+         */
+        var me = this,
+            myMask, icolCls;
+
+        // notify any pending states here to flush so we can change the
+        // view's state and be sure not to interfere with any vm setting
+        me.getViewModel().notify();
+
+        iconCls = me.getIconCls();
+
+        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+            title    : "Address Missing",
+            message  : "Could not send the message. Please specify one or more recipients.",
+            target   : me,
+            buttons  : conjoon.cn_comp.component.MessageMask.OK,
+            icon     : conjoon.cn_comp.component.MessageMask.ERROR,
+            callback : function(btnAction) {
+                var me = this;
+                me.down('#toField').focus();
+                me.setClosable(true);
+                me.setIconCls(iconCls);
+            },
+            scope : me
+        });
+
+        me.setIconCls('fa fa-exclamation-circle');
+        me.setClosable(false);
+
+        myMask.show();
     }
 
 });
