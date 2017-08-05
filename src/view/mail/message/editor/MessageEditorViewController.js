@@ -29,6 +29,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
     extend : 'Ext.app.ViewController',
 
+    requires : [
+        'conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener'
+    ],
+
     alias : 'controller.cn_mail-mailmessageeditorviewcontroller',
 
     control : {
@@ -60,21 +64,20 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     },
 
     /**
-     * @parivate
+     * @private
      */
     deferTimers : null,
 
     /**
-     * Helper to indicate the number of times the attachmentlistWrap was entered/
-     * leaved during the drag/drop process to properly add/remove styles.
-     * @type {Integer=0} dragEnterCount
      * @private
      */
-    dragEnterCount : 0,
+    ddListener : null,
 
 
     /**
-     * Makes sure #installDragDropListeners is called as soon as the controller's
+     * Makes sure
+     * conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener#installDragDropListeners
+     * is called as soon as the controller's
      * editor was rendered.
      */
     init : function() {
@@ -82,7 +85,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view = me.getView();
 
         me.deferTimers = {};
-        view.on('afterrender', me.installDragDropListeners, me, {single : true});
+
+        me.ddListener = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener', {
+            view : view
+        });
+
+        me.ddListener.init();
     },
 
 
@@ -107,116 +115,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view.busyMask.destroy();
             view.busyMask = null;
         }
-    },
 
-
-    /**
-     * Helper method to register the drag & drop listeners to the embedded
-     * container wrapping the AttachmentList.
-     *
-     * @private
-     */
-    installDragDropListeners : function() {
-        var me             = this,
-            view           = me.getView(),
-            attachmentWrap = view.down('#attachmentListWrap').el;
-
-        view.mon(
-            attachmentWrap, 'dragenter', me.onAttachmentListWrapDragEnter, me);
-        view.mon(
-            attachmentWrap, 'dragleave', me.onAttachmentListWrapDragLeave, me);
-        view.mon(
-            attachmentWrap, 'dragend',   me.onAttachmentListWrapDragEnd,   me);
-        view.mon(
-            attachmentWrap, 'drop',      me.onAttachmentListWrapDrop,      me);
-    },
-
-
-    /**
-     * Helper function to add/remove the "hover" css class of the
-     * attachmentListWrap.
-     *
-     * @param {Boolean} isHover true to add the css class, false to remove it.
-     * @param {Boolean} forceReset true to reset #dragEnterCount to 0
-     */
-    registerAttachmentListWrapEnter : function(isHover, forceReset) {
-        var me   = this,
-            view = me.getView();
-
-        if (isHover) {
-            me.dragEnterCount++;
-        } else {
-            me.dragEnterCount--;
+        if (me.ddListener) {
+            me.ddListener.destroy();
+            me.ddListener = null;
         }
 
-        me.dragEnterCount = me.dragEnterCount < 0 || forceReset === true
-                            ? 0
-                            : me.dragEnterCount;
-
-        view.down('#attachmentListWrap').el[
-            me.dragEnterCount ? 'addCls' : 'removeCls'
-        ]('hover')
-    },
-
-
-    /**
-     * Callback for the dragenter event of the attachmentListWrap.
-     * Makes sure the hoverAttachmentListWrap is being called.
-     *
-     * @param {Ext.util.Event} e
-     */
-    onAttachmentListWrapDragEnter : function(e) {
-        e.preventDefault();
-
-        var me = this;
-        me.registerAttachmentListWrapEnter(true);
-    },
-
-
-    /**
-     * Callback for the dragleave event of the attachmentListWrap.
-     * Makes sure the hoverAttachmentListWrap is being called if,
-     * and only if dragEnterCount is equal or less than 0.
-     *
-     * @param {Ext.util.Event} e
-     */
-    onAttachmentListWrapDragLeave : function(e) {
-        e.preventDefault();
-
-        var me = this;
-        me.registerAttachmentListWrapEnter(false);
-    },
-
-
-    /**
-     * Callback for the attachmentListWrap's dragend event.
-     *
-     * @param {Ext.util.Event} e
-     */
-    onAttachmentListWrapDragEnd : function(e) {
-        e.preventDefault();
-
-        var me = this;
-        me.registerAttachmentListWrapEnter(false, true);
-    },
-
-
-    /**
-     * Callback for the attachmentListWrap's drop event.
-     *
-     * @param {Ext.util.Event} e
-     */
-    onAttachmentListWrapDrop : function(e) {
-        e.preventDefault();
-
-        var me           = this,
-            dataTransfer = e.event.dataTransfer;
-
-        me.registerAttachmentListWrapEnter(false, true);
-
-        if (dataTransfer && dataTransfer.files) {
-            me.addAttachmentsFromFileList(dataTransfer.files);
-        }
     },
 
 

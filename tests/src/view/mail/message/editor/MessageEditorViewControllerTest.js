@@ -242,11 +242,11 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                         t.expect(wrap.dom.className).not.toContain('hover');
                     }
 
-                    t.expect(controller.dragEnterCount).toBe(count);
+                    t.expect(controller.ddListener.dragEnterCount).toBe(count);
                 };
 
             // dragenter, dragleave, dragend
-            t.expect(controller.dragEnterCount).toBe(0);
+            t.expect(controller.ddListener.dragEnterCount).toBe(0);
             wrap.fireEvent('dragenter', event);
             expectCountAndHover(t, 1, true);
             wrap.fireEvent('dragenter', event);
@@ -263,25 +263,25 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             expectCountAndHover(t, 0, false);
 
             // registerAttachmentListWrapEnter
-            controller.registerAttachmentListWrapEnter(true);
+            controller.ddListener.registerAttachmentListWrapEnter(true);
             expectCountAndHover(t, 1, true);
             controller.dragEnterCount = 8970;
-            controller.registerAttachmentListWrapEnter(false, true);
+            controller.ddListener.registerAttachmentListWrapEnter(false, true);
             expectCountAndHover(t, 0, false);
             controller.dragEnterCount = -8970;
             wrap.fireEvent('drop', event);
             expectCountAndHover(t, 0, false);
 
             controller.dragEnterCount = 0;
-            controller.onAttachmentListWrapDragEnter(event);
+            controller.ddListener.onAttachmentListWrapDragEnter(event);
             expectCountAndHover(t, 1, true);
-            controller.onAttachmentListWrapDragLeave(event);
+            controller.ddListener.onAttachmentListWrapDragLeave(event);
             expectCountAndHover(t, 0, false);
             controller.dragEnterCount = 9890;
-            controller.onAttachmentListWrapDragEnd(event);
+            controller.ddListener.onAttachmentListWrapDragEnd(event);
             expectCountAndHover(t, 0, false);
             controller.dragEnterCount = 9890;
-            controller.onAttachmentListWrapDrop(event);
+            controller.ddListener.onAttachmentListWrapDrop(event);
             expectCountAndHover(t, 0, false);
 
             // wait for viewmodel bindings
@@ -295,7 +295,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
                 event.event.dataTransfer = {files : [createFile()]};
                 t.expect(attachmentList.getStore().getRange().length).toBe(0);
-                controller.onAttachmentListWrapDrop(event);
+                controller.ddListener.onAttachmentListWrapDrop(event);
                 t.expect(attachmentList.getStore().getRange().length).toBe(1);
             });
 
@@ -375,7 +375,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         t.it("onMailMessageEditorBeforeDestroy()", function(t) {
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
-                });
+             });
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     controller : controller,
@@ -389,8 +389,12 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             t.expect(controller.deferTimers).toBeDefined();
             controller.deferTimers['test'] = 456;
             t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
+
             t.expect(view.busyMask).toBeDefined();
             t.isCalledNTimes('destroy', view.busyMask, 1);
+
+            t.expect(controller.ddListener).toBeDefined();
+            t.isCalledNTimes('destroy', controller.ddListener, 1);
 
             controller.onMailMessageEditorBeforeDestroy();
 

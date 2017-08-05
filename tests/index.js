@@ -23,6 +23,7 @@ harness.configure({
         'conjoon.cn_mail.view.mail.message.editor.AttachmentListController' : '../src/view/mail/message/editor/AttachmentListController.js',
         'conjoon.cn_mail.view.mail.MailDesktopViewController' : '../src/view/mail/MailDesktopViewController.js',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController' : '../src/view/mail/message/editor/MessageEditorViewController.js',
+        'conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener' : '../src/view/mail/message/editor/MessageEditorDragDropListener.js',
 
         /**
          * Classic
