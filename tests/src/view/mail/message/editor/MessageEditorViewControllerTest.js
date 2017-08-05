@@ -538,6 +538,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     editMode   : 'CREATE'
                 });
 
+            view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
             view.down('#subjectField').setValue('SEND');
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
@@ -570,6 +571,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     editMode   : 'CREATE'
                 });
 
+            view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
             view.down('#subjectField').setValue('SENDFAIL');
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
@@ -622,11 +624,65 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     editMode   : 'CREATE'
                 });
 
-            controller.onMailMessageBeforeSend();
+            view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
+            controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'));
 
             t.waitForMs(500, function() {
+                t.expect(view.busyMask).toBeDefined();
                 t.expect(view.busyMask.isHidden()).toBe(false);
                 t.expect(view.getViewModel().get('isSending')).toBe(true);
+            });
+        });
+
+
+        t.it("onMailMessageBeforeSend() - cancelled", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            t.isCalledOnce('showAddressMissingNotice', view);
+            t.expect(controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'))).toBe(false);
+
+            t.waitForMs(500, function() {
+
+            });
+        });
+
+
+        t.it("Should make sure that onSendButtonClick works properly when no recipients are specified", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            view.down('#subjectField').setValue('SEND');
+            view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+
+            t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
+            t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
+            t.isCalledNTimes('onMailMessageSendComplete',           controller, 0);
+            t.isCalledNTimes('onMailMessageSendException',          controller, 0);
+
+            controller.onSendButtonClick();
+
+            // send / save both add defers with each appr. 750 ms
+            // wait long enough here
+            t.waitForMs(3000, function() {
+                // give enough time for the tests to finish
             });
         });
 

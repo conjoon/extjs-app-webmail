@@ -377,11 +377,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     *
+     * @return {Boolean} false if the message could not validated and sending it
+     * should be cancelled
      */
-    onMailMessageBeforeSend : function(editor, messagDraft) {
+    onMailMessageBeforeSend : function(editor, messageDraft) {
         var me   = this,
             view = me.getView(),
             vm   = view.getViewModel();
+
+        if (!messageDraft.get('to').length &&
+            !messageDraft.get('cc').length &&
+            !messageDraft.get('bcc').length) {
+
+            view.showAddressMissingNotice();
+            return false;
+        }
 
         vm.set('isSending', true);
 
@@ -442,6 +453,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          * This method is part of a callback that gets called by onMailMessageSaveComplete,
          * if the save process was part of a request to send teh MessageDraft.
          *
+         * Returns {Boolean} true if sending the message was delegated to the backend,
+         * false if the cn_mail-mailmessagebeforesend event cancelled the process.
+         *
          * @private
          */
         sendMessage : function() {
@@ -458,7 +472,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 })
             }
 
-            view.fireEvent('cn_mail-mailmessagebeforesend', view, messageDraft);
+            if (view.fireEvent('cn_mail-mailmessagebeforesend', view, messageDraft) === false) {
+                return false;
+            };
 
             Ext.Ajax.request({
                 url    : './cn_mail/SendMessage',
