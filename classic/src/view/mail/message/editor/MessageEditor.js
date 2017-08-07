@@ -147,6 +147,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Boolean} isSending Whether the save process is part of an ongoing
      * send-process of the message.
+     * @param {Boolean} isRetry Whether the save process was paused due to an
+     * exception and is now being retried
      */
 
     /**
@@ -167,6 +169,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Ext.data.operation.Operation} operation The operation that caused
      * the exception
+     * @param {Boolean} isSending Whether the save process is part of an ongoing
+     * send-process of the message.
+     * @param {Ext.data.Batch} batch The save batch which can be resumed if it's
+     * pauseOnEXception property was et to true
      */
 
     /**
@@ -654,6 +660,54 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                 me.setIconCls(iconCls);
                 if (callback) {
                     callback.apply(me, [btnAction, value]);
+                }
+            },
+            scope : me
+        });
+
+        me.setIconCls('fa fa-question-circle');
+        me.setClosable(false);
+
+        myMask.show();
+    },
+
+
+    /**
+     * Shows a message that savin the current message failed.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation The operation that failed
+     * @param {Function} callback Optional callback that gets called in the
+     * scope of this view. Allows further user interaction by specifying logic
+     * to handle the failed process
+     */
+    showMailMessageSaveFailedNotice : function(messageDraft, operation, callback) {
+        /**
+         * @i18n
+         */
+        var me        = this,
+            viewModel = me.getViewModel(),
+            myMask, iconCls;
+
+        // notify any pending states here to flush so we can change the
+        // view's state and be sure not to interfere with any vm setting
+        me.getViewModel().notify();
+
+        iconCls = me.getIconCls();
+
+        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+            title    : "Saving Failed",
+            message  : "Saving the message failed. Do you want to retry to save the message?",
+            target   : me,
+            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
+            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            callback : function(btnAction, value) {
+                var me = this;
+                    me.setClosable(true);
+                    me.setIconCls(iconCls);
+
+                if (callback) {
+                    callback.apply(me, arguments);
                 }
             },
             scope : me

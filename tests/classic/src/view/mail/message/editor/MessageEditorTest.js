@@ -592,5 +592,64 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     });
 
+
+    t.it("showMailMessageSaveFailedNotice()", function(t) {
+        view = createWithViewConfig(viewConfig);
+
+        view.getViewModel().notify();
+
+        var BUTTONID, SCOPE,
+            iconCls = view.getIconCls(),
+            func    = function(btnId) {
+                SCOPE    = this;
+                BUTTONID = btnId;
+            };
+        t.expect(view.getClosable()).toBe(true);
+
+        view.showMailMessageSaveFailedNotice(view.getViewModel().get('messageDraft'), null, func);
+
+        var yesButton  = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom),
+            noButton   = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom),
+            mask       = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom)
+
+        t.expect(mask.length).toBe(1);
+        t.expect(yesButton.length).toBe(1);
+        t.expect(yesButton[0].parentNode.style.display).not.toBe('none');
+        t.expect(noButton.length).toBe(1);
+        t.expect(noButton[0].parentNode.style.display).not.toBe('none');
+
+        t.expect(view.getIconCls()).not.toBe(iconCls);
+        t.expect(view.getClosable()).toBe(false);
+
+        // OKBUTTON
+        t.click(yesButton[0]);
+
+        t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+        t.expect(view.getIconCls()).toBe(iconCls);
+        t.expect(view.getClosable()).toBe(true);
+
+        t.expect(BUTTONID).toBe('yesButton');
+        t.expect(SCOPE).toBe(view);
+        view.getViewModel().notify();
+
+
+        // CANCELBUTTON
+        VALUE    = "";
+        BUTTONID = "";
+        view.showMailMessageSaveFailedNotice(view.getViewModel().get('messageDraft'), null, func);
+
+        noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
+
+        t.click(noButton[0]);
+
+        t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+        t.expect(view.getIconCls()).toBe(iconCls);
+        t.expect(view.getClosable()).toBe(true);
+
+        t.expect(BUTTONID).toBe('noButton');
+
+    });
+
+
 });
 });
