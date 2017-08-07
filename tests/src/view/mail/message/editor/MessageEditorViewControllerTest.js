@@ -420,7 +420,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
             t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
-            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
             t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
             t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
 
@@ -482,7 +482,46 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            t.expect(controller.onMailMessageSaveOperationException()).toBe(false);
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    renderTo   : document.body,
+                    editMode   : 'CREATE'
+                });
+
+            var batch = {retry : function() {}};
+
+            view.getViewModel().set('messageDraft.subject', 'TEST');
+            view.getViewModel().set('isSaving', true);
+            view.getViewModel().notify();
+
+
+            t.isCalledNTimes('showMailMessageSaveFailedNotice', view, 2);
+
+            controller.onMailMessageSaveOperationException(
+                view, view.getViewModel().get('messageDraft'), createOperation(), false, batch);
+
+            var noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
+            t.click(noButton[0]);
+
+            t.waitForMs(500, function() {
+                t.expect(view.getViewModel().get('isSaving')).toBe(false);
+
+                view.getViewModel().set('isSaving', true);
+
+                controller.onMailMessageSaveOperationException(
+                    view, view.getViewModel().get('messageDraft'), createOperation(), false, batch);
+
+                t.isCalledOnce('retry', batch);
+
+                var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+                t.click(yesButton[0]);
+
+                t.waitForMs(500, function() {
+                    t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                });
+
+            });
         });
 
 
@@ -678,7 +717,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
             t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
-            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
             t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
             t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
             t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
@@ -711,7 +750,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
             t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
-            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
             t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
             t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
             t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
@@ -805,7 +844,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
             t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
-            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 1);
+            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
             t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
             t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
             t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);

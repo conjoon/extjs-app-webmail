@@ -219,10 +219,39 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Ext.data.operation.Operation} operation
+     * @param {Boolean} isSending
+     * @param {Ext.data.Batch} batch
      */
-    onMailMessageSaveOperationException : function(editor, messageDraft, operation) {
-        // tbd return value is only for tests
+    onMailMessageSaveOperationException : function(editor, messageDraft, operation, isSending, batch) {
+
+        var me   = this,
+            view = me.getView();
+
+        me.endBusyState('saving');
+
+        view.showMailMessageSaveFailedNotice(messageDraft, operation, Ext.Function.bindCallback(
+            function(isSending, batch, buttonId) {
+                var me   = this,
+                    view = me.getView();
+
+
+                if (buttonId !== 'yesButton' ||
+                    view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSending, true) === false) {
+                    // mailmessagessagebforesave listener called which sets the
+                    // busy state again - cancel it here.
+                    // a better way would we to have a "start" event in the
+                    // Ext.data.Batch class which gets fired upon start/retry.
+                    me.endBusyState('saving');
+                    return;
+                }
+
+                batch.retry();
+            },
+            me,
+            [isSending, batch]
+        ));
         return false;
+
     },
 
 
@@ -451,27 +480,33 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             saveBatch.setPauseOnException(true);
 
             saveBatch.on({
-                exception : function(batch, operation) {
-                    view.fireEvent('cn_mail-mailmessagesaveoperationexception',
-                        view, messageDraft, operation);
+                operationcomplete : {
+                    fn : function(batch, operation) {
+                        view.fireEvent('cn_mail-mailmessagesaveoperationcomplete',
+                            view, messageDraft, operation);
+                    },
+                    scope  : view
                 },
-                operationcomplete : function(batch, operation) {
-                    view.fireEvent('cn_mail-mailmessagesaveoperationcomplete',
-                        view, messageDraft, operation);
+                exception : {
+                    fn : function(batch, operation) {
+                        view.fireEvent('cn_mail-mailmessagesaveoperationexception',
+                            view, messageDraft, operation, isSend === true, batch);
+                    },
+                    scope : view
                 },
-                scope  : view,
-                single : true
+                complete : {
+                    fn : function(batch, operation) {
+                        view.fireEvent(
+                            'cn_mail-mailmessagesavecomplete',
+                            view, messageDraft,
+                            operation,
+                            isSend === true
+                        );
+                    },
+                    scope  : view,
+                    single : true
+                }
             });
-
-
-            saveBatch.on('complete', function(batch, operation) {
-                view.fireEvent(
-                    'cn_mail-mailmessagesavecomplete',
-                    view, messageDraft,
-                    operation,
-                    isSend === true
-                );
-            }, view, {single : true});
 
             if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true) === false) {
                 return false;
