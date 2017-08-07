@@ -87,6 +87,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
         view.mon(
             attachmentWrap, 'dragenter', me.onAttachmentListWrapDragEnter, me);
         view.mon(
+            attachmentWrap, 'dragover',  me.onAttachmentListWrapDragOver, me);
+        view.mon(
             attachmentWrap, 'dragleave', me.onAttachmentListWrapDragLeave, me);
         view.mon(
             attachmentWrap, 'dragend',   me.onAttachmentListWrapDragEnd,   me);
@@ -119,6 +121,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
         view.down('#attachmentListWrap').el[
             me.dragEnterCount ? 'addCls' : 'removeCls'
             ]('hover')
+    },
+
+
+    /**
+     * Callback for the dragover event of the attachmentListWrap.
+     * Makes sure the preventDefault is being called for the event.
+     *
+     * @param {Ext.util.Event} e
+     */
+    onAttachmentListWrapDragOver : function(e) {
+        e.preventDefault();
     },
 
 
