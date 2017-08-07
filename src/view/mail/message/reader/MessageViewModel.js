@@ -110,11 +110,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
          * @see getIndicatorIcon
          */
         getIndicatorText : function(get) {
-
+            /**
+             * @i18n
+             */
             return !get('messageBody') && !get('messageItem')
                    ? 'Select a message for reading.'
                    : get('messageItem') && !get('messageBody')
-                     ? 'Loading message...'
+                     ? 'Loading message body...'
                      : ''
 
         },

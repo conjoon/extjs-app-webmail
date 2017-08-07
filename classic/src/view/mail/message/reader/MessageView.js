@@ -73,6 +73,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
     closable : true,
 
+    /**
+     * @type {Ext.LoadMask}
+     * @private
+     */
+    loadingMask : null,
+
     items : [{
         xtype  : 'container',
         itemId : 'msgHeaderContainer',
@@ -157,6 +163,47 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             }
         }]
     }],
+
+
+    /**
+     * @inheritdoc
+     */
+    initComponent : function() {
+
+        var me = this;
+
+        me.on('afterrender', function() {
+            var me = this;
+
+            me.loadingMask = Ext.create('Ext.LoadMask', {
+                target : me,
+                bind   : {
+                    hidden : '{!isLoading}'
+                },
+                listeners : {
+                    hide : function(mask) {
+                        mask.destroy();
+                        me.loadingMask = null;
+                    }
+                }
+            });
+
+            me.loadingMask.show();
+        }, me, {single : true});
+
+        me.on('beforedestroy', function() {
+            var me = this;
+
+            if (me.loadingMask) {
+                me.loadingMask.destroy();
+                me.loadingMask = null;
+            }
+
+        }, me);
+
+        me.callParent(arguments);
+    },
+
 
 // -------- API
     /**

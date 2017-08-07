@@ -24,6 +24,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
     var view,
         viewConfig,
+        testDate   = new Date(),
+        formatDate = Ext.util.Format.date(testDate, 'd.m.Y H:i')
         createMessageItem = function(withMessageBody) {
 
             var conf = {
@@ -31,7 +33,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
                 messageBodyId  : 1,
                 subject        : 'SUBJECT',
                 from           : 'FROM',
-                date           : 'DATE',
+                date           : testDate,
                 isRead         : false,
                 hasAttachments : true
             };
@@ -48,14 +50,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
             t.expect(view.getTitle()).toContain('SUBJECT');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('FROM');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('SUBJECT');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('DATE');
+            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(formatDate);
             t.expect(view.down('component[cls=cn_mail-body]').el.dom.innerHTML).not.toBe("");
         },
         checkHtmlDataNotPresent = function(t, view) {
             t.expect(view.getTitle()).toBeFalsy();
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('FROM');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('SUBJECT');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('DATE');
+            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain(formatDate);
             t.expect(view.down('component[cls=cn_mail-body]').el.dom.innerHTML).toBe("");
         };
 
@@ -269,6 +271,53 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
 
         });
+
+
+        t.it("check that LoadMask is properly rendered", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+            view.getViewModel().set('isLoading', true);
+
+            t.expect(view.loadingMask).toBeFalsy();
+
+            view.render(document.body);
+
+            t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
+
+            t.isCalledOnce('destroy', view.loadingMask);
+
+            view.getViewModel().set('isLoading', false);
+
+            view.getViewModel().notify();
+
+            t.expect(view.loadingMask).toBe(null);
+
+        });
+
+
+        t.it("check that LoadMask is properly removed - beforedestroy", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+            view.getViewModel().set('isLoading', true);
+
+            t.expect(view.loadingMask).toBeFalsy();
+
+            view.render(document.body);
+
+            t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
+
+            t.isCalledOnce('destroy', view.loadingMask);
+
+            view.destroy();
+
+            t.expect(view.loadingMask).toBe(null);
+
+        });
+
 
 
     });
