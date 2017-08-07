@@ -104,8 +104,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     onMessageEditorAfterrender : function(editor) {
 
         var me   = this,
-            view = me.getView(),
-            vm   = view.getViewModel();
+            view = me.getView();
 
         if (view.editMode === 'EDIT') {
             view.showMessageDraftLoadingNotice();
@@ -134,6 +133,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         if (view.busyMask) {
             view.busyMask.destroy();
             view.busyMask = null;
+        }
+
+        if (view.loadingMask) {
+            view.loadingMask.destroy();
+            view.loadingMask = null;
         }
 
         if (me.ddListener) {
