@@ -90,7 +90,27 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view : view
         });
 
+        view.on('afterrender', me.onMessageEditorAfterrender, me ,{single : true});
+
         me.ddListener.init();
+    },
+
+
+    /**
+     * Callback for the MessageEditor's afterrender event.
+     * Will advise the view to show a loadmask if necessary.
+     * @param editor
+     */
+    onMessageEditorAfterrender : function(editor) {
+
+        var me   = this,
+            view = me.getView(),
+            vm   = view.getViewModel();
+
+        if (view.editMode === 'EDIT') {
+            view.showMessageDraftLoadingNotice();
+        }
+
     },
 
 

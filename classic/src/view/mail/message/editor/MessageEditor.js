@@ -229,12 +229,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     iconCls : "fa fa-spin fa-spinner",
 
     bind : {
-        closable : '{isSaving || isSending ? false : true}',
-        title    : '{getSubject}',
-        iconCls  : '{getSubject && !isSaving && !isSending ? "fa fa-edit" : "fa fa-spin fa-spinner"}'
+        closable : '{!isMessageBodyLoading && !isSaving && !isSending}',
+        title    : '{!isMessageBodyLoading ? getSubject : "Loading..."}',
+        iconCls  : '{getSubject && !isSaving && !isSending && !isMessageBodyLoading ? "fa fa-edit" : "fa fa-spin fa-spinner"}'
     },
 
-    closable : true,
+    closable : false,
 
     buttonAlign : 'right',
 
@@ -252,6 +252,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @see setBusy
      */
     busyMask : null,
+
+    /**
+     * @private
+     * @see showMessageDraftLoadingNotice
+     */
+    loadingMask : null,
 
     buttons : [{
         text   : 'Save',
@@ -717,6 +723,38 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         me.setClosable(false);
 
         myMask.show();
+    },
+
+
+    /**
+     * Creates a LoadMask to indicate that there is currently a message being
+     * loaded.
+     * The loadMask will be set to hidden and get destroyed as soon as the
+     * ViewModels {isMessageBodyLoading} returns false. All references to
+     * loadingMask will be cleared
+     *
+     * @private
+     */
+    showMessageDraftLoadingNotice : function() {
+
+        var me = this;
+
+        me.loadingMask = Ext.create('Ext.LoadMask', {
+            target : me,
+            bind   : {
+                hidden : '{!isMessageBodyLoading}'
+            },
+            listeners : {
+                hide : function(mask) {
+                    var me = this;
+                    me.loadingMask = null;
+                    mask.destroy();
+                },
+                scope : this
+            }
+        });
+
+        me.loadingMask.show();
     }
 
 

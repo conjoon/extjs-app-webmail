@@ -69,6 +69,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     formulas : {
 
         /**
+         * Returns true if the "loading" property of the messageDraft's MessageBody
+         * is true, otherwise false.
+         */
+        isMessageBodyLoading : function(get) {
+            var mb = get('messageDraft.messageBody');
+
+            return mb.loading !== undefined ? mb.loading : false;
+
+        },
+
+        /**
          * Formula returns true or false based on the value of the MessageDraft's
          * cc- and bcc-fields.
          *

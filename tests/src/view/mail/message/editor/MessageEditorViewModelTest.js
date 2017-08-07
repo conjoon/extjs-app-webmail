@@ -63,15 +63,12 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 var formulas = viewModel.getFormulas(),
                     expected = [
                         'addressStoreData', 'getBcc', 'getCc',
-                        'getSubject', 'getTo', 'isCcOrBccValueSet'
+                        'getSubject', 'getTo', 'isCcOrBccValueSet', 'isMessageBodyLoading'
                     ],
                     expectedCount = expected.length,
                     count = 0;
 
                 for (var i in formulas) {
-                    if (!formulas.hasOwnProperty(i)) {
-                        continue;
-                    }
                     t.expect(expected).toContain(i);
                     count++;
                 }
@@ -246,6 +243,24 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             t.expect(viewModel.get('messageDraft.subject')).toBe('test');
         });
 
+
+        t.it("Should make sure that isMessageBodyLoading works properly", function(t) {
+            viewModel = createWithSession();
+
+            var formulas = viewModel.getFormulas();
+
+            t.expect(formulas.isMessageBodyLoading).toBeDefined();
+            t.expect(formulas.isMessageBodyLoading.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
+
+            viewModel.set('messageDraft.messageBody.prop', 'foo');
+
+            t.expect(formulas.isMessageBodyLoading.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
+
+            viewModel.get('messageDraft.messageBody').loading = true;
+
+            t.expect(formulas.isMessageBodyLoading.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
+
+        });
 
 
     })});

@@ -881,5 +881,36 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         });
 
 
+        t.it('onMessageEditorAfterrender() - editMode: CREATE', function(t) {
+
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    editMode   : 'CREATE'
+                });
+
+            t.isntCalled('showMessageDraftLoadingNotice', view);
+        });
+
+        t.it('onMessageEditorAfterrender() - editMode: EDIT', function(t) {
+
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    editMode   : 'EDIT',
+                    messageDraft : 1
+                });
+
+            t.isCalledOnce('showMessageDraftLoadingNotice', view);
+
+            view.render(document.body);
+        });
+
     });
 });

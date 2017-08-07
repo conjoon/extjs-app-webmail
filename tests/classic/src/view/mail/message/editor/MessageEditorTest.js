@@ -68,7 +68,6 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         delay: 1
     });
 
-
 // +---------------------------------------------------------------------------
 // | BASIC BEHAVIOR
 // +---------------------------------------------------------------------------
@@ -81,7 +80,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         // configs
         t.expect(view instanceof Ext.form.Panel).toBe(true);
         t.expect(view.alias).toContain('widget.cn_mail-mailmessageeditor');
-        t.expect(view.closable).toBe(true);
+        t.expect(view.closable).toBe(false);
         t.expect(view.getSession()).toBeTruthy();
         t.expect(view.getSession().getSchema() instanceof conjoon.cn_mail.data.mail.BaseSchema).toBe(true);
         t.expect(view.getController() instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController).toBe(true);
@@ -647,6 +646,44 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(view.getClosable()).toBe(true);
 
         t.expect(BUTTONID).toBe('noButton');
+
+    });
+
+
+    t.it("showMessageDraftLoadingNotice()", function(t) {
+        view = createWithViewConfig(viewConfig);
+
+        t.expect(view.loadingMask).toBeFalsy();
+
+        view.showMessageDraftLoadingNotice();
+
+        t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
+        t.expect(view.loadingMask.isHidden()).toBe(false);
+
+        t.isCalledOnce('destroy', view.loadingMask);
+        view.loadingMask.hide();
+        t.expect(view.loadingMask).toBe(null);
+    });
+
+
+    t.it("showMessageDraftLoadingNotice() - vm isMessageBodyLoading", function(t) {
+
+        Ext.ux.ajax.SimManager.init({
+            delay: 500
+        });
+
+        view = createWithMessageConfig(1, 'EDIT');
+
+
+        t.waitForMs(250, function() {
+            t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
+            t.expect(view.loadingMask.isHidden()).toBe(false);
+            t.isCalledOnce('destroy', view.loadingMask);
+
+            t.waitForMs(1500, function() {
+                t.expect(view.loadingMask).toBe(null);
+            });
+        });
 
     });
 
