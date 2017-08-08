@@ -231,9 +231,13 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     onMailMessageGridDeselect : function(selectionModel, record) {
 
-        var me = this;
+        var me     = this,
+            navBar = me.getNavigationToolbar();
 
-        me.getNavigationToolbar().down('#cn_mail-nodeNavEditMessage').setDisabled(true);
+        navBar.down('#cn_mail-nodeNavEditMessage').setDisabled(true);
+        navBar.down('#cn_mail-nodeNavReplyTo').setDisabled(true);
+        navBar.down('#cn_mail-nodeNavReplyAll').setDisabled(true);
+        navBar.down('#cn_mail-nodeNavForward').setDisabled(true);
    },
 
 
@@ -248,11 +252,21 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
         var me             = this,
             mailFolderTree = me.getMailFolderTree(),
-            selectedNodes  = mailFolderTree.getSelection();
+            type           = mailFolderTree.getSelection()[0].get('type'),
+            navBar         = me.getNavigationToolbar();
 
-        if (selectedNodes[0].get('type') === 'DRAFT') {
-            me.getNavigationToolbar().down('#cn_mail-nodeNavEditMessage').setDisabled(false);
+        switch (type) {
+            case 'DRAFT':
+                navBar.down('#cn_mail-nodeNavEditMessage').setDisabled(false);
+                break;
+
+            default:
+                navBar.down('#cn_mail-nodeNavReplyTo').setDisabled(false);
+                navBar.down('#cn_mail-nodeNavReplyAll').setDisabled(false);
+                navBar.down('#cn_mail-nodeNavForward').setDisabled(false);
+                break;
         }
+
     },
 
 
@@ -381,6 +395,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                     xtype    : 'button',
                     iconCls  : 'x-fa fa-mail-reply',
                     disabled : true,
+                    itemId   : 'cn_mail-nodeNavReplyTo',
                     tooltip  : {
                         title : 'Reply to message',
                         text  : 'Opens the editor for replying to the sender of the selected message.'
@@ -388,6 +403,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 }, {
                     xtype    : 'button',
                     iconCls  :'x-fa fa-mail-reply-all',
+                    itemId   : 'cn_mail-nodeNavReplyAll',
                     disabled : true,
                     tooltip  : {
                         title : 'Reply all to message',
@@ -396,6 +412,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 }, {
                     xtype    : 'button',
                     iconCls  : 'x-fa fa-mail-forward',
+                    itemId   : 'cn_mail-nodeNavForward',
                     disabled : true,
                     tooltip  : {
                         title : 'Forward message',
