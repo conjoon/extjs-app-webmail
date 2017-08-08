@@ -68,9 +68,12 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             },
             before : 'onBeforePackageRoute'
         },
-       'cn_mail/message/edit/:id' : 'onEditMessageRoute',
-       'cn_mail/message/read/:id' : 'onReadMessageRoute',
-       'cn_mail/home'             : 'onHomeTabRoute'
+        'cn_mail/message/edit/:id'     : 'onEditMessageRoute',
+        'cn_mail/message/replyTo/:id'  : 'onReplyToRoute',
+        'cn_mail/message/replyAll/:id' : 'onReplyAllRoute',
+        'cn_mail/message/forward/:id'  : 'onForwardRoute',
+        'cn_mail/message/read/:id'     : 'onReadMessageRoute',
+        'cn_mail/home'                 : 'onHomeTabRoute'
     },
 
     control : {
@@ -86,6 +89,15 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage' : {
             click : 'onMessageEditButtonClick'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyTo' : {
+            click : 'onReplyToButtonClick'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyAll' : {
+            click : 'onReplyAllButtonClick'
+        },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavForward' : {
+            click : 'onForwardButtonClick'
         },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane > menu > menucheckitem' : {
             checkchange : 'onReadingPaneCheckChange'
@@ -302,11 +314,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id to be able to track this MessageEditor instance
      */
     onComposeMessageRoute : function(id) {
-
-        var me              = this,
-            mailDesktopView = me.getMainPackageView();
-
-        mailDesktopView.showMailEditor(id, 'compose');
+        this.showMailEditor(id, 'compose');
     },
 
 
@@ -316,13 +324,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id to be able to track this MessageEditor instance
      */
     onComposeMailtoMessageRoute : function(id) {
-
-        var me              = this,
-            mailDesktopView = me.getMainPackageView();
-
         id = 'mailto%3A'  + id;
-
-        mailDesktopView.showMailEditor(id, 'compose');
+        this.showMailEditor(id, 'compose');
     },
 
 
@@ -332,13 +335,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onMessageComposeButtonClick : function(btn) {
-        var me              = this,
-            mailDesktopView = me.getMainPackageView();
-
-        mailDesktopView.showMailEditor(
-            Ext.id().split('-').pop(),
-            'compose'
-        );
+        this.showMailEditor(Ext.id().split('-').pop(), 'compose');
     },
 
 
@@ -348,11 +345,37 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id of the message to edit
      */
     onEditMessageRoute : function(id) {
+        this.showMailEditor(id, 'edit');
+    },
 
-        var me              = this,
-            mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.showMailEditor(id, 'edit');
+    /**
+     * Action for cn_mail/message/replyTo.
+     *
+     * @param {String} id the id of the message to edit
+     */
+    onReplyToRoute : function(id) {
+        this.showMailEditor(id, 'replyTo');
+    },
+
+
+    /**
+     * Action for cn_mail/message/replyAll.
+     *
+     * @param {String} id the id of the message to edit
+     */
+    onReplyAllRoute : function(id) {
+        this.showMailEditor(id, 'replyAll');
+    },
+
+
+    /**
+     * Action for cn_mail/message/forward.
+     *
+     * @param {String} id the id of the message to edit
+     */
+    onForwardRoute : function(id) {
+        this.showMailEditor(id, 'forward');
     },
 
 
@@ -363,11 +386,52 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     onMessageEditButtonClick : function(btn) {
         var me              = this,
-            mailDesktopView = me.getMainPackageView(),
             sel             = me.getMailMessageGrid().getSelection(),
             id              = sel[0].getId();
 
-        mailDesktopView.showMailEditor(id, 'edit');
+        me.showMailEditor(id, 'edit');
+    },
+
+
+    /**
+     * Callback for the node navigation's "replyTo message button".
+     *
+     * @param {Ext.Button} btn
+     */
+    onReplyToButtonClick : function(btn) {
+        var me              = this,
+            sel             = me.getMailMessageGrid().getSelection(),
+            id              = sel[0].getId();
+
+        me.showMailEditor(id, 'replyTo');
+    },
+
+
+    /**
+     * Callback for the node navigation's "replyAll message button".
+     *
+     * @param {Ext.Button} btn
+     */
+    onReplyAllButtonClick : function(btn) {
+        var me              = this,
+            sel             = me.getMailMessageGrid().getSelection(),
+            id              = sel[0].getId();
+
+        me.showMailEditor(id, 'replyAll');
+    },
+
+
+    /**
+     * Callback for the node navigation's "forward message button".
+     *
+     * @param {Ext.Button} btn
+     */
+    onForwardButtonClick : function(btn) {
+        var me              = this,
+            sel             = me.getMailMessageGrid().getSelection(),
+            id              = sel[0].getId();
+
+        me.showMailEditor(id, 'forward');
     },
 
 
@@ -501,6 +565,27 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
          */
         return app.activateViewForHash('cn_mail/home');
+    },
+
+
+    privates : {
+
+        /**
+         * Opens the MaiLEditor for the specified id and the specified action (
+         * one of edit, compose, replyTo, replyAll, forward).
+         *
+         * @param {String} id
+         * @param {String type
+         *
+         * @private
+         */
+        showMailEditor : function(id, type) {
+            var me              = this,
+                mailDesktopView = me.getMainPackageView();
+
+            mailDesktopView.showMailEditor(id, type);
+        }
+
     }
 
 });

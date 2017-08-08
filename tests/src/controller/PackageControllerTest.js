@@ -50,10 +50,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     });
 
 
-    t.it("onComposeMessageRoute()", function(t) {
-
-        var SHOWN   = 0,
-            CN_HREF = 'foo';
+    t.it("showMailEditor()", function(t) {
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         packageCtrl.getMainPackageView = function() {
@@ -64,52 +61,18 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                     };
                 },
                 showMailEditor : function() {
-                    SHOWN++;
                 }
             }
         };
 
-        t.expect(SHOWN).toBe(0);
-        packageCtrl.onComposeMessageRoute();
-        t.expect(SHOWN).toBe(1);
-        packageCtrl.onComposeMessageRoute();
-        t.expect(SHOWN).toBe(2);
-
-        packageCtrl.onComposeMessageRoute();
-        t.expect(SHOWN).toBe(3);
-        packageCtrl.onComposeMessageRoute();
-        t.expect(SHOWN).toBe(4);
-
+        t.isCalledNTimes('showMailEditor', packageCtrl, 1);
+        packageCtrl.showMailEditor();
     });
 
 
-    t.it("onMessageComposeButtonClick()", function(t) {
+    t.it("message routes", function(t) {
 
-        var SHOWN = 0;
-
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        packageCtrl.getMainPackageView = function() {
-            return {
-                showMailEditor : function() {
-                    SHOWN++;
-                }
-            }
-        };
-
-        t.expect(SHOWN).toBe(0);
-        packageCtrl.onMessageComposeButtonClick();
-        t.expect(SHOWN).toBe(1);
-        packageCtrl.onMessageComposeButtonClick();
-        t.expect(SHOWN).toBe(2);
-        packageCtrl.onMessageComposeButtonClick();
-        t.expect(SHOWN).toBe(3);
-    });
-
-
-    t.it("onEditMessageRoute()", function(t) {
-
-        var SHOWN   = 0,
-            CN_HREF = 'foo';
+        var CN_HREF = 'foo';
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         packageCtrl.getMainPackageView = function() {
@@ -120,58 +83,48 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                     };
                 },
                 showMailEditor : function() {
-                    SHOWN++;
                 }
             }
         };
 
-        t.expect(SHOWN).toBe(0);
+        t.isCalledNTimes('showMailEditor', packageCtrl, 6);
+        packageCtrl.onComposeMessageRoute();
         packageCtrl.onEditMessageRoute();
-        t.expect(SHOWN).toBe(1);
-        packageCtrl.onEditMessageRoute();
-        t.expect(SHOWN).toBe(2);
+        packageCtrl.onReplyToRoute();
+        packageCtrl.onReplyAllRoute();
+        packageCtrl.onForwardRoute();
+        packageCtrl.onComposeMailtoMessageRoute();
 
-        packageCtrl.onEditMessageRoute();
-        t.expect(SHOWN).toBe(3);
-        packageCtrl.onEditMessageRoute();
-        t.expect(SHOWN).toBe(4);
     });
 
 
-    t.it("onMessageEditButtonClick()", function(t) {
-        var SHOWN = 0;
+    t.it("message edit buttons", function(t) {
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMainPackageView = function() {
+            return {
+                showMailEditor : function() {
+                }
+            }
+        };
         packageCtrl.getMailMessageGrid = function() {
-
             return {
                 getSelection : function() {
-
                     return [{
                         getId : function() {
                             return 1;
                         }
                     }]
-
                 }
             };
-
-        };
-        packageCtrl.getMainPackageView = function() {
-            return {
-                showMailEditor : function() {
-                    SHOWN++;
-                }
-            }
         };
 
-        t.expect(SHOWN).toBe(0);
+        t.isCalledNTimes('showMailEditor', packageCtrl, 5);
+        packageCtrl.onMessageComposeButtonClick();
         packageCtrl.onMessageEditButtonClick();
-        t.expect(SHOWN).toBe(1);
-        packageCtrl.onMessageEditButtonClick();
-        t.expect(SHOWN).toBe(2);
-        packageCtrl.onMessageEditButtonClick();
-        t.expect(SHOWN).toBe(3);
+        packageCtrl.onReplyToButtonClick();
+        packageCtrl.onReplyAllButtonClick();
+        packageCtrl.onForwardButtonClick();
     });
 
 
