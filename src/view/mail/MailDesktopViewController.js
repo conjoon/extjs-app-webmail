@@ -155,6 +155,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             recInd  = store ? store.findExact('id', messageId + '') : null;
 
         if (!newView) {
+
             newView = view.add({
                 xtype   : 'cn_mail-mailmessagereadermessageview',
                 itemId  : itemId,
@@ -167,7 +168,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
            } else {
                 // most likely opened via deeplinking
                 newView.loadMessageItem(messageId);
-            }
+           }
         }
 
         me.getView().setActiveTab(newView);
@@ -252,7 +253,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             })
         }
 
-        if (['edit', 'compose'].indexOf(type) === -1) {
+        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward'].indexOf(type) === -1) {
             Ext.raise({
                 type  : type,
                 msg : "\"type\" is not a valid value"
@@ -299,7 +300,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             })
         }
 
-        if (['edit', 'compose'].indexOf(type) === -1) {
+        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward'].indexOf(type) === -1) {
             Ext.raise({
                 type  : type,
                 msg : "\"type\" is not a valid value"
@@ -309,6 +310,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         switch (type) {
             case 'edit':
                 return 'cn_mail/message/edit/' + id;
+            case 'replyTo':
+                return 'cn_mail/message/replyTo/' + id;
+            case 'replyAll':
+                return 'cn_mail/message/replyAll/' + id;
+            case 'forward':
+                return 'cn_mail/message/forward/' + id;
             default :
                 return 'cn_mail/message/compose/' + id
         }

@@ -266,6 +266,15 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             args     : [8797, 'edit'],
             expected : 'cn_mail-mailmessageeditor-edit-8797'
         }, {
+            args     : ['8', 'replyTo'],
+            expected : 'cn_mail-mailmessageeditor-replyTo-8'
+        }, {
+            args     : ['7', 'replyAll'],
+            expected : 'cn_mail-mailmessageeditor-replyAll-7'
+        }, {
+            args     : ['9', 'forward'],
+            expected : 'cn_mail-mailmessageeditor-forward-9'
+        }, {
             args     : ['8797dssdggddsg', 'compose'],
             expected : 'cn_mail-mailmessageeditor-compose-8797dssdggddsg'
         }, {
@@ -316,6 +325,15 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         }, {
             args     : [8797, 'edit'],
             expected : 'cn_mail/message/edit/8797'
+        }, {
+            args     : [8, 'replyTo'],
+            expected : 'cn_mail/message/replyTo/8'
+        }, {
+            args     : [9, 'replyAll'],
+            expected : 'cn_mail/message/replyAll/9'
+        }, {
+            args     : [10, 'forward'],
+            expected : 'cn_mail/message/forward/10'
         }, {
             args     : ["8797dssdggddsg", 'compose'],
             expected : 'cn_mail/message/compose/8797dssdggddsg'
