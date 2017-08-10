@@ -130,7 +130,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
                 meta.tdCls += 'previewLarge';
             }
 
-            return value.name;
+            return value ? value.name : "";
         }
     }, {
         dataIndex : 'date',
