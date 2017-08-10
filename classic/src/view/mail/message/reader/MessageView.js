@@ -102,7 +102,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             cls   : 'message-subject',
             bind  : {
                 data : {
-                    from           : '{messageItem.from}',
+                    from           : '{messageItem.from.name}',
                     subject        : '{messageItem.subject}',
                     date           : '{getFormattedDate}',
                     hasAttachments : '{messageItem.hasAttachments}'

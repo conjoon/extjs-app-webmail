@@ -41,7 +41,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     extend : 'conjoon.cn_mail.model.mail.BaseModel',
 
     requires : [
-        'conjoon.cn_mail.model.mail.message.MessageBody'
+        'conjoon.cn_mail.model.mail.message.MessageBody',
+        'conjoon.cn_core.data.field.EmailAddress'
     ],
 
     fields : [{
@@ -53,6 +54,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     }, {
         name : 'date',
         type : 'date'
+    }, {
+        name : 'from',
+        type : 'cn_core-datafieldemailaddress'
     }, {
         name : 'mailFolderId',
         type : 'string'

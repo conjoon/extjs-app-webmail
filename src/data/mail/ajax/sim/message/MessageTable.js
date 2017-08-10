@@ -380,12 +380,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         ];
 
         sender = [
-            'tsuckow@conjoon.org',
-            'service@booking.com',
-            'info@ebay.de',
-            'mailer@mtb-news.de',
-            'service@otto.de',
-            'info@amazon.de'
+            {address : 'tsuckow@conjoon.org', name : 'conjoonadmin'},
+            {address : 'service@booking.com', name : 'Booking.com'},
+            {address : 'info@ebay.de',        name : 'ebay Verkäufer Team'},
+            {address : 'mailer@mtb-news.de',  name : 'MTB News'},
+            {address : 'service@otto.de',     name : 'Otto GmbH'},
+            {address : 'info@amazon.de',      name : 'Amazaon'}
         ];
 
         for (var i = 0; i < 100; i++) {

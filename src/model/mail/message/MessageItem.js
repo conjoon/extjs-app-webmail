@@ -53,9 +53,6 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
         name : 'to',
         type : 'cn_core-datafieldemailaddresscollection'
     }, {
-        name : 'from',
-        type : 'string'
-    }, {
         name    : 'previewText',
         type    : 'string',
         persist : false
