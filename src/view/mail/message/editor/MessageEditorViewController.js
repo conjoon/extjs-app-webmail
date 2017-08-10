@@ -106,7 +106,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         var me   = this,
             view = me.getView();
 
-        if (view.editMode === 'EDIT') {
+        if (view.editMode !== 'CREATE') {
             view.showMessageDraftLoadingNotice();
         }
 
