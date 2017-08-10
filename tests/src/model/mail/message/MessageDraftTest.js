@@ -95,7 +95,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
-
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
         t.it("Test addresses load", function(t) {
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
