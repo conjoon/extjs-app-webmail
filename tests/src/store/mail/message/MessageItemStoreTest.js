@@ -23,6 +23,11 @@
 describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) {
 
     t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
+
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+
         t.it("Should properly create the store and check for default config", function(t) {
 
             var store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore');
@@ -43,7 +48,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
 
             // data range
             store.load();
-            t.waitForMs(1000, function() {
+            t.waitForMs(250, function() {
                 t.expect(store.getTotalCount()).toBe(25);
             });
 
