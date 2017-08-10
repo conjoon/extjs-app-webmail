@@ -205,7 +205,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 bcc : bccAddresses
             }, baseMessageItems[i]));
 
-            delete messageDrafts[messageDrafts.length - 1].from;
         }
 
         me.messageDrafts = messageDrafts;
