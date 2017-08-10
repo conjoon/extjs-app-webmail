@@ -667,23 +667,39 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
 
     t.it("showMessageDraftLoadingNotice() - vm isMessageBodyLoading", function(t) {
-
         Ext.ux.ajax.SimManager.init({
             delay: 500
         });
 
-        view = createWithMessageConfig(1, 'EDIT');
+        var modes = ['EDIT', 'REPLY_TO', 'REPLY_ALL', 'FORWARD'],
+            i    = 0,
+            func = function(t, i) {
+
+                if (!modes[i]) {
+                    return;
+                }
+
+                view = createWithMessageConfig(1, modes[i]);
+
+                t.expect(view.editMode).toBe(modes[i]);
+
+                t.waitForMs(250, function() {
+                    t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
+                    t.expect(view.loadingMask.isHidden()).toBe(false);
+                    t.isCalledOnce('destroy', view.loadingMask);
+
+                    t.waitForMs(1500, function() {
+                        t.expect(view.loadingMask).toBe(null);
+                        view.destroy();
+                        view = null;
+                        func(t, ++i);
+                    });
+                });
+
+            };
 
 
-        t.waitForMs(250, function() {
-            t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
-            t.expect(view.loadingMask.isHidden()).toBe(false);
-            t.isCalledOnce('destroy', view.loadingMask);
-
-            t.waitForMs(1500, function() {
-                t.expect(view.loadingMask).toBe(null);
-            });
-        });
+        func(t, 0);
 
     });
 

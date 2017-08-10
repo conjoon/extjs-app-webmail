@@ -130,7 +130,23 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         /**
          * @type {String} MODE_CREATE
          */
-        MODE_CREATE : 'CREATE'
+        MODE_CREATE : 'CREATE',
+
+        /**
+         * @type {String} MODE_REPLY_TO
+         */
+        MODE_REPLY_TO  : 'REPLY_TO',
+
+        /**
+         * @type {String} MODE_REPLY_ALL
+         */
+        MODE_REPLY_ALL : 'REPLY_ALL',
+
+        /**
+         * @type {String} MODE_FORWARD
+         */
+        MODE_FORWARD   : 'FORWARD'
+
     },
 
     controller : 'cn_mail-mailmessageeditorviewcontroller',
@@ -379,13 +395,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     constructor : function(config) {
 
-        var me         = this,
+        var me      = this,
+            statics = me.statics(),
+            modes   = [
+                statics.MODE_EDIT,
+                statics.MODE_CREATE,
+                statics.MODE_REPLY_TO,
+                statics.MODE_REPLY_ALL,
+                statics.MODE_FORWARD
+            ],
             draftConfig = {
-                type   : 'MessageDraft'
+                type : 'MessageDraft'
             },
             messageDraft;
 
-        if ([me.statics().MODE_EDIT, me.statics().MODE_CREATE].indexOf(config.editMode) === -1) {
+        if (modes.indexOf(config.editMode) === -1) {
             Ext.raise({
                 editMode : config.editMode,
                 msg      : "\"editMode\" is invalid"
@@ -408,14 +432,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         switch (config.editMode) {
 
-            case me.statics().MODE_CREATE:
+            case statics.MODE_CREATE:
                 messageDraft       = config.messageDraft;
                 draftConfig.create = messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
                     ? messageDraft.toObject()
                     : true;
                 break;
 
-            case me.statics().MODE_EDIT:
+            case statics.MODE_EDIT:
+            case statics.MODE_REPLY_TO:
+            case statics.MODE_REPLY_ALL:
+            case statics.MODE_FORWARD:
                 messageDraft = config.messageDraft;
                 if (!messageDraft || Ext.isObject(messageDraft)) {
                     Ext.raise({
@@ -424,7 +451,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                         msg          : "unexpected value for \"messageDraft\""
                     });
                 }
-                draftConfig.id = messageDraft;
+
+                if (config.editMode === statics.MODE_EDIT) {
+                    draftConfig.id = messageDraft;
+                } else {
+                    draftConfig = null;
+                }
                 break;
 
             default:
@@ -435,12 +467,26 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                 });
         }
 
-        config.viewModel = {
-            type  : 'cn_mail-mailmessageeditorviewmodel',
-            links : {
-                messageDraft : draftConfig
-            }
-        };
+        if (draftConfig) {
+            config.viewModel = {
+                type     : 'cn_mail-mailmessageeditorviewmodel',
+                links    : {
+                    messageDraft : draftConfig
+                }
+            };
+        } else {
+            // REPLY_TO; REPLY_ALL, FORWARD
+            config.viewModel = {
+                type : 'cn_mail-mailmessageeditorviewmodel',
+            };
+
+            // messageDraft is the id
+            config.viewModel.editMode = {
+                id   : messageDraft,
+                type : config.editMode
+            };
+        }
+
 
 
 
@@ -458,8 +504,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     initComponent : function() {
 
-        var me    = this,
-            item  = null,
+        var me      = this,
+            item    = null,
+            statics = me.statics(),
+            modes   = [
+                statics.MODE_CREATE,
+                statics.MODE_REPLY_TO,
+                statics.MODE_REPLY_ALL,
+                statics.MODE_FORWARD
+            ],
             query = function(items) {
                 Ext.each(items, function(value) {
                     if (value.xtype == 'cn_mail-mailmessageeditorattachmentlist') {
@@ -475,7 +528,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         query(me.items);
         if (item) {
-            item.editMode = me.editMode;
+            item.editMode = modes.indexOf(me.editMode) !== -1
+                            ? statics.MODE_CREATE
+                            : statics.MODE_EDIT;
         } else {
             Ext.raise({
                 sourceClass : Ext.getClassName(me),

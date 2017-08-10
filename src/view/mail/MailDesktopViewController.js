@@ -108,12 +108,27 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         itemId  = me.getItemIdForMessageEditor(id, type);
         cn_href = me.getCnHrefForMessageEditor(id, type);
 
-        if (type === 'edit') {
-            initialConfig.messageDraft = id;
-            initialConfig.editMode     = MessageEditor.MODE_EDIT;
-        } else {
-            initialConfig.messageDraft = me.createMessageDraftConfig(id);
-            initialConfig.editMode     = MessageEditor.MODE_CREATE;
+        switch (type) {
+            case 'edit':
+                initialConfig.messageDraft = id;
+                initialConfig.editMode     = MessageEditor.MODE_EDIT;
+                break;
+            case 'replyTo':
+                initialConfig.messageDraft = id;
+                initialConfig.editMode     = MessageEditor.MODE_REPLY_TO;
+                break;
+            case 'replyAll':
+                initialConfig.messageDraft = id;
+                initialConfig.editMode     = MessageEditor.MODE_REPLY_ALL;
+                break;
+            case 'forward':
+                initialConfig.messageDraft = id;
+                initialConfig.editMode     = MessageEditor.MODE_FORWARD;
+                break;
+            default:
+                initialConfig.messageDraft = me.createMessageDraftConfig(id);
+                initialConfig.editMode     = MessageEditor.MODE_CREATE;
+                break;
         }
 
         newView = view.down('#' + itemId);
@@ -163,12 +178,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 margin  : '12 5 5 0'
             });
 
-           if (recInd > -1) {
+            if (recInd > -1) {
                 newView.setMessageItem(store.getAt(recInd));
-           } else {
+            } else {
                 // most likely opened via deeplinking
                 newView.loadMessageItem(messageId);
-           }
+            }
         }
 
         me.getView().setActiveTab(newView);
@@ -363,9 +378,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (encodedId == "") {
             if (addresses && addresses.length) {
                 return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
-                    to : addresses
-                });
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+                        to : addresses
+                    });
             }
             return Ext.create(
                 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
