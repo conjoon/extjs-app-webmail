@@ -103,12 +103,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      */
     onMessageEditorAfterrender : function(editor) {
 
-        var me   = this,
-            view = me.getView();
+        var me         = this,
+            view       = me.getView(),
+            htmlEditor = view.down('cn_mail-mailmessageeditorhtmleditor');
 
         if (view.editMode !== 'CREATE') {
             view.showMessageDraftLoadingNotice();
         }
+
+        me.deferTimers['htmlEditorFocus'] = Ext.Function.defer(
+            htmlEditor.focus, 100, htmlEditor);
 
     },
 
