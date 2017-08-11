@@ -80,6 +80,17 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
                 t.expect(setit).toBe(null);
                 t.expect(rec.get('sourceId')).toBe('1');
 
+                var newModel = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
+
+                t.expect(newModel.getId()).not.toBe(newModel.get('sourceId'));
+
+                newModel.save();
+
+                t.waitForMs(500, function() {
+                    t.expect(newModel.getId()).toBe(newModel.get('sourceId'));
+                    t.expect(newModel.getId()).toBe(parseInt(newModel.get('sourceId'), 10) + "");
+                });
+
             });
 
         });

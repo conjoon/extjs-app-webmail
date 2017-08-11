@@ -282,11 +282,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             dataItems = [draft, item],
             dataItems, item;
 
-
         for (var i = 0, len = dataItems.length; i < len; i++) {
 
             item = dataItems[i];
 
+            // possible that we landed from DraftAttachment Test here and that
+            // items are not existing
+            if (!item) {
+                continue;
+            }
             item['date'] = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
 
             for (var prop in values) {

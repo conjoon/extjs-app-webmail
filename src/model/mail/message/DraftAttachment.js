@@ -51,7 +51,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
         type : 'cn_core-datafieldblob'
     }, {
         name    : 'sourceId',
-        mapping : 'id'
+        mapping : 'id',
+        type    : 'string'
     }],
 
     proxy : {
