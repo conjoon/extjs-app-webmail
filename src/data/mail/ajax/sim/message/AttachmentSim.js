@@ -104,7 +104,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
                 console.log("GET", "Attachment", id, new Date());
-                return AttachmenTable.getAttachment(id);
+                return AttachmentTable.getAttachment(id);
             } else if (filters) {
                 filters = Ext.decode(filters);
                 id      = filters[0].value;
