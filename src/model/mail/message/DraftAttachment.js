@@ -49,10 +49,29 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
     }, {
         name : 'file',
         type : 'cn_core-datafieldblob'
+    }, {
+        name    : 'sourceId',
+        mapping : 'id'
     }],
 
     proxy : {
         type : 'cn_core-dataproxyrestform'
+    },
+
+
+    /**
+     * @inheritdoc
+     *
+     * Provides the sourceId field to be set to a value by hand, since this
+     * field is defined by loading a DraftAtatchment.
+     */
+    set : function(key, value) {
+
+        if (key === 'sourceId') {
+            return null;
+        }
+
+        return this.callParent(arguments);
     }
 
 

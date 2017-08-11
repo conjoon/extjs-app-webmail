@@ -39,20 +39,51 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function(t) {
-        t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractAttachment).toBeTruthy();
+    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+
+
+        t.it("Should create instance", function(t) {
+            t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractAttachment).toBeTruthy();
+        });
+
+        t.it("Test Entity Name", function(t) {
+            t.expect(
+                model.entityName
+            ).toBe('DraftAttachment');
+        });
+
+        t.it("Test Record Validity", function(t) {
+            t.expect(model.isValid()).toBe(true);
+        });
+
+        t.it("Test sourceId", function(t) {
+
+            var model = conjoon.cn_mail.model.mail.message.DraftAttachment.load(1);
+
+            t.waitForMs(500, function() {
+                t.expect(model.get('sourceId')).toBe(model.getId());
+
+                model.set('id', '8');
+
+                t.expect(model.get('sourceId')).not.toBe(model.get('id'));
+
+                var rec = model.copy(null);
+
+                t.expect(rec.get('sourceId')).not.toBe(rec.get('id'));
+                t.expect(rec.get('sourceId')).not.toBe(model.get('id'));
+
+                var setit = rec.set('sourceId');
+                t.expect(setit).toBe(null);
+                t.expect(rec.get('sourceId')).toBe('1');
+
+            });
+
+        });
+
     });
-
-    t.it("Test Entity Name", function(t) {
-        t.expect(
-            model.entityName
-        ).toBe('DraftAttachment');
-    });
-
-    t.it("Test Record Validity", function(t) {
-        t.expect(model.isValid()).toBe(true);
-    });
-
-
 
 });
