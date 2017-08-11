@@ -32,6 +32,61 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                     schema : 'cn_mail-mailbaseschema'
                 })
             });
+        },
+        testEditorMode = function(t, editMode) {
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session : Ext.create('Ext.data.Session', {
+                    schema : 'cn_mail-mailbaseschema'
+                }),
+                editMode : {
+                    type : editMode,
+                    id   : 1
+                }
+            });
+
+            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
+            t.waitForMs(100, function() {
+                var body = draft.getMessageBody();
+                draft.attachments().load();
+                t.waitForMs(100, function() {
+                    var attachments = draft.attachments().getRange();
+                    var messageDraft = viewModel.get('messageDraft');
+                    var messageBody  = viewModel.get('messageDraft.messageBody');
+
+                    t.expect(messageDraft).not.toBe(draft);
+                    t.expect(messageBody).not.toBe(body);
+
+                    t.expect(messageDraft).toBeDefined();
+                    t.expect(messageDraft.phantom).toBe(true);
+                    t.expect(messageDraft.get('id')).not.toBe(draft.get('id'));
+
+                    t.expect(messageBody).toBeDefined();
+                    t.expect(messageBody.phantom).toBe(true);
+                    t.expect(messageBody.get('id')).not.toBe(body.get('id'));
+
+                    t.expect(messageDraft.get('subject')).toBe(draft.get('subject'));
+                    t.expect(messageDraft.get('to')[0].name).toBe(draft.get('from').name);
+                    t.expect(messageDraft.get('to')[0].address).toBe(draft.get('from').address);
+
+                    t.expect(messageBody.get('textHtml')).toBe(body.get('textHtml'));
+
+                    var draftAttachments = messageDraft.attachments().getRange();
+
+                    t.waitForMs(500, function() {
+                        t.expect(attachments.length).toBe(draftAttachments.length);
+                        t.expect(attachments.length).toBeGreaterThan(0);
+
+                        for (var i = 0, len = draftAttachments.length; i < len; i++) {
+                            t.expect(draftAttachments[i].get('id')).not.toBe(attachments[i].get('id'));
+                            var cmp1 = Ext.copy({}, draftAttachments[i].data, 'sourceId,size,text,type');
+                            var cmp2 = Ext.copy({}, attachments[i].data, 'sourceId,size,text,type');
+                            t.expect(cmp1).toEqual(cmp2);
+                        }
+
+                    });
+
+                }) ;
+            });
         };
 
     t.afterEach(function() {
@@ -271,125 +326,17 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
 
         t.it("Should create the ViewModel with data from the backend - replyTo", function(t) {
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
-                editMode : {
-                    type : conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.MODE_REPLY_TO,
-                    id   : 1
-                }
-            });
-
-            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
-            t.waitForMs(100, function() {
-                var body = draft.getMessageBody();
-                t.waitForMs(100, function() {
-
-                    var messageDraft = viewModel.get('messageDraft');
-                    var messageBody  = viewModel.get('messageDraft.messageBody');
-
-                    t.expect(messageDraft).not.toBe(draft);
-                    t.expect(messageBody).not.toBe(body);
-
-                    t.expect(messageDraft).toBeDefined();
-                    t.expect(messageDraft.phantom).toBe(true);
-                    t.expect(messageDraft.get('id')).not.toBe(draft.get('id'));
-
-                    t.expect(messageBody).toBeDefined();
-                    t.expect(messageBody.phantom).toBe(true);
-                    t.expect(messageBody.get('id')).not.toBe(body.get('id'));
-
-                    t.expect(messageDraft.get('subject')).toBe(draft.get('subject'));
-                    t.expect(messageDraft.get('to')[0].name).toBe(draft.get('from').name);
-                    t.expect(messageDraft.get('to')[0].address).toBe(draft.get('from').address);
-
-                    t.expect(messageBody.get('textHtml')).toBe(body.get('textHtml'));
-
-                }) ;
-            });
+            testEditorMode(t, conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.MODE_REPLY_TO);
         });
 
 
         t.it("Should create the ViewModel with data from the backend - replyAll", function(t) {
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
-                editMode : {
-                    type : conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.MODE_REPLY_ALL,
-                    id   : 1
-                }
-            });
-
-            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
-            t.waitForMs(100, function() {
-                var body = draft.getMessageBody();
-                t.waitForMs(100, function() {
-
-                    var messageDraft = viewModel.get('messageDraft');
-                    var messageBody  = viewModel.get('messageDraft.messageBody');
-
-                    t.expect(messageDraft).not.toBe(draft);
-                    t.expect(messageBody).not.toBe(body);
-
-                    t.expect(messageDraft).toBeDefined();
-                    t.expect(messageDraft.phantom).toBe(true);
-                    t.expect(messageDraft.get('id')).not.toBe(draft.get('id'));
-
-                    t.expect(messageBody).toBeDefined();
-                    t.expect(messageBody.phantom).toBe(true);
-                    t.expect(messageBody.get('id')).not.toBe(body.get('id'));
-
-                    t.expect(messageDraft.get('subject')).toBe(draft.get('subject'));
-                    t.expect(messageDraft.get('to')[0].name).toBe(draft.get('from').name);
-                    t.expect(messageDraft.get('to')[0].address).toBe(draft.get('from').address);
-
-                    t.expect(messageBody.get('textHtml')).toBe(body.get('textHtml'));
-
-                }) ;
-            });
+            testEditorMode(t, conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.MODE_REPLY_ALL);
         });
 
 
         t.it("Should create the ViewModel with data from the backend - forward", function(t) {
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
-                editMode : {
-                    type : conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.MODE_FORWARD,
-                    id   : 1
-                }
-            });
-
-            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
-            t.waitForMs(100, function() {
-                var body = draft.getMessageBody();
-                t.waitForMs(100, function() {
-
-                    var messageDraft = viewModel.get('messageDraft');
-                    var messageBody  = viewModel.get('messageDraft.messageBody');
-
-                    t.expect(messageDraft).not.toBe(draft);
-                    t.expect(messageBody).not.toBe(body);
-
-                    t.expect(messageDraft).toBeDefined();
-                    t.expect(messageDraft.phantom).toBe(true);
-                    t.expect(messageDraft.get('id')).not.toBe(draft.get('id'));
-
-                    t.expect(messageBody).toBeDefined();
-                    t.expect(messageBody.phantom).toBe(true);
-                    t.expect(messageBody.get('id')).not.toBe(body.get('id'));
-
-                    t.expect(messageDraft.get('subject')).toBe(draft.get('subject'));
-                    t.expect(messageDraft.get('to')[0].name).toBe(draft.get('from').name);
-                    t.expect(messageDraft.get('to')[0].address).toBe(draft.get('from').address);
-
-                    t.expect(messageBody.get('textHtml')).toBe(body.get('textHtml'));
-
-                }) ;
-            });
+            testEditorMode(t, conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.MODE_FORWARD);
         });
 
     })});
