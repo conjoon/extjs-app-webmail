@@ -202,7 +202,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             var bccAddresses = me.buildAddresses('bcc', i);
 
             messageDrafts.push(Ext.apply({
-                bcc : bccAddresses
+                bcc     : bccAddresses,
+                replyTo : i !== 0 && me.buildRandomNumber(0, 1)
+                          ? sender[me.buildRandomNumber(0, 5)]
+                          : undefined
             }, baseMessageItems[i]));
 
         }
@@ -398,7 +401,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 date           : me.buildRandomDate(),
                 // leave first one as unread for tests
                 subject        : subjects[me.buildRandomNumber(0, 5)],
-                from           : sender[me.buildRandomNumber(0, 5)],
+                from           : i === 0
+                                 ? 'from@domain.tld'
+                                 : sender[me.buildRandomNumber(0, 5)],
                 to             : me.buildAddresses('to', i),
                 cc             : me.buildAddresses('cc', i),
                 mailFolderId   : (i % 5 == 0 ? 5 : i % 5) + '',

@@ -47,57 +47,59 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
+    t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
+    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
-    t.it("Should create instance", function(t) {
-        t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
-    });
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
 
-    t.it("Test Entity Name", function(t) {
-        t.expect(
-            model.entityName
-        ).toBe('MessageDraft');
-    });
+        t.it("Should create instance", function(t) {
+            t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
+        });
 
-    t.it("Test Record Validity", function(t) {
-        // messageBody is missing
-        t.expect(model.isValid()).toBe(false);
+        t.it("Test Entity Name", function(t) {
+            t.expect(
+                model.entityName
+            ).toBe('MessageDraft');
+        });
 
-        for (var i = 0, vs = ['to', 'cc', 'bcc'], len = vs.length; i < len; i++) {
-            var vtors = model.getField(vs[i])._validators;
-            t.expect(vtors.length).toBe(1);
-            t.expect(vtors[0] instanceof conjoon.cn_core.data.validator.EmailAddressCollection).toBe(true);
-            t.expect(vtors[0].getAllowEmpty()).toBe(true);
-        }
+        t.it("Test Record Validity", function(t) {
+            // messageBody is missing
+            t.expect(model.isValid()).toBe(false);
 
-    });
+            for (var i = 0, vs = ['to', 'cc', 'bcc'], len = vs.length; i < len; i++) {
+                var vtors = model.getField(vs[i])._validators;
+                t.expect(vtors.length).toBe(1);
+                t.expect(vtors[0] instanceof conjoon.cn_core.data.validator.EmailAddressCollection).toBe(true);
+                t.expect(vtors[0].getAllowEmpty()).toBe(true);
+            }
+
+        });
 
 
-    t.it("Test addresses inline", function(t) {
+        t.it("Test addresses inline", function(t) {
 
-        var model = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft',{
-            id : '1',
-            to : [{
+            var model = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft',{
+                id : '1',
+                to : [{
+                    name    : 'Firstname Lastname',
+                    address : 'name@domain.tld'
+                }, {
+                    name    : 'Firstname 1 Lastname 1',
+                    address : 'name@domain.tld'
+                }]
+            });
+            t.expect(model.get('to')).toEqual([{
                 name    : 'Firstname Lastname',
                 address : 'name@domain.tld'
             }, {
                 name    : 'Firstname 1 Lastname 1',
                 address : 'name@domain.tld'
-            }]
+            }]);
         });
-        t.expect(model.get('to')).toEqual([{
-            name    : 'Firstname Lastname',
-            address : 'name@domain.tld'
-        }, {
-            name    : 'Firstname 1 Lastname 1',
-            address : 'name@domain.tld'
-        }]);
-    });
 
 
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
-        Ext.ux.ajax.SimManager.init({
-            delay: 1
-        });
         t.it("Test addresses load", function(t) {
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
@@ -158,49 +160,58 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         });
 
 
-        t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
-            t.it("Test MessageDraft save MessageBody with session", function(t) {
+        t.it("Test MessageDraft save MessageBody with session", function(t) {
 
-                var session = Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                });
+            var session = Ext.create('Ext.data.Session', {
+                schema : 'cn_mail-mailbaseschema'
+            });
 
-                var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                    subject : 'test'
-                });
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject : 'test'
+            });
 
-                t.expect(rec.isValid()).toBe(false);
+            t.expect(rec.isValid()).toBe(false);
 
-                rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+            rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
 
-                t.expect(rec.isValid()).toBe(true);
+            t.expect(rec.isValid()).toBe(true);
 
-                var rec2 = rec.getMessageBody();
+            var rec2 = rec.getMessageBody();
 
-                session.adopt(rec);
+            session.adopt(rec);
 
-                t.expect(rec2.getId()).toContain('MessageBody');
+            t.expect(rec2.getId()).toContain('MessageBody');
 
-                rec2.set('textHtml', 'Hallo Welt');
+            rec2.set('textHtml', 'Hallo Welt');
 
-                var saveBatch = session.getSaveBatch();
+            var saveBatch = session.getSaveBatch();
 
-                saveBatch.on('complete', function() {
+            saveBatch.on('complete', function() {
 
-                });
+            });
 
-                saveBatch.start();
+            saveBatch.start();
 
-                t.waitForMs(1000, function() {
-                    t.expect(rec2.getId()).not.toContain('MessageBody');
-                });
-
+            t.waitForMs(1000, function() {
+                t.expect(rec2.getId()).not.toContain('MessageBody');
             });
 
         });
 
 
-    });
+        t.it("field - replyTo", function(t) {
+
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject : 'test',
+                from    : 'from@domain.tld',
+                replyTo : 'replyTo@domain.tld'
+            });
+
+            t.expect(rec.get('from').address).toBe('from@domain.tld');
+            t.expect(rec.get('replyTo').address).toBe('replyTo@domain.tld');
+        });
+
+    });});
 
 
 });

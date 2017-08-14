@@ -32,12 +32,17 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
     requires : [
         'conjoon.cn_core.data.field.EmailAddressCollection',
         'conjoon.cn_core.data.validator.EmailAddressCollection',
-        'conjoon.cn_mail.model.mail.message.DraftAttachment'
+        'conjoon.cn_mail.model.mail.message.DraftAttachment',
+        'conjoon.cn_core.data.field.EmailAddress'
     ],
 
     entityName : 'MessageDraft',
 
     fields : [{
+        name      : 'replyTo',
+        type      : 'cn_core-datafieldemailaddress',
+        persist   : false
+    }, {
         name       : 'to',
         type       : 'cn_core-datafieldemailaddresscollection',
         validators : [{
@@ -58,7 +63,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
             type       : 'cn_core-datavalidatoremailaddresscollection',
             allowEmpty : true
         }]
-    }]
+    }, ]
 
 
 });
