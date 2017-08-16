@@ -32,6 +32,7 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         t.expect(config.getSubject()).toBeUndefined();
         t.expect(config.getTextPlain()).toBeUndefined();
         t.expect(config.getTextHtml()).toBeUndefined();
+        t.expect(config.getAttachments()).toBeUndefined();
     });
 
 
@@ -141,6 +142,67 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         t.isArray(config.applyBcc('name@domain.tld'));
     });
 
+
+    t.it("applyAttachments()", function(t) {
+        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+        });
+
+        var attachments = [{
+            type           : 'TYPE1',
+            text           : 'TEXT1',
+            size           : 1111,
+            sourceId       : '51',
+            previewImgSrc  : 'PREVIEWIMGSRC1',
+            downloadImgUrl : 'DOWNLOADIMGURL1'
+        }, {
+            type           : 'TYPE12',
+            text           : 'TEXT2',
+            size           : 1112,
+            sourceId       : '52',
+            previewImgSrc  : 'PREVIEWIMGSRC2',
+            downloadImgUrl : 'DOWNLOADIMGURL2'
+        }];
+
+        var result    = config.applyAttachments(attachments),
+            propCount = 0;
+
+        t.isArray(result);
+        t.expect(result.length).toBe(2);
+
+        // test properties
+        for (var i = 0, len = result.length; i < len; i++) {
+            propCount = 0;
+            for (var prop in result[i]) {
+                if (!result[i].hasOwnProperty(prop)) {
+                    continue;
+                }
+                t.expect(result[i][prop]).toBe(attachments[i][prop]);
+                propCount++;
+            }
+            t.expect(propCount).toBe(6);
+        }
+
+        // test references
+        t.expect(result[0]['text']).toBe(attachments[0]['text']);
+        attachments[0]['text'] = "NEWTEXT";
+        t.expect(result[0]['text']).not.toBe(attachments[0]['text']);
+
+        // test exceptions
+        var exc, e;
+        config.setAttachments([]);
+        try{config.applyAttachments([]);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("is immutable");
+
+        exc = e = undefined;
+        var config2 = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+        });
+        try{config2.applyAttachments('foo');}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("must be an array");
+    });
+
+
     t.it("toObject()", function(t) {
 
         var config,
@@ -172,6 +234,41 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                 },
                 expected : {
                     subject  : 'foobar'
+                }
+            }, {
+                args : {
+                    attachments : [{
+                        type           : 'TYPE1',
+                        text           : 'TEXT1',
+                        size           : 1111,
+                        sourceId       : '51',
+                        previewImgSrc  : 'PREVIEWIMGSRC1',
+                        downloadImgUrl : 'DOWNLOADIMGURL1'
+                    }, {
+                        type           : 'TYPE12',
+                        text           : 'TEXT2',
+                        size           : 1112,
+                        sourceId       : '52',
+                        previewImgSrc  : 'PREVIEWIMGSRC2',
+                        downloadImgUrl : 'DOWNLOADIMGURL2'
+                    }]
+                },
+                expected : {
+                    attachments : [{
+                        type           : 'TYPE1',
+                        text           : 'TEXT1',
+                        size           : 1111,
+                        sourceId       : '51',
+                        previewImgSrc  : 'PREVIEWIMGSRC1',
+                        downloadImgUrl : 'DOWNLOADIMGURL1'
+                    }, {
+                        type           : 'TYPE12',
+                        text           : 'TEXT2',
+                        size           : 1112,
+                        sourceId       : '52',
+                        previewImgSrc  : 'PREVIEWIMGSRC2',
+                        downloadImgUrl : 'DOWNLOADIMGURL2'
+                    }]
                 }
             }], test;
 

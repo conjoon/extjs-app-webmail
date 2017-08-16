@@ -34,15 +34,19 @@
  * - bcc:Array
  * - subject:String
  * - messageBody:Object(textPlain:string,textHtml:string)
+ * - attachments:Object(type:string,text:String,size:Number,previewImgSrc:String,downloadUrl:String,sourceId:String)[]
+ * The purpose of this data object is to provide a template for an email message
+ * that gets saved under a new id.
  *
  *      @example
  *      var c = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
- *          to        : 'name@domainname.tld',
- *          cc        : ['ccname@domainname.tld', 'ccname2@domainname.tld'],
- *          bcc       : ['bccname@domainname.tld'],
- *          subject   : 'This is the subject',
- *          textPlain : 'Text for this message',
- *          textHtml  : '<b>Text for this message</b>'
+ *          to          : 'name@domainname.tld',
+ *          cc          : ['ccname@domainname.tld', 'ccname2@domainname.tld'],
+ *          bcc         : ['bccname@domainname.tld'],
+ *          subject     : 'This is the subject',
+ *          textPlain   : 'Text for this message',
+ *          textHtml    : '<b>Text for this message</b>',
+ *          attachments : [{type:'image/jpg', text:'image1.jpg', sourceId : '1'}]
  *     });
  *
  *     console.log(c.toObject());
@@ -67,7 +71,12 @@
  *     //    messageBody : {
  *     //        textPlain : 'Text for this message',
  *     //        textHtml  : '<b>Text for this message</b>00',
- *     //    }
+ *     //    },
+ *     //    attachments : [{
+ *     //        type     : 'image/jpg',
+ *     //        text     : 'image1.jpg',
+ *     //        sourceId : '1'
+ *     //    }]
  *     // }
  *     //
  *     //
@@ -82,12 +91,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
 
     config : {
-        to        : undefined,
-        cc        : undefined,
-        bcc       : undefined,
-        subject   : undefined,
-        textPlain : undefined,
-        textHtml  : undefined
+        to          : undefined,
+        cc          : undefined,
+        bcc         : undefined,
+        subject     : undefined,
+        textPlain   : undefined,
+        textHtml    : undefined,
+        attachments : undefined
     },
 
 
@@ -104,7 +114,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
     toObject : function() {
 
         var me  = this,
-            obj = {};
+            obj = {},
+            attachments;
 
         if (me.getTo() !== undefined) {
             obj.to = me.getTo()
@@ -126,6 +137,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
             obj.messageBody          = obj.messageBody || {};
             obj.messageBody.textHtml = me.getTextHtml()
         };
+        if (me.getAttachments() !== undefined) {
+            obj.attachments = me.getAttachments();
+        }
 
         return obj;
     },
@@ -147,8 +161,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getTextPlain() !== undefined) {
             Ext.raise({
-                txt : txt,
-                msg : "\"textPlain\" is immutable"
+                textPlain : me.getTextPlain(),
+                msg       : "\"textPlain\" is immutable"
             });
         }
 
@@ -172,8 +186,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getTextHtml() !== undefined) {
             Ext.raise({
-                txt : txt,
-                msg : "\"textHtml\" is immutable"
+                textHtml : me.getTextHtml(),
+                msg      : "\"textHtml\" is immutable"
             });
         }
 
@@ -197,12 +211,58 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getSubject() !== undefined) {
             Ext.raise({
-                txt : txt,
-                msg : "\"subject\" is immutable"
+                subject : me.getSubject(),
+                msg     : "\"subject\" is immutable"
             });
         }
 
         return subject;
+    },
+
+
+    /**
+     * Sets attachments. The method makes sure that no references are being
+     * copied.
+     *
+     * @param {Object[]} attachments
+     *
+     * @return {Object[]}
+     *
+     * @private
+     *
+     * @throws if the value was already set, or if it is not an array
+     */
+    applyAttachments : function(attachments) {
+        var me     = this,
+            copied = [];
+
+        if (attachments === undefined) {
+            return;
+        }
+
+        if (me.getAttachments() !== undefined) {
+            Ext.raise({
+                attachments : me.getAttachments(),
+                msg         : "\"attachments\" is immutable"
+            });
+        }
+
+        if (!Ext.isArray(attachments)) {
+            Ext.raise({
+                attachments : attachments,
+                msg         : "\"attachments\" must be an array"
+            });
+        }
+
+        for (var i = 0, len = attachments.length; i < len; i++) {
+            copied.push(Ext.copy(
+                {},
+                attachments[i],
+                'type,text,size,previewImgSrc,downloadImgUrl,sourceId'
+            ));
+        }
+
+        return copied;
     },
 
 
