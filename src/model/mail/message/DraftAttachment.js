@@ -64,7 +64,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
      * @inheritdoc
      *
      * Provides the sourceId field to be set to a value by hand, since this
-     * field is defined by loading a DraftAtatchment.
+     * field is defined by loading a DraftAttachment.
      */
     set : function(key, value) {
 
