@@ -35,7 +35,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
         'conjoon.cn_mail.text.QueryStringParser',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+        'conjoon.cn_mail.data.mail.message.EditingModes'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -103,7 +104,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             initialConfig = {
                 messageDraft : null
             },
-            MessageEditor = conjoon.cn_mail.view.mail.message.editor.MessageEditor;
+            EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
 
         itemId  = me.getItemIdForMessageEditor(id, type);
         cn_href = me.getCnHrefForMessageEditor(id, type);
@@ -111,23 +112,23 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         switch (type) {
             case 'edit':
                 initialConfig.messageDraft = id;
-                initialConfig.editMode     = MessageEditor.MODE_EDIT;
+                initialConfig.editMode     = EditingModes.EDIT;
                 break;
             case 'replyTo':
                 initialConfig.messageDraft = id;
-                initialConfig.editMode     = MessageEditor.MODE_REPLY_TO;
+                initialConfig.editMode     = EditingModes.REPLY_TO;
                 break;
             case 'replyAll':
                 initialConfig.messageDraft = id;
-                initialConfig.editMode     = MessageEditor.MODE_REPLY_ALL;
+                initialConfig.editMode     = EditingModes.REPLY_ALL;
                 break;
             case 'forward':
                 initialConfig.messageDraft = id;
-                initialConfig.editMode     = MessageEditor.MODE_FORWARD;
+                initialConfig.editMode     = EditingModes.FORWARD;
                 break;
             default:
                 initialConfig.messageDraft = me.createMessageDraftConfig(id);
-                initialConfig.editMode     = MessageEditor.MODE_CREATE;
+                initialConfig.editMode     = EditingModes.CREATE;
                 break;
         }
 
