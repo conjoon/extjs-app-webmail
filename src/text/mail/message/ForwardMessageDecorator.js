@@ -27,6 +27,10 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
 
     extend : 'conjoon.cn_mail.text.mail.message.CopyDecorator',
 
+    requires : [
+        'conjoon.cn_mail.text.mail.message.DecoratorFormat'
+    ],
+
     /**
      * @inheritdoc
      */
@@ -57,7 +61,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
     getTextHtml : function() {
 
         var me           = this,
-            textHtml     = "",
             messageDraft = me.messageDraft;
 
         return [
@@ -90,45 +93,22 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
      */
     getMessageBodyIntroHeaderFields : function(messageDraft) {
 
-        var me   = this,
-            from = messageDraft.get('from'),
+        var me              = this,
+            from            = messageDraft.get('from'),
+            DecoratorFormat = conjoon.cn_mail.text.mail.message.DecoratorFormat,
             result;
 
         result = [
-            Ext.String.format("<b>From:</b> {0}", me.stringifyEmailAddress(from)),
+            Ext.String.format("<b>From:</b> {0}", DecoratorFormat.stringifyEmailAddress(from)),
             Ext.String.format("<b>Date:</b> {0}", Ext.util.Format.date(messageDraft.get('date'), "d.m.Y H:i")),
-            Ext.String.format("<b>To:</b> {0}", me.stringifyEmailAddress(messageDraft.get('to'))),
+            Ext.String.format("<b>To:</b> {0}", DecoratorFormat.stringifyEmailAddress(messageDraft.get('to'))),
             Ext.String.format("<b>Subject:</b> {0}", messageDraft.get('subject')),
             Ext.String.format("<b>Reply to:</b> {0}", messageDraft.get('replyTo')
-                ? me.stringifyEmailAddress(messageDraft.get('replyTo'))
-                : me.stringifyEmailAddress(from))
+                ? DecoratorFormat.stringifyEmailAddress(messageDraft.get('replyTo'))
+                : DecoratorFormat.stringifyEmailAddress(from))
         ].join("<br />");
 
         return result;
-    },
-
-
-    /**
-     * @private
-     */
-    stringifyEmailAddress : function(addresses) {
-
-        var add    = [].concat(addresses),
-            result = [];
-
-        for (var i = 0, len = add.length; i < len; i++) {
-            if (!add[i]) {
-                continue;
-            }
-            result.push(
-                Ext.String.format(
-                    "&lt;{0}&gt; {1}",
-                    add[i].address, add[i].name
-                )
-            );
-        }
-
-        return result.join(",");
     }
 
 

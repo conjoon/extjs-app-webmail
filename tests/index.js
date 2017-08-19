@@ -115,6 +115,7 @@ harness.start({
                     group : 'message',
                     items : [
                         'src/text/mail/message/CopyDecoratorTest.js',
+                        'src/text/mail/message/DecoratorFormatTest.js',
                         'src/text/mail/message/ForwardMessageDecoratorTest.js'
                     ]
                 }]
