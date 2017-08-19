@@ -74,8 +74,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     t.it("Should create and show the view along with default config checks", function(t) {
         view = createWithViewConfig(viewConfig);
 
-        t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditor.MODE_EDIT).toBeDefined();
-        t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditor.MODE_CREATE).toBeDefined();
+        t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditor.MODE_EDIT).not.toBeDefined();
+        t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditor.MODE_CREATE).not.toBeDefined();
 
         // configs
         t.expect(view instanceof Ext.form.Panel).toBe(true);

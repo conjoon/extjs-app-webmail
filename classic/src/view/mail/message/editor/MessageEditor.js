@@ -116,38 +116,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.data.mail.BaseSchema',
         'conjoon.cn_core.data.Session',
         'conjoon.cn_core.data.session.SplitBatchVisitor',
-        'conjoon.cn_comp.component.MessageMask'
+        'conjoon.cn_comp.component.MessageMask',
+        'conjoon.cn_mail.data.mail.message.EditingModes'
     ],
 
     alias : 'widget.cn_mail-mailmessageeditor',
-
-    statics : {
-        /**
-         * @type {String} MODE_EDIT
-         */
-        MODE_EDIT : 'EDIT',
-
-        /**
-         * @type {String} MODE_CREATE
-         */
-        MODE_CREATE : 'CREATE',
-
-        /**
-         * @type {String} MODE_REPLY_TO
-         */
-        MODE_REPLY_TO  : 'REPLY_TO',
-
-        /**
-         * @type {String} MODE_REPLY_ALL
-         */
-        MODE_REPLY_ALL : 'REPLY_ALL',
-
-        /**
-         * @type {String} MODE_FORWARD
-         */
-        MODE_FORWARD   : 'FORWARD'
-
-    },
 
     controller : 'cn_mail-mailmessageeditorviewcontroller',
 
@@ -220,7 +193,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
 
     /**
-     * Gets fired when sending a MessageDraft caused an exxception.
+     * Gets fired when sending a MessageDraft caused an exception.
      * @event cn_mail-mailmessagesendexception
      * @param this
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
@@ -395,14 +368,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     constructor : function(config) {
 
-        var me      = this,
-            statics = me.statics(),
-            modes   = [
-                statics.MODE_EDIT,
-                statics.MODE_CREATE,
-                statics.MODE_REPLY_TO,
-                statics.MODE_REPLY_ALL,
-                statics.MODE_FORWARD
+        var me           = this,
+            EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
+            modes        = [
+                EditingModes.EDIT,
+                EditingModes.CREATE,
+                EditingModes.REPLY_TO,
+                EditingModes.REPLY_ALL,
+                EditingModes.FORWARD
             ],
             draftConfig = {
                 type : 'MessageDraft'
@@ -432,17 +405,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         switch (config.editMode) {
 
-            case statics.MODE_CREATE:
+            case EditingModes.CREATE:
                 messageDraft       = config.messageDraft;
                 draftConfig.create = messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
                     ? messageDraft.toObject()
                     : true;
                 break;
 
-            case statics.MODE_EDIT:
-            case statics.MODE_REPLY_TO:
-            case statics.MODE_REPLY_ALL:
-            case statics.MODE_FORWARD:
+            case EditingModes.EDIT:
+            case EditingModes.REPLY_TO:
+            case EditingModes.REPLY_ALL:
+            case EditingModes.FORWARD:
                 messageDraft = config.messageDraft;
                 if (!messageDraft || Ext.isObject(messageDraft)) {
                     Ext.raise({
@@ -452,7 +425,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     });
                 }
 
-                if (config.editMode === statics.MODE_EDIT) {
+                if (config.editMode === EditingModes.EDIT) {
                     draftConfig.id = messageDraft;
                 } else {
                     draftConfig = null;
@@ -477,7 +450,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         } else {
             // REPLY_TO; REPLY_ALL, FORWARD
             config.viewModel = {
-                type : 'cn_mail-mailmessageeditorviewmodel',
+                type : 'cn_mail-mailmessageeditorviewmodel'
             };
 
             // messageDraft is the id
@@ -504,14 +477,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     initComponent : function() {
 
-        var me      = this,
-            item    = null,
-            statics = me.statics(),
-            modes   = [
-                statics.MODE_CREATE,
-                statics.MODE_REPLY_TO,
-                statics.MODE_REPLY_ALL,
-                statics.MODE_FORWARD
+        var me           = this,
+            item         = null,
+            EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
+            modes        = [
+                EditingModes.CREATE,
+                EditingModes.REPLY_TO,
+                EditingModes.REPLY_ALL,
+                EditingModes.FORWARD
             ],
             query = function(items) {
                 Ext.each(items, function(value) {
@@ -529,8 +502,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         query(me.items);
         if (item) {
             item.editMode = modes.indexOf(me.editMode) !== -1
-                            ? statics.MODE_CREATE
-                            : statics.MODE_EDIT;
+                            ? EditingModes.CREATE
+                            : EditingModes.EDIT;
         } else {
             Ext.raise({
                 sourceClass : Ext.getClassName(me),
