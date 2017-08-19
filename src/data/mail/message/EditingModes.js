@@ -26,31 +26,33 @@
  *
  * @private
  */
-Ext.ns('conjoon.cn_mail.data.mail.message');
-conjoon.cn_mail.data.mail.message.EditingModes = {
+Ext.define('conjoon.cn_mail.data.mail.message.EditingModes', {
 
-    /**
-     * @type {String} MODE_EDIT
-     */
-    EDIT : 'EDIT',
+    statics : {
+        /**
+         * @type {String} MODE_EDIT
+         */
+        EDIT : 'EDIT',
 
-    /**
-     * @type {String} MODE_CREATE
-     */
-    CREATE : 'CREATE',
+        /**
+         * @type {String} MODE_CREATE
+         */
+        CREATE : 'CREATE',
 
-    /**
-     * @type {String} MODE_REPLY_TO
-     */
-    REPLY_TO  : 'REPLY_TO',
+        /**
+         * @type {String} MODE_REPLY_TO
+         */
+        REPLY_TO  : 'REPLY_TO',
 
-    /**
-     * @type {String} MODE_REPLY_ALL
-     */
-    REPLY_ALL : 'REPLY_ALL',
+        /**
+         * @type {String} MODE_REPLY_ALL
+         */
+        REPLY_ALL : 'REPLY_ALL',
 
-    /**
-     * @type {String} MODE_FORWARD
-     */
-    FORWARD : 'FORWARD'
-};
+        /**
+         * @type {String} MODE_FORWARD
+         */
+        FORWARD : 'FORWARD'
+    }
+
+});

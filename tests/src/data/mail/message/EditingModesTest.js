@@ -29,8 +29,6 @@ describe('conjoon.cn_mail.data.mail.message.EditingModesTest', function(t) {
             t.waitForMs(500, function() {
                 var EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
 
-                t.isObject(EditingModes);
-
                 t.expect(EditingModes.REPLY_TO).toBeTruthy();
                 t.expect(EditingModes.REPLY_ALL).toBeTruthy();
                 t.expect(EditingModes.FORWARD).toBeTruthy();
