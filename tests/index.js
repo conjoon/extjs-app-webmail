@@ -117,7 +117,8 @@ harness.start({
                         'src/text/mail/message/CopyDecoratorTest.js',
                         'src/text/mail/message/DecoratorFormatTest.js',
                         'src/text/mail/message/ForwardMessageDecoratorTest.js',
-                        'src/text/mail/message/ReplyToMessageDecoratorTest.js'
+                        'src/text/mail/message/ReplyToMessageDecoratorTest.js',
+                        'src/text/mail/message/ReplyAllMessageDecoratorTest.js'
                     ]
                 }]
             },
