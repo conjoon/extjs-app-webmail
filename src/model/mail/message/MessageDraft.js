@@ -63,7 +63,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
             type       : 'cn_core-datavalidatoremailaddresscollection',
             allowEmpty : true
         }]
-    }, ]
+    }]
 
 
 });
