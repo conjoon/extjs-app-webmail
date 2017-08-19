@@ -30,7 +30,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     extend : 'Ext.app.ViewController',
 
     requires : [
-        'conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener'
+        'conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener',
+        'conjoon.cn_mail.data.mail.message.EditingModes'
     ],
 
     alias : 'controller.cn_mail-mailmessageeditorviewcontroller',
@@ -103,16 +104,24 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      */
     onMessageEditorAfterrender : function(editor) {
 
-        var me         = this,
-            view       = me.getView(),
-            htmlEditor = view.down('cn_mail-mailmessageeditorhtmleditor');
+        var me   = this,
+            view = me.getView(),
+            toField, htmlEditor;
 
         if (view.editMode !== 'CREATE') {
             view.showMessageDraftLoadingNotice();
         }
 
-        me.deferTimers['htmlEditorFocus'] = Ext.Function.defer(
-            htmlEditor.focus, 100, htmlEditor);
+        if (view.editMode === conjoon.cn_mail.data.mail.message.EditingModes.FORWARD) {
+            toField = view.down('#toField');
+            me.deferTimers['toFieldFocus'] = Ext.Function.defer(
+                toField.focus, 100, toField);
+        } else {
+            htmlEditor = view.down('cn_mail-mailmessageeditorhtmleditor');
+            me.deferTimers['htmlEditorFocus'] = Ext.Function.defer(
+                htmlEditor.focus, 100, htmlEditor);
+
+        }
 
     },
 
