@@ -109,8 +109,16 @@ harness.start({
             }]
         }, {
             group : 'text',
-            items : [
-                'src/text/ForwardMessageTextDecoratorTest.js',
+            items : [{
+                group : 'mail',
+                items : [{
+                    group : 'message',
+                    items : [
+                        'src/text/mail/message/CopyDecoratorTest.js',
+                        'src/text/mail/message/ForwardMessageDecoratorTest.js'
+                    ]
+                }]
+            },
                 'src/text/QueryStringParserTest.js'
             ]
         }, {
