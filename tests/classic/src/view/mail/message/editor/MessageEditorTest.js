@@ -23,22 +23,17 @@
 describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorTest', function(t) {
 
     var view,
-        viewConfig = {
-            renderTo : document.body,
-            width    : 400,
-            height   : 400,
-            editMode : 'CREATE'
-        },
         createWithViewConfig = function(config) {
             return Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', config);
         },
-        createWithMessageConfig = function(msgConfig, editMode) {
+        createWithMessageConfig = function(msgConfig) {
             return Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     renderTo     : document.body,
-                    messageDraft : msgConfig,
-                    editMode     : editMode
+                    width        : 400,
+                    height       : 400,
+                    messageDraft : msgConfig
                 });
         },
         checkConstructorCreateWithAddress = function(address, t, view) {
@@ -58,9 +53,18 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorTest', function(
             view.destroy();
             view = null;
         }
+
+        viewConfig = null;
     });
 
-
+    t.beforeEach(function() {
+        viewConfig = {
+            renderTo     : document.body,
+            width        : 400,
+            height       : 400,
+            messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+        };
+    });
 
 t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
@@ -68,14 +72,55 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         delay: 1
     });
 
+
 // +---------------------------------------------------------------------------
 // | BASIC BEHAVIOR
 // +---------------------------------------------------------------------------
+    t.it("constructor() - no config", function(t) {
+        var exc, e;
+
+        try {
+            view = createWithViewConfig();
+        } catch (e) {
+            exc = e;
+        }
+
+
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("must be set");
+    });
+
+
+    t.it("constructor() - no config.messageDraft", function(t) {
+        var exc, e;
+
+        try {
+            view = createWithViewConfig({});
+        } catch (e) {
+            exc = e;
+        }
+
+
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("must be set");
+    });
+
+    t.it("constructor() - with ViewModel", function(t) {
+        var exc, e;
+
+        try {
+            view = createWithViewConfig({messageDraft : '1', viewModel : {}});
+        } catch (e) {
+            exc = e;
+        }
+
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("Cannot set");
+    });
+
     t.it("Should create and show the view along with default config checks", function(t) {
         view = createWithViewConfig(viewConfig);
 
-        t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditor.MODE_EDIT).not.toBeDefined();
-        t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditor.MODE_CREATE).not.toBeDefined();
 
         // configs
         t.expect(view instanceof Ext.form.Panel).toBe(true);
@@ -191,7 +236,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         }
 
         t.expect(exc).not.toBeUndefined();
-        t.expect(exc.msg).toContain("Can only set");
+        t.expect(exc.msg).toContain("Cannot set");
     });
 
 
@@ -207,7 +252,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             exc = e;
         }
 
-        t.expect(exc).toBeUndefined();
+        t.expect(exc).not.toBeUndefined();
+        t.expect(exc.msg).toContain("Cannot set");
     });
 
     t.it("Should create message with to, cc, bcc, subject and textHtml", function(t) {
@@ -291,7 +337,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 //  +---------------------------------------------------------------------------
 
         t.it("Should load message from backend", function(t) {
-            view = createWithMessageConfig(1, 'EDIT');
+            view = createWithMessageConfig('1');
 
             t.waitForMs(500, function() {
                 t.expect(view.editMode).toBe('EDIT');
@@ -309,7 +355,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
 
         t.it("Should load message from backend and not hide cc/bcc if fields are cleared", function(t) {
-            view = createWithMessageConfig(1, 'EDIT');
+            view = createWithMessageConfig('1');
 
             t.waitForMs(500, function() {
                 t.expect(view.editMode).toBe('EDIT');
@@ -334,7 +380,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
 
         t.it("Should load message from backend and showHide ccbcc button depending on the values of the cc bcc fields", function(t) {
-            view = createWithMessageConfig(1, 'EDIT');
+            view = createWithMessageConfig('1');
 
             t.waitForMs(500, function() {
                 t.expect(view.editMode).toBe('EDIT');
@@ -357,7 +403,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("Should load message from backend, cc and bcc field hidden", function(t) {
 
-        view = createWithMessageConfig(2, 'EDIT');
+        view = createWithMessageConfig('2');
 
         t.waitForMs(500, function() {
             expectCcsHidden(true, t, view);
@@ -671,7 +717,20 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             delay: 500
         });
 
-        var modes = ['EDIT', 'REPLY_TO', 'REPLY_ALL', 'FORWARD'],
+        var modes = [
+                Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                    id       : '1',
+                    editMode : 'REPLY_TO'
+                }),
+                Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                    id       : '1',
+                    editMode : 'REPLY_ALL'
+                }),
+                Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                    id       : '1',
+                    editMode : 'FORWARD'
+                })
+            ],
             i    = 0,
             func = function(t, i) {
 
@@ -679,9 +738,9 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                     return;
                 }
 
-                view = createWithMessageConfig(1, modes[i]);
+                view = createWithMessageConfig(modes[i]);
 
-                t.expect(view.editMode).toBe(modes[i]);
+                t.expect(view.editMode).toBe(modes[i].getEditMode());
 
                 t.waitForMs(250, function() {
                     t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');

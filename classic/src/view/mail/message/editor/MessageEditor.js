@@ -31,11 +31,9 @@
  *
  * editMode Context:
  * =================
- * When creating an instance of this class, the editMode should be specified
- * based upon the context the editor is opened with. The editMode can either
- * be "CREATE" or "EDIT". Note: the editMode is only important for the initial
- * firing up of this view. Once a phantom messageDraft gets saved and has a physical
- * id, it is not needed to change the editMode from "CREATE" to "EDIT".
+ * When creating an instance of this class, the editMode will be determined by the
+ * "messageDraft" configuration passed to teh constructor.
+ * The editMode will default to any of conjoon.cn_mail.data.mail.message.EditingModes.
  *
  *
  * Session:
@@ -58,45 +56,23 @@
  * ==================================
  * Instances of this class can be initially configured with various options for
  * the MessageDraft that should be used.
- * By specifying no options at all, an empty MessageDraft is created which gets
- * saved as a completely new Message.
+ * A "messageDraft" config must be available at any time, and can be any of the following:
  *
- *  @example
- *     // MessageEditor will be created with an empty MessageDraft.
- *     // editMode will be set to "CREATE", regardless of any editMode configuration
- *     // passed to the constructor
- *     Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor');
-
+ *  -String:
+ *  --------
+ *  Treated as the id of the MessageDraft to load. The Editor will then be in
+ *  editMode "EDIT"
  *
- * By specifying the configuration option "messageConfig", you can configure the
- * MessageDraft as follows:
- *  - none: MessageDraft will be created completely from scratch
- *  - {to: 'nam@domain.tld'} MessageDraft will be created completely from scratch,
- *  but the 'to'-address field will be set to the value of the to property
- *  - {id : [string]} The MessageDraft with the specified id will be loaded from
- *  the server, and the form fields will be set to the returned data accordingly.
+ *  - instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig:
+ *  --------------------------------------------------------------------------
+ *  Treated as composing a new message with data defaulting to the data of the
+ *  MessageDraftConfig. editMode will then be CREATE
  *
- *     @example
- *     // MessageEditor will be created and the MessageDraft with the specified
- *     // id "3" will be requested from the backend, editMode will be set to "EDIT",
- *     // regardless of any editMode configuration passed to the constructor
- *     Ext.create('conjoon.cn_mail.view.mail.message.MessageEditor', {
- *          messageConfig : {
- *             id   : '3'
- *          }
- *     });
+ *  - instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest:
+ *  ------------------------------------------------------------------------------
+ *  Treated as composing a new message, referencing the message as specified
+ *  in the request. editMode will be any of FORWARD, REPLY_TO, REPLY_ALL
  *
- *     // MessageEditor will be created with a phantom MessageDraft, and it's
- *     // to-Address will be initial set to 'name@domain.tld'
- *     // editMode will be set to CREATE
- *     Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
- *          messageConfig : {
- *              // the to property can be configured according to the specs
- *              // of conjoon.cn_mail.model.mail.message.EmailAddress or
- *              // conjoon.cn_core.data.field.EmailAddressCollection
- *              to : 'name@domain.tld'
- *          }
- *     });
  *
  * @see conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel
  */
@@ -111,13 +87,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
         'conjoon.cn_mail.view.mail.message.editor.HtmlEditor',
         'conjoon.cn_mail.view.mail.message.editor.AddressField',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.model.mail.message.EmailAddress',
         'conjoon.cn_mail.data.mail.BaseSchema',
         'conjoon.cn_core.data.Session',
         'conjoon.cn_core.data.session.SplitBatchVisitor',
         'conjoon.cn_comp.component.MessageMask',
-        'conjoon.cn_mail.data.mail.message.EditingModes'
+        'conjoon.cn_mail.data.mail.message.EditingModes',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
     ],
 
     alias : 'widget.cn_mail-mailmessageeditor',
@@ -161,7 +137,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @param {Boolean} isSending Whether the save process is part of an ongoing
      * send-process of the message.
      * @param {Ext.data.Batch} batch The save batch which can be resumed if it's
-     * pauseOnEXception property was et to true
+     * pauseOnException property was et to true
      */
 
     /**
@@ -363,105 +339,50 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * Overrides any specified session by creating an individual session of the
      * type conjoon.cn_core.Session with a conjoon.cn_core.session.BatchVisitor.
      *
-     * @throws if both viewModel and messageConfig want to be configured when
-     * creating an instance of this class, or if editMode was not specified.
+     * @throws if config is empty, or if viewModel is being applied using the
+     * config argument.
      */
     constructor : function(config) {
 
         var me           = this,
             EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
-            modes        = [
-                EditingModes.EDIT,
-                EditingModes.CREATE,
-                EditingModes.REPLY_TO,
-                EditingModes.REPLY_ALL,
-                EditingModes.FORWARD
-            ],
-            draftConfig = {
-                type : 'MessageDraft'
-            },
             messageDraft;
 
-        if (modes.indexOf(config.editMode) === -1) {
-            Ext.raise({
-                editMode : config.editMode,
-                msg      : "\"editMode\" is invalid"
-            });
-        }
 
-        config.session = Ext.create('conjoon.cn_core.data.Session', {
-            schema                : 'cn_mail-mailbaseschema',
-            batchVisitorClassName : 'conjoon.cn_core.data.session.SplitBatchVisitor'
-        });
-
-        if (config.messageDraft && config.viewModel) {
+        if (!config || !config.messageDraft) {
             Ext.raise({
                 source : Ext.getClassName(this),
-                msg    : 'Can only set messageConfig or viewModel, not both.'
-            })
+                msg    : 'argument "config" and "config.messageDraft" must be set.'
+            });
         }
 
         messageDraft = config.messageDraft;
 
-        switch (config.editMode) {
-
-            case EditingModes.CREATE:
-                messageDraft       = config.messageDraft;
-                draftConfig.create = messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
-                    ? messageDraft.toObject()
-                    : true;
-                break;
-
-            case EditingModes.EDIT:
-            case EditingModes.REPLY_TO:
-            case EditingModes.REPLY_ALL:
-            case EditingModes.FORWARD:
-                messageDraft = config.messageDraft;
-                if (!messageDraft || Ext.isObject(messageDraft)) {
-                    Ext.raise({
-                        messageDraft : messageDraft,
-                        editMode     : config.editMode,
-                        msg          : "unexpected value for \"messageDraft\""
-                    });
-                }
-
-                if (config.editMode === EditingModes.EDIT) {
-                    draftConfig.id = messageDraft;
-                } else {
-                    draftConfig = null;
-                }
-                break;
-
-            default:
-                Ext.raise({
-                    editMode     : config.editMode,
-                    messageDraft : messageDraft,
-                    msg          : "unexpected value for \"messageDraft\""
-                });
+        if (config.viewModel) {
+            Ext.raise({
+                source : Ext.getClassName(this),
+                msg    : 'Cannot set ViewModel for MessageEditor without overriding constructor.'
+            })
         }
 
-        if (draftConfig) {
-            config.viewModel = {
-                type     : 'cn_mail-mailmessageeditorviewmodel',
-                links    : {
-                    messageDraft : draftConfig
-                }
-            };
-        } else {
-            // REPLY_TO; REPLY_ALL, FORWARD
-            config.viewModel = {
-                type : 'cn_mail-mailmessageeditorviewmodel'
-            };
+        Ext.apply(config, {
+            session : Ext.create('conjoon.cn_core.data.Session', {
+                schema                : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_core.data.session.SplitBatchVisitor'
+            }),
+            viewModel : {
+                type         : 'cn_mail-mailmessageeditorviewmodel',
+                messageDraft : messageDraft
+            }
+        });
 
-            // messageDraft is the id
-            config.viewModel.editMode = {
-                id   : messageDraft,
-                type : config.editMode
-            };
+        me.editMode =  EditingModes.CREATE;
+
+        if (typeof messageDraft === 'string') {
+            me.editMode = EditingModes.EDIT;
+        } else if (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest) {
+            me.editMode = messageDraft.getEditMode();
         }
-
-
-
 
         delete config.messageDraft;
 
