@@ -22,6 +22,7 @@
 
 /**
  * Text Decorator for Email Messages which are used in "reply to" context.
+ * Instances of this class will return an empty set of attachments.
  */
 Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
 
@@ -99,6 +100,13 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
         ].join("<br />");
 
         return result;
+    },
+
+    /**
+     * @inehritdoc
+     */
+    getAttachments : function() {
+        return [];
     }
 
 });

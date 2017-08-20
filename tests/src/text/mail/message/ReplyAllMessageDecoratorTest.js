@@ -22,7 +22,7 @@
 
 describe('conjoon.cn_mail.text.ReplyAllMessageDecoratorTest', function(t) {
 
-    var createMessageDraft = function(andBodyToo, skipReplyTo) {
+    var createMessageDraft = function(andBodyToo, skipReplyTo, andAttachmentsTo) {
         var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
             subject : 'SUBJECT',
             from    : 'from@domain.tld',
@@ -42,12 +42,23 @@ describe('conjoon.cn_mail.text.ReplyAllMessageDecoratorTest', function(t) {
             }));
         }
 
+        if (andAttachmentsTo === true) {
+            draft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+                type           : 'TYPE',
+                text           : 'foo',
+                size           : 1,
+                previewImgSrc  : 'PREVIEWIMGSRC',
+                downloadImgUrl : 'DOWNLOADIMGURL',
+                sourceId       : 'SOURCEID'
+            }));
+        }
+
         return draft;
     };
 
 
     t.it("constructor()", function(t) {
-        var messageDraft = createMessageDraft(true),
+        var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator', messageDraft);
 
         t.isInstanceOf(decorator, conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator);
@@ -55,7 +66,7 @@ describe('conjoon.cn_mail.text.ReplyAllMessageDecoratorTest', function(t) {
 
 
     t.it("getTo()", function(t) {
-        var messageDraft = createMessageDraft(true),
+        var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator', messageDraft);
 
         t.expect(decorator.getTo()).toEqual([decorator.getReplyTo()].concat(messageDraft.get('to')));
@@ -63,7 +74,7 @@ describe('conjoon.cn_mail.text.ReplyAllMessageDecoratorTest', function(t) {
 
 
     t.it("getCc()", function(t) {
-        var messageDraft = createMessageDraft(true),
+        var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator', messageDraft);
 
         t.expect(decorator.getCc()).toEqual(messageDraft.get('cc'));

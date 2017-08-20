@@ -22,6 +22,8 @@
 
 /**
  * Abstract text decorator for Email Messages.
+ * The constructor expects a fully loaded MessageDraft-model, with the
+ * MessageBody and Attachments available.
  * A Decorator of this class provides the following interface for getting data:
  *
  * - getTextHtml
@@ -32,6 +34,12 @@
  * - getTo
  * - getFrom
  * - getReplyTo
+ * - getAttachments
+ *
+ * Additionally, the toMessageDraftConfig will create an instance of
+ * {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig} based on the
+ * data decorated by the above mentioned methods. Sub-classes should be aware
+ * of handling attachments and override the getAttachments method.
  *
  * @abstract
  *
@@ -41,7 +49,8 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
 
 
     requires : [
-        'conjoon.cn_mail.model.mail.message.MessageDraft'
+        'conjoon.cn_mail.model.mail.message.MessageDraft',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
     ],
 
     /**
@@ -55,7 +64,8 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
-     * @throws if MessageDraft is not of the proper type, or if MessageBody is not available
+     * @throws if MessageDraft is not of the proper type, or if MessageBody or
+     * Attachments are not available
      */
     constructor : function(messageDraft) {
 
@@ -77,14 +87,21 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
             });
         }
 
+        if (messageDraft.attachments().getRange().length === 0 &&
+            !messageDraft.attachments().isLoaded()) {
+            Ext.raise({
+                messageDraft : messageDraft,
+                msg          : "\"Attachments\" of messageDraft are not available",
+                cls          : Ext.getClassName(me)
+            });
+        }
+
         me.messageDraft = messageDraft;
     },
 
 
     /**
      * Decorates the MessageBody's textPlain.
-     *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @return {String}
      */
@@ -97,8 +114,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
 
     /**
      * Decorates the MessageBody's textHtml.
-     *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @return {String}
      */
@@ -114,8 +129,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
     /**
      * Decorates the MessageDraft's subject.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-     *
      * @return {String}
      */
     getSubject : function() {
@@ -129,8 +142,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
 
     /**
      * Decorates the MessageDraft's from-address.
-     *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @return {Object}
      */
@@ -146,8 +157,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
     /**
      * Decorates the MessageDraft's replyTo-address. Will return a copy of the
      * "from" address if replyTo is not specified.
-     *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @return {Object}
      *
@@ -167,8 +176,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
     /**
      * Decorates the MessageDraft's to-addresses.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-     *
      * @return {Array}
      *
      * @see copyAddresses
@@ -180,8 +187,6 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
 
     /**
      * Decorates the MessageDraft's cc-addresses.
-     *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @return {Array}
      *
@@ -195,14 +200,69 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
     /**
      * Decorates the MessageDraft's cc-addresses.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-     *
      * @return {Array}
      *
      * @see copyAddresses
      */
     getBcc : function() {
         return this.copyAddresses('bcc');
+    },
+
+
+    /**
+     * Decorates the MessageDrafts Attachments and returns an array with its data
+     * without references to the original attachment data.
+     * The following data will be available for decorating:
+     * - type
+     * - text
+     * - size
+     * - previewImgSrc
+     * - downloadImgUrl
+     * - sourceId
+     *
+     * @return {Object[]}
+     */
+    getAttachments : function() {
+
+        var me             = this,
+            attachments    = me.messageDraft.attachments().getRange(),
+            newAttachments = [];
+
+        for (var i = 0, len = attachments.length; i < len; i++) {
+
+            newAttachments.push(
+                Ext.copy(
+                    {},
+                    attachments[i].data,
+                    'type,text,size,previewImgSrc,downloadImgUrl,sourceId'
+                )
+            );
+        }
+
+        return newAttachments;
+    },
+
+
+    /**
+     * Returns an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
+     * with the data set to the values as computed by this decorator.
+     *
+     * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig}
+     */
+    toMessageDraftConfig : function() {
+
+        var me = this;
+
+        return Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+            to          : me.getTo(),
+            cc          : me.getCc(),
+            bcc         : me.getBcc(),
+            subject     : me.getSubject(),
+            textPlain   : me.getTextPlain(),
+            textHtml    : me.getTextHtml(),
+            attachments : me.getAttachments()
+        });
+
     },
 
 
