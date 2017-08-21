@@ -245,8 +245,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         var exc = undefined;
         try {
             view = createWithViewConfig({
-                viewModel : {data : {foo : 'bar'}},
-                editMode  : 'CREATE'
+                messageDraft : {},
+                viewModel    : {data : {foo : 'bar'}}
             });
         } catch (e) {
             exc = e;
@@ -291,8 +291,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         var exc = undefined;
         try {
             view = createWithViewConfig({
-                items : [{xtype :'panel'}],
-                editMode : 'CREATE'
+                messageDraft : '1',
+                items        : [{xtype :'panel'}]
             });
         } catch (e) {
             exc = e;
