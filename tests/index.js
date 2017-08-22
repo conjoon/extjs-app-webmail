@@ -59,6 +59,7 @@ harness.start({
                         group : 'editor',
                         items : [
                             'src/data/mail/message/editor/MessageDraftConfigTest.js',
+                            'src/data/mail/message/editor/MessageDraftCopierTest.js',
                             'src/data/mail/message/editor/MessageDraftCopyRequestTest.js'
                         ]
                     },
