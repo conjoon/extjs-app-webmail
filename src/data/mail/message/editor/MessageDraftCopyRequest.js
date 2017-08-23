@@ -133,8 +133,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
         if (me.getEditMode() !== undefined) {
             Ext.raise({
                 editMode : me.getEditMode(),
-                msg      : "Property \"editMode\" was already set.",
-                cls      : Ext.getClassName(me)
+                msg      : "Property \"editMode\" was already set."
             })
         }
 
@@ -151,8 +150,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                 msg      : Ext.String.format(
                     "Property \"editMode\" must be one of {0}.",
                     modes.join(", ")
-                ),
-                cls : Ext.getClassName(me)
+                )
             })
         }
 
