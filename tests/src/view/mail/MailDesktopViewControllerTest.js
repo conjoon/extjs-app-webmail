@@ -56,14 +56,14 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         });
 
 
-        t.it("showMailEditor()", function(t) {
+        t.it("createMessageDraftConfig()", function(t) {
 
             var ctrl = Ext.create(
                 'conjoon.cn_mail.view.mail.MailDesktopViewController'
             ), exc, e, tests, test;
 
-            t.expect(ctrl.createMessageDraftConfig(2)).toBe(2);
-            t.expect(ctrl.createMessageDraftConfig("jhkjhkj")).toBe("jhkjhkj");
+            t.isInstanceOf(ctrl.createMessageDraftConfig(2), conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig);
+            t.isInstanceOf(ctrl.createMessageDraftConfig("jhkjhkj"), conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig);
 
             tests = [{
                 value    : 'mailto:test@domain.tld',
@@ -73,7 +73,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                 expected : {}
             }, {
                 value    : 'maito:',
-                expected : 'maito:'
+                expected : {}
             },{
                 value    : 'mailto%3Atest1@domain.tld',
                 expected :{to : [{name : 'test1@domain.tld', address : 'test1@domain.tld'}]}

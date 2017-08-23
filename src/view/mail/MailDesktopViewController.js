@@ -36,7 +36,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
         'conjoon.cn_mail.text.QueryStringParser',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
-        'conjoon.cn_mail.data.mail.message.EditingModes'
+        'conjoon.cn_mail.data.mail.message.EditingModes',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -104,31 +105,37 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             initialConfig = {
                 messageDraft : null
             },
-            EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+            EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
+            CopyRequest  = 'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest';
 
         itemId  = me.getItemIdForMessageEditor(id, type);
         cn_href = me.getCnHrefForMessageEditor(id, type);
 
+
+        // MessageDraft === MessageDraftCopyRequest
+        // MessageDraft === id
+        // MessageDraft === MessageDraftConfig
         switch (type) {
             case 'edit':
-                initialConfig.messageDraft = id;
-                initialConfig.editMode     = EditingModes.EDIT;
+                initialConfig.messageDraft = id + '';
                 break;
             case 'replyTo':
-                initialConfig.messageDraft = id;
-                initialConfig.editMode     = EditingModes.REPLY_TO;
+                initialConfig.messageDraft = Ext.create(CopyRequest, {
+                    id : id + '', editMode : EditingModes.REPLY_TO
+                });
                 break;
             case 'replyAll':
-                initialConfig.messageDraft = id;
-                initialConfig.editMode     = EditingModes.REPLY_ALL;
+                initialConfig.messageDraft = Ext.create(CopyRequest, {
+                    id : id + '', editMode : EditingModes.REPLY_ALL
+                });
                 break;
             case 'forward':
-                initialConfig.messageDraft = id;
-                initialConfig.editMode     = EditingModes.FORWARD;
+                initialConfig.messageDraft = Ext.create(CopyRequest, {
+                    id : id + '', editMode : EditingModes.FORWARD
+                });
                 break;
             default:
                 initialConfig.messageDraft = me.createMessageDraftConfig(id);
-                initialConfig.editMode     = EditingModes.CREATE;
                 break;
         }
 
@@ -363,7 +370,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (Ext.String.startsWith(encodedId, 'mailto:', true)) {
             encodedId = encodedId.substring(7);
         } else {
-            return id;
+            return Ext.create(
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
         }
 
         addresses = '';
