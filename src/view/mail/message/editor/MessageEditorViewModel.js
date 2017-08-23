@@ -37,35 +37,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         'conjoon.cn_mail.model.mail.message.MessageDraft',
         'conjoon.cn_mail.model.mail.message.MessageBody',
         'conjoon.cn_mail.model.mail.message.EmailAddress',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier',
         'conjoon.cn_core.Util'
     ],
-
-    statics : {
-        /**
-         * @type {String} MODE_EDIT
-         */
-        MODE_EDIT : 'EDIT',
-
-        /**
-         * @type {String} MODE_CREATE
-         */
-        MODE_CREATE : 'CREATE',
-
-        /**
-         * @type {String} MODE_REPLY_TO
-         */
-        MODE_REPLY_TO  : 'REPLY_TO',
-
-        /**
-         * @type {String} MODE_REPLY_ALL
-         */
-        MODE_REPLY_ALL : 'REPLY_ALL',
-
-        /**
-         * @type {String} MODE_FORWARD
-         */
-        MODE_FORWARD   : 'FORWARD'
-    },
 
     alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
 
@@ -75,6 +51,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * @private
      */
     emptySubjectText : '(No subject)',
+
+    /**
+     * @type {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier}
+     * @private
+     */
+    messageDraftCopier : null,
 
     data : {
         /**
@@ -184,62 +166,153 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      *
      * This constructor will also take care of setting up the getTo, getCc and
      * getBcc formulas.
-     * If no MessageDraft was specified via the config for this constructor,
-     * an initial, empty MessageDraft will be generated.
+     * This constructor needs a config object that has a messageDraft-property,
+     * which can be any of:
+     * - conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
+     * - conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest
+     * - string (id of MessageDraft to edit)
      *
      * @see #createAddressFormulas
+     *
+     * @throws if config or config.messageDraft is not set, and if messageDraft
+     * is not an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig,
+     * conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest or of type string.
      */
     constructor : function(config) {
 
-        config = config || {};
+        var me = this,
+            messageDraft;
 
-        var me      = this,
-            statics = me.statics(),
-            modes   = [
-                statics.MODE_REPLY_TO,
-                statics.MODE_REPLY_ALL,
-                statics.MODE_FORWARD
-            ],
-            messageBody,
-            messageDraft,
-            editMode;
+        if (!config || !config.messageDraft) {
+            Ext.raise({
+                source : Ext.getClassName(this),
+                msg    : 'arguments "config" and  "config.messageDraft" must be set.'
+            });
+        }
 
-        // create address formulas and apply the to the instances formulas
-        me.config.formulas = Ext.apply(
-            me.config.formulas || {},
-            me.createAddressFormulas()
-        );
+        messageDraft = config.messageDraft;
+        delete config.messageDraft;
 
-        // Read out editMode. this is an object in the form of
-        // { type : [ANY OF THIS CLASS STATICS MODE_* VALUES],
-        //   id   : [THE ID OF THE MESSAGE TO LOAD] }
-        editMode = conjoon.cn_core.Util.unchain('editMode.type', config);
-        if (editMode && modes.indexOf(editMode) !== -1) {
+        Ext.apply(config, {
+            formulas : me.createAddressFormulas()
+        });
+
+        // MessageDraft is an id
+        if ((typeof messageDraft).toLowerCase() === 'string') {
+            Ext.apply(config, {
+                links : {
+                    messageDraft : {
+                        type : 'MessageDraft',
+                        id   : messageDraft
+                    }
+                }
+            });
             me.callParent([config]);
-            me.loadMessageDraftCopy(config.editMode.id);
             return;
-        } else {
-            messageBody = conjoon.cn_core.Util.unchain(
-                'links.messageDraft.create.messageBody', config
-            );
+        }
+
+
+        me.callParent([config]);
+        switch (true) {
+            case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig):
+                // MessageDraft is MessageDraftConfig
+                me.createDraftFromData(messageDraft);
+                return;
+
+            case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest):
+                // MessageDraft is MessageDraftCopyRequest
+                me.messageDraftCopier = Ext.create(
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier');
+                me.messageDraftCopier.loadMessageDraftCopy(
+                    messageDraft, me.onMessageDraftCopyLoad, me
+                );
+                return;
+
+        }
+
+        // exception
+        Ext.raise({
+            messageDraft : messageDraft,
+            msg          : "\"messageDraft\" must either be an instance of " +
+                           "MessageDraftConfig, of MessageDraftCopyRequest or " +
+                           "of type string."
+        });
+    },
+
+
+    /**
+     * @inheritdoc
+     */
+    destroy : function() {
+
+        var me = this;
+
+        if (me.messageDraftCopier) {
+            me.messageDraftCopier.destroy();
+            me.messageDraftCopier = null;
+        }
+
+        me.callParent(arguments);
+    },
+
+
+    privates : {
+
+        /**
+         * Callback for the cn_mail-mailmessagecopyload of the MessageDraftCopier.
+         * Creates a link for this viewmodel to the copied MessageDraft data.
+         *
+         * @param {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier} draftCopier
+         * @param {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig} messageDraftConfig
+         *
+         * @see createDraftFromData
+         */
+        onMessageDraftCopyLoad : function(draftCopier, messageDraftConfig) {
+            var me = this;
+
+            me.createDraftFromData(messageDraftConfig);
+        },
+
+
+        /**
+         * Creates a MessageDraft link for this ViewModel from the specified
+         * MessageDraftConfig.
+         *
+         * @param {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig} messageDraftConfig
+         *
+         * @private
+         *
+         * @throws if messageDraftConfig is not of type
+         * conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
+         */
+        createDraftFromData : function(messageDraftConfig) {
+
+            var me = this,
+                messageBody,
+                attachments,
+                data;
+
+            if (!(messageDraftConfig instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig)) {
+                Ext.raise({
+                    messageDraftConfig : messageDraftConfig,
+                    msg                : "\"messageDraftConfig\" must be an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"
+                })
+            }
+
+            data = messageDraftConfig.toObject();
+
+            messageBody = data.messageBody;
+            attachments = data.attachments;
 
             // intentionally remove reference, see below
-            if (messageBody) {
-                delete config.links.messageDraft.create.messageBody;
-            }
+            delete data.messageBody;
+            delete data.attachments;
 
-            if (!conjoon.cn_core.Util.unchain('links.messageDraft', config)) {
-                Ext.apply(config, {
-                    links : {
-                        messageDraft : {
-                            type    : 'MessageDraft',
-                            create  : true
-                        }
-                    }
-                });
-            }
 
-            me.callParent([config]);
+            me.linkTo('messageDraft', {
+                type   : 'MessageDraft',
+                create : data
+            });
 
             /**
              * @bug
@@ -250,101 +323,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             // we initialize it by hand here, considering above mentioned bug in 6.2.
             // The messageBody might be initialized with some values as specified
             // in the constructor's config-argument
-            if (!conjoon.cn_core.Util.unchain('links.messageDraft.id', config)) {
-                me.set('messageDraft.messageBody',
-                    me.getSession().createRecord('MessageBody', messageBody || {})
-                );
-            }
-        }
-    },
-
-
-    /**
-     * Loads a copy of the MessageDraft with the specified id and applies a copy
-     * of its data to this vm, so it can be saved with a new id.
-     *
-     * @param {String} id
-     *
-     * @private
-     */
-    loadMessageDraftCopy : function(id) {
-        var me = this;
-
-        conjoon.cn_mail.model.mail.message.MessageDraft.load(id, {
-            success : me.onMessageDraftLoad,
-            scope   : me
-        });
-    },
-
-
-    privates : {
-
-        /**
-         * Callback for a successfull load operation of a MessageDraft requested
-         * via loadMessageDraftCopy. Will trigger loading the Atatchments and
-         * the MessageBody for this vm's editor.
-         *
-         * @param {conjoon.cn_mail.model.mail.message.MessageDraft} record
-         */
-        onMessageDraftLoad : function(record) {
-
-            var me    = this,
-                draft = record.copy(null);
-
-            me.linkTo('messageDraft', {
-                type   : 'MessageDraft',
-                create : {
-                    subject : draft.get('subject'),
-                    to      : [draft.get('from')]
-                }
-            });
-
-            record.getMessageBody({
-                success : me.onMessageBodyLoad,
-                scope   : me
-            });
-
-            record.attachments().load({
-                callback : me.onAttachmentsLoad,
-                scope    : me
-            });
-        },
-
-
-        /**
-         * Callback for a successfull load operation of a MessageBody requested
-         * via loadMessageDraftCopy.
-         *
-         * @param {conjoon.cn_mail.model.mail.message.MessageBody} record
-         */
-        onMessageBodyLoad : function(record) {
-
-            var me          = this,
-                messageBody = record.copy(null);
-
             me.set(
                 'messageDraft.messageBody',
-                me.getSession().createRecord('MessageBody', {textHtml : messageBody.get('textHtml')})
+                me.getSession().createRecord('MessageBody', messageBody || {})
             );
-        },
 
-
-        /**
-         * Callback for a successfull load operation of a Attachmnets requested
-         * via loadMessageDraftCopy.
-         *
-         * @param {conjoon.cn_mail.model.mail.message.SraftAttachment} record
-         */
-        onAttachmentsLoad : function(records, operation, success) {
-
-            var me = this;
-
-            if (success) {
-                for (var i = 0, len = records.length; i < len; i++) {
-                    me.get('messageDraft').attachments().add(records[i].copy(null));
-                }
-            }
-
+            me.get('messageDraft').attachments().add(
+                attachments || []
+            );
         },
 
 
