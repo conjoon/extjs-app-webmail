@@ -70,6 +70,13 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
             proxy.url = tmpProxy.url;
 
+            if (tmpData.entityName === 'MessageItem') {
+                proxy.reader = {
+                    type         : 'json',
+                    rootProperty : 'data'
+                };
+            }
+
             return proxy;
         }
 }

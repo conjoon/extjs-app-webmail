@@ -63,6 +63,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             return ret;
         },
 
+
         data: function(ctx) {
 
             var idPart  = ctx.url.match(this.url)[1],
@@ -73,7 +74,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
-                console.log("GET", "MessageItem", id, new Date());
                 return Ext.Array.findBy(
                     messageItems,
                     function(messageItem) {
@@ -81,16 +81,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                     }
                 );
             } else if (filters) {
-                filters = Ext.decode(filters);
-                id      = filters[0].value;
-                var items = Ext.Array.filter(
-                    messageItems,
-                    function(messageItem) {
-                        return messageItem.mailFolderId === id;
-                    }
-                );
-
-                return items;
+                return messageItems;
             } else {
                 return messageItems;
             }

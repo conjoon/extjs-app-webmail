@@ -46,10 +46,13 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
             // proxy
             t.expect(store.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
 
+            t.expect(store.getProxy().getReader().getRootProperty()).toBe('data');
+
+
             // data range
             store.load();
             t.waitForMs(250, function() {
-                t.expect(store.getTotalCount()).toBe(25);
+                t.expect(store.getTotalCount()).toBeGreaterThan(0);
             });
 
 
