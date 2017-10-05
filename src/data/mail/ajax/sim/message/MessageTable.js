@@ -391,23 +391,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             {address : 'info@ebay.de',        name : 'ebay Verkäufer Team'},
             {address : 'mailer@mtb-news.de',  name : 'MTB News'},
             {address : 'service@otto.de',     name : 'Otto GmbH'},
-            {address : 'info@amazon.de',      name : 'Amazaon'}
+            {address : 'info@amazon.de',      name : 'Amazon'}
         ];
 
-        for (var i = 0; i < 100; i++) {
+        var mailFolderId;
+
+        for (var i = 0; i < 10000; i++) {
+
+            mailFolderId = (i % 5 == 0 ? 5 : i % 5) + '';
 
             baseMessageItems.push({
                 id            : (i + 1) + '',
                 date           : me.buildRandomDate(),
                 // leave first one as unread for tests
-                subject        : subjects[me.buildRandomNumber(0, 5)],
+                subject        : /*mailFolderId + ' - ' + (i) + ' - ' +*/ subjects[me.buildRandomNumber(0, 5)],
                 from           : i === 0
                                  ? 'from@domain.tld'
                                  : sender[me.buildRandomNumber(0, 5)],
                 to             : me.buildAddresses('to', i),
                 cc             : me.buildAddresses('cc', i),
-                mailFolderId   : (i % 5 == 0 ? 5 : i % 5) + '',
-                messageBodyId  : (i + 1) + ''
+                mailFolderId   : mailFolderId,
+                messageBodyId  : (i + 1) + '',
+                testProp       : i
             });
         }
 

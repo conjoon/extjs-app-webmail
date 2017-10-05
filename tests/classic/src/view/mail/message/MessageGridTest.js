@@ -23,7 +23,15 @@
 describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
     var grid,
-        gridConfig;
+        gridConfig,
+        prop = function(value, subject) {
+            return Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+                testProp    : value,
+                subject     : subject,
+                date        : new Date(),
+                previewText : 'Random Text'
+            });
+        };
 
     t.afterEach(function() {
         if (grid) {
@@ -38,35 +46,80 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         }
     });
 
+    t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
+    t.requireOk('conjoon.cn_mail.model.mail.message.MessageItem', function() {
+    t.requireOk('conjoon.cn_mail.store.mail.message.MessageItemStore', function() {
 
-    t.it("Should create and show the grid along with default config checks", function(t) {
-        grid = Ext.create(
-            'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
 
-        t.expect(grid instanceof Ext.grid.Panel).toBeTruthy();
 
-        t.expect(grid.alias).toContain('widget.cn_mail-mailmessagegrid');
+        t.it("Should create and show the grid along with default config checks", function(t) {
+            grid = Ext.create(
+                'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
 
-        var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
-        t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowBodySwitch');
-        t.expect(feature.disabled).toBeFalsy()
+            t.expect(grid instanceof Ext.grid.Panel).toBeTruthy();
+
+            t.expect(grid.alias).toContain('widget.cn_mail-mailmessagegrid');
+
+            var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+            t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowBodySwitch');
+            t.expect(feature.disabled).toBeFalsy()
+        });
+
+
+        t.it("enableRowPreview()", function(t) {
+            grid = Ext.create(
+                'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
+            var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+
+            t.expect(feature.disabled).toBe(false);
+            grid.enableRowPreview(false);
+            t.expect(feature.disabled).toBe(true);
+            grid.enableRowPreview();
+            t.expect(feature.disabled).toBe(false);
+            grid.enableRowPreview(false)
+            t.expect(feature.disabled).toBe(true);
+            grid.enableRowPreview(true);;
+            t.expect(feature.disabled).toBe(false);
+        });
+
+        t.it("Behavior with BufferedStore overrides", function(t) {
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                store    : {
+                    type     : 'cn_mail-mailmessageitemstore',
+                    autoLoad : true,
+                    sorters  : [{
+                        property  : 'testProp',
+                        direction : 'DESC'
+                    }]
+                },
+                renderTo : document.body
+            });
+
+            grid.enableRowPreview(false);
+
+            t.waitForMs(750, function() {
+                t.expect(grid.getStore().addSorted(prop(10000, 'first'))).not.toBe(null);
+                t.expect(grid.getView().getRow(0).getElementsByTagName('td')[2].firstChild.innerHTML).not.toBe("first");
+                grid.getView().refresh();
+                t.expect(grid.getView().getRow(0).getElementsByTagName('td')[2].firstChild.innerHTML).toBe("first");
+
+                t.expect(grid.getStore().addSorted(prop(9998.5, 'second'))).not.toBe(null);
+                t.expect(grid.getView().getRow(2).getElementsByTagName('td')[2].firstChild.innerHTML).not.toBe("second");
+                grid.getView().refresh();
+                t.expect(grid.getView().getRow(2).getElementsByTagName('td')[2].firstChild.innerHTML).toBe("second");
+
+            });
+
+
+        });
+
+
     });
-
-
-    t.it("enableRowPreview()", function(t) {
-        grid = Ext.create(
-            'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
-        var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
-
-        t.expect(feature.disabled).toBe(false);
-        grid.enableRowPreview(false);
-        t.expect(feature.disabled).toBe(true);
-        grid.enableRowPreview();
-        t.expect(feature.disabled).toBe(false);
-        grid.enableRowPreview(false)
-        t.expect(feature.disabled).toBe(true);
-        grid.enableRowPreview(true);;
-        t.expect(feature.disabled).toBe(false);
     });
-
+    });
 });
