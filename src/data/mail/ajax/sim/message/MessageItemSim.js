@@ -74,14 +74,23 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
-                return Ext.Array.findBy(
+                return {data : Ext.Array.findBy(
                     messageItems,
                     function(messageItem) {
                         return messageItem.id === '' + id;
                     }
-                );
+                )};
             } else if (filters) {
-                return messageItems;
+                filters = Ext.decode(filters);
+                id      = filters[0].value;
+                var items = Ext.Array.filter(
+                    messageItems,
+                    function(messageItem) {
+                        return messageItem.mailFolderId === id;
+                    }
+                );
+
+                return items;
             } else {
                 return messageItems;
             }
