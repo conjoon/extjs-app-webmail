@@ -38,6 +38,27 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 name : 'foo.png',
                 type : type ? type : 'image/jpg'
             }], 'foo.png');
+        },
+        createEditorForController = function(controller, editMode) {
+
+            var messageDraft,
+                editMode = editMode ? editMode : 'CREATE';
+
+            switch (editMode) {
+                case 'CREATE':
+                    messageDraft = Ext.create(
+                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
+                    );
+                    break;
+            }
+
+            return Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller   : controller,
+                    renderTo     : document.body,
+                    messageDraft : messageDraft
+                });
+
         };
 
     t.afterEach(function() {
@@ -108,12 +129,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller.onSendButtonClick = function() {sendButtonClick++;};
             controller.onSaveButtonClick = function() {saveButtonClick++;};
 
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller, 'CREATE');
 
             t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
 
@@ -176,12 +192,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.waitForMs(500, function() {
                 var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
@@ -196,12 +207,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.waitForMs(500, function() {
                 t.expect(view.down('#ccField').isHidden()).toBe(true);
@@ -223,12 +229,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             var wrap  = view.down('#attachmentListWrap').el,
                 event = {
@@ -307,12 +308,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.getViewModel().set('isSaving',  true);
             view.getViewModel().set('isSending', true);
@@ -352,12 +348,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('setBusy', view, 2);
             t.expect(view.busyMask).toBeFalsy();
@@ -376,12 +367,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
              });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             // dummy
             view.setBusy({msg : 'foo'});
@@ -409,12 +395,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.down('#subjectField').setValue('test');
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
@@ -436,12 +417,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.down('#subjectField').setValue('TESTFAIL');
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
@@ -464,12 +440,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('setViewBusy', controller, 1);
             controller.onMailMessageSaveOperationComplete(
@@ -482,12 +453,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             var batch = {retry : function() {}};
 
@@ -529,12 +495,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('setBusy', view, 1);
             view.getViewModel().get('messageDraft').set('subject', 'foo');
@@ -550,12 +511,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('showSubjectMissingNotice', view, 1);
 
@@ -571,12 +527,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.getViewModel().set('isSubjectRequired', false);
             view.getViewModel().notify();
@@ -596,12 +547,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('showSubjectMissingNotice', view, 1);
             controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), createOperation());
@@ -623,12 +569,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('showSubjectMissingNotice', view, 1);
             controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), createOperation());
@@ -650,12 +591,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('showSubjectMissingNotice', view, 1);
             controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), createOperation());
@@ -680,12 +616,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('setViewBusy',  controller, 1);
             t.isCalledNTimes('endBusyState', controller, 1);
@@ -705,12 +636,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
             view.down('#subjectField').setValue('SEND');
@@ -738,12 +664,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
             view.down('#subjectField').setValue('SENDFAIL');
@@ -771,12 +692,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
             });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-            });
+            view = createEditorForController(controller);
 
             controller.onMailMessageSendException();
 
@@ -791,12 +707,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
             controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'));
@@ -813,12 +724,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledOnce('showAddressMissingNotice', view);
             t.expect(controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'))).toBe(false);
@@ -833,12 +739,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             view.down('#subjectField').setValue('SEND');
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
@@ -865,12 +766,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isCalledNTimes('close', view, 1);
             controller.onMailMessageSendComplete();
@@ -886,11 +782,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    editMode   : 'CREATE'
-                });
+            view = createEditorForController(controller);
 
             t.isntCalled('showMessageDraftLoadingNotice', view);
         });
@@ -903,8 +795,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     controller : controller,
-                    editMode   : 'EDIT',
-                    messageDraft : 1
+                    messageDraft : "1"
                 });
 
             t.isCalledOnce('showMessageDraftLoadingNotice', view);
