@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2016 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,14 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
 
     var model,
         messageBody,
-        attachments;
+        attachments,
+        longString = "";
 
     t.beforeEach(function() {
+
+        for (var i = 0, len = 4000; i < len; i++) {
+            longString += '0';
+        }
 
         messageBody = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
             id : 2
@@ -48,6 +53,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
     });
 
     t.afterEach(function() {
+        longString  = "";
         model       = null;
         messageBody = null;
         atachments  = null;
@@ -81,6 +87,34 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
         model.attachments().add(attachments);
         t.expect(model.attachments().getAt(1).get('id')).toBe('2');
         t.expect(model.attachments().getAt(1).getMessageItem()).toBe(model);
+    });
+
+    t.it("Test previewText", function(t) {
+
+        t.expect(longString.length).toBe(4000);
+
+        model.set('previewText', longString);
+        t.expect(model.data.previewText.length).toBe(200);
+        t.expect(model.get('previewText').length).toBe(200);
+
+        model.set('previewText', 'u' + longString);
+        t.expect(model.previousValues.previewText.length).toBe(200);
+        t.expect(model.data.previewText[0]).toBe('u');
+        t.expect(model.data.previewText.length).toBe(200);
+        t.expect(model.get('previewText').length).toBe(200);
+
+        model.set('previewText', 0);
+        t.expect(model.get('previewText')).toBe('');
+        model.set('previewText', undefined);
+        t.expect(model.get('previewText')).toBe('');
+        model.set('previewText', null);
+        t.expect(model.get('previewText')).toBe('');
+        model.set('previewText', true);
+        t.expect(model.get('previewText')).toBe('');
+
+
+        console.log(model);
+
     });
 
 });

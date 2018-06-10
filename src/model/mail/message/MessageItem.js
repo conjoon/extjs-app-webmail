@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,11 @@
  * The data structure used for MessageItems does only need necessary (meta) data
  * for providing information about a message. Further data can be requested
  * by loading MessageBody-models.
-
+ *
+ * Note:
+ * =====
+ * When setting the previewText-field, it's length is automatically adjusted by
+ * previewText-field's "convert()"-method.
  *
  */
 Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
@@ -55,7 +59,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
     }, {
         name    : 'previewText',
         type    : 'string',
-        persist : false
+        persist : false,
+        /**
+         * Makes sure the previewText is not longer than 200 characters.
+         * @param {Mixed} v
+         * @param {conjoon.cn_mail.model.mail.message.MessageItem} record
+         * @return {string}
+         */
+        convert : function(v, record) {
+            return (typeof v == 'string')
+                   ? v.substring(0, 200)
+                   : '';
+
+        }
     }, {
         name    : 'size',
         type    : 'int',
