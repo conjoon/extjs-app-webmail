@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -442,6 +442,184 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
         });
 
+
+        t.it("onMailMessageSaveComplete() - no related views opened.", function(t) {
+
+            var viewController = Ext.create(
+                    'conjoon.cn_mail.view.mail.MailDesktopViewController'
+                ),
+                messageDraft;
+
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600,
+                items      : [{
+                    xclass : 'conjoon.cn_mail.view.mail.inbox.InboxView'
+                }]
+            });
+
+            t.waitForMs(500, function() {
+                messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                    id      : 1,
+                    subject : 'FOOBAR'
+                });
+                messageDraft.setMessageBody({
+                    textHtml : '', textPlain : ''
+                });
+
+                t.waitForMs(500, function() {
+                    t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 0);
+                    viewController.onMailMessageSaveComplete(null, messageDraft);
+                    panel.destroy();
+                    panel = null;
+                });
+            });
+
+        });
+
+
+        t.it("onMailMessageSaveComplete() - selected gridRow not represented by messageViews", function(t) {
+
+            var viewController = Ext.create(
+                    'conjoon.cn_mail.view.mail.MailDesktopViewController'
+                ),
+                mailFolderTree, draftNode, firstRowId, messageDraft,
+                messageDetailView, inboxView, inboxMessageView, gridStore,
+                grid, oldSubject;
+
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600,
+                items      : [{
+                    xclass : 'conjoon.cn_mail.view.mail.inbox.InboxView'
+                }]
+            });
+
+            inboxView        = panel.down('cn_mail-mailinboxview');
+            inboxMessageView = inboxView.down('cn_mail-mailmessagereadermessageview');
+            grid             = panel.down('cn_mail-mailmessagegrid');
+
+            mailFolderTree = panel.down('cn_mail-mailfoldertree');
+
+            t.waitForMs(500, function() {
+                draftNode = mailFolderTree.getStore().findNode('type', 'DRAFT');
+                mailFolderTree.getSelectionModel().select(draftNode);
+
+                t.waitForMs(500, function() {
+
+                    gridStore = grid.getStore();
+
+                    t.expect(draftNode).toBeTruthy();
+                    t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(draftNode);
+
+                    firstRowId = gridStore.getAt(0).getId();
+                    oldSubject = gridStore.getAt(1).get('subject');
+
+                    messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                        id      : gridStore.getAt(1).getId(), // CHOOSE DIFFERENT ID FOR MESSAGE DRAFT
+                        subject : 'FOOBAR'
+                    });
+                    messageDraft.setMessageBody({
+                        textHtml : '', textPlain : ''
+                    });
+
+                    grid.getSelectionModel().select(gridStore.getAt(0));
+                    panel.showMailMessageViewFor(firstRowId);
+
+                    t.waitForMs(500, function() {
+                        messageDetailView = panel.down('#cn_mail-mailmessagereadermessageview-' + firstRowId);
+                        t.expect(messageDetailView).toBeTruthy();
+
+                        t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
+                        t.isCalledNTimes('updateMessageItem',  messageDetailView, 0);
+                        t.isCalledNTimes('updateMessageItem',  inboxMessageView, 0);
+                        viewController.onMailMessageSaveComplete(null, messageDraft);
+                        t.expect(gridStore.getAt(1).get('subject')).not.toBe(oldSubject);
+                        t.expect(gridStore.getAt(1).get('subject')).toBe(messageDraft.get('subject'));
+
+                        panel.destroy();
+                        panel = null;
+                    });
+                });
+            });
+        });
+
+
+
+        t.it("onMailMessageSaveComplete() - opened inboxView, opened messageView, selected gridRow", function(t) {
+
+            var viewController = Ext.create(
+                    'conjoon.cn_mail.view.mail.MailDesktopViewController'
+                ),
+                mailFolderTree, draftNode, firstRowId, messageDraft,
+                messageDetailView, inboxView, inboxMessageView, gridStore,
+                grid, oldSubject;
+
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600,
+                items      : [{
+                    xclass : 'conjoon.cn_mail.view.mail.inbox.InboxView'
+                }]
+            });
+
+            inboxView        = panel.down('cn_mail-mailinboxview');
+            inboxMessageView = inboxView.down('cn_mail-mailmessagereadermessageview');
+            grid             = panel.down('cn_mail-mailmessagegrid');
+
+
+            mailFolderTree = panel.down('cn_mail-mailfoldertree');
+
+            t.waitForMs(500, function() {
+                draftNode      = mailFolderTree.getStore().findNode('type', 'DRAFT');
+                mailFolderTree.getSelectionModel().select(draftNode);
+
+                t.waitForMs(500, function() {
+
+                    gridStore = grid.getStore();
+
+                    t.expect(draftNode).toBeTruthy();
+                    t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(draftNode);
+
+                    firstRowId = gridStore.getAt(0).getId();
+                    oldSubject = gridStore.getAt(0).get('subject');
+
+                    messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                        id      : firstRowId,
+                        subject : 'FOOBAR'
+                    });
+                    messageDraft.setMessageBody({
+                        textHtml : '', textPlain : ''
+                    });
+
+                    grid.getSelectionModel().select(gridStore.getAt(0));
+                    panel.showMailMessageViewFor(firstRowId);
+
+                    t.waitForMs(500, function() {
+                        messageDetailView = panel.down('#cn_mail-mailmessagereadermessageview-' + firstRowId);
+                        t.expect(messageDetailView).toBeTruthy();
+
+                        t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 2);
+                        t.isCalledNTimes('updateMessageItem',  messageDetailView, 1);
+                        t.isCalledNTimes('updateMessageItem',  inboxMessageView, 1);
+                        viewController.onMailMessageSaveComplete(null, messageDraft);
+                        t.expect(gridStore.getAt(0).get('subject')).not.toBe(oldSubject);
+                        t.expect(gridStore.getAt(0).get('subject')).toBe(messageDraft.get('subject'));
+
+                        panel.destroy();
+                        panel = null;
+                    });
+                });
+            });
+
+
+        });
 
 
     });

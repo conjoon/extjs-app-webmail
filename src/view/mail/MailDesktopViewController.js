@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,13 +47,16 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'cn_mail-maildesktopview' : {
             'tabchange' : 'onTabChange'
         },
-
         'cn_mail-maildesktopview > cn_mail-mailmessagereadermessageview' : {
             'cn_mail-mailmessageitemread' : 'onMessageItemRead'
         },
         'cn_mail-mailmessagegrid' : {
             'rowdblclick' : 'onMailMessageGridDoubleClick'
+        },
+        'cn_mail-mailmessageeditor' : {
+            'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete'
         }
+
     },
 
     /**
@@ -195,6 +198,74 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         me.getView().setActiveTab(newView);
+    },
+
+    /**
+     * Callback for the global cn_mail-mailmessagesavecomplete event that gets
+     * triggered from editor instances.
+     * Looks up any referencing view of the currently saved draft and will update
+     * its data with the newly committed data.
+     * Grid actions will only be triggered if the grid is currently representing
+     * the contents of a DRAFT-inbox.
+     *
+     * @param {conjoon.mail.message.editor.MessageEditor} editor
+     * @param {{conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param operation
+     */
+    onMailMessageSaveComplete : function(editor, messageDraft) {
+
+        var me               = this,
+            view             = me.getView(),
+            messageGrid      = view.down('cn_mail-mailmessagegrid'),
+            itemStore        = messageGrid ? messageGrid.getStore() : null,
+            messageView      = view.down('#cn_mail-mailmessagereadermessageview-' + messageDraft.getId()),
+            inboxView        = view.down('cn_mail-mailinboxview'),
+            mailFolderTree   = view.down('cn_mail-mailfoldertree'),
+            inboxMessageView = inboxView
+                ? inboxView.down('cn_mail-mailmessagereadermessageview')
+                : null,
+            inboxMessageViewId, messageItem, recInd;
+
+        if (messageView) {
+            messageView.updateMessageItem(messageDraft);
+        }
+
+
+        // query grid and inboxMessageView only if we are currently in a DRAFT-folder
+        if (!mailFolderTree.getSelection().length
+            || mailFolderTree.getSelection()[0].get('type') != 'DRAFT') {
+            return;
+        }
+
+        // this is two-way-data bound and should only be queried by us if the
+        // selected folder / opened grid is DRAFT related
+        if (inboxMessageView) {
+
+            inboxMessageViewId = inboxMessageView.getViewModel().get('messageItem.id');
+
+            if (inboxMessageViewId == messageDraft.getId()) {
+                // Due to the two way-data binding between the grid and the message
+                // view, we do not need to update the associated item in the
+                // grid. Just update the MessageView, changes should be reflected
+                // in the grid
+                inboxMessageView.updateMessageItem(messageDraft);
+            }
+        }
+
+
+        // only update the MessageItems in the view which have not been updated
+        // over the MessageView above. Thus, we have to look up any item which might
+        // be loaded in the grid.
+        if (messageGrid && inboxMessageViewId != messageDraft.getId()) {
+            recInd = itemStore.findExact('id', messageDraft.getId());
+            if (recInd > -1) {
+                messageItem = itemStore.getAt(recInd);
+                conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.updateItemWithDraft(
+                    messageItem, messageDraft
+                );
+            }
+        }
+
     },
 
     /**
