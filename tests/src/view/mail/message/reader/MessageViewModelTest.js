@@ -379,27 +379,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
             viewModelItem = viewModel.get('messageItem');
 
-            t.expect(viewModelItem.get('size')).toBe(messageItem.get('size'));
-            t.expect(viewModelItem.get('subject')).toBe(messageItem.get('subject'));
-            t.expect(viewModelItem.get('date')).toBe(messageItem.get('date'));
-            t.expect(viewModelItem.get('previewText')).toBe(messageItem.get('previewText'));
-            t.expect(viewModelItem.get('hasAttachments')).toBe(messageItem.get('hasAttachments'));
-            t.expect(viewModelItem.get('to')).toEqual(messageItem.get('to'));
+            t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
 
             viewModel.updateMessageItem(messageDraft);
 
-            t.expect(viewModelItem.get('subject')).toBe(messageDraft.get('subject'));
-            t.expect(viewModelItem.get('date')).toBe(messageDraft.get('date'));
-            t.expect(viewModelItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
-            t.expect(viewModelItem.get('hasAttachments')).toBe(true);
-
-            t.expect(viewModelItem.get('size')).toBeGreaterThan(0);
-            t.expect(viewModelItem.get('size')).not.toBe(messageItem.get('size'));
-
-            t.expect(viewModelItem.get('to')).not.toBe(messageDraft.get('to'));
-            t.expect(viewModelItem.get('to')).toEqual(messageDraft.get('to'));
-
             t.expect(viewModel.get('messageBody')).toBeTruthy();
+
+
 
             var attachments = viewModel.get('attachments');
 
@@ -409,6 +395,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.expect(viewModel.get('messageBody')).not.toBe(messageDraft.getMessageBody());
             t.expect(viewModel.get('messageBody').data).toEqual(messageDraft.getMessageBody().data);
 
+            // was committed
             t.expect(viewModelItem.dirty).toBe(false);
         });
     });

@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
     requires : [
         'conjoon.cn_mail.model.mail.message.ItemAttachment',
-        'conjoon.cn_mail.model.mail.message.MessageDraft'
+        'conjoon.cn_mail.model.mail.message.MessageDraft',
+        'conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessagereadermessageviewmodel',
@@ -191,24 +192,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         attachments = messageDraft.attachments().getRange();
         messageBody = messageDraft.getMessageBody().copy();
 
-        size += messageBody.get('textPlain').length;
-        size += messageBody.get('textHtml').length;
-
         // clone attachments to make sure no references are passed
         for (var i = 0, len = attachments.length; i < len; i++) {
             newAttachments.push(attachments[i].copy());
-            size += attachments[i].get('size')
         }
 
-        messageItem.set({
-            date           : messageDraft.get('date'),
-            to             : messageDraft.get('to'),
-            subject        : messageDraft.get('subject'),
-            hasAttachments : attachments.length > 0,
-            previewText    : messageBody.get('textPlain'),
-            size           : size
-        });
-        messageItem.commit();
+        conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.updateItemWithDraft(
+            messageItem, messageDraft
+        );
 
         me.set('attachments', newAttachments);
         me.set('messageBody', messageBody);
