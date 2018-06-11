@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,6 +117,137 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
 
         });
+
+
+        t.it("enableRowPreview while store loads", function(t) {
+
+            t.diag("upping SimManager delay to 1500");
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1500
+            });
+
+            var exc, e;
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                store    : {
+                    type     : 'cn_mail-mailmessageitemstore',
+                    autoLoad : false,
+                    sorters  : [{
+                        property  : 'testProp',
+                        direction : 'DESC'
+                    }]
+                },
+                renderTo : document.body
+            });
+
+            grid.getStore().load();
+
+            t.waitForMs(250, function() {
+                try {
+                    grid.enableRowPreview(true);
+                } catch (e) {
+                    exc = e;
+                }
+
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain("cannot call enablerowpreview");
+            });
+
+        });
+
+
+        t.it("bindStore with exception and ext-empty-store", function(t) {
+            var exc, e;
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            try {
+                grid.setStore(Ext.create('Ext.data.Store'));
+            } catch (e) {
+                exc = e;
+            }
+
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("store must be an instance of");
+
+
+            grid.setStore(Ext.data.StoreManager.lookup('ext-empty-store'));
+            t.expect(grid.getStore()).toBe(Ext.data.StoreManager.lookup('ext-empty-store'));
+
+            t.isCalledNTimes('onMessageItemStoreBeforeLoad', grid, 0);
+            t.isCalledNTimes('onMessageItemStoreLoad', grid, 0);
+            grid.getStore().load();
+
+            t.waitForMs(500, function() {
+
+            });
+        });
+
+
+
+        t.it("bindStore with proper store config and event behavior", function(t) {
+
+            t.diag("downing SimManager delay to 1");
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
+            var ULOAD = 0, UBEFORELOAD = 0, store;
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore', {
+                autoLoad : false
+            });
+
+            grid.setStore(store);
+
+
+            grid.on('cn_mail-mailmessagegridbeforeload', function() {UBEFORELOAD++;});
+            grid.on('cn_mail-mailmessagegridload',       function() {ULOAD++;});
+
+            t.expect(ULOAD).toBe(0);
+            t.expect(UBEFORELOAD).toBe(0);
+
+            store.load();
+
+            t.waitForMs(850, function() {
+                t.expect(ULOAD).toBe(1);
+                t.expect(UBEFORELOAD).toBe(1);
+
+                grid.unbindStore(store);
+
+                store.reload();
+
+                t.waitForMs(850, function() {
+                    t.expect(ULOAD).toBe(1);
+                    t.expect(UBEFORELOAD).toBe(1);
+                });
+
+            })
+
+
+
+
+
+
+
+            });
+
+
+
 
 
     });

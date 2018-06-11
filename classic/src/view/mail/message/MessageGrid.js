@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,37 @@
  * The default Message Grid representing the contents of a message folder.
  * This grid's columns are configured to be used with models of the type
  * {@link conjoon.cn_mail.model.mail.MessageItem}.
+ * A MessageGrid can either be configured with an EmptyStore or a
+ * conjoon.cn_mail.store.mail.message.MessageItemStore.
  */
 Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     extend : 'Ext.grid.Panel',
 
     requires : [
-        'conjoon.cn_comp.grid.feature.RowBodySwitch'
+        'conjoon.cn_comp.grid.feature.RowBodySwitch',
+        'conjoon.cn_mail.store.mail.message.MessageItemStore'
     ],
 
     alias : 'widget.cn_mail-mailmessagegrid',
+
+    /**
+     * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
+     * beforeload-event fires. This relay is needed due to the late binding behavior
+     * of the two-way-databinding. This event is not canceable.
+     * @event cn_mail-mailmessagegridbeforeload
+     * @param this
+     * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
+     */
+
+    /**
+     * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
+     * load-event fires. This relay is needed due to the late binding behavior
+     * of the two-way-databinding.
+     * @event cn_mail-mailmessagegridload
+     * @param this
+     * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
+     */
 
     cls   : 'cn_mail-mailmessagegrid',
 
@@ -163,11 +184,83 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             view    = me.getView(),
             feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
 
+        if (me.getStore().isLoading()) {
+            Ext.raise({
+                msg       : 'cannot call enableRowPreview during store\'s load-operation',
+                isLoading : me.getStore().isLoading()
+            });
+        }
+
         if (enable) {
             feature.enable();
         } else {
             feature.disable();
         }
+    },
+
+
+    /**
+     * Overridden to attach beforeload/load event handlers to the store if its a
+     * conjoon.cn_mail.store.mail.message.MessageItemStore
+     * @inheritdoc
+     */
+    bindStore : function(store, initial) {
+
+        var me  = this;
+
+        if (store && !store.isEmptyStore &&
+            !(store instanceof conjoon.cn_mail.store.mail.message.MessageItemStore)) {
+            Ext.raise({
+                msg   : 'store must be an instance of "conjoon.cn_mail.store.message.MessageItemStore"',
+                store : store
+            });
+        }
+
+        if (store && me.getStore() !== store) {
+            me.mon(store, 'beforeload', me.onMessageItemStoreBeforeLoad, me);
+            me.mon(store, 'load',       me.onMessageItemStoreLoad,       me);
+        }
+
+        return me.callParent(arguments);
+    },
+
+
+    /**
+     * Overridden to detach load/beforeload events from the store being unbound
+     * if its a conjoon.cn_mail.store.mail.message.MessageItemStore.
+     *
+     * @inheritdoc
+     */
+    unbindStore : function(store) {
+
+        var me = this;
+
+        if (store && (store instanceof conjoon.cn_mail.store.mail.message.MessageItemStore)) {
+            me.mun(store, 'beforeload', me.onMessageItemStoreBeforeLoad, me);
+            me.mun(store, 'load',       me.onMessageItemStoreLoad,       me);
+        }
+
+        return me.callParent(arguments);
+    },
+
+
+    privates : {
+
+        onMessageItemStoreBeforeLoad : function(store) {
+            var me = this;
+
+            me.fireEvent('cn_mail-mailmessagegridbeforeload', me, store)
+        },
+
+
+        onMessageItemStoreLoad : function(store) {
+            var me = this;
+
+            me.fireEvent('cn_mail-mailmessagegridload', me, store);
+        }
     }
+
+
+
 
 });
