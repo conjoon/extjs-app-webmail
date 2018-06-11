@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -315,6 +315,32 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
             view.destroy();
 
             t.expect(view.loadingMask).toBe(null);
+
+        });
+
+        t.it("should abort pending load operations when view is destroyed", function(t) {
+
+            t.diag("upping SimManager-delay to 1500");
+            Ext.ux.ajax.SimManager.init({
+                delay : 1500
+            });
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+            view.loadMessageItem(1);
+            t.expect(view.loadingItem).toBeDefined();
+            t.isCalledNTimes('abort', view.loadingItem, 1);
+            view.destroy();
+
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView');
+            view.setMessageItem(createMessageItem());
+            t.isCalledNTimes('abortMessageAttachmentsLoad', view.getViewModel(), 1);
+            t.isCalledNTimes('abortMessageBodyLoad',        view.getViewModel(), 1);
+            view.destroy();
+
 
         });
 

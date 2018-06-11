@@ -337,23 +337,41 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     },
 
 
+    /**
+     * Aborts any currently active attachment-store load operation.
+     * @protected
+     */
+    abortMessageAttachmentsLoad : function() {
+
+        var me = this;
+
+        if (me.attachmentsLoadOperation) {
+            me.attachmentsLoadOperation.abort();
+            me.attachmentsLoadOperation = null;
+        }
+    },
+
+
+    /**
+     * Aborts the current actove loading of the MessageBody.
+     * @protected
+     */
+    abortMessageBodyLoad : function() {
+
+        var me                = this,
+            bodyLoadOperation = me.bodyLoadOperation;
+
+        if (bodyLoadOperation && bodyLoadOperation.loadOperation &&
+            bodyLoadOperation.loadOperation.isRunning()) {
+            bodyLoadOperation.loadOperation.abort();
+            me.abortedRequestMap[bodyLoadOperation.messageBodyId] = true;
+        }
+
+        me.bodyLoadOperation = null;
+    },
+
+
     privates : {
-
-        /**
-         * Aborts any currently active attachment-store load operation.
-         * @private
-         */
-        abortMessageAttachmentsLoad : function() {
-
-            var me = this;
-
-            if (me.attachmentsLoadOperation) {
-                me.attachmentsLoadOperation.abort();
-                me.attachmentsLoadOperation = null;
-            }
-
-        },
-
 
         /**
          * Callback for the attachments-store load operation.
@@ -384,24 +402,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
             me.attachmentsLoadOperation = operation;
 
-        },
-
-
-        /**
-         * Aborts the current actove loading of the MessageBody.
-         * @private
-         */
-        abortMessageBodyLoad : function() {
-
-            var me                   = this,
-                bodyLoadOperation = me.bodyLoadOperation;
-
-            if (bodyLoadOperation.loadOperation && bodyLoadOperation.loadOperation.isRunning()) {
-                bodyLoadOperation.loadOperation.abort();
-                me.abortedRequestMap[bodyLoadOperation.messageBodyId] = true;
-            }
-
-            me.bodyLoadOperation = null;
         },
 
 

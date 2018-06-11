@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     },
 
     closable : true,
+
+    /**
+     * @type {conjoon.cn_mail.model.mail.message.MessageItem} loadingItem
+     * If any item was requested via #loadMessageItem, this olds the reference
+     * to the current record being loaded to be able to abort load operations
+     * when needed.
+     */
+    loadingItem : null,
 
     /**
      * @type {Ext.LoadMask}
@@ -192,12 +200,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         }, me, {single : true});
 
         me.on('beforedestroy', function() {
-            var me = this;
+            var me = this,
+                vm = me.getViewModel();
 
             if (me.loadingMask) {
                 me.loadingMask.destroy();
                 me.loadingMask = null;
             }
+
+            if (me.loadingItem) {
+                me.loadingItem.abort();
+                me.loadingItem = null;
+            }
+
+            vm.abortMessageBodyLoad();
+            vm.abortMessageAttachmentsLoad();
 
         }, me);
 
@@ -238,7 +255,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
         vm.set('isLoading', true);
 
-        conjoon.cn_mail.model.mail.message.MessageItem.load(messageId, {
+        if (me.loadingItem) {
+            me.loadingItem.abort();
+        }
+
+        me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.load(messageId, {
             success : me.onMessageItemLoaded,
             scope   : me
         });
