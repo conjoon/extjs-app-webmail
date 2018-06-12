@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,9 +80,15 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree' : {
             selectionchange : 'onMailFolderTreeSelectionChange'
         },
+        'cn_mail-maildesktopview > cn_mail-mailinboxview' : {
+            activate   : 'onMailInboxViewActivate',
+            deactivate : 'onMailInboxViewDeactivate'
+        },
         'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid' : {
-            deselect : 'onMailMessageGridDeselect',
-            select   : 'onMailMessageGridSelect'
+            deselect                            : 'onMailMessageGridDeselect',
+            select                              : 'onMailMessageGridSelect',
+            'cn_mail-mailmessagegridbeforeload' : 'onMailMessageGridBeforeLoad',
+            'cn_mail-mailmessagegridload'       : 'onMailMessageGridLoad'
         },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavCreateMessage' : {
             click : 'onMessageComposeButtonClick'
@@ -111,6 +117,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     },
 
     refs : [{
+        ref      : 'mailDesktopView',
+        selector : 'cn_mail-maildesktopview'
+    }, {
         ref      : 'mailInboxView',
         selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview'
     }, {
@@ -129,9 +138,77 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         ref      : 'toggleGridListButton',
         selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleList'
     }, {
+        ref      : 'toggleMailFolderButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleFolder'
+    }, {
         ref      : 'switchReadingPaneButton',
         selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane'
     }],
+
+
+    /**
+     * Callback for the InboxView's activate event. Toggles grid-/inbox-view
+     * related buttons.
+     *
+     * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
+     */
+    onMailInboxViewActivate : function(view) {
+        var me = this;
+
+        if (!me.getMailMessageGrid().getStore().isLoading()) {
+            me.getToggleGridListButton().setDisabled(false);
+        }
+
+        me.getSwitchReadingPaneButton().setDisabled(false);
+        me.getToggleMailFolderButton().setDisabled(false);
+    },
+
+
+    /**
+     * Callback for the InboxView's activate event. Toggles grid-/inbox-view
+     * related buttons.
+     *
+     * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
+     */
+    onMailInboxViewDeactivate : function(inboxView) {
+        var me = this;
+
+        me.getToggleGridListButton().setDisabled(true);
+        me.getSwitchReadingPaneButton().setDisabled(true);
+        me.getToggleMailFolderButton().setDisabled(true);
+    },
+
+
+    /**
+     * Callback for the MessageGrid's cn_mail-mailmessagegridbeforeload event.
+     * Sets the button for toggling the row preview disabled.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
+     * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
+     */
+    onMailMessageGridBeforeLoad : function(grid, store) {
+        var me = this;
+
+        me.getToggleGridListButton().setDisabled(true);
+    },
+
+
+    /**
+     * Callback for the MessageGrid's cn_mail-mailmessagegridbeforeload event.
+     * Sets the button for toggling the row preview enabled.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
+     * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
+     */
+    onMailMessageGridLoad : function(grid, store) {
+        var me = this;
+
+        if (me.getMailDesktopView().getLayout().getActiveItem() !== me.getMailInboxView()) {
+            return;
+        }
+
+        me.getToggleGridListButton().setDisabled(false);
+    },
 
 
     /**
@@ -227,8 +304,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             });
         }
 
-        me.getSwitchReadingPaneButton().setDisabled(records.length <= 0)
-        me.getToggleGridListButton().setDisabled(records.length <= 0);
+        me.getSwitchReadingPaneButton().setDisabled(records.length <= 0);
 
         messageGrid.getSelectionModel().deselectAll();
     },
