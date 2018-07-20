@@ -34,6 +34,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     requires : [
         'conjoon.cn_comp.grid.feature.RowBodySwitch',
+        'conjoon.cn_comp.grid.feature.Livegrid',
         'conjoon.cn_mail.store.mail.message.MessageItemStore'
     ],
 
@@ -64,8 +65,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     headerBorders : false,
     rowLines      : false,
 
-
     features : [{
+        ftype : 'cn_comp-gridfeature-livegrid',
+        id    : 'cn_mail-mailMessageFeature-livegrid'
+    }, {
         ftype              : 'cn_comp-gridfeature-rowbodyswitch',
         enableCls          : 'previewEnabled',
         disableCls         : 'previewDisabled',
@@ -127,7 +130,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     }, {
         dataIndex : 'subject',
         text      : 'Subject',
-        flex      : 2
+        width     : 150
     }, {
         dataIndex : 'to',
         text      : 'To',

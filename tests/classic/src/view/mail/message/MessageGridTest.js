@@ -65,7 +65,10 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
             t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowBodySwitch');
-            t.expect(feature.disabled).toBeFalsy()
+            t.expect(feature.disabled).toBeFalsy();
+
+            var feature = grid.view.getFeature('cn_mail-mailMessageFeature-livegrid');
+            t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.Livegrid');
         });
 
 
@@ -83,39 +86,6 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             t.expect(feature.disabled).toBe(true);
             grid.enableRowPreview(true);;
             t.expect(feature.disabled).toBe(false);
-        });
-
-        t.it("Behavior with BufferedStore overrides", function(t) {
-            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
-                width    : 400,
-                height   : 400,
-                store    : {
-                    type     : 'cn_mail-mailmessageitemstore',
-                    autoLoad : true,
-                    sorters  : [{
-                        property  : 'testProp',
-                        direction : 'DESC'
-                    }]
-                },
-                renderTo : document.body
-            });
-
-            grid.enableRowPreview(false);
-
-            t.waitForMs(750, function() {
-                t.expect(grid.getStore().addSorted(prop(10000, 'first'))).not.toBe(null);
-                t.expect(grid.getView().getRow(0).getElementsByTagName('td')[2].firstChild.innerHTML).not.toBe("first");
-                grid.getView().refresh();
-                t.expect(grid.getView().getRow(0).getElementsByTagName('td')[2].firstChild.innerHTML).toBe("first");
-
-                t.expect(grid.getStore().addSorted(prop(9998.5, 'second'))).not.toBe(null);
-                t.expect(grid.getView().getRow(2).getElementsByTagName('td')[2].firstChild.innerHTML).not.toBe("second");
-                grid.getView().refresh();
-                t.expect(grid.getView().getRow(2).getElementsByTagName('td')[2].firstChild.innerHTML).toBe("second");
-
-            });
-
-
         });
 
 
