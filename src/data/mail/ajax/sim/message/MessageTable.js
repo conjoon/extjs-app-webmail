@@ -419,6 +419,20 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         me.baseMessageItems = baseMessageItems;
 
         return me.baseMessageItems;
+    },
+
+    remove : function(record) {
+        const me = this;
+
+        let items = me.messageItems;
+        console.log("REMOVING", record.getId())
+        for (var i = 0, len = items.length; i < len; i++) {
+            if (items[i].id === record.getId()) {
+                items.splice(i, 1);
+                console.log("REMOVED, NEW LENGTH ", items.length)
+                return;
+            }
+        }
     }
 
 
