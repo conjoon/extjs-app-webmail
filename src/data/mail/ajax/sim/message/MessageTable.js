@@ -294,6 +294,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             if (!item) {
                 continue;
             }
+
             item['date'] = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
 
             for (var prop in values) {
@@ -308,6 +309,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                     case 'bcc':
                         if (Ext.isString(values[prop]))
                         item[prop] = Ext.JSON.decode(values[prop]);
+                        break;
+                    case 'date':
+                        // already set above
                         break;
                     default:
                         item[prop] = values[prop];
