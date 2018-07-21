@@ -482,12 +482,12 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
         t.it("onMailMessageSaveComplete() - selected gridRow not represented by messageViews", function(t) {
 
-            var viewController = Ext.create(
+            let viewController = Ext.create(
                     'conjoon.cn_mail.view.mail.MailDesktopViewController'
                 ),
                 mailFolderTree, draftNode, firstRowId, messageDraft,
                 messageDetailView, inboxView, inboxMessageView, gridStore,
-                grid, oldSubject;
+                grid, oldSubject, oldDate;
 
             panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
                 controller : viewController,
@@ -518,11 +518,14 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
                     firstRowId = gridStore.getAt(0).getId();
                     oldSubject = gridStore.getAt(1).get('subject');
+                    oldDate    = gridStore.getAt(1).get('date');
 
                     messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
                         id      : gridStore.getAt(1).getId(), // CHOOSE DIFFERENT ID FOR MESSAGE DRAFT
-                        subject : 'FOOBAR'
+                        subject : 'FOOBAR',
+                        date    : gridStore.getAt(1).get('date')
                     });
+
                     messageDraft.setMessageBody({
                         textHtml : '', textPlain : ''
                     });
@@ -539,6 +542,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                         t.isCalledNTimes('updateMessageItem',  inboxMessageView, 0);
                         viewController.onMailMessageSaveComplete(null, messageDraft);
                         t.expect(gridStore.getAt(1).get('subject')).not.toBe(oldSubject);
+                        t.expect(gridStore.getAt(1).get('date')).toBe(oldDate);
                         t.expect(gridStore.getAt(1).get('subject')).toBe(messageDraft.get('subject'));
 
                         panel.destroy();
@@ -552,12 +556,12 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
         t.it("onMailMessageSaveComplete() - opened inboxView, opened messageView, selected gridRow", function(t) {
 
-            var viewController = Ext.create(
+            let viewController = Ext.create(
                     'conjoon.cn_mail.view.mail.MailDesktopViewController'
                 ),
                 mailFolderTree, draftNode, firstRowId, messageDraft,
                 messageDetailView, inboxView, inboxMessageView, gridStore,
-                grid, oldSubject;
+                grid, oldSubject, oldDate;
 
             panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
                 controller : viewController,
@@ -589,10 +593,12 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
                     firstRowId = gridStore.getAt(0).getId();
                     oldSubject = gridStore.getAt(0).get('subject');
+                    oldDate    = gridStore.getAt(0).get('date');
 
                     messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
                         id      : firstRowId,
-                        subject : 'FOOBAR'
+                        subject : 'FOOBAR',
+                        date    : oldDate
                     });
                     messageDraft.setMessageBody({
                         textHtml : '', textPlain : ''
@@ -610,6 +616,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                         t.isCalledNTimes('updateMessageItem',  inboxMessageView, 1);
                         viewController.onMailMessageSaveComplete(null, messageDraft);
                         t.expect(gridStore.getAt(0).get('subject')).not.toBe(oldSubject);
+                        t.expect(gridStore.getAt(0).get('date')).toBe(oldDate);
                         t.expect(gridStore.getAt(0).get('subject')).toBe(messageDraft.get('subject'));
 
                         panel.destroy();
