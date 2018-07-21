@@ -207,20 +207,48 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
                 });
 
             })
+        });
 
 
+        t.it("selection still available after pageremove", function(t) {
 
 
+            let store;
 
-
-
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
             });
 
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore', {
+                autoLoad : false
+            });
+
+            grid.setStore(store);
+
+            store.load();
+
+            t.waitForMs(850, function() {
+
+                let rec = store.getAt(0);
+
+                grid.getSelectionModel().select(rec);
+
+                grid.view.getScrollable().scrollTo(0, 100000);
+
+                t.waitForMs(250, function() {
+
+                    store.getData().removeAtKey(1);
+                    t.expect(store.getData().map[1]).toBeUndefined();
+
+                    t.expect(grid.getSelection()[0]).toBe(rec);
+                });
+
+            })
+        });
 
 
 
 
-    });
-    });
-    });
-});
+});})});});

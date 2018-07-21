@@ -303,8 +303,6 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         }
 
         me.getSwitchReadingPaneButton().setDisabled(records.length <= 0);
-
-        messageGrid.getSelectionModel().deselectAll();
     },
 
 

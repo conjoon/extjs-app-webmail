@@ -70,6 +70,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     headerBorders : false,
     rowLines      : false,
 
+    selModel : {
+        pruneRemoved : false
+    },
+
     features : [{
         ftype : 'cn_comp-gridfeature-livegrid',
         id    : 'cn_mail-mailMessageFeature-livegrid'

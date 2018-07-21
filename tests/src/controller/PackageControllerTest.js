@@ -166,7 +166,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
         t.expect(DESELECTED).toBe(0);
         packageCtrl.onMailFolderTreeSelectionChange(null, [1]);
-        t.expect(DESELECTED).toBe(1);
+        t.expect(DESELECTED).toBe(0);
         t.expect(READINGPANEDISABLED).toBe(false);
         t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
         packageCtrl.onMailFolderTreeSelectionChange(null, []);

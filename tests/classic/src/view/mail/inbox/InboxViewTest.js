@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,6 +163,74 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
+    t.it("Selection after switching between folders in grid is still available", function(t) {
+
+        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+            view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+            var grid           = view.down('cn_mail-mailmessagegrid'),
+                tree           = view.down('cn_mail-mailfoldertree'),
+                gridMessageBox = view.down('#msgIndicatorBox'),
+                messageView    = view.down('cn_mail-mailmessagereadermessageview');
+
+
+            t.waitForMs(500, function(){
+
+                t.waitForMs(500, function(){
+                    var mailFolder1 = tree.getStore().getAt(0),
+                        mailFolder2 = tree.getStore().getAt(1);
+
+                    tree.getSelectionModel().select(mailFolder1);
+
+                    t.waitForMs(750, function(){
+
+                        var messageItem = grid.getStore().getAt(0);
+
+                        grid.getSelectionModel().select(messageItem);
+
+                        t.expect(grid.getSelection()[0]).toBe(messageItem);
+
+                        grid.view.getScrollable().scrollTo(0, 100000);
+
+                        grid.getStore().getData().removeAtKey(1);
+                        t.expect(grid.getStore().getData().map[1]).toBeUndefined();
+
+                        t.expect(grid.getSelection()[0]).toBe(messageItem);
+
+                        tree.getSelectionModel().select(mailFolder2);
+
+                        t.waitForMs(750, function(){
+
+
+                            t.expect(grid.getSelection()[0]).toBe(messageItem);
+
+                            var messageItem2 = grid.getStore().getAt(0);
+
+                            grid.getSelectionModel().select(messageItem2);
+
+                            t.expect(grid.getSelection()[0]).toBe(messageItem2);
+
+                            tree.getSelectionModel().select(mailFolder2);
+
+                            t.waitForMs(750, function(){
+                                t.expect(grid.getSelection()[0]).toBe(messageItem2);
+                                view.destroy();
+                            });
+
+
+                        });
+
+                    });
+                });
+            });
+
+
+        });
+
+    });
 
 
 });
