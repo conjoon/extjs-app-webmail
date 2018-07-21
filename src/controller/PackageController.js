@@ -281,21 +281,18 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
     /**
      * Callback for the MailFolderTree#s selectionchange event.
-     * Will make sure that the listeners for the MessageGrid are properly
-     * registered based on the currently selected node.
      *
      * @param {conjoon.cn_mail.view.mail.folder.MailFolderTree} treeListe
      * @param {conjoon.cn_mail.model.mail.folder.MailFolder[]} records
      *
-     * @throws if this method was not called with exactly one record in records,
-     * or if the mailMessageGrid was not found
+     * @throws if this method was called with more than one record available
+     * in records
      */
     onMailFolderTreeSelectionChange : function(treeList, records) {
 
-        var me          = this,
-            messageGrid = me.getMailMessageGrid();
+        const me = this;
 
-        if (records.length > 1) {
+        if (records.length !== 1) {
             Ext.raise({
                 records : records,
                 msg     : "unexpected multiple records"
