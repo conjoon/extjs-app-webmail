@@ -40,12 +40,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     alias : 'widget.cn_mail-mailmessagegrid',
 
+
     /**
      * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
      * beforeload-event fires. This relay is needed due to the late binding behavior
      * of the two-way-databinding. This event is not canceable.
      * @event cn_mail-mailmessagegridbeforeload
-     * @param this
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
 
@@ -54,11 +54,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      * load-event fires. This relay is needed due to the late binding behavior
      * of the two-way-databinding.
      * @event cn_mail-mailmessagegridload
-     * @param this
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
 
-    cls   : 'cn_mail-mailmessagegrid',
+    /**
+     * "storeRelayers" was already taken
+     * @private
+     */
+    myStoreRelayers : null,
+
+    cls : 'cn_mail-mailmessagegrid',
 
     flex : 1,
 
@@ -203,13 +208,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
 
     /**
-     * Overridden to attach beforeload/load event handlers to the store if its a
-     * conjoon.cn_mail.store.mail.message.MessageItemStore
+     * Overridden to relay events from the store to this grid
+     *
      * @inheritdoc
      */
     bindStore : function(store, initial) {
 
-        var me  = this;
+        const me  = this;
 
         if (store && !store.isEmptyStore &&
             !(store instanceof conjoon.cn_mail.store.mail.message.MessageItemStore)) {
@@ -219,9 +224,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             });
         }
 
+
         if (store && me.getStore() !== store) {
-            me.mon(store, 'beforeload', me.onMessageItemStoreBeforeLoad, me);
-            me.mon(store, 'load',       me.onMessageItemStoreLoad,       me);
+            me.myStoreRelayers = me.relayEvents(store, ['beforeload', 'load'], 'cn_mail-mailmessagegrid');
         }
 
         return me.callParent(arguments);
@@ -229,40 +234,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
 
     /**
-     * Overridden to detach load/beforeload events from the store being unbound
-     * if its a conjoon.cn_mail.store.mail.message.MessageItemStore.
+     * Overridden to detach relayed events.
      *
      * @inheritdoc
      */
     unbindStore : function(store) {
 
-        var me = this;
+        const me = this;
 
-        if (store && (store instanceof conjoon.cn_mail.store.mail.message.MessageItemStore)) {
-            me.mun(store, 'beforeload', me.onMessageItemStoreBeforeLoad, me);
-            me.mun(store, 'load',       me.onMessageItemStoreLoad,       me);
+        if (me.myStoreRelayers) {
+            me.myStoreRelayers.destroy();
         }
+        me.myStoreRelayers = null;
 
         return me.callParent(arguments);
-    },
-
-
-    privates : {
-
-        onMessageItemStoreBeforeLoad : function(store) {
-            var me = this;
-
-            me.fireEvent('cn_mail-mailmessagegridbeforeload', me, store)
-        },
-
-
-        onMessageItemStoreLoad : function(store) {
-            var me = this;
-
-            me.fireEvent('cn_mail-mailmessagegridload', me, store);
-        }
     }
-
 
 
 

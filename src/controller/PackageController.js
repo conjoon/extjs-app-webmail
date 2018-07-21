@@ -183,10 +183,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * Callback for the MessageGrid's cn_mail-mailmessagegridbeforeload event.
      * Sets the button for toggling the row preview disabled.
      *
-     * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridBeforeLoad : function(grid, store) {
+    onMailMessageGridBeforeLoad : function(store) {
         var me = this;
 
         me.getToggleGridListButton().setDisabled(true);
@@ -197,10 +196,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * Callback for the MessageGrid's cn_mail-mailmessagegridbeforeload event.
      * Sets the button for toggling the row preview enabled.
      *
-     * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridLoad : function(grid, store) {
+    onMailMessageGridLoad : function(store) {
         var me = this;
 
         if (me.getMailDesktopView().getLayout().getActiveItem() !== me.getMailInboxView()) {
