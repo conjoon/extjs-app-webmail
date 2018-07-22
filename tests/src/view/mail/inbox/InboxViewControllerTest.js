@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,9 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
     var panel;
 
     t.afterEach(function() {
-        panel.destroy();
+        if (panel) {
+            panel.destroy();
+        }
         panel = null;
     });
 
@@ -86,6 +88,21 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
         })
 
 
+    });
+
+
+    t.it("onMailFolderTreeSelect", function(t) {
+
+        const viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.inbox.InboxViewController'
+            ),
+            node = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+                id : 2
+            });
+
+        t.isCalledNTimes('redirectTo', viewController, 1);
+
+        viewController.onMailFolderTreeSelect(null, node);
     });
 
 

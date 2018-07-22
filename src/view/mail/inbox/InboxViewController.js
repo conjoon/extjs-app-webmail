@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     control : {
         'cn_mail-mailmessagereadermessageview' : {
             'cn_mail-mailmessageitemread' : 'onMessageItemRead'
+        },
+
+        'cn_mail-mailfoldertree' : {
+            'select' : 'onMailFolderTreeSelect'
         }
     },
 
@@ -85,6 +89,21 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         }
 
 
+    },
+
+
+    /**
+     * Callback for the select event of the MailFolderTree.
+     * Calls #redirectTo for the selected MailFolder.
+     *
+     * @param {Ext.selection.Model } selModel
+     * @param [Ext.data.TreeModel} node
+     */
+    onMailFolderTreeSelect : function(selModel, node) {
+
+        const me = this;
+
+        me.redirectTo(node);
     }
 
 });
