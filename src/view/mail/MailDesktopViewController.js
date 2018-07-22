@@ -283,17 +283,24 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onMailMessageSaveComplete : function(editor, messageDraft) {
 
-        var me               = this,
-            view             = me.getView(),
-            messageGrid      = view.down('cn_mail-mailmessagegrid'),
-            itemStore        = messageGrid ? messageGrid.getStore() : null,
-            messageView      = view.down('#cn_mail-mailmessagereadermessageview-' + messageDraft.getId()),
-            inboxView        = view.down('cn_mail-mailinboxview'),
-            mailFolderTree   = view.down('cn_mail-mailfoldertree'),
-            inboxMessageView = inboxView
-                ? inboxView.down('cn_mail-mailmessagereadermessageview')
-                : null,
-            inboxMessageViewId, messageItem, recInd;
+        const me               = this,
+              view             = me.getView(),
+              messageGrid      = view.down('cn_mail-mailmessagegrid'),
+              itemStore        = messageGrid ? messageGrid.getStore() : null,
+              messageView      = view.down('#cn_mail-mailmessagereadermessageview-' + messageDraft.getId()),
+              inboxView        = view.down('cn_mail-mailinboxview'),
+              mailFolderTree   = view.down('cn_mail-mailfoldertree'),
+              EditingModes     = conjoon.cn_mail.data.mail.message.EditingModes,
+              inboxMessageView = inboxView
+                  ? inboxView.down('cn_mail-mailmessagereadermessageview')
+                  : null;
+
+        let inboxMessageViewId, messageItem, recInd;
+
+        if(editor.editMode === EditingModes.CREATE) {
+            me.updateHistoryForComposedMessage(editor, messageDraft.getId());
+        }
+
 
         if (messageView) {
             messageView.updateMessageItem(messageDraft);
@@ -564,5 +571,64 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 to : addresses
             }, res)
         );
+    },
+
+
+    /**
+     * This method will effectively replace the current hashbang of an editor in
+     * editMode == CREATE to the hashbang of an editor which is currently in
+     * editMode === edit.
+     * Method gets called as soon as the saving of a newly composed message
+     * finishes, taking care of the following:
+     *  - remapping editorIdMap so that a new mapping between the editor in its
+     *  new context is successfull once deeplinking occures
+     *  - compute and assign a new token for the editor's cn_href-attribute (which
+     *  is also returned by this method)
+     *  - call window.location.replace with the newl generated cn_href.
+     *  Ext.History-events are suspended and resumed after a timeout of 500 ms,
+     *  since the Ext.History queries the changes to the window hash in a
+     *  frequent interval (ExtJS6.2: 50ms)
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @oaram {String} messageDraftId the id of the newly created messageDraft
+     *
+     * @return {String} the newly computed cn_href attribute of the editor
+     *
+     * @throws if the editMode of the specified editor is not
+     * conjoon.cn_mail.data.mail.message.EditingModes#CREATE
+     *
+     * @private
+     */
+    updateHistoryForComposedMessage : function(editor, messageDraftId) {
+
+        const me           = this,
+              EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+
+        if (!editor || (editor.editMode !== EditingModes.CREATE)) {
+            Ext.raise({
+                msg    : Ext.String.format("'editMode' of Editor must be '{0}'", EditingModes.CREATE),
+                editor : editor
+            });
+        }
+
+        for (let id in me.editorIdMap) {
+            if (me.editorIdMap[id] === editor.getItemId()) {
+                delete me.editorIdMap[id];
+                me.editorIdMap['edit' + messageDraftId] = editor.getItemId();
+                break;
+            }
+        }
+
+        let newToken = me.getCnHrefForMessageEditor(messageDraftId, 'edit');
+
+        editor.cn_href = newToken;
+
+        Ext.History.suspendEvents();
+        window.location.replace('#' + newToken);
+        Ext.Function.defer(function() {
+            Ext.History.resumeEvents();
+        }, 500);
+
+        return newToken;
     }
 });

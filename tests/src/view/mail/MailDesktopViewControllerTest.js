@@ -22,9 +22,8 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) {
 
-    var panel,
-        getRecordCollection = function() {
-            return [
+    const getRecordCollection = function() {
+             return [
                 Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                     id           : 1,
                     mailFolderId : 1
@@ -46,7 +45,16 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                     mailFolderId : 2
                 })
             ];
+        },
+        getDummyEditor = function() {
+            return Ext.create({
+                xtype   : 'cn_mail-mailmessageeditor',
+                messageDraft : Ext.create(
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            });
         };
+
+    let panel;
 
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
@@ -471,7 +479,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
                 t.waitForMs(500, function() {
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 0);
-                    viewController.onMailMessageSaveComplete(null, messageDraft);
+                    viewController.onMailMessageSaveComplete(getDummyEditor(), messageDraft);
                     panel.destroy();
                     panel = null;
                 });
@@ -540,7 +548,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                         t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
                         t.isCalledNTimes('updateMessageItem',  messageDetailView, 0);
                         t.isCalledNTimes('updateMessageItem',  inboxMessageView, 0);
-                        viewController.onMailMessageSaveComplete(null, messageDraft);
+                        viewController.onMailMessageSaveComplete(getDummyEditor(), messageDraft);
                         t.expect(gridStore.getAt(1).get('subject')).not.toBe(oldSubject);
                         t.expect(gridStore.getAt(1).get('date')).toBe(oldDate);
                         t.expect(gridStore.getAt(1).get('subject')).toBe(messageDraft.get('subject'));
@@ -614,7 +622,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                         t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 2);
                         t.isCalledNTimes('updateMessageItem',  messageDetailView, 1);
                         t.isCalledNTimes('updateMessageItem',  inboxMessageView, 1);
-                        viewController.onMailMessageSaveComplete(null, messageDraft);
+                        viewController.onMailMessageSaveComplete(getDummyEditor(), messageDraft);
                         t.expect(gridStore.getAt(0).get('subject')).not.toBe(oldSubject);
                         t.expect(gridStore.getAt(0).get('date')).toBe(oldDate);
                         t.expect(gridStore.getAt(0).get('subject')).toBe(messageDraft.get('subject'));
@@ -720,6 +728,93 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                 panel = null;
             });
 
+        });
+
+
+        t.it("updateHistoryForComposedMessage() - exceptions", function(t) {
+
+            let exc, e,
+                viewController = Ext.create(
+                    'conjoon.cn_mail.view.mail.MailDesktopViewController'
+                );
+
+            try{viewController.updateHistoryForComposedMessage();}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
+            t.expect(exc.msg.toLowerCase()).toContain('editmode');
+            exc = undefined;
+
+            try{viewController.updateHistoryForComposedMessage({editMode : 'foo'});}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
+            t.expect(exc.msg.toLowerCase()).toContain('editmode');
+
+        });
+
+        t.it("updateHistoryForComposedMessage()", function(t) {
+
+            let viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            );
+            Ext.ux.ajax.SimManager.init({
+                delay : 1
+            });
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600
+            });
+
+            let inboxView = panel.down('cn_mail-mailinboxview');
+
+            let editor = viewController.showMailEditor(8989, 'compose');
+
+            let oldId, newId, itemId = editor.getItemId();
+            for (let id in viewController.editorIdMap) {
+                if (viewController.editorIdMap[id] === itemId) {
+                    oldId = id;
+                    break;
+                }
+            }
+
+            t.expect(oldId).not.toBeUndefined();
+
+            t.waitForMs(250, function() {
+                let token   = Ext.History.getToken(),
+                    cn_href = editor.cn_href;
+
+                t.expect(token).toBe(cn_href);
+
+                let ret = viewController.updateHistoryForComposedMessage(editor, 5);
+
+                t.waitForMs(750, function() {
+                    let newToken  = Ext.History.getToken(),
+                        newCnHref = editor.cn_href;
+
+                    t.expect(ret).toBe(newCnHref);
+                    t.expect(newToken).toBe(newCnHref);
+                    t.expect(newToken).not.toBe(token);
+
+                    t.expect(viewController.editorIdMap[oldId]).toBeUndefined()
+
+                    for (let id in viewController.editorIdMap) {
+                        if (viewController.editorIdMap[id] === itemId) {
+                            newId = id;
+                            break;
+                        }
+                    }
+
+                    t.expect(newId).toBeDefined();
+                    t.expect(newId).not.toBe(oldId);
+
+                    panel.destroy();
+                    panel = null;
+                });
+
+            });
         });
 
 });});
