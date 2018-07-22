@@ -92,4 +92,11 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
     });
 
 
+    t.it("toUrl()", function(t) {
+
+        t.expect(model.toUrl()).toBe('cn_mail/folder/1');
+
+    })
+
+
 });

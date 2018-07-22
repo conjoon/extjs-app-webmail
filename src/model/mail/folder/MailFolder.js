@@ -57,6 +57,19 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         }, {
             type : 'presence'
         }]
-    }]
+    }],
+
+
+    /**
+     * Returns te url represented by an instance of this MailFolder
+     * to be used with redirectTo
+     *
+     * @returns {string}
+     */
+    toUrl : function() {
+        const me = this;
+
+        return 'cn_mail/folder/' + me.getId()
+    }
 
 });
