@@ -624,11 +624,102 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                     });
                 });
             });
+        });
 
+
+        t.it("showInboxViewFor()", function(t) {
+
+            let viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+                );
+            Ext.ux.ajax.SimManager.init({
+                delay : 1000
+            });
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600,
+                items      : [{
+                    xclass : 'conjoon.cn_mail.view.mail.inbox.InboxView'
+                }]
+            });
+
+            let newPanel = Ext.create('Ext.Panel', {title : 'foo'});
+
+            panel.add(newPanel);
+            panel.setActiveTab(newPanel);
+
+            let inboxView = panel.down('cn_mail-mailinboxview');
+
+            t.isCalledNTimes('processMailFolderSelectionForRouting', viewController, 2);
+
+            t.expect(panel.getActiveTab()).toBe(newPanel);
+            t.expect(viewController.showInboxViewFor('2')).toBe(inboxView);
+            t.expect(panel.getActiveTab()).toBe(inboxView);
+
+            t.expect(panel.down('cn_mail-mailinboxview').down('cn_mail-mailfoldertree').getStore().getProxy().type).toBe('memory');
+
+
+            t.waitForMs(1250, function() {
+
+                t.expect(panel.down('cn_mail-mailinboxview').down('cn_mail-mailfoldertree').getStore().getProxy().type).not.toBe('memory');
+                panel.setActiveTab(newPanel);
+                t.expect(viewController.showInboxViewFor('3')).toBe(panel.down('cn_mail-mailinboxview'));
+                t.expect(panel.getActiveTab()).toBe(inboxView);
+
+                panel.destroy();
+                panel = null;
+
+            });
 
         });
 
 
-    });
+        t.it("processMailFolderSelectionForRouting()", function(t) {
 
-});
+            let viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            );
+            Ext.ux.ajax.SimManager.init({
+                delay : 1
+            });
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600
+            });
+
+            let inboxView = panel.down('cn_mail-mailinboxview');
+
+            t.waitForMs(750, function() {
+
+                let cnhref = inboxView.cn_href;
+                t.expect(cnhref).toBe('cn_mail/home');
+
+                t.expect(viewController.processMailFolderSelectionForRouting('foo')).toBe(false);
+
+                t.expect(cnhref).toBe(inboxView.cn_href);
+
+                let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(1);
+                t.expect(viewController.processMailFolderSelectionForRouting(1)).toBe(true);
+                t.expect(inboxView.cn_href).toBe(node.toUrl());
+                t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
+                t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
+
+                t.expect(viewController.processMailFolderSelectionForRouting(1)).toBe(false);
+
+                node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
+                t.expect(viewController.processMailFolderSelectionForRouting(2)).toBe(true);
+                t.expect(inboxView.cn_href).toBe(node.toUrl());
+                t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
+                t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
+
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+
+});});

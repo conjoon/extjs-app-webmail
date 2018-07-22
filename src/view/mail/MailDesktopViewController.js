@@ -160,6 +160,75 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
+     * Shows the InboxView and selects the specified mailFolderId.
+     * Delegates to #processMailFolderSelectionForRouting. If the store of the
+     * MailFolderTree is not yet bound by the MVVM or currently being loaded,
+     * the processMailFolderSelectionForRouting-method is invoked as soon as
+     * loading of the MailFolderTree's store finished.
+     *
+     * @param {String} mailFolderId
+     *
+     * @return conjoon.cn_mail.view.mail.inbox.InboxView
+     *
+     * @see #processMailFolderSelectionForRouting
+     */
+    showInboxViewFor : function(mailFolderId) {
+
+        const me        = this,
+              view      = me.getView(),
+              inboxView = view.down('cn_mail-mailinboxview'),
+              tree      = inboxView.down('cn_mail-mailfoldertree'),
+              store     = tree.getStore();
+
+        if (store.isLoading() || store.getProxy().type === 'memory') {
+            tree.on(
+                'load',
+                Ext.Function.bind(
+                    me.processMailFolderSelectionForRouting, me, [mailFolderId]
+                ), me, {single : true}
+            );
+        } else {
+            me.processMailFolderSelectionForRouting(mailFolderId);
+        }
+
+        return view.setActiveTab(inboxView);
+    },
+
+
+    /**
+     * Selects the MailFolder represented by the mailFolderId and makea sure
+     * that the "cn_href" attribute of the InboxView-tab is being changed to the
+     * "toUrl()"-return value of the selected MailFolder to make the
+     * tabchange-listener working with the deeplinking into ONE panel.
+     *
+     * @param {String} mailFolderId
+     *
+     * @return {Boolean} false if the specified MAilFolder was not found or if
+     * it was already selected, otherwise true.
+     *
+     * @private
+     */
+    processMailFolderSelectionForRouting : function(mailFolderId) {
+
+        const me        = this,
+              view      = me.getView(),
+              inboxView = view.down('cn_mail-mailinboxview'),
+              tree      = inboxView.down('cn_mail-mailfoldertree');
+
+        let rec = tree.getStore().getNodeById(mailFolderId);
+
+        if (!rec || (tree.getSelection() && tree.getSelection()[0] === rec)) {
+            return false;
+        }
+
+        inboxView.cn_href = rec.toUrl();
+        tree.getSelectionModel().select(rec);
+        Ext.History.add(inboxView.cn_href);
+        return true;
+    },
+
+
+    /**
      * Tries to find an existing MessageView opened in the view and focus it,
      * or create a new one by adding it to the view.
      * The associated messageItem record will be queried in the MessageGrid and
