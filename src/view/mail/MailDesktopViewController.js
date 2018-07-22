@@ -203,8 +203,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @param {String} mailFolderId
      *
-     * @return {Boolean} false if the specified MAilFolder was not found or if
-     * it was already selected, otherwise true.
+     * @return {Boolean} false if the specified MailFolder was not found
      *
      * @private
      */
@@ -217,7 +216,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         let rec = tree.getStore().getNodeById(mailFolderId);
 
-        if (!rec || (tree.getSelection() && tree.getSelection()[0] === rec)) {
+        if (!rec) {
             return false;
         }
 

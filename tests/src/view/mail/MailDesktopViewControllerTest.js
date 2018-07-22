@@ -716,13 +716,64 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                 t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
                 t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
 
-                t.expect(viewController.processMailFolderSelectionForRouting(1)).toBe(false);
+                t.expect(viewController.processMailFolderSelectionForRouting(1)).toBe(true);
 
                 node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
                 t.expect(viewController.processMailFolderSelectionForRouting(2)).toBe(true);
                 t.expect(inboxView.cn_href).toBe(node.toUrl());
                 t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
                 t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
+
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+
+
+        t.it("showInboxViewFor() - issue with selection already registered", function(t) {
+
+            let viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            );
+            Ext.ux.ajax.SimManager.init({
+                delay : 1
+            });
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600
+            });
+
+            let newPanel = Ext.create('Ext.Panel', {
+                title   : 'foo',
+                cn_href : 'foo'
+            });
+
+            panel.add(newPanel);
+            let inboxView = panel.down('cn_mail-mailinboxview');
+
+            t.waitForMs(750, function() {
+
+                let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(1);
+                inboxView.down('cn_mail-mailfoldertree').getSelectionModel().select(node);
+                viewController.showInboxViewFor(1);
+                t.expect(inboxView.cn_href).toBe(node.toUrl());
+
+                panel.setActiveTab(newPanel);
+
+                node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
+                inboxView.down('cn_mail-mailfoldertree').getSelectionModel().select(node);
+                viewController.showInboxViewFor(2);
+                t.expect(inboxView.cn_href).toBe(node.toUrl());
+
+                panel.setActiveTab(newPanel);
+
+                panel.setActiveTab(inboxView);
+                t.expect(inboxView.cn_href).toBe(node.toUrl());
+
+
 
                 panel.destroy();
                 panel = null;
