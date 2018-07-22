@@ -89,9 +89,25 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
         var me = this;
 
         return me.getController().showMailEditor(id, type);
+    },
+
+
+    /**
+     * Creates and shows the InboxView with the MailFolder represented by the
+     * requested mailFolderId loaded/loading into the MessageGrid.
+     * Delegates to conjoon.cn_mail.view.mail.MailDesktopViewController#showInboxViewFor.
+     *
+     * @param {String} mailFolderId
+     *
+     * @return conjoon.cn_mail.view.mail.inbox.InboxView
+     *
+     * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showInboxViewFor}
+     */
+    showInboxViewFor : function(mailFolderId) {
+        const me = this;
+
+        return me.getController().showInboxViewFor(mailFolderId);
     }
-
-
 
 
 

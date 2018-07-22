@@ -64,6 +64,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
     });
 
+
     t.it("showMailEditor()", function(t) {
         var editor1, editor2;
 
@@ -82,6 +83,24 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
         t.expect(editor1).toBe(editor2);
 
         t.expect(view.showMailEditor(1, 'compose')).not.toBe(editor1);
+    });
+
+
+    t.it("showInboxViewFor()", function(t) {
+
+        let inb1, inb2;
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
+
+        t.isCalledNTimes('showInboxViewFor', view.getController(), 2);
+
+        inb1 = view.showInboxViewFor("1");
+        t.isInstanceOf(inb1, 'conjoon.cn_mail.view.mail.inbox.InboxView')
+
+        inb2 = view.showInboxViewFor("2");
+
+        t.expect(inb1).toBe(inb2);
     });
 
 });
