@@ -496,6 +496,21 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         packageCtrl.onMailInboxViewActivate(null);
         t.expect(TOGGLEGRIDDISABLED).toBe(false);
 
+    });
+
+
+    t.it("mailfolder route", function(t) {
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        let pv = {
+                showInboxViewFor : function() {}
+            };
+        packageCtrl.getMainPackageView = function() {
+            return pv;
+        };
+
+        t.isCalledNTimes('showInboxViewFor', packageCtrl.getMainPackageView(), 1);
+        packageCtrl.onMailFolderRoute();
 
     });
 

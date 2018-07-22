@@ -73,6 +73,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_mail/message/replyAll/:id' : 'onReplyAllRoute',
         'cn_mail/message/forward/:id'  : 'onForwardRoute',
         'cn_mail/message/read/:id'     : 'onReadMessageRoute',
+        'cn_mail/mailfolder/:id'       : 'onMailFolderRoute',
         'cn_mail/home'                 : 'onHomeTabRoute'
     },
 
@@ -292,7 +293,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
         const me = this;
 
-        if (records.length !== 1) {
+        if (records.length > 1) {
             Ext.raise({
                 records : records,
                 msg     : "unexpected multiple records"
@@ -374,6 +375,21 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             mailDesktopView = me.getMainPackageView();
 
         mailDesktopView.showMailMessageViewFor(messageId);
+    },
+
+
+    /**
+     * Action for the cn_mail/mailfolder/:id route.
+     *
+     * @param {String} mailFolderId
+     *
+     * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailFolderFor}
+     */
+    onMailFolderRoute : function(mailFolderId) {
+        const me              = this,
+              mailDesktopView = me.getMainPackageView();
+
+        mailDesktopView.showInboxViewFor(mailFolderId);
     },
 
 
