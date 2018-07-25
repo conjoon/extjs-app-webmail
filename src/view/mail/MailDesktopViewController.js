@@ -55,6 +55,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         },
         'cn_mail-mailmessageeditor' : {
             'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete'
+        },
+        'cn_mail-mailinboxview #btn-replyall' : {
+            'click' : 'onMailInboxViewReplyAllClick'
+        },
+        'cn_mail-mailinboxview #btn-reply' : {
+            'click' : 'onMailInboxViewReplyClick'
+        },
+        'cn_mail-mailinboxview #btn-forward' : {
+            'click' : 'onMailInboxViewForwardClick'
         }
 
     },
@@ -76,6 +85,48 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @private
      */
     parser : null,
+
+
+    /**
+     *
+     * @returns {*|conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     */
+    onMailInboxViewReplyClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageReader(), 'replyTo');
+    },
+
+
+    /**
+     *
+     * @returns {*|conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     */
+    onMailInboxViewForwardClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageReader(), 'forward');
+    },
+
+
+    /**
+     *
+     * @returns {*|conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     */
+    onMailInboxViewReplyAllClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageReader(), 'replyAll');
+    },
+
+
+    /**
+     *
+     * @returns {*}
+     */
+    getIdFromInboxMessageReader : function() {
+        return this.getView()
+                   .down('cn_mail-mailinboxview')
+                   .down('cn_mail-mailmessagereadermessageview')
+                   .getViewModel().get('messageItem').getId();
+    },
 
 
     /**

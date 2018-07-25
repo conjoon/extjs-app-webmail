@@ -122,6 +122,32 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     store  : '{cn_mail-mailmessageitemstore}'
                 }
         }]}, {
+            dockedItems : [{
+                bind   : {
+                    hidden: '{!cn_mail_ref_mailmessagegrid.selection}'
+                },
+                xtype  : 'toolbar',
+                items  : ['->', {
+                    xtype     : 'splitbutton',
+                    scale     : 'small',
+                    ui        : 'cn-btn-medium-base-color',
+                    iconCls   : 'x-fa fa-mail-reply-all',
+                    text      : 'Reply all',
+                    itemId    : 'btn-replyall',
+                    menuAlign : 'tr-br',
+                    menu    : {
+                        items : [{
+                            text    : 'Reply',
+                            iconCls : 'x-fa fa-mail-reply',
+                            itemId  : 'btn-reply',
+                        }, {
+                            text    : 'Forward',
+                            iconCls : 'x-fa fa-mail-forward',
+                            itemId  : 'btn-forward'
+                        }]
+                    }
+                }]
+            }],
             flex   : 1,
             xtype  : 'cn_mail-mailmessagereadermessageview',
             margin : '0 5 5 0',
