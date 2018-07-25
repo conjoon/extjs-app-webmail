@@ -106,4 +106,97 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
     });
 
 
+    t.it("onMessageItemRead()", function(t) {
+
+        let CALLED = 0;
+
+        const viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxViewController',
+            {
+                view : {
+                getViewModel : function() {
+                    return {
+                        updateUnreadMessageCount : function() {
+                            CALLED++;
+                        }
+                    }
+                }
+            }}),
+            node = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+                id : 2
+            });
+
+        t.expect(CALLED).toBe(0);
+        viewController.onMessageItemRead(Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 2,
+            isRead       : false
+        }));
+        t.expect(CALLED).toBe(1);
+
+        CALLED = 0;
+
+        t.expect(CALLED).toBe(0);
+        viewController.onMessageItemRead([Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 2,
+            isRead       : false
+        }), Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 3,
+            isRead       : true
+        })]);
+        t.expect(CALLED).toBe(2);
+    });
+
+
+    t.it('onRowFlyMenuItemClick()', function(t) {
+
+        const viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxViewController');
+
+        let rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+                mailFolderId : 2,
+                isRead       : true
+            }),
+            CALLED = 0;
+
+        viewController.onMessageItemRead = function() {
+            CALLED++;
+        }
+
+        t.expect(rec.get('isRead')).toBe(true);
+        t.expect(CALLED).toBe(0);
+
+        viewController.onRowFlyMenuItemClick(null, null, 'markunread', rec);
+
+        t.waitForMs(250, function() {
+            t.expect(rec.get('isRead')).toBe(false);
+            t.expect(CALLED).toBe(1);
+        });
+
+
+    });
+
+
+    t.it('onRowFlyMenuBeforeShow()', function(t) {
+
+        let CALLED = 0;
+
+        const viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxViewController', {
+            view : {
+                down : function() {
+                    return {
+                        updateRowFlyMenu : function() {
+                            CALLED++;
+                        }
+                    }
+                }
+            }});
+
+        t.expect(CALLED).toBe(0);
+        viewController.onRowFlyMenuBeforeShow();
+        t.expect(CALLED).toBe(1);
+
+
+
+    });
 });

@@ -233,4 +233,40 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
+    t.it("should trigger onRowFlyMenuItemClick()", function(t) {
+
+        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+            view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+            let grid = view.down('cn_mail-mailmessagegrid');
+
+            t.isCalledNTimes('onRowFlyMenuItemClick', view.getController(), 1)
+            grid.fireEvent('cn_comp-rowflymenu-itemclick');
+
+        });
+
+    });
+
+
+    t.it("should trigger onRowFlyMenuBeforeShow()", function(t) {
+
+        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+            view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+            let grid = view.down('cn_mail-mailmessagegrid');
+
+            t.isCalledNTimes('onRowFlyMenuBeforeShow', view.getController(), 1)
+            grid.fireEvent('cn_comp-rowflymenu-beforemenushow');
+
+        });
+
+    });
+
+
 });

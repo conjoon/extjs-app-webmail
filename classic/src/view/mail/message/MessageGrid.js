@@ -35,7 +35,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     requires : [
         'conjoon.cn_comp.grid.feature.RowBodySwitch',
         'conjoon.cn_comp.grid.feature.Livegrid',
-        'conjoon.cn_mail.store.mail.message.MessageItemStore'
+        'conjoon.cn_mail.store.mail.message.MessageItemStore',
+        'conjoon.cn_comp.grid.feature.RowFlyMenu'
     ],
 
     alias : 'widget.cn_mail-mailmessagegrid',
@@ -91,7 +92,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             }
 
             return {
-                rowBody : '<div class="subject '+ (!record.get('isRead') ? 'unread' : '')+'">' + record.get("subject") + '</div>' +
+                rowBody :
+                          '<div class="head '+ (!record.get('isRead') ? 'unread' : '')+'">' +
+                          '<div class="subject '+ (!record.get('isRead') ? 'unread' : '')+'">' + record.get("subject") + '</div>' +
+                          '<div class="date">' + Ext.util.Format.date(record.get("date"), "d.m.Y H:i") + '</div>' +
+                          '</div>' +
                            '<div class="previewText">' + record.get("previewText") + '</div>',
                 rowBodyCls : 'cn_mail-mailmessagepreviewfeature'
             };
@@ -101,10 +106,20 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             'subject'        : {visible : false},
             'to'             : {visible : false},
             'from'           : {flex : 1},
-            'date'           : {},
+            'date'           : {visible : false},
             'hasAttachments' : {},
             'size'           : {visible : false}
         }
+    }, {
+        ftype : 'cn_comp-gridfeature-rowflymenu',
+        id    : 'cn_mail-mailMessageFeature-rowFlyMenu',
+        items  : [{
+            cls    : 'fa fa-envelope-o',
+            title  : 'Mark as Unread',
+            action : 'markunread',
+            id     : 'cn_mail-mailMessageFeature-rowFlyMenu-markUnread'
+        }],
+        alignTo : ['tr-tr', [-12, 8]]
     }],
 
     viewConfig : {
@@ -182,19 +197,39 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
 
     /**
+     * @inheritdoc
+     */
+    initComponent : function() {
+
+        const me = this;
+
+        me.callParent(arguments);
+
+        me.relayEvents(
+            me.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
+            ['itemclick', 'beforemenushow'],
+            'cn_comp-rowflymenu-'
+        );
+    },
+
+    /**
      * Allows to switch between preview- and detail view, whereas the detail
      * view is a regular gridpanel view with column headers and table cells,
      * and the preview view uses the {conjoon.cn_comp.grid.feature.RowBodySwitch}.
+     * This method will also enable/disable the RowFlyMenu (enabled only if
+     * RowPreview is enabled).
      *
      * @param {Boolean} enable true to switch to the grid view, falsy to
      * switch to preview mode.
      */
     enableRowPreview : function(enable) {
 
-        var me      = this,
-            enable  = enable === undefined ? true : !!enable,
-            view    = me.getView(),
-            feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+        const me         = this,
+              view       = me.getView(),
+              feature    = view.getFeature('cn_mail-mailMessageFeature-messagePreview'),
+              rowFlyMenu = view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
+
+        enable = enable === undefined ? true : !!enable;
 
         if (me.getStore().isLoading()) {
             Ext.raise({
@@ -205,8 +240,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
         if (enable) {
             feature.enable();
+            rowFlyMenu.enable();
         } else {
             feature.disable();
+            rowFlyMenu.disable();
         }
     },
 
@@ -227,7 +264,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
                 store : store
             });
         }
-
 
         if (store && me.getStore() !== store) {
             me.myStoreRelayers = me.relayEvents(store, ['beforeload', 'load'], 'cn_mail-mailmessagegrid');
@@ -252,6 +288,33 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         me.myStoreRelayers = null;
 
         return me.callParent(arguments);
+    },
+
+
+    /**
+     * Updates the current RowFlyMenu for the specified record.
+     * Updates the menu's items to represent the proper state for the following
+     * properties:
+     *  - isRead
+     *
+     * @param {conjoon.cn_mail.model.mail.message.reader.MessageItem} record
+     */
+    updateRowFlyMenu : function(record) {
+
+        const me      = this,
+              feature = me.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
+              menu    = feature.menu,
+              readItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true);
+
+        switch (record.get('isRead')) {
+            case (true):
+                readItem[0].title = "Mark as Unread";
+                break;
+
+            default:
+                readItem[0].title = "Mark as Read";
+        }
+
     }
 
 

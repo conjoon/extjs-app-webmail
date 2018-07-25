@@ -63,29 +63,44 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             t.expect(grid.alias).toContain('widget.cn_mail-mailmessagegrid');
 
-            var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+            let feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
             t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowBodySwitch');
             t.expect(feature.disabled).toBeFalsy();
 
-            var feature = grid.view.getFeature('cn_mail-mailMessageFeature-livegrid');
+            feature = grid.view.getFeature('cn_mail-mailMessageFeature-livegrid');
             t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.Livegrid');
+
+            feature = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
+            t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowFlyMenu');
+            let MARKUNREAD = false;
+            for (let i in feature.idToActionMap) {
+                if (feature.idToActionMap[i] === 'markunread') {
+                    MARKUNREAD = true;
+                }
+            }
+            t.expect(MARKUNREAD).toBe(true);
         });
 
 
         t.it("enableRowPreview()", function(t) {
             grid = Ext.create(
                 'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
-            var feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+            let feature    = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview'),
+                rowFlyMenu = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
 
             t.expect(feature.disabled).toBe(false);
             grid.enableRowPreview(false);
             t.expect(feature.disabled).toBe(true);
+            t.expect(rowFlyMenu.disabled).toBe(true);
             grid.enableRowPreview();
             t.expect(feature.disabled).toBe(false);
+            t.expect(rowFlyMenu.disabled).toBe(false);
             grid.enableRowPreview(false)
             t.expect(feature.disabled).toBe(true);
-            grid.enableRowPreview(true);;
+            t.expect(rowFlyMenu.disabled).toBe(true);
+            grid.enableRowPreview(true);
             t.expect(feature.disabled).toBe(false);
+            t.expect(rowFlyMenu.disabled).toBe(false);
         });
 
 
@@ -211,8 +226,6 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
 
         t.it("selection still available after pageremove", function(t) {
-
-
             let store;
 
             grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
@@ -249,6 +262,82 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         });
 
 
+        t.it("call to relayEvents properly registered", function(t) {
+            let store;
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            let rowFlyMenu = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
+                CALLED = 0,
+                SHOWN  = 0;
+
+            let fid = null;
+
+            for (let i in rowFlyMenu.idToActionMap) {
+                if (rowFlyMenu.idToActionMap[i] === 'markunread') {
+                    fid = i;
+                    break;
+                }
+            }
+
+            t.expect(fid).toBeTruthy();
+
+            t.expect(CALLED).toBe(0);
+
+            grid.on('cn_comp-rowflymenu-beforemenushow', function(feature, item, action, record) {
+                SHOWN++;
+            });
+
+            grid.on('cn_comp-rowflymenu-itemclick', function(feature, item, action, record) {
+                CALLED++;
+            });
+
+            t.expect(SHOWN).toBe(0);
+            rowFlyMenu.fireEvent('beforemenushow');
+            t.expect(SHOWN).toBe(1);
+
+            rowFlyMenu.onMenuClick(
+                {stopEvent : Ext.emptyFn},
+                {id : fid}
+            );
+
+            t.expect(CALLED).toBe(1);
+        });
 
 
-});})});});
+        t.it("updateRowFlyMenu()", function(t) {
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            let rowFlyMenu = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
+                rec        = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+                    mailFolderId : 2,
+                    isRead       : true
+                }),
+                getReadItem = function() {
+                    return rowFlyMenu.menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true)[0];
+                };
+
+            grid.updateRowFlyMenu(rec);
+
+            t.expect(getReadItem().title.toLowerCase()).toBe("mark as unread");
+
+            rec.set('isRead', false);
+            grid.updateRowFlyMenu(rec);
+
+            t.expect(getReadItem().title.toLowerCase()).toBe("mark as read");
+
+
+        });
+
+
+
+    });})});});

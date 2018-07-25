@@ -38,13 +38,64 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         'cn_mail-mailfoldertree' : {
             'select' : 'onMailFolderTreeSelect'
-        }
+        },
+
+        'cn_mail-mailmessagegrid' : {
+            'cn_comp-rowflymenu-itemclick'      : 'onRowFlyMenuItemClick',
+            'cn_comp-rowflymenu-beforemenushow' : 'onRowFlyMenuBeforeShow'
+        },
     },
 
+
     /**
-     *  Callback for any {@link conjoon.cn_mail.view.mail.message.reader.MessageView}
-     *  embedded in this controller's view. Makes sure the associated folder
-     *  get notified of the message items and their current isRead state by calling
+     * Delegates to the mailmessagegrid's #updateRowFlyMenu method.
+     *
+     * @param {conjoon.cn_comp.grid.feature.RowFlyMenu} feature
+     * @param {HtmlElement} row
+     * @para, {Ext.data.Model} record
+     *
+     * @see conjoon.cn_mail.view.mail.message.MessageGrid#updateRowFlyMenu
+     */
+    onRowFlyMenuBeforeShow : function(feature, row, record) {
+
+        const me = this;
+
+        me.view.down('cn_mail-mailmessagegrid').updateRowFlyMenu(record);
+    },
+
+
+    /**
+     * Callback for the RowFlyMenu's itemclick event. Checks for the action
+     * specified and invokes appropriate measures.
+     * Valid actions are:
+     *  - markunread: Marks the record as either read or unread, depending
+     *    on it's state.
+     *
+     * @param {conjoon.cn_comp.grid.feature.RowFlyMenu} feature
+     * @param {HtmlElement} item
+     * @param {Strng} action
+     * @param {Ext.data.Model} record
+     */
+    onRowFlyMenuItemClick : function(feature, item, action, record) {
+
+        const me = this;
+
+        switch (action) {
+            case 'markunread':
+                record.set('isRead', !record.get('isRead'));
+                record.save({
+                    callback : me.onMessageItemRead,
+                    scope    : me
+                });
+                break;
+        }
+
+    },
+
+
+    /**
+     *  Makes sure the folders associated with the specified MessageItems get
+     *  notified of their current isRead state by calling
      *  {@link conjoon.cn_mail.view.mail.inbox.InboxViewModel#updateUnreadMessageCount}.
      *  The updateUnreadMessageCount will only be called if the computed number
      *  of read/unread messages is anything but 0.
@@ -61,6 +112,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             tmpId,
             rec,
             isRead;
+
+        messageItemRecords = [].concat(messageItemRecords);
 
         for (var i = 0, len = messageItemRecords.length; i <len; i++) {
             rec    = messageItemRecords[i];
