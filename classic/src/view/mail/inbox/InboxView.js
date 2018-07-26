@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,6 +129,20 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     hidden: '{!cn_mail_ref_mailmessagegrid.selection}'
                 },
                 items  : ['->', {
+                    xtype     : 'button',
+                    scale     : 'small',
+                    ui        : 'cn-btn-medium-base-color',
+                    iconCls   : 'x-fa fa-edit',
+                    itemId    : 'btn-editdraft',
+                    hidden    : true,
+                    bind      : {
+                        hidden : '{!isDraftLoaded}'
+                    }
+                }, {
+                    hidden    : true,
+                    bind      : {
+                        hidden : '{isDraftLoaded}'
+                    },
                     xtype     : 'splitbutton',
                     scale     : 'small',
                     ui        : 'cn-btn-medium-base-color',
@@ -149,11 +163,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     }
                 }]
             }],
-            flex   : 1,
-            xtype  : 'cn_mail-mailmessagereadermessageview',
-            margin : '0 5 5 0',
-            header : false,
-            bind   : {
+            flex      : 1,
+            xtype     : 'cn_mail-mailmessagereadermessageview',
+            margin    : '0 5 5 0',
+            header    : false,
+            bind      : {
                 hidden      : '{!cn_mail_ref_mailfoldertree.selection}',
                 messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }

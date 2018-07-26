@@ -269,7 +269,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
-    t.it("reply all button with menu is there", function(t) {
+    t.it("reply all / edit draft button is there", function(t) {
 
         t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             Ext.ux.ajax.SimManager.init({
@@ -281,6 +281,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                 tree           = view.down('cn_mail-mailfoldertree'),
                 messageView    = view.down('cn_mail-mailmessagereadermessageview');
 
+            t.expect(messageView.down('#btn-editdraft')).toBeTruthy();
             t.expect(messageView.down('#btn-replyall')).toBeTruthy();
             t.expect(messageView.down('#btn-replyall').getMenu()).toBeTruthy();
 
@@ -293,6 +294,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
                 t.waitForMs(500, function(){
                     var mailFolder = tree.getStore().getAt(0);
+                    t.expect(mailFolder.get('type')).not.toBe('DRAFT');
                     tree.getSelectionModel().select(mailFolder);
 
                     t.waitForMs(750, function(){
@@ -303,7 +305,28 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                         t.waitForMs(500, function(){
                             t.expect(messageView.down('#btn-replyall').up('toolbar').isVisible()).toBe(true);
 
-                            view.destroy();
+                            t.expect(messageView.down('#btn-replyall').isVisible()).toBe(true);
+                            t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(false);
+
+                            mailFolder = tree.getStore().getAt(3);
+                            t.expect(mailFolder.get('type')).toBe('DRAFT');
+                            tree.getSelectionModel().select(mailFolder);
+
+                            t.waitForMs(750, function(){
+
+                                var messageItem = grid.getStore().getAt(0);
+                                grid.getSelectionModel().select(messageItem);
+
+                                t.waitForMs(500, function(){
+                                    t.expect(messageView.down('#btn-replyall').isVisible()).toBe(false);
+                                    t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(true);
+
+                                    view.destroy();
+                                });
+
+                            });
+
+
                         });
 
                     });
