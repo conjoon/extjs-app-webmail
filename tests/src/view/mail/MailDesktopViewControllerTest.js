@@ -904,7 +904,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         });
 
 
-        t.it("onInboxViewReplyAllClick() / onInboxViewReplyClick() / onInboxViewForwardClick()", function(t) {
+        t.it("onInboxViewReplyAllClick() / onInboxViewReplyClick() / onInboxViewForwardClick() / onInboxViewEditDraftClick()", function(t) {
 
             let viewController = Ext.create(
                 'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -923,18 +923,21 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
                 msgv      = inboxView.down('cn_mail-mailmessagereadermessageview'),
                 btnra     = inboxView.down('#btn-forward'),
                 btnr      = inboxView.down('#btn-reply'),
-                btnf      = inboxView.down('#btn-replyall');
+                btnf      = inboxView.down('#btn-replyall'),
+                btne      = inboxView.down('#btn-editdraft');
 
             msgv.setMessageItem(getRecordCollection()[0]);
 
             t.isCalled('onInboxViewReplyAllClick', viewController);
             t.isCalled('onInboxViewReplyClick', viewController);
             t.isCalled('onInboxViewForwardClick', viewController);
-            t.isCalledNTimes('showMailEditor', viewController, 3);
+            t.isCalled('onInboxViewEditDraftClick', viewController);
+            t.isCalledNTimes('showMailEditor', viewController, 4);
 
             btnra.fireEvent('click');
             btnr.fireEvent('click');
             btnf.fireEvent('click');
+            btne.fireEvent('click');
 
             t.waitForMs(750, function() {
                 panel.destroy();

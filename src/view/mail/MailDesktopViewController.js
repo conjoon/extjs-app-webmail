@@ -64,6 +64,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         },
         'cn_mail-mailinboxview #btn-forward' : {
             'click' : 'onInboxViewForwardClick'
+        },
+        'cn_mail-mailinboxview #btn-editdraft' : {
+            'click' : 'onInboxViewEditDraftClick'
         }
 
     },
@@ -682,6 +685,19 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         return me.showMailEditor(me.getIdFromInboxMessageView(), 'replyAll');
     },
 
+
+    /**
+     * Callback for the edit draft button of the InboxView's MessageView. Will
+     * open the editor for editing the draft.
+     *
+     * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     *
+     * @see #showMaiLEditor
+     */
+    onInboxViewEditDraftClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageView(), 'edit');
+    },
 
     /**
      * Returns the id of the MessageItem currently loaded into the MessageView
