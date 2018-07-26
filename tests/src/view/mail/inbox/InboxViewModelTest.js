@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2016 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,10 +93,45 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
             });
 
         });
+    });
 
 
+    t.it("formula - isDraftLoaded()", function(t) {
+            let TYPE = 'DRAFT';
 
+            // mock viewmodel
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
+                getView : function() {
+                    return {
+                        down : function() {
+                            return {
+                                getStore : function() {
+                                    return {
+                                        findExact : function() {
+                                            return 1;
+                                        },
+                                        getAt : function() {
+                                            return {
+                                                get : function() {
+                                                    return TYPE;
+                                                }
+                                            }
+                                        }
+                                    }
 
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var formulas = viewModel.getFormulas();
+            t.expect(formulas.isDraftLoaded).toBeDefined();
+
+            t.expect(formulas.isDraftLoaded.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
+            TYPE = 'INBOX';
+            t.expect(formulas.isDraftLoaded.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
     });
 
 });

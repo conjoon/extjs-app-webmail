@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,34 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
                 value    : '{cn_mail_ref_mailfoldertree.selection.id}'
             }]
         }
+    },
+
+    formulas : {
+
+        /**
+         * Returns true if the currently selected MessageItem in the store of the
+         * MessageGrid is laoded from a Draft folder.
+         *
+         * @param get
+         *
+         * @returns {boolean}
+         */
+        isDraftLoaded : function(get) {
+            const me           = this,
+                  view         = me.getView(),
+                  store        = view.down('cn_mail-mailfoldertree').getStore(),
+                  mailFolderId = get('cn_mail_ref_mailmessagegrid.selection.mailFolderId');
+
+
+            let ind = store.findExact('id', mailFolderId);
+
+            if (ind === -1) {
+                return false;
+            }
+
+            return store.getAt(ind).get('type') === 'DRAFT';
+        }
+
     },
 
     /**
