@@ -868,4 +868,80 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             });
         });
 
+
+        t.it("getIdFromInboxMessageView()", function(t) {
+
+            let viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            );
+            Ext.ux.ajax.SimManager.init({
+                delay : 1
+            });
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600
+            });
+
+            let inboxView = panel.down('cn_mail-mailinboxview'),
+                msgv      = inboxView.down('cn_mail-mailmessagereadermessageview');
+
+            msgv.setMessageItem(getRecordCollection()[0]);
+            t.expect(viewController.getIdFromInboxMessageView()).toBe(
+                getRecordCollection()[0].getId()
+            );
+
+            msgv.setMessageItem(getRecordCollection()[3]);
+            t.expect(viewController.getIdFromInboxMessageView()).toBe(
+                getRecordCollection()[3].getId()
+            );
+
+
+            panel.destroy();
+            panel = null;
+
+        });
+
+
+        t.it("onInboxViewReplyAllClick() / onInboxViewReplyClick() / onInboxViewForwardClick()", function(t) {
+
+            let viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            );
+            Ext.ux.ajax.SimManager.init({
+                delay : 1
+            });
+            panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+                controller : viewController,
+                renderTo   : document.body,
+                width      : 800,
+                height     : 600
+            });
+
+            let inboxView = panel.down('cn_mail-mailinboxview'),
+                msgv      = inboxView.down('cn_mail-mailmessagereadermessageview'),
+                btnra     = inboxView.down('#btn-forward'),
+                btnr      = inboxView.down('#btn-reply'),
+                btnf      = inboxView.down('#btn-replyall');
+
+            msgv.setMessageItem(getRecordCollection()[0]);
+
+            t.isCalled('onInboxViewReplyAllClick', viewController);
+            t.isCalled('onInboxViewReplyClick', viewController);
+            t.isCalled('onInboxViewForwardClick', viewController);
+            t.isCalledNTimes('showMailEditor', viewController, 3);
+
+            btnra.fireEvent('click');
+            btnr.fireEvent('click');
+            btnf.fireEvent('click');
+
+            t.waitForMs(750, function() {
+                panel.destroy();
+                panel = null;
+            });
+
+
+        });
+
 });});

@@ -57,13 +57,13 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete'
         },
         'cn_mail-mailinboxview #btn-replyall' : {
-            'click' : 'onMailInboxViewReplyAllClick'
+            'click' : 'onInboxViewReplyAllClick'
         },
         'cn_mail-mailinboxview #btn-reply' : {
-            'click' : 'onMailInboxViewReplyClick'
+            'click' : 'onInboxViewReplyClick'
         },
         'cn_mail-mailinboxview #btn-forward' : {
-            'click' : 'onMailInboxViewForwardClick'
+            'click' : 'onInboxViewForwardClick'
         }
 
     },
@@ -85,48 +85,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @private
      */
     parser : null,
-
-
-    /**
-     *
-     * @returns {*|conjoon.cn_mail.view.mail.message.editor.MessageEditor}
-     */
-    onMailInboxViewReplyClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageReader(), 'replyTo');
-    },
-
-
-    /**
-     *
-     * @returns {*|conjoon.cn_mail.view.mail.message.editor.MessageEditor}
-     */
-    onMailInboxViewForwardClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageReader(), 'forward');
-    },
-
-
-    /**
-     *
-     * @returns {*|conjoon.cn_mail.view.mail.message.editor.MessageEditor}
-     */
-    onMailInboxViewReplyAllClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageReader(), 'replyAll');
-    },
-
-
-    /**
-     *
-     * @returns {*}
-     */
-    getIdFromInboxMessageReader : function() {
-        return this.getView()
-                   .down('cn_mail-mailinboxview')
-                   .down('cn_mail-mailmessagereadermessageview')
-                   .getViewModel().get('messageItem').getId();
-    },
 
 
     /**
@@ -680,5 +638,64 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }, 500);
 
         return newToken;
+    },
+
+
+    /**
+     * Callback for the reply all button of the InboxView's MessageView. Will
+     * open the editor for replying to the message.
+     *
+     * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     *
+     * @see #showMaiLEditor
+     */
+    onInboxViewReplyClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageView(), 'replyTo');
+    },
+
+
+    /**
+     * Callback for the reply all button of the InboxView's MessageView. Will
+     * open the editor for forwarding the message.
+     *
+     * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     *
+     * @see #showMaiLEditor
+     */
+    onInboxViewForwardClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageView(), 'forward');
+    },
+
+
+    /**
+     * Callback for the reply all button of the InboxView's MessageView. Will
+     * open the editor for replying to the message.
+     *
+     * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
+     *
+     * @see #showMaiLEditor
+     */
+    onInboxViewReplyAllClick : function() {
+        const me = this;
+        return me.showMailEditor(me.getIdFromInboxMessageView(), 'replyAll');
+    },
+
+
+    /**
+     * Returns the id of the MessageItem currently loaded into the MessageView
+     * of the InboxView.
+     *
+     * @return {String}
+     *
+     * @private
+     */
+    getIdFromInboxMessageView : function() {
+        return this.getView()
+            .down('cn_mail-mailinboxview')
+            .down('cn_mail-mailmessagereadermessageview')
+            .getViewModel().get('messageItem').getId();
     }
+
 });

@@ -262,11 +262,57 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
             let grid = view.down('cn_mail-mailmessagegrid');
 
             t.isCalledNTimes('onRowFlyMenuBeforeShow', view.getController(), 1)
-            grid.fireEvent('cn_comp-rowflymenu-beforemenushow');
+            grid.fireEvent('cn_comp-rowflymenu-beforemenushow', null, 1, {get : Ext.emptyFn});
 
         });
 
     });
 
+
+    t.it("reply all button with menu is there", function(t) {
+
+        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+            view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+            var grid           = view.down('cn_mail-mailmessagegrid'),
+                tree           = view.down('cn_mail-mailfoldertree'),
+                messageView    = view.down('cn_mail-mailmessagereadermessageview');
+
+            t.expect(messageView.down('#btn-replyall')).toBeTruthy();
+            t.expect(messageView.down('#btn-replyall').getMenu()).toBeTruthy();
+
+            t.expect(messageView.down('#btn-replyall').getMenu().down('#btn-forward')).toBeTruthy();
+            t.expect(messageView.down('#btn-replyall').getMenu().down('#btn-reply')).toBeTruthy();
+
+            t.expect(messageView.down('#btn-replyall').up('toolbar').isVisible()).toBe(false);
+
+            t.waitForMs(500, function(){
+
+                t.waitForMs(500, function(){
+                    var mailFolder = tree.getStore().getAt(0);
+                    tree.getSelectionModel().select(mailFolder);
+
+                    t.waitForMs(750, function(){
+
+                        var messageItem = grid.getStore().getAt(0);
+                        grid.getSelectionModel().select(messageItem);
+
+                        t.waitForMs(500, function(){
+                            t.expect(messageView.down('#btn-replyall').up('toolbar').isVisible()).toBe(true);
+
+                            view.destroy();
+                        });
+
+                    });
+                });
+            });
+
+
+        });
+
+    });
 
 });

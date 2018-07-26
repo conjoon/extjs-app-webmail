@@ -123,10 +123,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 }
         }]}, {
             dockedItems : [{
+                xtype  : 'toolbar',
+                hidden : true,
                 bind   : {
                     hidden: '{!cn_mail_ref_mailmessagegrid.selection}'
                 },
-                xtype  : 'toolbar',
                 items  : ['->', {
                     xtype     : 'splitbutton',
                     scale     : 'small',
