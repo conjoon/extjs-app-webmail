@@ -119,7 +119,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             action : 'markunread',
             id     : 'cn_mail-mailMessageFeature-rowFlyMenu-markUnread'
         }],
-        alignTo : ['tr-tr', [-12, 8]]
+        alignTo : ['tr-tr', [-12, 4]]
     }],
 
     viewConfig : {
