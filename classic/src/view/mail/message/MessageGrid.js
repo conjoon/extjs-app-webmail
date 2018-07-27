@@ -113,11 +113,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     }, {
         ftype : 'cn_comp-gridfeature-rowflymenu',
         id    : 'cn_mail-mailMessageFeature-rowFlyMenu',
-        items  : [{
-            cls    : 'fa fa-envelope-o',
-            title  : 'Mark as Unread',
-            action : 'markunread',
-            id     : 'cn_mail-mailMessageFeature-rowFlyMenu-markUnread'
+        items  : [ {
+            cls         : 'fa fa-trash',
+            "data-qtip" : 'Delete Message',
+            action      : 'delete',
+            id          : 'cn_mail-mailMessageFeature-rowFlyMenu-delete'
+        }, {
+            cls    : 'fa fa-envelope',
+            "data-qtip" : 'Mark as Unread',
+            action      : 'markunread',
+            id          : 'cn_mail-mailMessageFeature-rowFlyMenu-markUnread'
         }],
         alignTo : ['tr-tr', [-12, 4]]
     }],
@@ -308,13 +313,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
         switch (record.get('isRead')) {
             case (true):
-                readItem[0].title = "Mark as Unread";
+                readItem[0].setAttribute("data-qtip",  "Mark as Unread");
                 break;
 
             default:
-                readItem[0].title = "Mark as Read";
+                readItem[0].setAttribute("data-qtip",  "Mark as Read");
         }
-
     }
 
 
