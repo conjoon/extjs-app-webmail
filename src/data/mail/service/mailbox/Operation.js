@@ -32,7 +32,22 @@ Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
         /**
          * @type {Number} MOVE_OR_DELETE
          */
-        MOVE_OR_DELETE : 1
+        MOVE_OR_DELETE : 1,
+
+        /**
+         * @type {Number} DELETE
+         */
+        DELETE : 2,
+
+        /**
+         * @type {Number} MOVE
+         */
+        MOVE : 3,
+
+        /**
+         * @type {Number} NOOP
+         */
+        NOOP : 4
     },
 
 

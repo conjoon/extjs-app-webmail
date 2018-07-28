@@ -39,7 +39,23 @@ describe('conjoon.cn_mail.data.mail.service.mailbox.OperationTest', function(t) 
             op = createOperation();
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
         t.expect(op.getRequest()).toEqual({type : 'foo'});
-        t.expect(conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE).toBeDefined();
+
+        let coll = [
+            conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE,
+            conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+            conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+            conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP
+        ];
+
+        for (let i = 0, len = coll.length; i < len; i++) {
+            t.expect(coll[i]).toBeTruthy();
+        }
+
+        let fin = coll.filter(function(item, pos, self) {
+            return self.indexOf(item) == pos;
+        });
+
+        t.expect(fin).toEqual(coll);
 
 
         try{createOperation(false);}catch(e){exc = e;}
