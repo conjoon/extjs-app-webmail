@@ -54,6 +54,11 @@ harness.start({
             items : [{
                 group : 'mail',
                 items : [{
+                    group : 'folder',
+                    items : [
+                        'src/data/mail/folder/MailFolderTypesTest.js'
+                    ]
+                }, {
                     group : 'message',
                     items : [{
                         group : 'editor',
@@ -70,6 +75,17 @@ harness.start({
                         ]
                     },
                     'src/data/mail/message/EditingModesTest.js'
+                    ]
+                }, {
+                    group : 'service',
+                    items : [{
+                        group : 'mailbox',
+                        items : [
+                            'src/data/mail/service/mailbox/OperationTest.js'
+                        ]
+                    },
+                        'src/data/mail/service/MailFolderHelperTest.js',
+                        'src/data/mail/service/MailboxServiceTest.js'
                     ]
                 },
                     'src/data/mail/BaseSchemaTest.js'
