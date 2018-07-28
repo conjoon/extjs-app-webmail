@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,10 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
     extend : 'conjoon.cn_mail.model.mail.BaseTreeModel',
 
+    requires : [
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+    ],
+
     entityName : 'MailFolder',
 
     fields : [{
@@ -50,14 +54,33 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         persist : false
     }, {
         name : 'type',
-        type : 'string',
-        validators : [{
-            type : 'inclusion',
-            list : ['INBOX', 'JUNK', 'TRASH', 'SENT', 'FOLDER', 'DRAFT']
-        }, {
-            type : 'presence'
-        }]
+        type : 'string'
     }],
+
+
+    /**
+     * Overriden to make sure we can specify class statics for values of
+     * field validation for "type".
+     *
+     * @inheritdoc
+     */
+    constructor : function() {
+        const me = this;
+
+        me.callParent(arguments);
+
+        me.getField('type').setModelValidators([{
+            type : 'inclusion',
+            list : [
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.JUNK,
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH,
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT,
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.FOLDER,
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT
+            ]
+        }]);
+    },
 
 
     /**
