@@ -172,7 +172,6 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
             t.expect(CALLED).toBe(1);
         });
 
-
     });
 
 
@@ -182,21 +181,80 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
 
         const viewController = Ext.create(
             'conjoon.cn_mail.view.mail.inbox.InboxViewController', {
-            view : {
-                down : function() {
-                    return {
-                        updateRowFlyMenu : function() {
-                            CALLED++;
+                view : {
+                    down : function() {
+                        return {
+                            updateRowFlyMenu : function() {
+                                CALLED++;
+                            }
                         }
                     }
-                }
-            }});
+                }});
 
         t.expect(CALLED).toBe(0);
         viewController.onRowFlyMenuBeforeShow();
         t.expect(CALLED).toBe(1);
 
+    });
+
+
+    t.it('getMailBoxMessageService()', function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+            let service = viewController.getMailboxService();
+
+            t.isInstanceOf(service, 'conjoon.cn_mail.data.mail.service.MailboxService');
+            t.expect(service).toBe(viewController.getMailboxService());
+
+            t.isInstanceOf(service.getMailFolderHelper(), 'conjoon.cn_mail.data.mail.service.MailFolderHelper');
+            t.expect(service.getMailFolderHelper().getStore()).toBe(viewController.getView().down('cn_mail-mailfoldertree').getStore())
+
+        });
+
+    });
+
+
+    t.it('onRowFlyMenuItemClick() - delete', function(t) {
+
+        const viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxViewController');
+
+        let rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+                mailFolderId : 2,
+                isRead       : true
+            }),
+            CALLED = 0;
+
+        viewController.getMailboxService = function() {
+            return {
+                moveToTrashOrDeleteMessage : function() {
+                    CALLED++;
+                }
+            };
+        }
+
+        t.expect(CALLED).toBe(0);
+
+        viewController.onRowFlyMenuItemClick(null, null, 'delete', rec);
+
+        t.waitForMs(250, function() {
+            t.expect(CALLED).toBe(1);
+        });
 
 
     });
+
+
+
+
 });

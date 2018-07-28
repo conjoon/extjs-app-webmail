@@ -31,6 +31,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
     alias : 'controller.cn_mail-mailinboxviewcontroller',
 
+    requires : [
+        'conjoon.cn_mail.data.mail.service.MailboxService'
+    ],
+
     control : {
         'cn_mail-mailmessagereadermessageview' : {
             'cn_mail-mailmessageitemread' : 'onMessageItemRead'
@@ -46,6 +50,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         },
     },
 
+    /**
+     * @private
+     */
+    mailboxService : null,
 
     /**
      * Delegates to the mailmessagegrid's #updateRowFlyMenu method.
@@ -87,6 +95,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                     callback : me.onMessageItemRead,
                     scope    : me
                 });
+                break;
+            case 'delete':
+                me.getMailboxService().moveToTrashOrDeleteMessage(record);
+                // must update read items!
+                // must update message views!
+                // must removed opened tabs (editors, views)
                 break;
         }
 
@@ -157,6 +171,26 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         const me = this;
 
         me.redirectTo(node);
+    },
+
+
+    /**
+     * Returns the MailboxService used with ths class.
+     *
+     * @return {conjoon.cn_mail.data.mail.service.MailboxService}
+     */
+    getMailboxService : function() {
+        const me = this;
+
+        if (!me.mailboxService) {
+            me.mailboxService = Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
+                mailFolderHelper : Ext.create('conjoon.cn_mail.data.mail.service.MailFolderHelper', {
+                    store : me.getView().down('cn_mail-mailfoldertree').getStore()
+                })
+            });
+        }
+
+        return me.mailboxService;
     }
 
 });
