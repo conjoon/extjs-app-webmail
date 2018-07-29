@@ -133,7 +133,23 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     scale     : 'small',
                     ui        : 'cn-btn-medium-base-color',
                     iconCls   : 'x-fa fa-edit',
+                    tooltip  : {
+                        text  : "Edit this draft"
+                    },
                     itemId    : 'btn-editdraft',
+                    hidden    : true,
+                    bind      : {
+                        hidden : '{!isDraftLoaded}'
+                    }
+                }, {
+                    xtype     : 'button',
+                    scale     : 'small',
+                    ui        : 'cn-btn-medium-base-color',
+                    iconCls   : 'x-fa fa-trash',
+                    itemId    : 'btn-deletedraft',
+                    tooltip  : {
+                        text  : "Delete this draft"
+                    },
                     hidden    : true,
                     bind      : {
                         hidden : '{!isDraftLoaded}'
@@ -159,6 +175,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                             text    : 'Forward',
                             iconCls : 'x-fa fa-mail-forward',
                             itemId  : 'btn-forward'
+                        }, '-', {
+                            text    : 'Delete',
+                            iconCls : 'x-fa fa-trash',
+                            itemId  : 'btn-delete'
                         }]
                     }
                 }]

@@ -26,7 +26,6 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     var view;
 
     t.afterEach(function() {
-        return;
         if (view) {
             view.destroy();
             view = null;
@@ -269,7 +268,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
-    t.it("reply all / edit draft button is there", function(t) {
+    t.it("reply all / edit draft / delete draft button is there", function(t) {
 
         t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             Ext.ux.ajax.SimManager.init({
@@ -282,6 +281,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                 messageView    = view.down('cn_mail-mailmessagereadermessageview');
 
             t.expect(messageView.down('#btn-editdraft')).toBeTruthy();
+            t.expect(messageView.down('#btn-deletedraft')).toBeTruthy();
             t.expect(messageView.down('#btn-replyall')).toBeTruthy();
             t.expect(messageView.down('#btn-replyall').getMenu()).toBeTruthy();
 
@@ -307,6 +307,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
                             t.expect(messageView.down('#btn-replyall').isVisible()).toBe(true);
                             t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(false);
+                            t.expect(messageView.down('#btn-deletedraft').isVisible()).toBe(false);
 
                             mailFolder = tree.getStore().getAt(3);
                             t.expect(mailFolder.get('type')).toBe('DRAFT');
@@ -320,6 +321,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                                 t.waitForMs(500, function(){
                                     t.expect(messageView.down('#btn-replyall').isVisible()).toBe(false);
                                     t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(true);
+                                    t.expect(messageView.down('#btn-deletedraft').isVisible()).toBe(true);
 
                                     view.destroy();
                                 });
