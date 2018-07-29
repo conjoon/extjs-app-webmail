@@ -650,5 +650,65 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it('callbacks registered for delete draft / delete buttons', function(t){
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        let messageView = panel.down('cn_mail-mailmessagereadermessageview');
+
+
+        t.waitForMs(250, function() {
+
+            t.isCalledNTimes('onDeleteClick', viewController, 2);
+            t.isCalledNTimes('onDeleteClick', viewController, 2);
+
+
+
+            selectMailFolder(panel, 4);
+
+            t.waitForMs(250, function() {
+
+                selectMessage(panel, 2);
+
+                t.waitForMs(250, function() {
+
+                    messageView.down('#btn-delete').fireEvent('click');
+
+                    t.waitForMs(250, function() {
+
+                        selectMessage(panel, 4);
+
+                        t.waitForMs(250, function() {
+
+                            messageView.down('#btn-deletedraft').fireEvent('click');
+
+                            t.waitForMs(250, function() {
+                                // intentionally left empty
+                            });
+
+                        });
+                    });
+
+                });
+
+
+
+
+
+
+            });
+
+
+
+        });
+
+    });
+
 
 });});});

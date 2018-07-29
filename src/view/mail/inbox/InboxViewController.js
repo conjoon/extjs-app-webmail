@@ -42,6 +42,14 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             'cn_mail-mailmessageitemread' : 'onMessageItemRead'
         },
 
+        'cn_mail-mailmessagereadermessageview toolbar #btn-deletedraft' : {
+            'click' : 'onDeleteClick'
+        },
+
+        'cn_mail-mailmessagereadermessageview toolbar #btn-delete' : {
+            'click' : 'onDeleteClick'
+        },
+
         'cn_mail-mailfoldertree' : {
             'select' : 'onMailFolderTreeSelect'
         },
@@ -111,6 +119,23 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
     },
 
+
+    /**
+     * Callback for InboxView's embedded buttons/controls that request to
+     * delete a MessageItem.
+     *
+     * @param {Ext.Button/Ext.menu.Item} btn
+     *
+     * @see moveOrDeleteMessage
+     */
+    onDeleteClick : function(btn) {
+
+        const me          = this;
+              messageView = me.getMessageView(),
+              messageItem = messageView.getViewModel().get('messageItem');
+              
+        me.moveOrDeleteMessage(messageItem);
+    },
 
     /**
      *  Makes sure the folders associated with the specified MessageItems get
@@ -406,6 +431,14 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         }
 
         return operation;
+    },
+
+
+    /**
+     * @private
+     */
+    getMessageView : function() {
+        return this.getView().down('cn_mail-mailmessagereadermessageview');
     },
 
 
