@@ -24,12 +24,50 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
 
     var panel;
 
+    const selectMailFolder = function(panel, storeAt) {
+
+        let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
+
+        panel.down('cn_mail-mailfoldertree').getSelectionModel()
+             .select(folder);
+
+        return folder;
+
+    }, selectMessage = function(panel, storeAt) {
+
+        let message = panel.down('cn_mail-mailmessagegrid').getStore().getAt(storeAt);
+
+        panel.down('cn_mail-mailmessagegrid').getSelectionModel()
+            .select(message);
+
+        return message;
+    }, getMessageGridStore = function(panel) {
+
+        return panel.down('cn_mail-mailmessagegrid').getStore();
+
+    }, getSelectedMessage = function(panel) {
+
+        return panel.down('cn_mail-mailmessagegrid').getSelection()
+               ? panel.down('cn_mail-mailmessagegrid').getSelection()[0]
+               : null;
+
+    };
+
+
     t.afterEach(function() {
         if (panel) {
             panel.destroy();
         }
         panel = null;
     });
+
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function() {
+
+    Ext.ux.ajax.SimManager.init({
+        delay: 1
+    });
+
 
     t.it("Should create the ViewController", function(t) {
 
@@ -192,7 +230,7 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
                 }});
 
         t.expect(CALLED).toBe(0);
-        viewController.onRowFlyMenuBeforeShow();
+        viewController.onRowFlyMenuBeforeShow(null, null, {get : function(){}});
         t.expect(CALLED).toBe(1);
 
     });
@@ -229,32 +267,388 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
         const viewController = Ext.create(
             'conjoon.cn_mail.view.mail.inbox.InboxViewController');
 
+        viewController.getMailboxService = function() {
+            return {
+                moveToTrashOrDeleteMessage : function() {}
+            }
+        };
+
         let rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 2,
                 isRead       : true
-            }),
-            CALLED = 0;
+            });
 
-        viewController.getMailboxService = function() {
-            return {
-                moveToTrashOrDeleteMessage : function() {
-                    CALLED++;
-                }
-            };
-        }
-
-        t.expect(CALLED).toBe(0);
-
+        t.isCalled('moveOrDeleteMessage', viewController);
         viewController.onRowFlyMenuItemClick(null, null, 'delete', rec);
+    });
 
-        t.waitForMs(250, function() {
-            t.expect(CALLED).toBe(1);
+
+    t.it('onRowFlyMenuBeforeShow() - cn_deleted / cn_moved', function(t) {
+
+        let CALLED = 0;
+
+        const viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxViewController'
+            );
+
+        t.expect(viewController.onRowFlyMenuBeforeShow(null, null,  Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 1,
+            cn_deleted : true
+        }))).toBe(false);
+
+
+        t.expect(viewController.onRowFlyMenuBeforeShow(null, null,  Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 1,
+            cn_moved : true
+        }))).toBe(false);
+    });
+
+
+    t.it("onBeforeMessageMoveOrDelete()", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
         });
 
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                    request : {
+                        type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                        record : messageItem
+                    }
+                });
+
+                t.expect(messageItem.get('cn_moved')).toBe(false);
+                t.expect(viewController.onBeforeMessageMoveOrDelete(op)).toBe(op);
+                t.expect(messageItem.get('cn_moved')).toBe(true);
+
+                messageItem = selectMessage(panel, 2);
+                op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                    request : {
+                        type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                        record : messageItem
+                    }
+                });
+
+                t.isCalled('detachMenuAndUnset', viewController.getRowFlyMenu());
+                t.expect(messageItem).toBeTruthy();
+                t.expect(messageItem.get('cn_deleted')).toBe(false);
+                t.expect(messageItem.store).toBe(getMessageGridStore(panel));
+                t.expect(getSelectedMessage(panel)).toBe(messageItem);
+                t.expect(viewController.onBeforeMessageMoveOrDelete(op)).toBe(op);
+                t.expect(messageItem.get('cn_deleted')).toBe(true);
+                t.expect(messageItem.store).toBeFalsy();
+                t.expect(getSelectedMessage(panel)).toBeFalsy();
+            });
+        });
+    });
+
+
+    t.it("onMessageMovedOrDeletedFailure()", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                messageItem.unjoin(messageItem.store);
+                messageItem.set('cn_moved',   true);
+
+
+                let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                    request : {
+                        type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                        record : messageItem
+                    }
+                });
+
+                t.expect(messageItem.get('cn_moved')).toBe(true);
+                t.expect(viewController.onMessageMovedOrDeletedFailure(op)).toBe(op);
+                t.expect(messageItem.get('cn_moved')).toBe(false);
+
+                messageItem = selectMessage(panel, 2);
+                messageItem.unjoin(messageItem.store);
+                messageItem.set('cn_deleted', true);
+                op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                    request : {
+                        type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                        record : messageItem
+                    }
+                });
+
+                t.isCalled('reject', messageItem);
+
+                t.expect(messageItem).toBeTruthy();
+                t.expect(messageItem.get('cn_deleted')).toBe(true);
+                t.expect(messageItem.store).toBeFalsy();
+                t.expect(viewController.onMessageMovedOrDeletedFailure(op)).toBe(op);
+                t.expect(messageItem.get('cn_deleted')).toBe(false);
+                t.expect(messageItem.store).toBe(getMessageGridStore(panel));
+            });
+        });
+    });
+
+
+    t.it("onMessageMovedOrDeleted() - MOVED - targetFolder not shown in messageGrid", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                messageItem.unjoin(messageItem.store);
+                messageItem.set('cn_moved',   true);
+
+                let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                    request : {
+                        type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                        record         : messageItem,
+                        targetFolderId : "5"
+                    }
+                });
+
+                t.isCalled('remove', viewController.getLivegrid());
+                t.isntCalled('add', viewController.getLivegrid());
+
+                t.expect(messageItem.get('cn_moved')).toBe(true);
+                t.expect(viewController.onMessageMovedOrDeleted(op)).toBe(op);
+                t.expect(messageItem.get('cn_moved')).toBe(false);
+                t.expect(messageItem.store).toBe(getMessageGridStore(panel));
+            });
+        });
+    });
+
+
+    t.it("onMessageMovedOrDeleted() - MOVED - targetFolder shown in messageGrid", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                selectMailFolder(panel, 4);
+
+                t.waitForMs(250, function() {
+                    messageItem.unjoin(messageItem.store);
+                    messageItem.set('cn_moved',   true);
+
+                    let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                        request : {
+                            type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                            record         : messageItem,
+                            targetFolderId : "5"
+                        }
+                    });
+
+                    t.isntCalled('remove', viewController.getLivegrid());
+                    t.isCalled('add', viewController.getLivegrid());
+
+                    t.expect(messageItem.get('cn_moved')).toBe(true);
+                    t.expect(viewController.onMessageMovedOrDeleted(op)).toBe(op);
+                    t.expect(messageItem.get('cn_moved')).toBe(false);
+                    t.expect(messageItem.store).toBe(getMessageGridStore(panel));
+                });
+            });
+        });
+    });
+
+
+    t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder not selected", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                selectMailFolder(panel, 4);
+
+                t.waitForMs(250, function() {
+                    messageItem.unjoin(messageItem.store);
+                    messageItem.set('cn_deleted', true);
+
+                    let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                        request : {
+                            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                            record : messageItem
+                        }
+                    });
+
+                    t.isntCalled('remove', viewController.getLivegrid());
+                    t.isntCalled('add', viewController.getLivegrid());
+
+                    t.expect(messageItem.get('cn_deleted')).toBe(true);
+                    t.expect(viewController.onMessageMovedOrDeleted(op)).toBe(op);
+                    t.expect(messageItem.get('cn_deleted')).toBe(false);
+                    t.expect(messageItem.store).toBeFalsy();
+                });
+            });
+        });
+    });
+
+
+    t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder is selected", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                    messageItem.unjoin(messageItem.store);
+                    messageItem.set('cn_deleted', true);
+
+                    let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                        request : {
+                            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                            record : messageItem
+                        }
+                    });
+
+                    t.isCalled('remove', viewController.getLivegrid());
+                    t.isntCalled('add', viewController.getLivegrid());
+
+                    t.expect(messageItem.get('cn_deleted')).toBe(true);
+                    t.expect(viewController.onMessageMovedOrDeleted(op)).toBe(op);
+                    t.expect(messageItem.get('cn_deleted')).toBe(false);
+                    t.expect(messageItem.store).toBeFalsy();
+            });
+        });
+    });
+
+
+    t.it('moveOrDeleteMessage()', function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            // should be move operation since selected folder is not of type
+            // TRASH
+            t.expect(selectMailFolder(panel, 1).get('type')).not.toBe('TRASH');
+
+            t.waitForMs(250, function() {
+                let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
+
+                t.isCalled('moveToTrashOrDeleteMessage', viewController.getMailboxService());
+                t.isCalled('onBeforeMessageMoveOrDelete', viewController);
+                t.isCalled('onMessageMovedOrDeleted', viewController);
+                t.isntCalled('onMessageMovedOrDeletedFailure', viewController);
+
+                t.isInstanceOf(viewController.moveOrDeleteMessage(messageItem), 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+
+                t.waitForMs(250, function() {
+                    // intentionally left empty
+                })
+            });
+        });
+    });
+
+
+    t.it('moveOrDeleteMessage() - failure', function(t){
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let folder =  selectMailFolder(panel, 4);
+            t.expect(folder.get('type')).toBe('TRASH');
+
+            t.waitForMs(250, function() {
+                let messageItem = Ext.create(
+                    'conjoon.cn_mail.model.mail.message.MessageItem', {
+                        id           : 'foobar',
+                        mailFolderId : folder.getId()
+                    });
+
+                t.isCalled('onMessageMovedOrDeletedFailure', viewController);
+
+                viewController.moveOrDeleteMessage(messageItem);
+
+                t.waitForMs(250, function() {
+                    // intentionally left empty
+                })
+            })
+        });
 
     });
 
 
 
-
-});
+});});});

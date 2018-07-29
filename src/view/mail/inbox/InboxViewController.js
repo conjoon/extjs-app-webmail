@@ -32,7 +32,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     alias : 'controller.cn_mail-mailinboxviewcontroller',
 
     requires : [
-        'conjoon.cn_mail.data.mail.service.MailboxService'
+        'conjoon.cn_mail.data.mail.service.MailboxService',
+        'conjoon.cn_mail.data.mail.service.mailbox.Operation',
+        'conjoon.cn_mail.data.mail.service.MailFolderHelper'
     ],
 
     control : {
@@ -57,6 +59,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
     /**
      * Delegates to the mailmessagegrid's #updateRowFlyMenu method.
+     * Will not show the menu if the record is currently marked as cn_deleted
+     * or cn_moved by returning false.
      *
      * @param {conjoon.cn_comp.grid.feature.RowFlyMenu} feature
      * @param {HtmlElement} row
@@ -67,6 +71,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     onRowFlyMenuBeforeShow : function(feature, row, record) {
 
         const me = this;
+
+        if (record.get('cn_deleted') || record.get('cn_moved')) {
+            return false;
+        }
 
         me.view.down('cn_mail-mailmessagegrid').updateRowFlyMenu(record);
     },
@@ -97,10 +105,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                 });
                 break;
             case 'delete':
-                me.getMailboxService().moveToTrashOrDeleteMessage(record);
-                // must update read items!
-                // must update message views!
-                // must removed opened tabs (editors, views)
+                me.moveOrDeleteMessage(record);
                 break;
         }
 
@@ -191,6 +196,249 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         }
 
         return me.mailboxService;
+    },
+
+
+    /**
+     * Moves or deletes the specified messageItem. Delegates to
+     * #mailboxService.moveToTrashOrDeleteMessage.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     *
+     * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
+     * created by the MailboxService for the requested action.
+     *
+     * @see onBeforeMessageMoveOrDelete
+     * @see onMessageMovedOrDeleted
+     * @see onMessageMovedOrDeletedFailure
+     */
+    moveOrDeleteMessage : function(messageItem) {
+
+        const me   = this;
+
+        return me.getMailboxService().moveToTrashOrDeleteMessage(messageItem, {
+            before  : me.onBeforeMessageMoveOrDelete,
+            success : me.onMessageMovedOrDeleted,
+            failure : me.onMessageMovedOrDeletedFailure,
+            scope   : me
+        });
+        // must update read items!
+        // must update message views!
+        // must removed opened tabs (editors, views)
+
+    },
+
+
+    /**
+     * Gets called before the MailboxService removes or deletes a MessageItem.
+     * Sets the record's cn_deleted or cn_moved field to true depending
+     * on the type of the operation.
+     * Deselects the mesageItem if it was part of the selection and hides the
+     * RowFlyMenu currently shown.
+     * Will also unjoin the record from it's store to prevent issues with
+     * BufferedStore and remove-operations (looking up child-associations and
+     * trying to delete them etc.)
+     *
+     * @param {conjoon.cn_mail.data.mail.service.mailbox.Operation} operation
+     *
+     * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
+     */
+    onBeforeMessageMoveOrDelete : function(operation) {
+
+        const me          = this,
+              messageItem = operation.getRequest().record,
+              type        = operation.getRequest().type,
+              Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+              messageGrid = me.getView().down('cn_mail-mailmessagegrid');
+
+        let field;
+
+        switch (type) {
+            case Operation.MOVE:
+                field = "cn_moved";
+                break;
+
+            case Operation.DELETE:
+                field = "cn_deleted";
+                break;
+            default:
+                Ext.raise({
+                    msg  : "Unexpected operation type for before-callback",
+                    type : type
+                });
+                break;
+        }
+
+        // set the field property
+        messageItem.set(field, true);
+        messageItem.commit();
+
+        // this is needed since messageGrid has a BufferedStore.
+        // not unjoining beforehand means the default impl. tries to look
+        // up and call getAssociatedEntitity on the BufferedStore. This
+        // method does not exist.
+        messageItem.unjoin(messageItem.store);
+
+        // deselect messageItem
+        messageGrid.getSelectionModel().deselect(messageItem);
+
+        // hide RowFylMenu
+        me.getRowFlyMenu().detachMenuAndUnset();
+
+        return operation;
+    },
+
+
+    /**
+     * Gets called when the MailboxService fails to remove or move a messageItems
+     *
+     * @param {conjoon.cn_mail.data.mail.service.mailbox.Operation} operation
+     *
+     * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
+     */
+    onMessageMovedOrDeletedFailure : function(operation) {
+
+        const me          = this,
+              messageItem = operation.getRequest().record,
+              type        = operation.getRequest().type,
+              Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+              messageGrid = me.getView().down('cn_mail-mailmessagegrid');
+
+        let field;
+
+        switch (type) {
+            case Operation.MOVE:
+                field = "cn_moved";
+                break;
+
+            case Operation.DELETE:
+                field = "cn_deleted";
+                break;
+            default:
+                Ext.raise({
+                    msg  : "Unexpected operation type for failure-callback",
+                    type : type
+                });
+                break;
+        }
+
+        messageItem.reject();
+
+        // unjoined in before, join again.
+        messageItem.join(messageGrid.getStore());
+
+        // set the field property
+        messageItem.set(field, false);
+        messageItem.commit();
+
+        return operation;
+    },
+
+
+    /**
+     * Callback for successfull move/delete operation. Moves the record out of
+     * the currently shown MessageGrid if applicable, or adds it to the MessageGrid,
+     * depending on the MailFolder currentls selected and the operation's type.
+     * Also removes any cn_deleted/cn_moved flag.
+     *
+     * @param {conjoon.cn_mail.data.mail.service.mailbox.Operation} operation
+     *
+     * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
+     */
+    onMessageMovedOrDeleted : function(operation) {
+
+        const me          = this,
+              view        = me.getView(),
+              messageItem = operation.getRequest().record,
+              request     = operation.getRequest(),
+              type        = operation.getRequest().type,
+              Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+              messageGrid = me.getView().down('cn_mail-mailmessagegrid');
+
+        let field;
+
+        switch (type) {
+            case Operation.MOVE:
+                field = "cn_moved";
+                break;
+
+            case Operation.DELETE:
+                field = "cn_deleted";
+                break;
+            default:
+                Ext.raise({
+                    msg  : "Unexpected operation type for failure-callback",
+                    type : type
+                });
+                break;
+        }
+
+        messageItem.set(field, false);
+        messageItem.commit();
+
+        let selectedFolder      = me.getSelectedMailFolder(),
+            targetFolderId      = type === Operation.MOVE
+                                  ? request.targetFolderId
+                                  : messageItem.get('mailFolderId'),
+            isNotTargetSelected = targetFolderId && selectedFolder &&
+                                  selectedFolder.getId() !== targetFolderId,
+            isTargetSelected    = targetFolderId && selectedFolder &&
+                                  selectedFolder.getId() === targetFolderId;
+
+        switch (type) {
+            case (Operation.MOVE):
+
+                messageItem.join(messageGrid.getStore());
+
+                if (isNotTargetSelected) {
+                    me.getLivegrid().remove(messageItem);
+                } else if (isTargetSelected) {
+                    me.getLivegrid().add(messageItem);
+                }
+                break;
+
+            case (Operation.DELETE):
+                if (isTargetSelected) {
+                    me.getLivegrid().remove(messageItem);
+                }
+                break;
+
+        }
+
+        return operation;
+    },
+
+
+    /**
+     * @private
+     */
+    getLivegrid : function() {
+        return this.getView().down('cn_mail-mailmessagegrid').view
+            .getFeature('cn_mail-mailMessageFeature-livegrid');
+    },
+
+
+    /**
+     * @private
+     */
+    getRowFlyMenu : function() {
+        return this.getView().down('cn_mail-mailmessagegrid').view
+                   .getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
+    },
+
+
+    /**
+     * @private
+     */
+    getSelectedMailFolder : function() {
+        let sel = this.getView().down('cn_mail-mailfoldertree').getSelection();
+
+        if (sel && sel.length) {
+            return sel[0];
+        }
+
+        return null;
     }
+
 
 });
