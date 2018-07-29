@@ -128,6 +128,39 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     });
 
 
+    t.it("message delete button", function(t) {
+
+        let CALLED = 0;
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMailInboxView = function() {
+            return {
+                getController : function() {
+                    return {
+                        moveOrDeleteMessage : function() {
+                            CALLED++;
+                        }
+                    }
+                }
+            }
+        };
+        packageCtrl.getMailMessageGrid = function() {
+            return {
+                getSelection : function() {
+                    return [{
+                        getId : function() {
+                            return 1;
+                        }
+                    }]
+                }
+            };
+        };
+
+        t.expect(CALLED).toBe(0);
+        packageCtrl.onMessageDeleteButtonClick();
+        t.expect(CALLED).toBe(1);
+    });
+
+
     t.it('onMailFolderTreeSelectionChange()', function(t) {
 
         var DESELECTED = 0, exc, e, READINGPANEDISABLED, TOGGLEGRIDDISABLED;
@@ -178,10 +211,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
     t.it('onMailMessageGridDeselect()', function(t) {
         var DISABLED = {
-            '#cn_mail-nodeNavEditMessage' : 0,
-            '#cn_mail-nodeNavReplyTo'     : 0,
-            '#cn_mail-nodeNavReplyAll'    : 0,
-            '#cn_mail-nodeNavForward'     : 0
+            '#cn_mail-nodeNavEditMessage'   : 0,
+            '#cn_mail-nodeNavReplyTo'       : 0,
+            '#cn_mail-nodeNavReplyAll'      : 0,
+            '#cn_mail-nodeNavForward'       : 0,
+            '#cn_mail-nodeNavDeleteMessage' : 0
         };
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         packageCtrl.getNavigationToolbar = function() {
@@ -190,7 +224,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                     if (id === '#cn_mail-nodeNavEditMessage' ||
                         id === '#cn_mail-nodeNavReplyTo' ||
                         id === '#cn_mail-nodeNavReplyAll' ||
-                        id === '#cn_mail-nodeNavForward') {
+                        id === '#cn_mail-nodeNavForward' ||
+                        id === '#cn_mail-nodeNavDeleteMessage') {
                         return {
                             setDisabled : function(doIt) {
                                 if (doIt === true) {
@@ -212,20 +247,23 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(DISABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(DISABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
         packageCtrl.onMailMessageGridDeselect();
         t.expect(DISABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
         t.expect(DISABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
         t.expect(DISABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
         t.expect(DISABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(DISABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
 
     });
 
     t.it('onMailMessageGridSelect()', function(t) {
         var ENABLED = {
-            '#cn_mail-nodeNavEditMessage' : 0,
-            '#cn_mail-nodeNavReplyTo'     : 0,
-            '#cn_mail-nodeNavReplyAll'    : 0,
-            '#cn_mail-nodeNavForward'     : 0
+            '#cn_mail-nodeNavEditMessage'   : 0,
+            '#cn_mail-nodeNavReplyTo'       : 0,
+            '#cn_mail-nodeNavReplyAll'      : 0,
+            '#cn_mail-nodeNavForward'       : 0,
+            '#cn_mail-nodeNavDeleteMessage' : 0
             },
             NODETYPE,
             /**
@@ -233,10 +271,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
              */
             reset = function() {
                 ENABLED = {
-                    '#cn_mail-nodeNavEditMessage' : 0,
-                    '#cn_mail-nodeNavReplyTo'     : 0,
-                    '#cn_mail-nodeNavReplyAll'    : 0,
-                    '#cn_mail-nodeNavForward'     : 0
+                    '#cn_mail-nodeNavEditMessage'   : 0,
+                    '#cn_mail-nodeNavReplyTo'       : 0,
+                    '#cn_mail-nodeNavReplyAll'      : 0,
+                    '#cn_mail-nodeNavForward'       : 0,
+                    '#cn_mail-nodeNavDeleteMessage' : 0
                 };
             };
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
@@ -246,7 +285,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                     if (id === '#cn_mail-nodeNavEditMessage' ||
                         id === '#cn_mail-nodeNavReplyTo' ||
                         id === '#cn_mail-nodeNavReplyAll' ||
-                        id === '#cn_mail-nodeNavForward') {
+                        id === '#cn_mail-nodeNavForward' ||
+                        id === '#cn_mail-nodeNavDeleteMessage') {
                         return {
                             setDisabled : function(doIt) {
                                 if (doIt === false) {
@@ -283,6 +323,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
 
         NODETYPE = "DRAFT"
         packageCtrl.onMailMessageGridSelect();
@@ -290,6 +331,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
         reset();
 
         NODETYPE = "SENT"
@@ -298,6 +340,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
 
     });
 

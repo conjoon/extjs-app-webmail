@@ -97,6 +97,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage' : {
             click : 'onMessageEditButtonClick'
         },
+        'cn_treenavviewport-tbar > #cn_mail-nodeNavDeleteMessage' : {
+            click : 'onMessageDeleteButtonClick'
+        },
         'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyTo' : {
             click : 'onReplyToButtonClick'
         },
@@ -320,6 +323,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         navBar.down('#cn_mail-nodeNavReplyTo').setDisabled(true);
         navBar.down('#cn_mail-nodeNavReplyAll').setDisabled(true);
         navBar.down('#cn_mail-nodeNavForward').setDisabled(true);
+        navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(true);
    },
 
 
@@ -340,12 +344,14 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         switch (type) {
             case 'DRAFT':
                 navBar.down('#cn_mail-nodeNavEditMessage').setDisabled(false);
+                navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(false);
                 break;
 
             default:
                 navBar.down('#cn_mail-nodeNavReplyTo').setDisabled(false);
                 navBar.down('#cn_mail-nodeNavReplyAll').setDisabled(false);
                 navBar.down('#cn_mail-nodeNavForward').setDisabled(false);
+                navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(false);
                 break;
         }
 
@@ -479,6 +485,19 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     /**
+     * Callback for the node navigation's "delete message" button.
+     *
+     * @param {Ext.Button} btn
+     */
+    onMessageDeleteButtonClick : function(btn) {
+        const me  = this,
+              sel = me.getMailMessageGrid().getSelection();
+
+        me.getMailInboxView().getController().moveOrDeleteMessage(sel[0]);
+    },
+
+
+    /**
      * Callback for the node navigation's "replyTo message button".
      *
      * @param {Ext.Button} btn
@@ -575,6 +594,15 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                     tooltip  : {
                         title : 'Edit message draft',
                         text  : 'Opens the editor for editing the selected message draft.'
+                    }
+                }, {
+                    xtype    : 'button',
+                    iconCls  : 'x-fa fa-trash',
+                    itemId   : 'cn_mail-nodeNavDeleteMessage',
+                    disabled : true,
+                    tooltip  : {
+                        title : 'Delete message',
+                        text  : 'Moves this message to the Trash Bin or removes it completely out of it.'
                     }
                 }, {
                     xtype : 'tbseparator'
