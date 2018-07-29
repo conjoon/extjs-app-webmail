@@ -135,6 +135,25 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("callBefore()", function(t) {
+
+        let service = createService(),
+            op, cfg,
+            testObj   = {CALLED : 0},
+            cbOptions = {
+                before : function(op) {this.BEFORE = -1;expectOp(t, op);},
+                scope   : testObj
+            };
+
+        op = service.createOperation({foo : 'bar'});
+
+        t.expect(testObj.BEFORE).toBeUndefined();
+        service.callBefore(op, cbOptions);
+        t.expect(testObj.BEFORE).toBe(-1);
+
+    });
+
+
     t.it("moveToTrashOrDeleteMessage() - no trashfolder", function(t) {
 
         let service = createService(),
@@ -177,13 +196,16 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         let testObj   = {CALLED : 0},
             cbOptions = {
                 success : function(op) {this.CALLED++;expectOp(t, op);},
+                before : function(op) {this.BEFORE = -1;expectOp(t, op);},
                 failure : function(op) {this.CALLED--;expectOp(t, op);},
                 scope   : testObj
             };
         t.isCalled('createOperation', service);
+        t.isCalled('callBefore', service);
         t.isCalled('configureOperationCallbacks', service);
         let op = service.deleteMessage(messageItem, cbOptions);
 
+        t.expect(testObj.BEFORE).toBe(-1);
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
         let request = op.getRequest();
@@ -278,16 +300,18 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         let testObj   = {CALLED : 0},
             cbOptions = {
                 success : function(op) {this.CALLED++;expectOp(t, op);},
+                before  : function(op) {this.BEFORE = -1;expectOp(t, op);},
                 failure : function(op) {this.CALLED--;expectOp(t, op);},
                 scope   : testObj
             };
 
         let targetFolderId = "3";
         t.expect(testObj.CALLED).toBe(0);
+        t.isCalled('callBefore', service);
         t.isCalled('createOperation', service);
         t.isCalled('configureOperationCallbacks', service);
         let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
-
+        t.expect(testObj.BEFORE).toBe(-1);
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
         let request = op.getRequest();

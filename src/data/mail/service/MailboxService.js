@@ -123,6 +123,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.before A callback for when the operation is about to start
      * @param {Object} options.success A callback for when the operation successfully finished
      * @param {Object} options.failure A callback for when the operation failed
      * @param {Object} options.scope The object in which the specified callbacks
@@ -176,6 +177,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.before A callback for when the operation is about to start
      * @param {Object} options.success A callback for when the operation successfully finished
      * @param {Object} options.failure A callback for when the operation failed
      * @param {Object} options.scope The object in which the specified callbacks
@@ -194,6 +196,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
             record : messageItem
         });
+        me.callBefore(op, options);
         messageItem.erase(me.configureOperationCallbacks(op, options));
 
         return op;
@@ -211,6 +214,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      * @param {String} mailFolderId
      * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.before A callback for when the operation is about to start
      * @param {Object} options.success A callback for when the operation successfully finished
      * @param {Object} options.failure A callback for when the operation failed
      * @param {Object} options.scope The object in which the specified callbacks
@@ -253,7 +257,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             record         : messageItem,
             targetFolderId : mailFolderId
         });
-
+        me.callBefore(op, options);
         messageItem.set('mailFolderId', mailFolderId);
         messageItem.save(me.configureOperationCallbacks(op, options));
 
@@ -359,6 +363,25 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         }
 
         return Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', cfg);
+    },
+
+
+    /**
+     * Invokes the "before"-callback if available as function in options..
+     *
+     * @param {conjoon.cn_mail.data.mail.service.mailbox.Operation} op
+     * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.before A callback for when the operation is about to start
+     *
+     *
+     * @private
+     */
+    callBefore : function(op, options) {
+
+        if (options && options.before) {
+            options.before.apply(options.scope, [op]);
+        }
+
     }
 
 
