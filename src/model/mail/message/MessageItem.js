@@ -76,6 +76,14 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
         name    : 'size',
         type    : 'int',
         persist : false
+    }, {
+        name    : 'cn_deleted',
+        type    : 'bool',
+        persist : false
+    }, {
+        name    : 'cn_moved',
+        type    : 'bool',
+        persist : false
     }]
 
 

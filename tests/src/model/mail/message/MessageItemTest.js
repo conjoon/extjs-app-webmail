@@ -113,7 +113,20 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
         t.expect(model.get('previewText')).toBe('');
 
 
-        console.log(model);
+
+    });
+
+    t.it("cn_deleted / cn_moved", function(t) {
+
+        t.expect(model.get('cn_deleted')).toBe(false);
+        t.expect(model.get('cn_moved')).toBe(false);
+
+        model.set('cn_deleted', 1);
+        t.expect(model.get('cn_deleted')).toBe(true);
+
+        model.set('cn_moved', true);
+        t.expect(model.get('cn_moved')).toBe(true);
+
 
     });
 
