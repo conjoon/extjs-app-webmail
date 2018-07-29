@@ -39,6 +39,21 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
         url  : /cn_mail\/MessageBody(\/\d+)?/,
 
+        doDelete : function() {
+
+            const me     = this,
+                idPart = ctx.url.match(this.url)[1],
+                id     = idPart ? idPart.substring(1) : null;
+
+            if (!id) {
+                console.log("DELETE MessageBody - no numeric id specified.");
+                return {success : false};
+            }
+
+            console.log("DELETE MessageBody - ", id);
+
+        },
+
         doPut : function(ctx) {
 
             console.log("PUT MessageBody", ctx.xhr.options.jsonData);

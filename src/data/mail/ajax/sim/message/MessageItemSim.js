@@ -49,6 +49,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 return {success : false};
             }
 
+            console.log("DELETE MessageItem - ", id);
+
             let ret = {}, found = false;
 
             MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
