@@ -40,6 +40,9 @@ describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
             id           : id || Ext.id(),
             mailFolderId : mailFolderId
         })
+    },
+    expectOp = function(t, op) {
+        t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
     };
 
 
@@ -83,6 +86,55 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("createOperation()", function(t) {
+
+        let service = createService();
+
+        let op = service.createOperation({foo : 'bar'});
+        expectOp(t, op);
+        t.expect(op.getRequest()).toEqual({foo : 'bar'});
+        t.expect(op.getResult()).toBeUndefined();
+
+        op = service.createOperation({foo : 'bar'}, {bar : 'foo'});
+        expectOp(t, op);
+        t.expect(op.getRequest()).toEqual({foo : 'bar'});
+        t.expect(op.getResult()).toEqual({bar : 'foo'});
+    });
+
+
+    t.it("configureOperationCallbacks()", function(t) {
+
+        let service = createService(),
+            op, cfg,
+            testObj   = {CALLED : 0},
+            cbOptions = {
+                success : function(op) {this.CALLED++;expectOp(t, op);},
+                failure : function(op) {this.CALLED--;expectOp(t, op);},
+                scope   : testObj
+            };
+
+        op = service.createOperation({foo : 'bar'});
+        cfg = service.configureOperationCallbacks(op, cbOptions);
+        t.expect(cfg.success).toBeDefined();
+        t.expect(cfg.failure).toBeDefined();
+
+        // success
+        t.expect(testObj.CALLED).toBe(0);
+        cfg.success();
+        t.expect(op.getResult().success).toBe(true);
+        t.expect(testObj.CALLED).toBe(1);
+
+        // failure
+        op = service.createOperation({foo : 'bar'});
+        cfg = service.configureOperationCallbacks(op, cbOptions);
+        t.expect(testObj.CALLED).toBe(1);
+        cfg.failure();
+        t.expect(op.getResult().success).toBe(false);
+        t.expect(testObj.CALLED).toBe(0);
+
+    });
+
+
     t.it("moveToTrashOrDeleteMessage() - no trashfolder", function(t) {
 
         let service = createService(),
@@ -90,7 +142,16 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         checkArgMessageItem(t, service);
 
-        let op = service.moveToTrashOrDeleteMessage(messageItem);
+        let testObj   = {CALLED : 0},
+            cbOptions = {
+                success : function(op) {this.CALLED++;expectOp(t, op);},
+                failure : function(op) {this.CALLED--;expectOp(t, op);},
+                scope   : testObj
+            };
+
+        t.isCalled('createOperation', service);
+        t.expect(testObj.CALLED).toBe(0);
+        let op = service.moveToTrashOrDeleteMessage(messageItem, cbOptions);
 
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
@@ -102,6 +163,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         let result = op.getResult();
         t.expect(result.success).toBe(false);
         t.expect(result.reason.toLowerCase()).toContain("could not find");
+        t.expect(testObj.CALLED).toBe(-1);
     });
 
 
@@ -112,7 +174,15 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         checkArgMessageItem(t, service);
 
-        let op = service.deleteMessage(messageItem);
+        let testObj   = {CALLED : 0},
+            cbOptions = {
+                success : function(op) {this.CALLED++;expectOp(t, op);},
+                failure : function(op) {this.CALLED--;expectOp(t, op);},
+                scope   : testObj
+            };
+        t.isCalled('createOperation', service);
+        t.isCalled('configureOperationCallbacks', service);
+        let op = service.deleteMessage(messageItem, cbOptions);
 
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
@@ -120,17 +190,20 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         t.expect(request.type).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE);
         t.expect(request.record).toBe(messageItem);
 
+        t.expect(testObj.CALLED).toBe(0);
         t.expect(op.getResult()).toBeUndefined();
 
         t.waitForMs(250, function() {
             let result = op.getResult();
             t.expect(result.success).toBe(true);
+            t.expect(testObj.CALLED).toBe(1);
 
-            op = service.deleteMessage(createMessageItem("4", "foo"));
+            op = service.deleteMessage(createMessageItem("4", "foo"), cbOptions);
 
             t.waitForMs(250, function() {
                 let result = op.getResult();
                 t.expect(result.success).toBe(false);
+                t.expect(testObj.CALLED).toBe(0);
             });
         });
 
@@ -173,14 +246,24 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         let service     = createService(),
             messageItem = createMessageItem("4", "1");
 
+        let testObj   = {CALLED : 0},
+            cbOptions = {
+                success : function(op) {this.CALLED++;expectOp(t, op);},
+                failure : function(op) {this.CALLED--;expectOp(t, op);},
+                scope   : testObj
+            };
+
         let targetFolderId = "4";
-        let op = service.moveMessage(messageItem, targetFolderId);
+        t.expect(testObj.CALLED).toBe(0);
+        t.isCalled('createOperation', service);
+        let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
 
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
         let request = op.getRequest();
         t.expect(request.type).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP);
         t.expect(request.record).toBe(messageItem);
+        t.expect(testObj.CALLED).toBe(1);
 
         let result = op.getResult();
         t.expect(result.success).toBe(true);
@@ -192,8 +275,18 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         let service     = createService(),
             messageItem = createMessageItem("4", "1");
 
+        let testObj   = {CALLED : 0},
+            cbOptions = {
+                success : function(op) {this.CALLED++;expectOp(t, op);},
+                failure : function(op) {this.CALLED--;expectOp(t, op);},
+                scope   : testObj
+            };
+
         let targetFolderId = "3";
-        let op = service.moveMessage(messageItem, targetFolderId);
+        t.expect(testObj.CALLED).toBe(0);
+        t.isCalled('createOperation', service);
+        t.isCalled('configureOperationCallbacks', service);
+        let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
 
         t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
@@ -207,6 +300,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         t.waitForMs(250, function() {
             let result = op.getResult();
             t.expect(result.success).toBe(true);
+            t.expect(testObj.CALLED).toBe(1);
 
             t.expect(messageItem.get("mailFolderId")).toBe(targetFolderId)
         });
@@ -219,11 +313,20 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         let service     = createService(),
             messageItem = createMessageItem("2", "271");
 
+        let testObj   = {CALLED : 0},
+            cbOptions = {
+                success : function(op) {this.CALLED++;expectOp(t, op);},
+                failure : function(op) {this.CALLED--;expectOp(t, op);},
+                scope   : testObj
+            };
+
         t.isCalledNTimes('moveMessage', service, 1);
         t.waitForMs(250, function() {
-            let op = service.moveToTrashOrDeleteMessage(messageItem);
+            t.expect(testObj.CALLED).toBe(0);
+            let op = service.moveToTrashOrDeleteMessage(messageItem, cbOptions);
 
             t.waitForMs(250, function() {
+                t.expect(testObj.CALLED).toBe(1);
                 t.expect(op.getResult().success).toBe(true);
                 t.expect(messageItem.get("mailFolderId")).toBe("5");
 
@@ -231,4 +334,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         });
 
     });
+
+
+
 });});});

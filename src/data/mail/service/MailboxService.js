@@ -23,6 +23,61 @@
 /**
  * Service class for mailbox related tasks.
  *
+ * @example
+ *
+ *      let store = Ext.create('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
+ *          autoLoad : mailFolderTreeStore
+ *      });
+ *
+ *      let service = Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
+ *          mailFolderHelper : Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
+ *              store : mailFolderTreeStore
+ *          )}
+ *      ));
+ *
+ *      let messageItem = conjoon.cn_mail.model.mail.message.MessageItem.load("1", {
+ *          success : function(record) {
+ *              let op = service.moveToTrashOrDeleteMessage(record, {
+ *                  success : function(operation) {
+ *                      let request = operation.getRequest(),
+ *                          id      = request.record.getId(),
+ *                          type    = request.type;
+ *
+ *                          switch (type) {
+ *                              case (conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE):
+ *                                  console.log("message with id ", id, " was successfully moved");
+ *                              break;
+ *
+ *                              case (conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE):
+ *                                  console.log("message with id ", id, " was successfully deleted");
+ *                              break;
+ *                          }
+ *                  },
+ *                  failure : function(operation) {
+ *                      let request = operation.getRequest(),
+ *                          id      = request.record.getId(),
+ *                          type    = request.type;
+ *
+ *                          switch (type) {
+ *                              case (conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE):
+ *                                  console.log("Moving or deleting failed. Reason: ", operation.getResult().reason);
+ *                              break;
+ *
+ *                              case (conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE):
+ *                                  console.log("message with id ", id, " could not be moved");
+ *                              break;
+ *
+ *                              case (conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE):
+ *                                  console.log("message with id ", id, " could not be deleted");
+ *                              break;
+ *                          }
+ *                  }
+ *              });
+ *
+ *
+ *          }
+ *      });
+ *
  */
 Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
@@ -67,6 +122,11 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * depending on the parent folder of the messageItem.
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.success A callback for when the operation successfully finished
+     * @param {Object} options.failure A callback for when the operation failed
+     * @param {Object} options.scope The object in which the specified callbacks
+     * have to be called.
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
      * triggered by this action
@@ -74,7 +134,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @see deleteMessage
      * @see moveMessage
      */
-    moveToTrashOrDeleteMessage : function(messageItem) {
+    moveToTrashOrDeleteMessage : function(messageItem, options) {
 
         const me               = this,
               mailFolderHelper = me.getMailFolderHelper(),
@@ -84,25 +144,28 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         messageItem = me.filterMessageItemValue(messageItem);
 
         if (trashFolderId === null) {
-            return Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
-                request : {
-                    type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE,
-                    record : messageItem
-                },
-                result : {
-                    success : false,
-                    reason  : "Could not find TRASH folder."
-                }
+            let op = me.createOperation({
+                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE,
+                record : messageItem
+            }, {
+                success : false,
+                reason  : "Could not find TRASH folder."
             });
+
+            if (options && options.failure) {
+                options.failure.apply(options.scope, [op]);
+            }
+
+            return op;
         }
 
         // check whether we are already in the trashbin
         let sourceMailFolderId = messageItem.get('mailFolderId');
         if (trashFolderId === sourceMailFolderId) {
-            return me.deleteMessage(messageItem);
+            return me.deleteMessage(messageItem, options);
         }
 
-        return me.moveMessage(messageItem, trashFolderId);
+        return me.moveMessage(messageItem, trashFolderId, options);
     },
 
 
@@ -112,30 +175,26 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * will be set.
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.success A callback for when the operation successfully finished
+     * @param {Object} options.failure A callback for when the operation failed
+     * @param {Object} options.scope The object in which the specified callbacks
+     * have to be called.
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
      * triggered by this action
      */
-    deleteMessage : function(messageItem) {
+    deleteMessage : function(messageItem, options) {
 
         const me = this;
 
         messageItem = me.filterMessageItemValue(messageItem);
 
-        let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
-            request : {
-                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
-                record : messageItem
-            }
+        let op = me.createOperation({
+            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+            record : messageItem
         });
-        messageItem.erase({
-            success : function() {
-                op.setResult({success : true});
-            },
-            failure : function() {
-                op.setResult({success : false});
-            }
-        });
+        messageItem.erase(me.configureOperationCallbacks(op, options));
 
         return op;
     },
@@ -151,13 +210,18 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      * @param {String} mailFolderId
+     * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.success A callback for when the operation successfully finished
+     * @param {Object} options.failure A callback for when the operation failed
+     * @param {Object} options.scope The object in which the specified callbacks
+     * have to be called.
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
      * triggered by this action
      *
      * @throws if mailFolderId is not a string
      */
-    moveMessage : function(messageItem, mailFolderId) {
+    moveMessage : function(messageItem, mailFolderId, options) {
 
         const me = this;
 
@@ -172,32 +236,26 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
 
         if (messageItem.get('mailFolderId') === mailFolderId) {
-            return Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
-                request : {
-                    type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
-                    record : messageItem
-                },
-                result : {success : true}
-            });
+            let op =  me.createOperation({
+                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
+                record : messageItem
+            }, {success : true});
+
+            if (options && options.success) {
+                options.success.apply(options.scope, [op]);
+            }
+
+            return op;
         }
 
-        let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
-            request : {
-                type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
-                record         : messageItem,
-                targetFolderId : mailFolderId
-            }
+        let op = me.createOperation({
+            type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+            record         : messageItem,
+            targetFolderId : mailFolderId
         });
 
         messageItem.set('mailFolderId', mailFolderId);
-        messageItem.save({
-            success : function() {
-                op.setResult({success : true});
-            },
-            failure : function() {
-                op.setResult({success : false});
-            }
-        });
+        messageItem.save(me.configureOperationCallbacks(op, options));
 
         return op;
 
@@ -238,6 +296,69 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         }
 
         return messageItem;
+    },
+
+
+    /**
+     * Returns an object to be used to configure as callbacks for various
+     * model-related operations, and immediately calls any method configured
+     * for options.success / options.failure depending on the result of op.
+     *
+     * @param {conjoon.cn_mail.data.mail.service.mailbox.Operation} op
+     * @param {Object} options An additional, optional argument with the following options
+     * @param {Object} options.success A callback for when the operation successfully finished
+     * @param {Object} options.failure A callback for when the operation failed
+     * @param {Object} options.scope The object in which the specified callbacks
+     * have to be called.
+     *
+     * @returns {Object}
+     *
+     * @private
+     */
+    configureOperationCallbacks : function(op, options) {
+
+        options = options || {};
+
+        return {
+            success : function() {
+                op.setResult({success : true});
+                if (options && options.success) {
+                    options.success.apply(options.scope, [op]);
+                }
+            },
+            failure : function() {
+                op.setResult({success : false});
+                if (options && options.failure) {
+                    options.failure.apply(options.scope, [op]);
+                }
+            }
+        };
+    },
+
+
+    /**
+     * Helper function to create and return an Operation-object.
+     *
+     * @param {Object} request
+     * @param {Object} result
+     *
+     * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
+     *
+     * @private
+     */
+    createOperation : function(request, result) {
+
+        let cfg = request || result ? {} : undefined;
+
+        if (request) {
+            cfg.request = request;
+        }
+
+        if (result) {
+            cfg.result = result;
+        }
+
+        return Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', cfg);
     }
 
 
