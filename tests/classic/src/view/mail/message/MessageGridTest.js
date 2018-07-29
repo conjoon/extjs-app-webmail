@@ -367,4 +367,43 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         });
 
 
+        t.it("getRowClass()", function(t) {
+            grid = Ext.create(
+                'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
+
+            let messageItem = prop();
+
+
+            messageItem.set('isRead', true);
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('boldFont');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-deleted');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-moved');
+
+            messageItem.set('isRead', false);
+            t.expect(grid.view.getRowClass(messageItem)).toContain('boldFont');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-deleted');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-moved');
+
+            messageItem.set('cn_deleted', true);
+            t.expect(grid.view.getRowClass(messageItem)).toContain('boldFont');
+            t.expect(grid.view.getRowClass(messageItem)).toContain('cn-deleted');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-moved');
+
+            messageItem.set('cn_moved', true);
+            t.expect(grid.view.getRowClass(messageItem)).toContain('boldFont');
+            t.expect(grid.view.getRowClass(messageItem)).toContain('cn-deleted');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-moved');
+
+            messageItem.set('cn_deleted', false);
+
+            messageItem.set('cn_moved', true);
+            t.expect(grid.view.getRowClass(messageItem)).toContain('boldFont');
+            t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-deleted');
+            t.expect(grid.view.getRowClass(messageItem)).toContain('cn-moved');
+
+
+        });
+
+
+
     });})});});

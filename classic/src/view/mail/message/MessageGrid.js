@@ -93,8 +93,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
             return {
                 rowBody :
-                          '<div class="head '+ (!record.get('isRead') ? 'unread' : '')+'">' +
-                          '<div class="subject '+ (!record.get('isRead') ? 'unread' : '')+'">' + record.get("subject") + '</div>' +
+                          '<div class="head' + (!record.get('isRead') ? ' unread' : '')+'">' +
+                          '<div class="subject'+ (!record.get('isRead') ? ' unread' : '')+'">' + record.get("subject") + '</div>' +
                           '<div class="date">' + me.grid.getHumanReadableDate(record.get('date')) + '</div>' +
                           '</div>' +
                            '<div class="previewText">' + record.get("previewText") + '</div>',
@@ -130,7 +130,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     viewConfig : {
         markDirty   : false,
         getRowClass : function(record, rowIndex, rowParams, store){
-            return record.get("isRead") ? "" : "boldFont";
+            let cls = record.get("isRead")
+                      ? ""
+                      : "boldFont";
+
+            if (record.get('cn_deleted')) {
+                cls += ' cn-deleted';
+            } else if (record.get('cn_moved')) {
+                cls += ' cn-moved';
+            }
+
+            return cls;
         }
     },
 
