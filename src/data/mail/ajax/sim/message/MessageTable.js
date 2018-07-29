@@ -280,11 +280,27 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
 
     updateAllItemData : function(id, values) {
+
         var me     = this,
             draft  = me.getMessageDraft(id),
             item   = me.getMessageItem(id),
             dataItems = [draft, item],
-            dataItems, item;
+            dataItems, item, skipDate = false;
+
+        let vals = [];
+
+        for (let a in values) {
+            if (!values.hasOwnProperty(a)) {
+                continue;
+            }
+
+            vals.push(a);
+        }
+
+        if (vals.length === 2 && vals.indexOf('id') !== -1 && (
+            vals.indexOf('mailFolderId') !== -1 || vals.indexOf('isRead') !== -1)) {
+            skipDate = true;
+        }
 
         for (var i = 0, len = dataItems.length; i < len; i++) {
 
@@ -296,7 +312,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 continue;
             }
 
-            item['date'] = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
+            if (skipDate === false) {
+                item['date'] = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
+            }
 
             for (var prop in values) {
 
