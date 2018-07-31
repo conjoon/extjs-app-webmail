@@ -133,7 +133,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         const me          = this;
               messageView = me.getMessageView(),
               messageItem = messageView.getViewModel().get('messageItem');
-              
+
         me.moveOrDeleteMessage(messageItem);
     },
 
@@ -276,6 +276,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
               Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
               messageGrid = me.getView().down('cn_mail-mailmessagegrid');
 
+
         let field;
 
         switch (type) {
@@ -284,6 +285,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                 break;
 
             case Operation.DELETE:
+
+                if (Ext.GlobalEvents.fireEvent('cn_mail-beforemessageitemdelete', messageItem) === false) {
+                    return false;
+                }
+
                 field = "cn_deleted";
                 break;
             default:
