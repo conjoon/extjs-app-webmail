@@ -360,5 +360,46 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("callBefore() - check return value", function(t) {
+
+        let service = createService(),
+            op, cfg,
+            testObj   = {CALLED : 0},
+            cbOptions = {
+                before : function(op) {return 'foo';},
+                scope   : testObj
+            };
+
+        op = service.createOperation({foo : 'bar'});
+
+        t.expect(service.callBefore(op, cbOptions)).toBe('foo');
+
+    });
+
+
+    t.it("deleteMessage() - cancel", function(t) {
+
+        let service     = createService(),
+            messageItem = createMessageItem("4", "1");
+
+        checkArgMessageItem(t, service);
+
+        let testObj   = {CALLED : 0},
+            cbOptions = {
+                before : function(op) {return false;},
+                scope   : testObj
+            };
+
+        let op = service.deleteMessage(messageItem, cbOptions);
+
+        t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+
+        t.expect(op.getResult().success).toBe(false);
+        t.expect(op.getResult().code).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED);
+
+
+    });
+
+
 
 });});});

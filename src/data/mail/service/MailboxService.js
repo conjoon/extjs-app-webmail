@@ -196,7 +196,15 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
             record : messageItem
         });
-        me.callBefore(op, options);
+
+        if (me.callBefore(op, options) === false) {
+            op.setResult({
+                success : false,
+                code    : conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED
+            });
+            return op;
+        }
+
         messageItem.erase(me.configureOperationCallbacks(op, options));
 
         return op;
@@ -373,13 +381,15 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @param {Object} options An additional, optional argument with the following options
      * @param {Object} options.before A callback for when the operation is about to start
      *
+     * @return {Boolean} The boolean return value of the before-callback invoked,
+     * if any.
      *
      * @private
      */
     callBefore : function(op, options) {
 
         if (options && options.before) {
-            options.before.apply(options.scope, [op]);
+            return options.before.apply(options.scope, [op]);
         }
 
     }
