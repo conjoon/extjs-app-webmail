@@ -47,7 +47,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
         /**
          * @type {Number} NOOP
          */
-        NOOP : 4
+        NOOP : 4,
+
+        /**
+         * @type {Number} CANCELED
+         */
+        CANCELED : 5
     },
 
 
