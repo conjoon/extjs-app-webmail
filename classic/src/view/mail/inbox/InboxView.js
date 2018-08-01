@@ -45,7 +45,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         'conjoon.cn_mail.view.mail.inbox.InboxViewController',
         'conjoon.cn_mail.view.mail.folder.MailFolderTree',
         'conjoon.cn_mail.view.mail.message.MessageGrid',
-        'conjoon.cn_mail.view.mail.message.reader.MessageView'
+        'conjoon.cn_mail.view.mail.message.reader.MessageView',
+        'conjoon.cn_comp.component.MessageMask'
     ],
 
     layout  : {
@@ -62,6 +63,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
     iconCls : 'fa fa-paper-plane',
 
     title   : 'Emails',
+
+    /**
+     * @type {conjoon.cn_comp.component.MessageMask}
+     * @private
+     */
+    deleteMask : null,
 
     items: [{
         xtype     : 'cn_mail-mailfoldertree',
@@ -240,6 +247,45 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         } else {
             gridContainer.setMargin('0 5 0 0');
         }
+    },
+
+
+    /**
+     * Shows a confirm dialog masking this view, requesting the user interaction
+     * regarding deleting of a message.
+     * Will void if there is currently already a mask for confirming deletion of
+     * a message shown.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {Function} cb
+     * @param {Object} scope
+     *
+     * @return {conjoon.cn_comp.component.MessageMask}
+     */
+    showMessageDeleteConfirmDialog : function(messageItem, cb, scope) {
+
+        const me   = this;
+
+        if (me.deleteMask) {
+            return me.deleteMask;
+        }
+
+        let mask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+            title    : "Delete Message",
+            message  : "Are you sure you want to delete the message permanently?",
+            target   : me,
+            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
+            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            callback : cb,
+            scope    : scope
+        });
+
+        me.mon(mask, 'destroy', function() {this.deleteMask = null}, me);
+        mask.show();
+
+        me.deleteMask = mask;
+
+        return mask;
     }
 
 

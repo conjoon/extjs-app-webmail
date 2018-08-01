@@ -43,7 +43,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
-
+/*
     t.it("Should create and show the inbox view along with default config checks", function(t) {
         view = Ext.create(
             'conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
@@ -334,10 +334,44 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                     });
                 });
             });
+        });
+    });
+
+*/
+    t.it("showMessageDeleteConfirmDialog()", function(t) {
+
+        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+            let view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+            var grid           = view.down('cn_mail-mailmessagegrid'),
+                tree           = view.down('cn_mail-mailfoldertree'),
+                messageView    = view.down('cn_mail-mailmessagereadermessageview');
+
+            let obj = { CALLED : 0},
+                fn = function() {
+                    this.CALLED++;
+                };
+
+            t.expect(obj.CALLED).toBe(0);
+            let mask = view.showMessageDeleteConfirmDialog(null, fn, obj);
+            t.isInstanceOf(mask, 'conjoon.cn_comp.component.MessageMask');
+            t.expect(mask).toBe(view.deleteMask);
+            t.expect(view.showMessageDeleteConfirmDialog(null, fn, obj)).toBe(mask);
+
+            let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+            t.click(yesButton[0]);
+            t.waitForMs(250, function() {
+                t.expect(obj.CALLED).toBe(1);
+                t.expect(view.deleteMask).toBe(null);
+            });
 
 
         });
-
     });
+
+
 
 });
