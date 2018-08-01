@@ -37,10 +37,18 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.text.QueryStringParser',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
+        'conjoon.cn_comp.window.Toast'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
+
+    listen : {
+        global : {
+            'cn_mail-beforemessageitemdelete' : 'onBeforeMessageItemDelete'
+        },
+    },
+
 
     control : {
 
@@ -88,6 +96,43 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @private
      */
     parser : null,
+
+
+    /**
+     * Callback for the global cn_mail-beforemessageitemdelete event.
+     * Checks if there are currently any opened editors and vetoes removal
+     * should this be the case.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     *
+     * @return {Boolean}
+     */
+    onBeforeMessageItemDelete : function(messageItem) {
+
+        const me   = this,
+              view = me.getView(),
+              id   = messageItem.getId();
+
+        let editor, itemIds = [
+            me.getItemIdForMessageEditor(id, 'edit'),
+            me.getItemIdForMessageEditor(id, 'replyTo'),
+            me.getItemIdForMessageEditor(id, 'replyAll'),
+            me.getItemIdForMessageEditor(id, 'forward'),
+            'cn_mail-mailmessagereadermessageview-' + id
+        ];
+
+        for (let i = 0, len = itemIds.length; i < len; i++) {
+            editor = view.down('#' + itemIds[i]);
+
+            if (editor) {
+                conjoon.Toast.warn("Please close all related tabs to this message first.");
+                view.setActiveTab(editor);
+                return false;
+            }
+        }
+
+        return true;
+    },
 
 
     /**
@@ -248,7 +293,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @param {String} messageId The id of the message that should be shown
      * in a MessageView.
      *
-     * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailMessageViewFor}
+     * @return {conjoon.cn_mail.view.mail.message.reader.MessageView}
      */
     showMailMessageViewFor : function(messageId) {
 
@@ -278,6 +323,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         me.getView().setActiveTab(newView);
+
+        return newView;
     },
 
     /**
