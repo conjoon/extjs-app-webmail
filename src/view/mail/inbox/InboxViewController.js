@@ -229,6 +229,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * #mailboxService.moveToTrashOrDeleteMessage.
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {Boolean} hideConfirmWindow true to make sure the InboxView does
+     * not show its confirm window, otherwise false.
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
      * created by the MailboxService for the requested action.
@@ -237,12 +239,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * @see onMessageMovedOrDeleted
      * @see onMessageMovedOrDeletedFailure
      */
-    moveOrDeleteMessage : function(messageItem) {
+    moveOrDeleteMessage : function(messageItem, hideConfirmWindow = false) {
 
         const me   = this;
 
         return me.getMailboxService().moveToTrashOrDeleteMessage(messageItem, {
-            before  : me.onBeforeMessageMoveOrDelete,
+            before  : Ext.Function.bind(me.onBeforeMessageMoveOrDelete, me, [hideConfirmWindow], true),
             success : me.onMessageMovedOrDeleted,
             failure : me.onMessageMovedOrDeletedFailure,
             scope   : me
@@ -265,17 +267,18 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * trying to delete them etc.)
      *
      * @param {conjoon.cn_mail.data.mail.service.mailbox.Operation} operation
+     * @param {Boolean} hideConfirmWindow true to make sure the InboxView does
+     * not show its confirm window, otherwise false.
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
      */
-    onBeforeMessageMoveOrDelete : function(operation) {
+    onBeforeMessageMoveOrDelete : function(operation, hideConfirmWindow = false) {
 
         const me          = this,
               messageItem = operation.getRequest().record,
               type        = operation.getRequest().type,
               Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
               messageGrid = me.getView().down('cn_mail-mailmessagegrid');
-
 
         let field;
 
@@ -286,7 +289,22 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
             case Operation.DELETE:
 
+                // fire global event and let other components veto
                 if (Ext.GlobalEvents.fireEvent('cn_mail-beforemessageitemdelete', messageItem) === false) {
+                    return false;
+                }
+
+                // if no veto, confirm by InboxView
+                if (hideConfirmWindow !== true) {
+                    me.getView().showMessageDeleteConfirmDialog(messageItem,
+                        function(btnAction, value) {
+                            const me = this;
+                            if (btnAction == 'yesButton') {
+                                me.moveOrDeleteMessage(messageItem, true);
+                            }
+                        },
+                    me);
+
                     return false;
                 }
 

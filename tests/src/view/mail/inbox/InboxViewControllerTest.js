@@ -330,7 +330,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 });
 
                 t.expect(messageItem.get('cn_moved')).toBe(false);
-                t.expect(viewController.onBeforeMessageMoveOrDelete(op)).toBe(op);
+                t.expect(viewController.onBeforeMessageMoveOrDelete(op, true)).toBe(op);
                 t.expect(messageItem.get('cn_moved')).toBe(true);
 
                 messageItem = selectMessage(panel, 2);
@@ -346,7 +346,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 t.expect(messageItem.get('cn_deleted')).toBe(false);
                 t.expect(messageItem.store).toBe(getMessageGridStore(panel));
                 t.expect(getSelectedMessage(panel)).toBe(messageItem);
-                t.expect(viewController.onBeforeMessageMoveOrDelete(op)).toBe(op);
+                t.expect(viewController.onBeforeMessageMoveOrDelete(op, true)).toBe(op);
                 t.expect(messageItem.get('cn_deleted')).toBe(true);
                 t.expect(messageItem.store).toBeFalsy();
                 t.expect(getSelectedMessage(panel)).toBeFalsy();
@@ -605,7 +605,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 t.isCalled('onMessageMovedOrDeleted', viewController);
                 t.isntCalled('onMessageMovedOrDeletedFailure', viewController);
 
-                t.isInstanceOf(viewController.moveOrDeleteMessage(messageItem), 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+                t.isInstanceOf(viewController.moveOrDeleteMessage(messageItem, true), 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
                 t.waitForMs(250, function() {
                     // intentionally left empty
@@ -639,7 +639,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
                 t.isCalled('onMessageMovedOrDeletedFailure', viewController);
 
-                viewController.moveOrDeleteMessage(messageItem);
+                viewController.moveOrDeleteMessage(messageItem, true);
 
                 t.waitForMs(250, function() {
                     // intentionally left empty
@@ -697,18 +697,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                     });
 
                 });
-
-
-
-
-
-
             });
-
-
-
         });
-
     });
 
 
@@ -733,11 +723,13 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 t.isntCalled('erase', messageItem);
                 t.isntCalled('moveMessage', viewController.getMailboxService());
 
-                Ext.GlobalEvents.on('cn_mail-beforemessageitemdelete', function() {
+                let cb = function() {
                     return false;
-                })
+                };
 
-                let op = viewController.moveOrDeleteMessage(messageItem);
+                Ext.GlobalEvents.on('cn_mail-beforemessageitemdelete', cb);
+
+                let op = viewController.moveOrDeleteMessage(messageItem, true);
 
                 t.expect(messageItem.dropped).toBe(false);
                 t.expect(messageItem.get('cn_deleted')).toBe(false);
@@ -747,9 +739,144 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 t.expect(op.getResult()).toBeDefined();
                 t.expect(op.getResult().success).toBe(false);
                 t.expect(op.getResult().code).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED);
+
+                Ext.GlobalEvents.un('cn_mail-beforemessageitemdelete', cb);
+
             });
         });
     });
+
+
+
+    t.it("moveOrDeleteMessage() - confirm dialog not shown", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 4);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                let cb = function() {
+                    return false;
+                };
+
+                Ext.GlobalEvents.on('cn_mail-beforemessageitemdelete', cb);
+
+                t.isntCalled('showMessageDeleteConfirmDialog', viewController.getView());
+                viewController.moveOrDeleteMessage(messageItem);
+
+                Ext.GlobalEvents.un('cn_mail-beforemessageitemdelete', cb);
+
+
+
+            });
+        });
+    });
+
+
+    t.it("moveOrDeleteMessage() - confirm dialog shown", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 4);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                let cb = function() {
+                    return true;
+                };
+
+                Ext.GlobalEvents.on('cn_mail-beforemessageitemdelete', cb);
+
+                t.isCalled('showMessageDeleteConfirmDialog', viewController.getView());
+                t.isCalled('erase', messageItem);
+
+
+                viewController.moveOrDeleteMessage(messageItem);
+
+                let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
+                t.click(yesButton[0]);
+
+                Ext.GlobalEvents.un('cn_mail-beforemessageitemdelete', cb);
+
+                t.waitForMs(250, function() {
+                    // intentionally left blank
+                });
+
+
+            });
+        });
+    });
+
+
+    t.it("moveOrDeleteMessage() - confirm dialog shown while global event returned false again", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            let mailFolder = selectMailFolder(panel, 4);
+
+            t.waitForMs(250, function() {
+
+                let messageItem = selectMessage(panel, 3);
+
+                let cbtrue = function() {
+                    return true;
+                },
+                cbfalse = function() {
+                    return false;
+                };
+
+                Ext.GlobalEvents.on('cn_mail-beforemessageitemdelete', cbtrue);
+
+                t.isntCalled('erase', messageItem);
+                t.isCalled('showMessageDeleteConfirmDialog', viewController.getView());
+                viewController.moveOrDeleteMessage(messageItem);
+
+                Ext.GlobalEvents.un('cn_mail-beforemessageitemdelete', cbtrue);
+
+                Ext.GlobalEvents.on('cn_mail-beforemessageitemdelete', cbfalse);
+                let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
+                t.click(yesButton[0]);
+
+                Ext.GlobalEvents.un('cn_mail-beforemessageitemdelete', cbtrue);
+                Ext.GlobalEvents.un('cn_mail-beforemessageitemdelete', cbfalse);
+
+                t.waitForMs(250, function() {
+                    // intentionally left blank
+                });
+
+            });
+        });
+    });
+
 
 
 });});});
