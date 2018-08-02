@@ -58,8 +58,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         var me = this,
             dt  = new Date(),
             y  = me.buildRandomNumber(2007, dt.getFullYear()),
-            m  = me.buildRandomNumber(1, y == dt.getFullYear() ? dt.getMonth() : 12),
-            d  = me.buildRandomNumber(1, y == dt.getFullYear() && m == dt.getMonth() ? dt.getDate() : 31),
+            m  = me.buildRandomNumber(1, y == dt.getFullYear() ? dt.getMonth() + 1 : 12),
+            d  = me.buildRandomNumber(1, y == dt.getFullYear() && m - 1 == dt.getMonth() ? dt.getDate() : 31),
             h  = me.buildRandomNumber(0, 23),
             i  = me.buildRandomNumber(0, 59),
             pad = function(v) {
@@ -425,7 +425,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
             baseMessageItems.push({
                 id            : (i + 1) + '',
-                date           : me.buildRandomDate(),
+                date           : me.buildRandomDate(i < 100),
                 // leave first one as unread for tests
                 subject        : /*mailFolderId + ' - ' + (i) + ' - ' +*/ subjects[me.buildRandomNumber(0, 5)],
                 from           : i === 0
