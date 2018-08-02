@@ -63,6 +63,29 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
     },
 
 
+    /**
+     * Queries the store this helper is configured with and returns the
+     * conjoon.cn_mail.model.mail.folder.MailFolder with the specified id.
+     * Returns null if the MailFolder couldn't be found.
+     *
+     * @param {String} mailFolderId
+     *
+     * @return {null|conjoon.cn_mail.model.mail.folder.MailFolder}
+     */
+    getMailFolder : function(mailFolderId) {
+
+        const me      = this,
+              store   = me.getStore(),
+              nodeInd = store.findExact('id', mailFolderId);
+
+        if (nodeInd === -1) {
+            return null;
+        }
+
+        return store.getAt(nodeInd);
+
+    },
+
 
     /**
      * Returns the id of the mailfolder found in #store with this type.

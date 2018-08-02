@@ -74,5 +74,16 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("getMailFolder()", function(t) {
+
+        let helper = createHelper();
+
+        t.waitForMs(250, function() {
+            t.expect(helper.getMailFolder('foo')).toBeNull();
+            t.isInstanceOf(helper.getMailFolder("1"), 'conjoon.cn_mail.model.mail.folder.MailFolder');
+        });
+
+    });
+
 
 });});
