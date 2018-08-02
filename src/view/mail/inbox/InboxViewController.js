@@ -249,10 +249,6 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             failure : me.onMessageMovedOrDeletedFailure,
             scope   : me
         });
-        // must update read items!
-        // must update message views!
-        // must removed opened tabs (editors, views)
-
     },
 
 

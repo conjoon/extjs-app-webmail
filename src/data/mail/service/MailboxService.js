@@ -174,6 +174,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * Deletes the specified MessageItem from it's parent folder.
      * Deleting is asynchron. Once finished, the "result" of teh returned operation
      * will be set.
+     * The unreadCount of the belonging source and target mailFolder will also
+     * be updated.
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      * @param {Object} options An additional, optional argument with the following options
@@ -218,6 +220,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * will be set.
      * If the MessageItem has the same mailFolderId as specified, a NOOP operation
      * will be returned.
+     * The unreadCount of the belonging source and target mailFolder will also
+     * be updated.
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      * @param {String} mailFolderId
@@ -327,24 +331,45 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @returns {Object}
      *
      * @private
+     *
+     * @see moveCallback
+     * @see deleteCallback
      */
     configureOperationCallbacks : function(op, options) {
+
+        const me        = this,
+              Operation = conjoon.cn_mail.data.mail.service.mailbox.Operation;
 
         options = options || {};
 
         return {
             success : function() {
                 op.setResult({success : true});
+
+                if (op.getRequest().type === Operation.MOVE) {
+                    me.moveCallback(op);
+                } else  if (op.getRequest().type === Operation.DELETE) {
+                    me.deleteCallback(op);
+                }
+
                 if (options && options.success) {
                     options.success.apply(options.scope, [op]);
                 }
             },
             failure : function() {
                 op.setResult({success : false});
+
+                if (op.getRequest().type === Operation.MOVE) {
+                    me.moveCallback(op);
+                } else  if (op.getRequest().type === Operation.DELETE) {
+                    me.deleteCallback(op);
+                }
+
                 if (options && options.failure) {
                     options.failure.apply(options.scope, [op]);
                 }
-            }
+            },
+            scope : this
         };
     },
 
@@ -393,7 +418,89 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             return options.before.apply(options.scope, [op]);
         }
 
+    },
+
+
+    /**
+     * Internal callback for a finished move operation. Success can be determined
+     * by inspecting the specified operation.
+     *
+     * {conjoon.cn_mail.data.mail.service.mailbox.Operation} op
+     *
+     * @return {Boolean} the property of the operations result success property.
+     */
+    moveCallback : function(op) {
+
+        const me               = this,
+              request          = op.getRequest(),
+              sourceFolderId   = request.sourceFolderId,
+              targetFolderId   = request.targetFolderId,
+              record           = request.record,
+              mailFolderHelper = me.getMailFolderHelper();
+
+        if (op.getResult().success !== true) {
+            return false;
+        }
+
+        if (record.get('isRead')) {
+            return;
+        }
+
+        let sourceFolder = mailFolderHelper.getMailFolder(sourceFolderId),
+            targetFolder = mailFolderHelper.getMailFolder(targetFolderId);
+
+        // most likely not loaded yet if null
+        if (sourceFolder) {
+            sourceFolder.set('unreadCount', Math.max(0, sourceFolder.get('unreadCount') - 1));
+            sourceFolder.commit();
+        }
+
+        // most likely not loaded yet if null
+        if (targetFolder) {
+            targetFolder.set('unreadCount', targetFolder.get('unreadCount') + 1);
+            targetFolder.commit();
+        }
+
+
+        return true;
+
+    },
+
+
+    /**
+     * Internal callback for a finished delete operation. Success can be determined
+     * by inspecting the specified operation.
+     *
+     * {conjoon.cn_mail.data.mail.service.mailbox.Operation} op
+     */
+    deleteCallback : function(op) {
+
+        const me             = this,
+            request          = op.getRequest(),
+            record           = request.record,
+            mailFolderId     = record.get('mailFolderId'),
+            mailFolderHelper = me.getMailFolderHelper();
+
+        if (op.getResult().success !== true) {
+            return false;
+        }
+
+        if (record.get('isRead')) {
+            return;
+        }
+
+        let mailFolder = mailFolderHelper.getMailFolder(mailFolderId);
+
+        // most likely not loaded if not available
+        if (mailFolder) {
+            mailFolder.set('unreadCount', Math.max(0, mailFolder.get('unreadCount') - 1));
+            mailFolder.commit();
+        }
+
+
+        return true;
     }
+
 
 
 });

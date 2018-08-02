@@ -407,5 +407,182 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it('moveCallback()', function(t) {
+        let service     = createService(),
+            sourceFolderId = "1",
+            targetFolderId = "4",
+            messageItem = createMessageItem(sourceFolderId, "8");
+
+
+        t.waitForMs(250, function() {
+
+            let sourceFolder = service.getMailFolderHelper().getMailFolder(sourceFolderId),
+                targetFolder = service.getMailFolderHelper().getMailFolder(targetFolderId);
+
+            sourceFolder.set("unreadCount", 5);
+            targetFolder.set("unreadCount", 0);
+
+            messageItem.set('isRead', false);
+
+            let op = service.createOperation({
+                type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                record         : messageItem,
+                sourceFolderId : sourceFolderId,
+                targetFolderId : targetFolderId,
+            }, {
+                success : true
+            });
+
+            t.expect(service.moveCallback(op)).toBe(true);
+
+            t.expect(sourceFolder.get("unreadCount")).toBe(4);
+            t.expect(targetFolder.get("unreadCount")).toBe(1);
+
+            t.expect(sourceFolder.dirty).toBe(false);
+            t.expect(targetFolder.dirty).toBe(false);
+
+            // no success
+            messageItem = createMessageItem(sourceFolderId, "28");
+            messageItem.set('isRead', false);
+
+            op = service.createOperation({
+                type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                record         : messageItem,
+                sourceFolderId : sourceFolderId,
+                targetFolderId : targetFolderId,
+            }, {
+                success : false
+            });
+
+            t.expect(service.moveCallback(op)).toBe(false);
+
+            t.expect(sourceFolder.get("unreadCount")).toBe(4);
+            t.expect(targetFolder.get("unreadCount")).toBe(1);
+        });
+    });
+
+
+    t.it('deleteCallback()', function(t) {
+        let service        = createService(),
+            sourceFolderId = "5",
+            messageItem    = createMessageItem(sourceFolderId, "4");
+
+
+        t.waitForMs(250, function() {
+
+            let sourceFolder = service.getMailFolderHelper().getMailFolder(sourceFolderId);
+
+            sourceFolder.set("unreadCount", 5);
+
+            messageItem.set('isRead', false);
+
+            let op = service.createOperation({
+                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                record : messageItem
+            }, {
+                success : true
+            });
+
+            t.expect(service.deleteCallback(op)).toBe(true);
+
+            t.expect(sourceFolder.get("unreadCount")).toBe(4);
+
+            t.expect(sourceFolder.dirty).toBe(false);
+
+            // no success
+            messageItem = createMessageItem(sourceFolderId, "28");
+            messageItem.set('isRead', false);
+
+            op = service.createOperation({
+                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                record : messageItem
+            }, {
+                success : false
+            });
+
+            t.expect(service.deleteCallback(op)).toBe(false);
+
+            t.expect(sourceFolder.get("unreadCount")).toBe(4);
+
+
+        });
+
+    });
+
+
+    t.it("configureOperationCallbacks() - internal delete/move callbacks called", function(t) {
+
+        let service = createService(),
+            op, opts,
+            messageItem = createMessageItem("3", "4"),
+            moveRequest = {
+                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                record : messageItem
+            },
+        deleteRequest = {
+            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+            record : messageItem
+        }, opCbs = {success : Ext.emptyFn, failure : Ext.emptyFn};
+
+        t.isCalledNTimes('moveCallback', service, 2);
+        t.isCalledNTimes('deleteCallback', service, 2);
+
+        // MOVE
+        op = service.createOperation(moveRequest);
+        opts = service.configureOperationCallbacks(op, opCbs);
+        opts.success.apply(service, [op]);
+
+
+        op = service.createOperation(moveRequest);
+        opts = service.configureOperationCallbacks(op, opCbs);
+        opts.failure.apply(service, [op]);
+
+        // DELETE
+        op = service.createOperation(deleteRequest);
+        opts = service.configureOperationCallbacks(op, opCbs);
+        opts.success.apply(service, [op]);
+
+        op = service.createOperation(deleteRequest);
+        opts = service.configureOperationCallbacks(op, opCbs);
+        opts.failure.apply(service, [op]);
+
+        // NOOP
+        op = service.createOperation({
+            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
+            record : messageItem
+        });
+        opts = service.configureOperationCallbacks(op, opCbs);
+        opts.success.apply(service, [op]);
+    });
+
+
+    t.it('deleteCallback() - max 0 unreadCount', function(t) {
+        let service        = createService(),
+            sourceFolderId = "5",
+            messageItem    = createMessageItem(sourceFolderId, "4");
+
+
+        t.waitForMs(250, function() {
+
+            let sourceFolder = service.getMailFolderHelper().getMailFolder(sourceFolderId);
+
+            sourceFolder.set("unreadCount", 0);
+
+            messageItem.set('isRead', false);
+
+            let op = service.createOperation({
+                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                record : messageItem
+            }, {
+                success : true
+            });
+
+            t.expect(service.deleteCallback(op)).toBe(true);
+
+            t.expect(sourceFolder.get("unreadCount")).toBe(0);
+        });
+
+    });
+
 
 });});});
