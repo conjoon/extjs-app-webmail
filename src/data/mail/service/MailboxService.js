@@ -263,6 +263,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         let op = me.createOperation({
             type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
             record         : messageItem,
+            sourceFolderId : messageItem.get('mailFolderId'),
             targetFolderId : mailFolderId
         });
         me.callBefore(op, options);

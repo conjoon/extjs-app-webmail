@@ -305,7 +305,11 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 scope   : testObj
             };
 
-        let targetFolderId = "3";
+        let targetFolderId = "3",
+            sourceFolderId = messageItem.get('mailFolderId');
+
+        t.expect(sourceFolderId).toBeTruthy();
+        t.expect(targetFolderId).not.toBe(sourceFolderId);
         t.expect(testObj.CALLED).toBe(0);
         t.isCalled('callBefore', service);
         t.isCalled('createOperation', service);
@@ -318,6 +322,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         t.expect(request.type).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE);
         t.expect(request.record).toBe(messageItem);
         t.expect(request.targetFolderId).toBe(targetFolderId);
+        t.expect(request.sourceFolderId).toBe(sourceFolderId);
+
 
         t.expect(op.getResult()).toBeUndefined();
 
