@@ -112,6 +112,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Boolean} isSending Whether the save process is part of an ongoing
      * send-process of the message.
+     * @param {Boolean} isCreated Whether the draft was newly created. If false,
+     * the draft was edited
+     * send-process of the message.
      * @param {Boolean} isRetry Whether the save process was paused due to an
      * exception and is now being retried
      */
@@ -136,6 +139,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * the exception
      * @param {Boolean} isSending Whether the save process is part of an ongoing
      * send-process of the message.
+     * @param {Boolean} isCreated Whether the draft was newly created. If false,
+     * this draft is being edited.
      * @param {Ext.data.Batch} batch The save batch which can be resumed if it's
      * pauseOnException property was et to true
      */
@@ -150,6 +155,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * was processed.
      * @param {Boolean} isSending Whether the save process is part of an ongoing
      * send-process of the message.
+     * @param {Boolean} isCreated Whether the draft was newly created
      */
 
     /**
