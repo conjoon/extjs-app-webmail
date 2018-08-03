@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,9 +257,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Ext.data.operation.Operation} operation
      * @param {Boolean} isSending
+     * @param {Boolean} isCreated
      * @param {Ext.data.Batch} batch
      */
-    onMailMessageSaveOperationException : function(editor, messageDraft, operation, isSending, batch) {
+    onMailMessageSaveOperationException : function(editor, messageDraft, operation, isSending, isCreated, batch) {
 
         var me   = this,
             view = me.getView();
@@ -267,13 +268,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         me.endBusyState('saving');
 
         view.showMailMessageSaveFailedNotice(messageDraft, operation, Ext.Function.bindCallback(
-            function(isSending, batch, buttonId) {
+            function(isSending, isCreated, batch, buttonId) {
                 var me   = this,
                     view = me.getView();
 
 
                 if (buttonId !== 'yesButton' ||
-                    view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSending, true) === false) {
+                    view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSending, isCreated, true) === false) {
                     // mailmessagessagebforesave listener called which sets the
                     // busy state again - cancel it here.
                     // a better way would we to have a "start" event in the
@@ -285,7 +286,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 batch.retry();
             },
             me,
-            [isSending, batch]
+            [isSending, isCreated, batch]
         ));
         return false;
 
@@ -300,8 +301,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Ext.data.operation.Operation} operation
      * @param {Boolean} isSending
+     * @param {Boolean} isCreated
      */
-    onMailMessageSaveComplete : function(editor, messageDraft, operation, isSending) {
+    onMailMessageSaveComplete : function(editor, messageDraft, operation, isSending, isCreated) {
 
         var me   = this,
             view = me.getView();
@@ -334,8 +336,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param {Boolean} true if the event is part of a "send" process, i.e. the
      * message is currently being saved before it gets send.
+     * @param {Boolean} isCreated Whether the message draft was newly created
      */
-    onMailMessageBeforeSave : function(editor, messageDraft, isSending) {
+    onMailMessageBeforeSave : function(editor, messageDraft, isSending, isCreated) {
         var me   = this,
             view = me.getView(),
             vm   = view.getViewModel();
@@ -343,7 +346,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         if (!Ext.String.trim(messageDraft.get('subject')) &&
             vm.get('isSubjectRequired') === true) {
             view.showSubjectMissingNotice(messageDraft, Ext.Function.bindCallback(
-                function(isSending, viewModel, buttonId, value) {
+                function(isSending, isCreated, viewModel, buttonId, value) {
                     var me = this;
 
                     if (buttonId !== 'okButton') {
@@ -354,10 +357,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                         viewModel.set('isSubjectRequired', false);
                     }
 
-                    me.configureAndStartSaveBatch(isSending);
+                    me.configureAndStartSaveBatch(isSending, isCreated);
                 },
                 me,
-                [isSending, vm]
+                [isSending, isCreated, vm]
             ));
             return false;
         }
@@ -507,6 +510,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 vm           = view.getViewModel(),
                 session      = view.getSession(),
                 messageDraft = vm.get('messageDraft'),
+                isCreated    = messageDraft.phantom === true,
                 saveBatch;
 
             // will trigger a save in the case the date value changes.
@@ -527,7 +531,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 exception : {
                     fn : function(batch, operation) {
                         view.fireEvent('cn_mail-mailmessagesaveoperationexception',
-                            view, messageDraft, operation, isSend === true, batch);
+                            view, messageDraft, operation, isSend === true, isCreated === true, batch);
                     },
                     scope : view
                 },
@@ -537,7 +541,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                             'cn_mail-mailmessagesavecomplete',
                             view, messageDraft,
                             operation,
-                            isSend === true
+                            isSend === true,
+                            isCreated === true
                         );
                     },
                     scope  : view,
@@ -545,7 +550,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 }
             });
 
-            if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true) === false) {
+            if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true, isCreated === true) === false) {
                 return false;
             }
             saveBatch.start();
