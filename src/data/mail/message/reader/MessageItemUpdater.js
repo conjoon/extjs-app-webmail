@@ -110,7 +110,40 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
         messageItem.commit();
 
         return messageItem;
-    }
+    },
 
+
+    /**
+     * Creates a new MessageItem based on the draft data.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     *
+     * @return {conjoon.cn_mail.model.mail.message.MessageItem}
+     *
+     * @throws if messageDraft is not an instance of {conjoon.cn_mail.model.mail.message.MessageDraft}
+     *
+     * @see updateItemWithDraft
+     */
+    createItemFromDraft : function(messageDraft) {
+
+        const me = this;
+
+        if (!(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
+            Ext.raise({
+                msg          : 'messageDraft must be an instance of \'conjoon.cn_mail.model.mail.message.MessageDraft\'',
+                cls          : Ext.getClassName(me),
+                messageDraft : messageDraft
+            });
+        }
+
+        let messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            id            : messageDraft.getId(),
+            mailFolderId  : messageDraft.get('mailFolderId'),
+            messageBodyId : messageDraft.getMessageBody().getId()
+        });
+
+        return me.updateItemWithDraft(messageItem, messageDraft);
+
+    }
 
 });

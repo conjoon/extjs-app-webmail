@@ -133,6 +133,39 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
             });
 
 
+            t.it("createItemFromDraft()", function(t) {
+
+                let UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
+                    exc, e,
+                    messageDraft = createMessageDraft(),
+                    messageItem;
+
+
+
+                try {UPDATER.createItemFromDraft();} catch (e) {exc = e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+                t.expect(exc.msg.toLowerCase()).toContain('messagedraft');
+                exc = undefined;
+
+                t.isCalled('updateItemWithDraft', UPDATER);
+
+                messageItem = UPDATER.createItemFromDraft(messageDraft);
+
+                t.isInstanceOf(messageItem, 'conjoon.cn_mail.model.mail.message.MessageItem');
+
+                t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
+
+                t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
+
+                t.expect(messageItem.get('mailFolderId')).toBe(messageDraft.get('mailFolderId'));
+
+                // was committed
+                t.expect(messageItem.dirty).toBe(false);
+
+            });
+
+
         })});
 
 })});
