@@ -60,8 +60,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             y  = me.buildRandomNumber(2007, dt.getFullYear()),
             m  = me.buildRandomNumber(1, y == dt.getFullYear() ? dt.getMonth() + 1 : 12),
             d  = me.buildRandomNumber(1, y == dt.getFullYear() && m - 1 == dt.getMonth() ? dt.getDate() : 31),
-            h  = me.buildRandomNumber(0, 23),
-            i  = me.buildRandomNumber(0, 59),
+            h  = me.buildRandomNumber(
+                0,
+                y == dt.getFullYear() && m - 1 == dt.getMonth() && d == dt.getDate() ? dt.getHours() : 23
+            ),
+            i  = me.buildRandomNumber(
+                0,
+                y == dt.getFullYear() && m - 1 == dt.getMonth() && d == dt.getDate() ? dt.getMinutes() : 59
+            ),
             pad = function(v) {
                 return v < 10 ? '0' + v : v;
             };
