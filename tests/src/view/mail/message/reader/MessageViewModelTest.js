@@ -417,8 +417,44 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
+    t.it("formula.getDisplayAddress", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
-    })});
+        var expected    = 'FROM',
+            formulas    = viewModel.getFormulas(),
+            get         = function() {
+                return {
+                    get : function() {
+                        return {
+                            name : expected
+                        }
+                    }
+                }
+            };
+
+        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
+    });
+
+
+        t.it("formula.getDisplayAddress - empty", function(t) {
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+            var expected    = "",
+                formulas    = viewModel.getFormulas(),
+                get         = function() {
+                    return {
+                        get : function() {
+                            return null;
+                        }
+                    }
+                };
+
+            t.expect(formulas.getDisplayAddress(get)).toBe(expected);
+        });
+
+
+
+})});
 
 });
 

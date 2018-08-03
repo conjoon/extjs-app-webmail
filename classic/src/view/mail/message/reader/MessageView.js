@@ -110,14 +110,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             cls   : 'message-subject',
             bind  : {
                 data : {
-                    from           : '{messageItem.from.name}',
+                    displayAddress : '{getDisplayAddress}',
                     subject        : '{messageItem.subject}',
                     date           : '{getFormattedDate}',
                     hasAttachments : '{messageItem.hasAttachments}'
                 }
             },
             tpl: [
-                '<div class="from">{from}</div>',
+                '<div class="displayAddress">{displayAddress}</div>',
                 '<div class="subject"><tpl if="hasAttachments"><span class="fa fa-paperclip"></span></tpl> {subject}</div>',
                 '<div class="date">{date}</div>'
             ]

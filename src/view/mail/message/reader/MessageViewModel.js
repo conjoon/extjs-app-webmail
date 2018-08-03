@@ -87,6 +87,27 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
     formulas : {
 
+
+        /**
+         * Returns the  address of the current MessageItem the view should
+         * display.
+         *
+         * @param {Function}  get
+         *
+         * @return {String}
+         */
+        getDisplayAddress : function(get) {
+
+            const messageItem = get('messageItem');
+
+            if (messageItem && messageItem.get('from')) {
+                return messageItem.get('from').name;
+            }
+
+            return "";
+        },
+
+
         /**
          * Returns the date of the message item in the date format "d.m.Y H:i"
          *
