@@ -54,6 +54,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 values[i] = ctx.xhr.options.jsonData[i];
             }
 
+            if (values['subject'] === 'TESTFAIL') {
+                ret.responseText = Ext.JSON.encode({
+                    success : false
+                });
+                return ret;
+
+            }
+
             MessageTable.updateMessageDraft(ctx.xhr.options.jsonData.id, values);
 
             Ext.Array.forEach(me.responseProps, function (prop) {
