@@ -38,7 +38,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.EditingModes',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
-        'conjoon.cn_comp.window.Toast'
+        'conjoon.cn_comp.window.Toast',
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -338,8 +339,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @param {conjoon.mail.message.editor.MessageEditor} editor
      * @param {{conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param operation
+     * @param {Boolean} isSend
+     * @param {Boolean} isCreated
      */
-    onMailMessageSaveComplete : function(editor, messageDraft) {
+    onMailMessageSaveComplete : function(editor, messageDraft, operation, isSend, isCreated) {
 
         const me               = this,
               view             = me.getView(),
@@ -357,6 +360,17 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         if(editor.editMode === EditingModes.CREATE) {
             me.updateHistoryForComposedMessage(editor, messageDraft.getId());
+
+            if (isCreated && mailFolderTree.getSelection()[0].get('type') ===
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT) {
+                let addItem = conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.createItemFromDraft(
+                    messageDraft
+                );
+                addItem.set('isRead', true);
+                addItem.commit();
+                inboxView.getController().getLivegrid().add(addItem);
+                return;
+            }
         }
 
 
@@ -367,7 +381,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         // query grid and inboxMessageView only if we are currently in a DRAFT-folder
         if (!mailFolderTree.getSelection().length
-            || mailFolderTree.getSelection()[0].get('type') != 'DRAFT') {
+            || mailFolderTree.getSelection()[0].get('type') !=
+            conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT) {
             return;
         }
 
