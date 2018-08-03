@@ -102,6 +102,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                 body[i] = ctx.xhr.options.jsonData[i];
             }
 
+
             if (!body.textPlain && body.textHtml) {
                 body.textPlain = Ext.util.Format.stripTags(body.textHtml);
             } else {
@@ -113,8 +114,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
 
             ret.responseText = Ext.JSON.encode({
-                id      : newRec.id,
-                success : true
+                id        : newRec.id,
+                success   : true,
+                textPlain : newRec.textPlain,
+                textHtml  : newRec.textHtml
             });
 
             Ext.Array.forEach(me.responseProps, function (prop) {
