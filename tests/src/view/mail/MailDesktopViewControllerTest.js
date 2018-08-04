@@ -69,7 +69,6 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
     });
 
 
-
     t.it("createMessageDraftConfig()", function(t) {
 
         var ctrl = Ext.create(
@@ -1206,7 +1205,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
                             t.waitForMs(750, function() {
 
-                                subjectCont = Ext.dom.Query.select("div[class=subject unread]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
                                 t.expect(subjectCont[0].innerHTML).toBe(myValue);
 
                                 panel.setActiveTab(editor);
@@ -1219,11 +1218,11 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
                                     panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
-                                    subjectCont = Ext.dom.Query.select("div[class=subject unread]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                    subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
                                     t.expect(subjectCont[0].innerHTML).toBe('456');
 
-                                  //  panel.destroy();
-                                  //  panel = null;
+                                    panel.destroy();
+                                    panel = null;
                                 });
 
                             });
