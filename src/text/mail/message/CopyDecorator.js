@@ -35,6 +35,7 @@
  * - getFrom
  * - getReplyTo
  * - getAttachments
+ * - getIsRead
  *
  * Additionally, the toMessageDraftConfig will create an instance of
  * {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig} based on the
@@ -137,6 +138,19 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
 
         return me.messageDraft.get('subject')
 
+    },
+
+
+    /**
+     * Decorates the MessageDraft's isRead flag.
+     *
+     * @return {Boolean}
+     */
+    getIsRead : function() {
+
+        var me = this;
+
+        return me.messageDraft.get('isRead')
     },
 
 
@@ -260,7 +274,8 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
             subject     : me.getSubject(),
             textPlain   : me.getTextPlain(),
             textHtml    : me.getTextHtml(),
-            attachments : me.getAttachments()
+            attachments : me.getAttachments(),
+            isRead      : me.getIsRead()
         });
 
     },

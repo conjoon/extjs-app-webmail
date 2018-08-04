@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
             from    : 'from@domain.tld',
             to      : 'to@domain.tld',
             cc      : 'cc@domain.tld',
-            bcc     : 'bcc@domain.tld'
+            bcc     : 'bcc@domain.tld',
+            isRead  : Math.random() >= 0.5 === true
         });
 
         if (skipReplyTo !== true) {
@@ -107,6 +108,9 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
                 fn   : 'getSubject',
                 toBe : messageDraft.get('subject')
             }, {
+                fn   : 'getIsRead',
+                toBe : messageDraft.get('isRead')
+            }, {
                 fn      : 'getFrom',
                 toEqual : messageDraft.get('from')
             }, {
@@ -184,6 +188,7 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.isCalledOnce('getTextPlain', decorator);
         t.isCalledOnce('getTextHtml', decorator);
         t.isCalledOnce('getAttachments', decorator);
+        t.isCalledOnce('getIsRead',      decorator);
 
         t.isInstanceOf(decorator.toMessageDraftConfig(), 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
 
@@ -203,6 +208,7 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.expect(decorator.getTextPlain()).toBe(messageDraftConfig.getTextPlain());
         t.expect(decorator.getTextHtml()).toBe(messageDraftConfig.getTextHtml());
         t.expect(decorator.getAttachments()).toEqual(messageDraftConfig.getAttachments());
+        t.expect(decorator.getIsRead()).toEqual(messageDraftConfig.getIsRead());
 
     });
 
