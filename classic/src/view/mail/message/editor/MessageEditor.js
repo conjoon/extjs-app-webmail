@@ -172,6 +172,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @event cn_mail-mailmessagesendcomplete
      * @param this
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {String} mailFolderId the id of the MailFolder to where the
+     * Draft was moved.
      */
 
     /**
