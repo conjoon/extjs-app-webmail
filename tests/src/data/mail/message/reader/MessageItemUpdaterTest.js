@@ -35,7 +35,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 from           : 'FROM',
                 date           : 'DATE',
                 to             : 'TO',
-                hasAttachments : true
+                hasAttachments : true,
+                isRead         : Math.random() >= 0.5 === true
             });
 
             return messageItem;
@@ -45,7 +46,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 id      : 1,
                 subject : 'subject',
                 date    : '2017-07-30 23:45:00',
-                to      : 'test@testdomain.tld'
+                to      : 'test@testdomain.tld',
+                isRead  : Math.random() >= 0.5 === true
             });
 
             messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
@@ -109,6 +111,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 t.expect(messageItem.get('date')).toBe(messageDraft.get('date'));
                 t.expect(messageItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
                 t.expect(messageItem.get('hasAttachments')).toBe(true);
+                t.expect(messageItem.get('isRead')).toBe(messageDraft.get('isRead'));
 
                 expectedSize = 0;
                 expectedSize += messageDraft.getMessageBody().get('textPlain').length;
@@ -155,6 +158,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 t.isInstanceOf(messageItem, 'conjoon.cn_mail.model.mail.message.MessageItem');
 
                 t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
+
+                t.expect(messageItem.get('isRead')).toBe(messageDraft.get('isRead'));
 
                 t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
 
