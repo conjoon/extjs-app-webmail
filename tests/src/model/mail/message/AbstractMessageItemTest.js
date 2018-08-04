@@ -63,4 +63,8 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
     });
 
 
+    t.it("Test isRead", function(t) {
+        t.expect(model.getField('isRead')).toBeTruthy();
+    });
+
 });

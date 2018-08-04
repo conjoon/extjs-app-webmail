@@ -51,9 +51,6 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
         name : 'hasAttachments',
         type : 'bool'
     }, {
-        name : 'isRead',
-        type : 'bool'
-    }, {
         name : 'to',
         type : 'cn_core-datafieldemailaddresscollection'
     }, {
