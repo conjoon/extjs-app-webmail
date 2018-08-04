@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         });
         t.expect(config.getTo()).toBeUndefined();
+        t.expect(config.getIsRead()).toBeUndefined();
         t.expect(config.getCc()).toBeUndefined();
         t.expect(config.getBcc()).toBeUndefined();
         t.expect(config.getSubject()).toBeUndefined();
@@ -227,6 +228,13 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                         textHtml  : 'foo',
                         textPlain : 'bar'
                     }
+                }
+            }, {
+                args : {
+                    isRead : true
+                },
+                expected : {
+                    isRead : true
                 }
             }, {
                 args : {

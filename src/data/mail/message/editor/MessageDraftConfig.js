@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         cc          : undefined,
         bcc         : undefined,
         subject     : undefined,
+        isRead      : undefined,
         textPlain   : undefined,
         textHtml    : undefined,
         attachments : undefined
@@ -128,20 +129,47 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         }
         if (me.getSubject() !== undefined) {
             obj.subject = me.getSubject()
-        };
+        }
         if (me.getTextPlain() !== undefined) {
             obj.messageBody           = obj.messageBody || {};
             obj.messageBody.textPlain = me.getTextPlain()
-        };
+        }
         if (me.getTextHtml() !== undefined) {
             obj.messageBody          = obj.messageBody || {};
             obj.messageBody.textHtml = me.getTextHtml()
-        };
+        }
         if (me.getAttachments() !== undefined) {
             obj.attachments = me.getAttachments();
         }
-
+        if (me.getIsRead() !== undefined) {
+            obj.isRead = me.getIsRead();
+        }
         return obj;
+    },
+
+
+    /**
+     * Sets isRead
+     *
+     * @param {Boolean} isRead
+     *
+     * @return {Boolean}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyIsRead : function(isRead) {
+        var me = this;
+
+        if (me.getIsRead() !== undefined) {
+            Ext.raise({
+                isRead : me.getIsRead(),
+                msg    : "\"isRead\" is immutable"
+            });
+        }
+
+        return isRead;
     },
 
 
