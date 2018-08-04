@@ -366,8 +366,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 let addItem = conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.createItemFromDraft(
                     messageDraft
                 );
-                addItem.set('isRead', true);
-                addItem.commit();
                 addItem.join(messageGrid.getStore());
                 inboxView.getController().getLivegrid().add(addItem);
                 return;
@@ -577,15 +575,22 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     createMessageDraftConfig : function(id) {
 
-        var me        = this,
-            encodedId = decodeURIComponent(id + ''),
-            pos, addresses, res, tmpId;
+        const me        = this,
+              cfg       = {
+                  isRead : true
+              };
+
+        let pos,
+            addresses,
+            res,
+            tmpId,
+            encodedId = decodeURIComponent(id + '');
 
         if (Ext.String.startsWith(encodedId, 'mailto:', true)) {
             encodedId = encodedId.substring(7);
         } else {
             return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', cfg);
         }
 
         addresses = '';
@@ -601,12 +606,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (encodedId == "") {
             if (addresses && addresses.length) {
                 return Ext.create(
-                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
-                        to : addresses
-                    });
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', Ext.apply(cfg, {
+                        to     : addresses
+                    }));
             }
             return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', cfg);
         }
 
         if (!me.parser) {
@@ -635,8 +640,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         return Ext.create(
             'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
             Ext.apply({
-                to : addresses
-            }, res)
+                to     : addresses,
+            }, res, cfg)
         );
     },
 
