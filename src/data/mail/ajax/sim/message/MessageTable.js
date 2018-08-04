@@ -259,14 +259,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         messageDrafts.push(Ext.apply(draftData, {
             id           : id,
             mailFolderId : mailFolderId,
-            isRead       : false,
             date         : date
         }));
 
         messageItems.push(Ext.apply(draftData, {
             id           : id,
             mailFolderId : mailFolderId,
-            isRead       : false,
             date         : date
         }));
 
@@ -385,7 +383,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
             messageItems.push(Ext.apply({
                 // leave first one as unread for tests
-                isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 hasAttachments : AttachmentTable.getAttachments(baseMessageItems[i].id) ? 1 : 0,
                 size           : me.buildRandomSizeInBytes(),
                 previewText    : me.buildPreviewText(baseMessageItems[i].id)
@@ -441,7 +438,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 cc             : me.buildAddresses('cc', i),
                 mailFolderId   : mailFolderId,
                 messageBodyId  : (i + 1) + '',
-                testProp       : i
+                testProp       : i,
+                isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
+
             });
         }
 
