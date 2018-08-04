@@ -1132,7 +1132,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                             panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
                             subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                            t.expect(subjectCont[0].innerHTML).toBe(myValue);
+                            t.expect(subjectCont[0].innerHTML).toBe('456');
 
                             panel.destroy();
                             panel = null;
@@ -1145,8 +1145,102 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
     });
 
 
+    t.it("onMailMessageSaveComplete() - edited data after switching folders is reflected in grid", function (t) {
 
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller: viewController,
+            renderTo: document.body,
+            width: 800,
+            height: 600
+        });
+
+        t.isCalledNTimes('add', panel.down('cn_mail-mailinboxview').getController().getLivegrid(), 1);
+        t.isCalledNTimes('createItemFromDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
+
+
+        t.waitForMs(250, function () {
+
+            t.expect(panel.down('cn_mail-mailfoldertree').getStore().getAt(3).get('type')).toBe('DRAFT');
+            panel.down('cn_mail-mailfoldertree').getSelectionModel().select(
+                panel.down('cn_mail-mailfoldertree').getStore().getAt(3)
+            );
+
+            t.waitForMs(1250, function () {
+
+                let editor = viewController.showMailEditor(2253236, 'compose');
+                let myValue = Ext.id();
+                editor.down('#subjectField').setValue(myValue);
+
+
+                t.waitForMs(250, function () {
+
+                    t.click(editor.down('#saveButton'));
+
+                    t.waitForMs(1750, function () {
+
+                        panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+
+                        let subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                        t.expect(subjectCont[0].innerHTML).toBe(myValue);
+
+                        let rec   = panel.down('cn_mail-mailmessagegrid').getStore().getData().map[1].value[0],
+                            recId = rec.getId();
+
+                        panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
+                            panel.down('cn_mail-mailmessagegrid').getStore().getData().map[1].value[0]
+                        );
+
+                        t.waitForMs(750, function() {
+
+                            t.expect(panel.down('cn_mail-mailfoldertree').getStore().getAt(4).get('type')).toBe('TRASH');
+                            panel.down('cn_mail-mailfoldertree').getSelectionModel().select(
+                                panel.down('cn_mail-mailfoldertree').getStore().getAt(4)
+                            );
+
+                            t.waitForMs(750, function() {
+
+                                subjectCont = Ext.dom.Query.select("div[class=subject unread]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                t.expect(subjectCont[0].innerHTML).toBe(myValue);
+
+                                panel.setActiveTab(editor);
+
+                                editor.down('#subjectField').setValue('456');
+
+                                t.click(editor.down('#saveButton'));
+
+                                t.waitForMs(750, function () {
+
+                                    panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+
+                                    subjectCont = Ext.dom.Query.select("div[class=subject unread]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                    t.expect(subjectCont[0].innerHTML).toBe('456');
+
+                                  //  panel.destroy();
+                                  //  panel = null;
+                                });
+
+                            });
+                        });
+
+
+                    });
+                });
             });
+        });
+
+    });
+
+
+
+
+
+});
         })
     });
 });});});

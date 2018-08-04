@@ -368,6 +368,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 );
                 addItem.set('isRead', true);
                 addItem.commit();
+                addItem.join(messageGrid.getStore());
                 inboxView.getController().getLivegrid().add(addItem);
                 return;
             }
@@ -378,13 +379,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             messageView.updateMessageItem(messageDraft);
         }
 
-
-        // query grid and inboxMessageView only if we are currently in a DRAFT-folder
-        if (!mailFolderTree.getSelection().length
-            || mailFolderTree.getSelection()[0].get('type') !=
-            conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT) {
-            return;
-        }
 
         // this is two-way-data bound and should only be queried by us if the
         // selected folder / opened grid is DRAFT related
