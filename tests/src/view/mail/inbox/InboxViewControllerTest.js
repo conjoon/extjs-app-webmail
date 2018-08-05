@@ -61,6 +61,8 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
         panel = null;
     });
 
+t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function() {
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', function() {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function() {
 
@@ -878,5 +880,107 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("updateViewForSentDraft() - no selection", function(t) {
 
-});});});
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(250, function() {
+
+            t.expect(viewController.updateViewForSentDraft(
+                Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft')
+            )).toBe(null);
+        });
+    });
+
+
+    t.it("updateViewForSentDraft() - mail folder SENT selected", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(750, function() {
+
+            // messageDrafts are sent once they have been moved to DRAFT folder
+            let messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                id           : '98970978',
+                mailFolderId : viewController.getMailboxService().getMailFolderHelper().getMailFolderIdForType(conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT)
+            });
+
+            messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+
+            t.waitForMs(750, function() {
+
+                let mailFolder = selectMailFolder(panel, 1);
+
+                t.waitForMs(750, function() {
+
+                    t.isCalledOnce('onBeforeMessageMoveOrDelete', viewController);
+                    t.isCalledOnce('onMessageMovedOrDeleted', viewController);
+
+                    let op = viewController.updateViewForSentDraft(messageDraft);
+
+                    t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+
+                    t.expect(op.getRequest().targetFolderId).toBe("2");
+
+                    t.waitForMs(250, function() {
+                        // intentionally left blank
+                    });
+                });
+            });
+        });
+    });
+
+
+    t.it("updateViewForSentDraft() - mail folder DRAFT selected", function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        t.waitForMs(750, function() {
+
+            t.waitForMs(750, function() {
+
+                let mailFolder = selectMailFolder(panel, 3);
+
+                t.waitForMs(750, function() {
+
+                    let messageItem  = selectMessage(panel, 0),
+                        messageDraft = conjoon.cn_mail.model.mail.message.MessageDraft.load(messageItem.getId());
+
+                    t.waitForMs(750, function() {
+
+                        let op = viewController.updateViewForSentDraft(messageDraft);
+
+                        t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+                        t.expect(op.getRequest().targetFolderId).toBe("2");
+                        t.expect(op.getRequest().sourceFolderId).toBe(mailFolder.getId());
+
+                        t.waitForMs(250, function() {
+                            // intentionally left blank
+                        });
+                    });
+                });
+
+            });
+        });
+    });
+
+
+});});});});});
