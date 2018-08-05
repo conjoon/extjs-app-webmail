@@ -334,16 +334,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-     * @param {String} mailFolderId
      *
      * @see conjoon.cn_mail.view.mail.inbox.InboxView#updateViewForSentDraft
      */
-    onMailMessageSendComplete : function(editor, messageDraft, mailFolderId) {
+    onMailMessageSendComplete : function(editor, messageDraft) {
 
         const me = this;
 
         me.getView().down('cn_mail-mailinboxview').updateViewForSentDraft(
-            messageDraft, mailFolderId
+            messageDraft
         );
     },
 
