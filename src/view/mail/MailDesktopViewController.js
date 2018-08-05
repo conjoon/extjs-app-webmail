@@ -38,8 +38,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.EditingModes',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
-        'conjoon.cn_comp.window.Toast',
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+        'conjoon.cn_comp.window.Toast'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -63,7 +62,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             'rowdblclick' : 'onMailMessageGridDoubleClick'
         },
         'cn_mail-mailmessageeditor' : {
-            'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete'
+            'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete',
+            'cn_mail-mailmessagesendcomplete' : 'onMailMessageSendComplete'
         },
         'cn_mail-mailinboxview #btn-replyall' : {
             'click' : 'onInboxViewReplyAllClick'
@@ -328,6 +328,26 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         return newView;
     },
 
+
+    /**
+     * Callback for the cn_mail-mailmessagesendcomplete event.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {String} mailFolderId
+     *
+     * @see conjoon.cn_mail.view.mail.inbox.InboxView#updateViewForSentDraft
+     */
+    onMailMessageSendComplete : function(editor, messageDraft, mailFolderId) {
+
+        const me = this;
+
+        me.getView().down('cn_mail-mailinboxview').updateViewForSentDraft(
+            messageDraft, mailFolderId
+        );
+    },
+
+
     /**
      * Callback for the global cn_mail-mailmessagesavecomplete event that gets
      * triggered from editor instances.
@@ -350,7 +370,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               itemStore        = messageGrid ? messageGrid.getStore() : null,
               messageView      = view.down('#cn_mail-mailmessagereadermessageview-' + messageDraft.getId()),
               inboxView        = view.down('cn_mail-mailinboxview'),
-              mailFolderTree   = view.down('cn_mail-mailfoldertree'),
               EditingModes     = conjoon.cn_mail.data.mail.message.EditingModes,
               inboxMessageView = inboxView
                   ? inboxView.down('cn_mail-mailmessagereadermessageview')
@@ -361,13 +380,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if(editor.editMode === EditingModes.CREATE) {
             me.updateHistoryForComposedMessage(editor, messageDraft.getId());
 
-            if (isCreated && mailFolderTree.getSelection()[0].get('type') ===
-                conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT) {
-                let addItem = conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.createItemFromDraft(
-                    messageDraft
-                );
-                addItem.join(messageGrid.getStore());
-                inboxView.getController().getLivegrid().add(addItem);
+            if (isCreated){
+                inboxView.updateViewForCreatedDraft(messageDraft);
                 return;
             }
         }

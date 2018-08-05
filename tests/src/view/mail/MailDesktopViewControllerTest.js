@@ -1094,7 +1094,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
         t.isCalledNTimes('add', panel.down('cn_mail-mailinboxview').getController().getLivegrid(), 1);
         t.isCalledNTimes('createItemFromDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
-
+        t.isCalledOnce('updateViewForCreatedDraft', panel.down('cn_mail-mailinboxview'));
 
         t.waitForMs(250, function () {
 
@@ -1237,6 +1237,93 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
     });
 
 
+    t.it("onMailMessageSendComplete() - registered", function(t) {
+
+        var viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            ),
+            messageDraft;
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600,
+            items      : [{
+                xclass : 'conjoon.cn_mail.view.mail.inbox.InboxView'
+            }]
+        });
+
+        t.waitForMs(500, function() {
+
+            let CALLED = 0;
+
+            viewController.onMailMessageSendComplete = function() {
+                CALLED++;
+            }
+
+            let editor = panel.showMailEditor('233242', 'compose');
+
+            t.expect(CALLED).toBe(0);
+
+            t.waitForMs(250, function() {
+
+                editor.fireEvent('cn_mail-mailmessagesendcomplete',
+                    editor,
+                    Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                        subject : 'FOOBAR'
+                    })
+                );
+
+                t.expect(CALLED).toBe(1);
+
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+
+    });
+
+
+    t.it("onMailMessageSendComplete() - delegating to InboxView", function(t) {
+
+        var viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            ),
+            messageDraft;
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600,
+            items      : [{
+                xclass : 'conjoon.cn_mail.view.mail.inbox.InboxView'
+            }]
+        });
+
+        t.waitForMs(500, function() {
+
+
+            let editor = panel.showMailEditor('233242', 'compose');
+            t.isCalledOnce('updateViewForSentDraft', panel.down('cn_mail-mailinboxview'));
+
+            t.waitForMs(250, function() {
+
+                editor.fireEvent('cn_mail-mailmessagesendcomplete',
+                    editor,
+                    Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                        subject : 'FOOBAR'
+                    })
+                );
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+
+    });
 
 
 
