@@ -286,6 +286,37 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         me.deleteMask = mask;
 
         return mask;
+    },
+
+
+    /**
+     * Advises the the InboxView to update it's child components regarding the
+     * creating of a MessageDraft.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageeDraft} messageDraft
+     *
+     * @see conjoon.cn_mail.view.mail.inbox.InboxViewController#updateViewForCreatedDraft
+     */
+    updateViewForCreatedDraft : function(messageDraft) {
+        const me = this
+
+        me.getController().updateViewForCreatedDraft(messageDraft);
+    },
+
+
+    /**
+     * Advises the the InboxView to update it's child components regarding the
+     * sending of a MessageDraft.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageeDraft} messageDraft
+     *
+     * @see conjoon.cn_mail.view.mail.inbox.InboxViewController#updateViewForSentDraft
+     */
+    updateViewForSentDraft : function(messageDraft) {
+
+        const me = this
+
+        me.getController().updateViewForSentDraft(messageDraft);
     }
 
 

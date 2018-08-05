@@ -373,5 +373,27 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
+    t.it("updateViewForCreatedDraft() - delegates to controller", function(t){
+
+        view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+        t.isCalledOnce('updateViewForCreatedDraft', view.getController());
+
+        view.updateViewForCreatedDraft(Ext.create(
+            'conjoon.cn_mail.model.mail.message.MessageDraft', {id : 'foo'}
+        ));
+    });
+
+
+    t.it("updateViewForSentDraft() - delegates to controller", function(t){
+        view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+        t.isCalledOnce('updateViewForSentDraft', view.getController())
+
+        view.updateViewForSentDraft(Ext.create(
+            'conjoon.cn_mail.model.mail.message.MessageDraft', {id : 'foo'}
+        ));
+    })
+
 
 });
