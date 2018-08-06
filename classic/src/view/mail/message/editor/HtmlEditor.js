@@ -46,7 +46,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.HtmlEditor', {
         tbar.add('-');
         tbar.add({
             xtype   : 'cn_comp-formfieldfilebutton',
-            iconCls : 'fa fa-paperclip',
+            iconCls : 'x-fa fa-paperclip',
             tooltip : {
                 title : 'Add Attachment(s)...',
                 text  : 'Add one or more attachments to this message.',
