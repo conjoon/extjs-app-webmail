@@ -36,7 +36,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 date           : 'DATE',
                 to             : 'TO',
                 hasAttachments : true,
-                seen         : Math.random() >= 0.5 === true
+                seen           : Math.random() >= 0.5 === true,
+                recent         : Math.random() >= 0.5 === true,
+                flagged        : Math.random() >= 0.5 === true,
+                answered       : Math.random() >= 0.5 === true,
+                draft          : Math.random() >= 0.5 === true,
             });
 
             return messageItem;
@@ -111,7 +115,12 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 t.expect(messageItem.get('date')).toBe(messageDraft.get('date'));
                 t.expect(messageItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
                 t.expect(messageItem.get('hasAttachments')).toBe(true);
+
                 t.expect(messageItem.get('seen')).toBe(messageDraft.get('seen'));
+                t.expect(messageItem.get('recent')).toBe(messageDraft.get('recent'));
+                t.expect(messageItem.get('flagged')).toBe(messageDraft.get('flagged'));
+                t.expect(messageItem.get('answered')).toBe(messageDraft.get('answered'));
+                t.expect(messageItem.get('draft')).toBe(messageDraft.get('draft'));
 
                 expectedSize = 0;
                 expectedSize += messageDraft.getMessageBody().get('textPlain').length;
@@ -160,6 +169,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
 
                 t.expect(messageItem.get('seen')).toBe(messageDraft.get('seen'));
+                t.expect(messageItem.get('recent')).toBe(messageDraft.get('recent'));
+                t.expect(messageItem.get('flagged')).toBe(messageDraft.get('flagged'));
+                t.expect(messageItem.get('answered')).toBe(messageDraft.get('answered'));
+                t.expect(messageItem.get('draft')).toBe(messageDraft.get('draft'));
+
 
                 t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
 

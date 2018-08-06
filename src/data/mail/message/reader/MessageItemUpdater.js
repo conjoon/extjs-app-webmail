@@ -59,6 +59,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
      *  - hasAttachments
      *  - previewText
      *  - size
+     *  - seen
+     *  - answered
+     *  - recent
+     *  - flagged
+     *  - draft
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem}  messageItem
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
@@ -105,7 +110,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
             hasAttachments : attachments.length > 0,
             previewText    : messageBody.get('textPlain'),
             size           : size,
-            seen         : messageDraft.get('seen'),
+            seen           : messageDraft.get('seen'),
+            flagged        : messageDraft.get('flagged'),
+            recent         : messageDraft.get('recent'),
+            answered       : messageDraft.get('answered'),
+            draft          : messageDraft.get('draft'),
         });
 
         messageItem.commit();
