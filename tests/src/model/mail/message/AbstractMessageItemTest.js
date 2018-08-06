@@ -67,4 +67,20 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(model.getField('seen')).toBeTruthy();
     });
 
+    t.it("Test recent", function(t) {
+        t.expect(model.getField('recent')).toBeTruthy();
+    });
+
+    t.it("Test flagged", function(t) {
+        t.expect(model.getField('flagged')).toBeTruthy();
+    });
+
+    t.it("Test answered", function(t) {
+        t.expect(model.getField('answered')).toBeTruthy();
+    });
+
+    t.it("Test draft", function(t) {
+        t.expect(model.getField('draft')).toBeTruthy();
+    });
+
 });

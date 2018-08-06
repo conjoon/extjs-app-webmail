@@ -71,6 +71,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     }, {
         name : 'seen',
         type : 'bool'
+    }, {
+        name : 'answered',
+        type : 'bool'
+    }, {
+        name : 'flagged',
+        type : 'bool'
+    }, {
+        name : 'draft',
+        type : 'bool'
+    }, {
+        name    : 'recent',
+        type    : 'bool',
+        persist : false
     }]
 
 
