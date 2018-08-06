@@ -94,7 +94,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             return {
                 rowBody :
                           '<div class="head' + (!record.get('seen') ? ' unread' : '')+'">' +
-                          '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' + record.get("subject") + '</div>' +
+                          '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' +
+                              (record.get('draft') ? '<span class="draft">[Draft]</span>' : '')+
+                              record.get("subject") +
+                          '</div>' +
                           '<div class="date">' + me.grid.getHumanReadableDate(record.get('date')) + '</div>' +
                           '</div>' +
                            '<div class="previewText">' + record.get("previewText") + '</div>',

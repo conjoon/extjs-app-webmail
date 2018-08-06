@@ -345,6 +345,46 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
         });
 
 
+        t.it("renders draft properly", function(t) {
+
+            t.diag("lowering SimManager-delay to 1");
+            Ext.ux.ajax.SimManager.init({
+                delay : 1
+            });
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+
+            view.loadMessageItem(1);
+
+            t.waitForMs(750, function() {
+
+                view.getViewModel().get('messageItem').set('draft', false);
+
+                t.waitForMs(250, function() {
+
+                    let subjectCont = Ext.dom.Query.select("span[class*=draft]", view.dom);
+                    t.expect(subjectCont.length).toBe(0)
+
+                    view.getViewModel().get('messageItem').set('draft', true);
+
+
+                    t.waitForMs(250, function() {
+                        subjectCont = Ext.dom.Query.select("span[class*=draft]", view.dom);
+                        t.expect(subjectCont.length).toBe(1);
+
+                        t.expect(subjectCont[0].parentNode.className.toLowerCase()).toContain('subject');
+                    });
+
+                })
+
+            })
+
+
+        });
+
+
 
     });
 });

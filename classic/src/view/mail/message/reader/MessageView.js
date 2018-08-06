@@ -113,12 +113,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                     displayAddress : '{getDisplayAddress}',
                     subject        : '{messageItem.subject}',
                     date           : '{getFormattedDate}',
-                    hasAttachments : '{messageItem.hasAttachments}'
+                    hasAttachments : '{messageItem.hasAttachments}',
+                    isDraft        : '{messageItem.draft}'
                 }
             },
             tpl: [
                 '<div class="displayAddress">{displayAddress}</div>',
-                '<div class="subject"><tpl if="hasAttachments"><span class="fa fa-paperclip"></span></tpl> {subject}</div>',
+                '<div class="subject">' +
+                   '<tpl if="isDraft"><span class="draft">[Draft]</span></tpl>' +
+                   '<tpl if="hasAttachments"><span class="fa fa-paperclip"></span></tpl>' +
+                    '{subject}</div>',
                 '<div class="date">{date}</div>'
             ]
 

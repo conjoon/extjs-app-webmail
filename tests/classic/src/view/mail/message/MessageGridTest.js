@@ -373,7 +373,6 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             let messageItem = prop();
 
-
             messageItem.set('seen', true);
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('boldFont');
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-deleted');
@@ -404,6 +403,40 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
         });
 
+
+        t.it("draft rendering", function(t) {
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore', {
+                autoLoad : false
+            });
+
+            grid.setStore(store);
+
+            store.load();
+
+            t.waitForMs(1250, function() {
+
+                let messageItem = grid.getStore().getAt(0);
+                messageItem.set('draft', false);
+                messageItem.commit();
+
+                let subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[0];
+                t.expect(subjectCont.firstChild.tagName).toBeUndefined()
+
+                messageItem.set('draft', true);
+                messageItem.commit();
+
+                subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[0];
+                t.expect(subjectCont.firstChild.tagName.toLowerCase()).toBe('span');
+                t.expect(subjectCont.firstChild.className.toLowerCase()).toBe('draft');
+            });
+
+        });
 
 
     });})});});
