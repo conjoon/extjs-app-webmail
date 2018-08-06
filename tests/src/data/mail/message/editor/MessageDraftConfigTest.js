@@ -34,6 +34,11 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         t.expect(config.getTextPlain()).toBeUndefined();
         t.expect(config.getTextHtml()).toBeUndefined();
         t.expect(config.getAttachments()).toBeUndefined();
+
+        t.expect(config.getRecent()).toBeUndefined();
+        t.expect(config.getAnswered()).toBeUndefined();
+        t.expect(config.getFlagged()).toBeUndefined();
+        t.expect(config.getDraft()).toBeUndefined();
     });
 
 
@@ -235,6 +240,34 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                 },
                 expected : {
                     seen : true
+                }
+            }, {
+                args : {
+                    flagged : true
+                },
+                expected : {
+                    flagged : true
+                }
+            }, {
+                args : {
+                    recent : true
+                },
+                expected : {
+                    recent : true
+                }
+            }, {
+                args : {
+                    answered : true
+                },
+                expected : {
+                    answered : true
+                }
+            }, {
+                args : {
+                    draft : true
+                },
+                expected : {
+                    draft : true
                 }
             }, {
                 args : {

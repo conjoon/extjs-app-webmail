@@ -95,10 +95,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         cc          : undefined,
         bcc         : undefined,
         subject     : undefined,
-        seen      : undefined,
+        seen        : undefined,
         textPlain   : undefined,
         textHtml    : undefined,
-        attachments : undefined
+        attachments : undefined,
+        answered    : undefined,
+        recent      : undefined,
+        draft       : undefined,
+        flagged     : undefined,
     },
 
 
@@ -144,7 +148,44 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         if (me.getSeen() !== undefined) {
             obj.seen = me.getSeen();
         }
+        if (me.getAnswered() !== undefined) {
+            obj.answered = me.getAnswered();
+        }
+        if (me.getDraft() !== undefined) {
+            obj.draft = me.getDraft();
+        }
+        if (me.getFlagged() !== undefined) {
+            obj.flagged = me.getFlagged();
+        }
+        if (me.getRecent() !== undefined) {
+            obj.recent = me.getRecent();
+        }
         return obj;
+    },
+
+
+    /**
+     * Sets flagged
+     *
+     * @param {Boolean} flagged
+     *
+     * @return {Boolean}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyFlagged : function(flagged) {
+        var me = this;
+
+        if (me.getFlagged() !== undefined) {
+            Ext.raise({
+                flagged : me.getFlagged(),
+                msg    : "\"flagged\" is immutable"
+            });
+        }
+
+        return flagged;
     },
 
 
@@ -172,6 +213,80 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         return seen;
     },
 
+
+    /**
+     * Sets recent
+     *
+     * @param {Boolean} recent
+     *
+     * @return {Boolean}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyRecent : function(recent) {
+        var me = this;
+
+        if (me.getRecent() !== undefined) {
+            Ext.raise({
+                recent : me.getRecent(),
+                msg    : "\"recent\" is immutable"
+            });
+        }
+
+        return recent;
+    },
+
+
+    /**
+     * Sets draft
+     *
+     * @param {Boolean} draft
+     *
+     * @return {Boolean}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyDraft : function(draft) {
+        var me = this;
+
+        if (me.getDraft() !== undefined) {
+            Ext.raise({
+                draft : me.getDraft(),
+                msg   : "\"draft\" is immutable"
+            });
+        }
+
+        return draft;
+    },
+
+
+    /**
+     * Sets answered
+     *
+     * @param {Boolean} answered
+     *
+     * @return {Boolean}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyAnswered : function(answered) {
+        var me = this;
+
+        if (me.getAnswered() !== undefined) {
+            Ext.raise({
+                answered : me.getAnswered(),
+                msg      : "\"answered\" is immutable"
+            });
+        }
+
+        return answered;
+    },
 
     /**
      * Sets textPlain
