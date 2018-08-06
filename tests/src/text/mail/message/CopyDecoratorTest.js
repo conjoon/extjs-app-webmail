@@ -29,7 +29,11 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
             to      : 'to@domain.tld',
             cc      : 'cc@domain.tld',
             bcc     : 'bcc@domain.tld',
-            seen    : Math.random() >= 0.5 === true
+            seen    : Math.random() >= 0.5 === true,
+            flagged  : Math.random() >= 0.5 === true,
+            recent   : Math.random() >= 0.5 === true,
+            answered : Math.random() >= 0.5 === true,
+            draft    : Math.random() >= 0.5 === true
         });
 
         if (skipReplyTo !== true) {
@@ -111,6 +115,18 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
                 fn   : 'getSeen',
                 toBe : messageDraft.get('seen')
             }, {
+                fn   : 'getRecent',
+                toBe : messageDraft.get('recent')
+            }, {
+                fn   : 'getDraft',
+                toBe : messageDraft.get('draft')
+            }, {
+                fn   : 'getAnswered',
+                toBe : messageDraft.get('answered')
+            }, {
+                fn   : 'getFlagged',
+                toBe : messageDraft.get('flagged')
+            }, {
                 fn      : 'getFrom',
                 toEqual : messageDraft.get('from')
             }, {
@@ -188,7 +204,12 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.isCalledOnce('getTextPlain', decorator);
         t.isCalledOnce('getTextHtml', decorator);
         t.isCalledOnce('getAttachments', decorator);
+
         t.isCalledOnce('getSeen',      decorator);
+        t.isCalledOnce('getFlagged',      decorator);
+        t.isCalledOnce('getRecent',      decorator);
+        t.isCalledOnce('getAnswered',      decorator);
+        t.isCalledOnce('getDraft',      decorator);
 
         t.isInstanceOf(decorator.toMessageDraftConfig(), 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
 
@@ -208,8 +229,12 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.expect(decorator.getTextPlain()).toBe(messageDraftConfig.getTextPlain());
         t.expect(decorator.getTextHtml()).toBe(messageDraftConfig.getTextHtml());
         t.expect(decorator.getAttachments()).toEqual(messageDraftConfig.getAttachments());
-        t.expect(decorator.getSeen()).toEqual(messageDraftConfig.getSeen());
 
+        t.expect(decorator.getSeen()).toEqual(messageDraftConfig.getSeen());
+        t.expect(decorator.getDraft()).toEqual(messageDraftConfig.getDraft());
+        t.expect(decorator.getAnswered()).toEqual(messageDraftConfig.getAnswered());
+        t.expect(decorator.getRecent()).toEqual(messageDraftConfig.getRecent());
+        t.expect(decorator.getFlagged()).toEqual(messageDraftConfig.getFlagged());
     });
 
 

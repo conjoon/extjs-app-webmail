@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,10 @@
  * - getReplyTo
  * - getAttachments
  * - getSeen
+ * - getRecent
+ * - getFlagged
+ * - getDraft
+ * - getAnswered
  *
  * Additionally, the toMessageDraftConfig will create an instance of
  * {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig} based on the
@@ -151,6 +155,58 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
         var me = this;
 
         return me.messageDraft.get('seen')
+    },
+
+
+    /**
+     * Decorates the MessageDraft's draft flag.
+     *
+     * @return {Boolean}
+     */
+    getDraft : function() {
+
+        var me = this;
+
+        return me.messageDraft.get('draft')
+    },
+
+
+    /**
+     * Decorates the MessageDraft's answered flag.
+     *
+     * @return {Boolean}
+     */
+    getAnswered : function() {
+
+        var me = this;
+
+        return me.messageDraft.get('answered')
+    },
+
+
+    /**
+     * Decorates the MessageDraft's recent flag.
+     *
+     * @return {Boolean}
+     */
+    getRecent : function() {
+
+        var me = this;
+
+        return me.messageDraft.get('recent')
+    },
+
+
+    /**
+     * Decorates the MessageDraft's flagged flag.
+     *
+     * @return {Boolean}
+     */
+    getFlagged : function() {
+
+        var me = this;
+
+        return me.messageDraft.get('flagged')
     },
 
 
@@ -275,7 +331,11 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
             textPlain   : me.getTextPlain(),
             textHtml    : me.getTextHtml(),
             attachments : me.getAttachments(),
-            seen        : me.getSeen()
+            seen        : me.getSeen(),
+            flagged     : me.getFlagged(),
+            answered    : me.getAnswered(),
+            draft       : me.getDraft(),
+            recent      : me.getRecent()
         });
 
     },
