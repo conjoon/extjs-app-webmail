@@ -283,6 +283,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     onBeforeMessageMoveOrDelete : function(operation, hideConfirmWindow = false) {
 
         const me          = this,
+              view        = me.getView(),
               messageItem = operation.getRequest().record,
               type        = operation.getRequest().type,
               Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
@@ -298,7 +299,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             case Operation.DELETE:
 
                 // fire global event and let other components veto
-                if (Ext.GlobalEvents.fireEvent('cn_mail-beforemessageitemdelete', messageItem) === false) {
+                if (view.fireEvent('cn_mail-beforemessageitemdelete', view, messageItem) === false) {
                     return false;
                 }
 

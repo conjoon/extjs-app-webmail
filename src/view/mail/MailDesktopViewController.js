@@ -43,12 +43,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
 
-    listen : {
-        global : {
-            'cn_mail-beforemessageitemdelete' : 'onBeforeMessageItemDelete'
-        },
-    },
-
 
     control : {
 
@@ -64,6 +58,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'cn_mail-mailmessageeditor' : {
             'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete',
             'cn_mail-mailmessagesendcomplete' : 'onMailMessageSendComplete'
+        },
+        'cn_mail-maildesktopview > cn_mail-mailinboxview' : {
+            'cn_mail-beforemessageitemdelete' : 'onBeforeMessageItemDelete'
         },
         'cn_mail-mailinboxview #btn-replyall' : {
             'click' : 'onInboxViewReplyAllClick'
@@ -100,15 +97,16 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Callback for the global cn_mail-beforemessageitemdelete event.
+     * Callback for the embedded InboxView's cn_mail-beforemessageitemdelete event.
      * Checks if there are currently any opened editors and vetoes removal
      * should this be the case.
      *
+     * @param {conjoon.cn_mail.view.mail.inbox.InboxView} inboxView
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
      *
      * @return {Boolean}
      */
-    onBeforeMessageItemDelete : function(messageItem) {
+    onBeforeMessageItemDelete : function(inboxView, messageItem) {
 
         const me   = this,
               view = me.getView(),

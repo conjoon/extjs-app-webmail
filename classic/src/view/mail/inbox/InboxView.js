@@ -49,6 +49,15 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         'conjoon.cn_comp.component.MessageMask'
     ],
 
+    /**
+     * @event cn_mail-beforemessageitemdelete
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem}
+     * Gets fired before a MessageItem should be deleted.
+     * Return "false" in any listener to prevent the deleting of the specified
+     * MessageItem.
+     */
+
     layout  : {
         type  : 'hbox',
         align : 'stretch'

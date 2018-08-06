@@ -964,7 +964,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
     });
 
 
-    t.it("onBeforeMessageItemDelete() - global event registered", function(t) {
+    t.it("onBeforeMessageItemDelete() - event registered", function(t) {
 
         let viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -980,8 +980,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
         });
 
         t.waitForMs(750, function() {
-            t.isCalled('onBeforeMessageItemDelete', viewController);
-            Ext.GlobalEvents.fireEvent('cn_mail-beforemessageitemdelete', getRecordCollection()[0]);
+            t.isCalledOnce('onBeforeMessageItemDelete', viewController);
+            panel.down('cn_mail-mailinboxview').fireEvent(
+                'cn_mail-beforemessageitemdelete', panel.down('cn_mail-mailinboxview'), getRecordCollection()[0]);
 
             t.waitForMs(750, function() {
                 panel.destroy();
@@ -1006,8 +1007,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
             height     : 600
         });
 
-        let rec = conjoon.cn_mail.model.mail.message.MessageItem.load('123'),
-            id  = rec.getId() + '';
+        let rec       = conjoon.cn_mail.model.mail.message.MessageItem.load('123'),
+            id        = rec.getId() + '',
+            inboxView = panel.down('cn_mail-mailinboxview');
 
         t.waitForMs(750, function() {
 
@@ -1027,41 +1029,41 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
            t.isCalled('warn', conjoon.Toast);
 
-            panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+            panel.setActiveTab(inboxView);
 
-            t.expect(viewController.onBeforeMessageItemDelete(rec)).toBe(false);
+            t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
             t.expect(isActive([view, edit, replyAll, replyTo, forward])).toBe(true);
 
             t.waitForMs(750, function() {
                 forward.close();
 
-                t.expect(viewController.onBeforeMessageItemDelete(rec)).toBe(false);
+                t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                 t.expect(isActive([view, edit, replyAll, replyTo])).toBe(true);
 
                 t.waitForMs(750, function() {
 
                     replyTo.close();
 
-                    t.expect(viewController.onBeforeMessageItemDelete(rec)).toBe(false);
+                    t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                     t.expect(isActive([view, edit, replyAll])).toBe(true);
 
                     t.waitForMs(750, function() {
                         replyAll.close();
 
-                        t.expect(viewController.onBeforeMessageItemDelete(rec)).toBe(false);
+                        t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                         t.expect(isActive([view, edit])).toBe(true);
 
                         t.waitForMs(750, function() {
                             edit.close();
 
-                            t.expect(viewController.onBeforeMessageItemDelete(rec)).toBe(false);
+                            t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                             t.expect(isActive([view])).toBe(true);
 
                             t.waitForMs(750, function() {
                                 view.close();
 
                                 t.waitForMs(750, function() {
-                                    t.expect(viewController.onBeforeMessageItemDelete(rec)).toBe(true);
+                                    t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(true);
 
                                     t.waitForMs(750, function () {
                                         panel.destroy();
