@@ -63,8 +63,8 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
     });
 
 
-    t.it("Test isRead", function(t) {
-        t.expect(model.getField('isRead')).toBeTruthy();
+    t.it("Test seen", function(t) {
+        t.expect(model.getField('seen')).toBeTruthy();
     });
 
 });

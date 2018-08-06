@@ -34,7 +34,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
                 subject        : 'SUBJECT',
                 from           : 'FROM',
                 date           : testDate,
-                isRead         : false,
+                seen         : false,
                 hasAttachments : true
             };
 

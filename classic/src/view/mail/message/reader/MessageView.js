@@ -41,7 +41,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
     /**
      * @event cn_mail-messageitemread
-     * Fires when a MessageItem isRead property was changed and successfully saved,
+     * Fires when a MessageItem seen property was changed and successfully saved,
      * most likely due to loading into this view.
      * @param {Array|conjoon.cn_mail.model.mail.message.MessageItem} item
      */

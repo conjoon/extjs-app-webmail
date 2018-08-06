@@ -442,7 +442,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             return false;
         }
 
-        if (record.get('isRead')) {
+        if (record.get('seen')) {
             return;
         }
 
@@ -485,7 +485,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             return false;
         }
 
-        if (record.get('isRead')) {
+        if (record.get('seen')) {
             return;
         }
 

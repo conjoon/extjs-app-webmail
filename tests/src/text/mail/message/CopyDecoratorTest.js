@@ -29,7 +29,7 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
             to      : 'to@domain.tld',
             cc      : 'cc@domain.tld',
             bcc     : 'bcc@domain.tld',
-            isRead  : Math.random() >= 0.5 === true
+            seen    : Math.random() >= 0.5 === true
         });
 
         if (skipReplyTo !== true) {
@@ -108,8 +108,8 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
                 fn   : 'getSubject',
                 toBe : messageDraft.get('subject')
             }, {
-                fn   : 'getIsRead',
-                toBe : messageDraft.get('isRead')
+                fn   : 'getSeen',
+                toBe : messageDraft.get('seen')
             }, {
                 fn      : 'getFrom',
                 toEqual : messageDraft.get('from')
@@ -132,7 +132,7 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         for (var i = 0, len = tests.length; i < len; i++) {
 
             fn    = tests[i].fn;
-            op    = tests[i].toBe ? 'toBe' : 'toEqual';
+            op    = tests[i].hasOwnProperty('toBe') ? 'toBe' : 'toEqual';
             value = op === 'toBe' ? tests[i].toBe : tests[i].toEqual;
 
             t.expect(decorator[fn]())[op](value)
@@ -188,7 +188,7 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.isCalledOnce('getTextPlain', decorator);
         t.isCalledOnce('getTextHtml', decorator);
         t.isCalledOnce('getAttachments', decorator);
-        t.isCalledOnce('getIsRead',      decorator);
+        t.isCalledOnce('getSeen',      decorator);
 
         t.isInstanceOf(decorator.toMessageDraftConfig(), 'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
 
@@ -208,7 +208,7 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.expect(decorator.getTextPlain()).toBe(messageDraftConfig.getTextPlain());
         t.expect(decorator.getTextHtml()).toBe(messageDraftConfig.getTextHtml());
         t.expect(decorator.getAttachments()).toEqual(messageDraftConfig.getAttachments());
-        t.expect(decorator.getIsRead()).toEqual(messageDraftConfig.getIsRead());
+        t.expect(decorator.getSeen()).toEqual(messageDraftConfig.getSeen());
 
     });
 

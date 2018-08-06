@@ -93,8 +93,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
             return {
                 rowBody :
-                          '<div class="head' + (!record.get('isRead') ? ' unread' : '')+'">' +
-                          '<div class="subject'+ (!record.get('isRead') ? ' unread' : '')+'">' + record.get("subject") + '</div>' +
+                          '<div class="head' + (!record.get('seen') ? ' unread' : '')+'">' +
+                          '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' + record.get("subject") + '</div>' +
                           '<div class="date">' + me.grid.getHumanReadableDate(record.get('date')) + '</div>' +
                           '</div>' +
                            '<div class="previewText">' + record.get("previewText") + '</div>',
@@ -102,7 +102,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             };
         },
         previewColumnConfig : {
-            'isRead'         : {visible : false},
+            'seen'         : {visible : false},
             'subject'        : {visible : false},
             'to'             : {visible : false},
             'from'           : {flex : 1},
@@ -130,7 +130,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     viewConfig : {
         markDirty   : false,
         getRowClass : function(record, rowIndex, rowParams, store){
-            let cls = record.get("isRead")
+            let cls = record.get("seen")
                       ? ""
                       : "boldFont";
 
@@ -145,7 +145,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     },
 
     columns : [{
-        dataIndex : 'isRead',
+        dataIndex : 'seen',
         text      : '<span class="x-fa fa-circle"></span>',
         /**
          * @bug
@@ -310,7 +310,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      * Updates the current RowFlyMenu for the specified record.
      * Updates the menu's items to represent the proper state for the following
      * properties:
-     *  - isRead
+     *  - seen
      *
      * @param {conjoon.cn_mail.model.mail.message.reader.MessageItem} record
      */
@@ -321,7 +321,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
               menu    = feature.menu,
               readItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true);
 
-        switch (record.get('isRead')) {
+        switch (record.get('seen')) {
             case (true):
                 readItem[0].setAttribute("data-qtip",  "Mark as Unread");
                 break;

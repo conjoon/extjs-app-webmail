@@ -323,7 +323,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             let rowFlyMenu = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
                 rec        = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                     mailFolderId : 2,
-                    isRead       : true
+                    seen       : true
                 }),
                 getReadItem = function() {
                     return rowFlyMenu.menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true)[0];
@@ -333,7 +333,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             t.expect(getReadItem().title.toLowerCase()).toBe("mark as unread");
 
-            rec.set('isRead', false);
+            rec.set('seen', false);
             grid.updateRowFlyMenu(rec);
 
             t.expect(getReadItem().title.toLowerCase()).toBe("mark as read");
@@ -374,12 +374,12 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             let messageItem = prop();
 
 
-            messageItem.set('isRead', true);
+            messageItem.set('seen', true);
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('boldFont');
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-deleted');
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-moved');
 
-            messageItem.set('isRead', false);
+            messageItem.set('seen', false);
             t.expect(grid.view.getRowClass(messageItem)).toContain('boldFont');
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-deleted');
             t.expect(grid.view.getRowClass(messageItem)).not.toContain('cn-moved');

@@ -118,7 +118,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         switch (action) {
             case 'markunread':
-                record.set('isRead', !record.get('isRead'));
+                record.set('seen', !record.get('seen'));
                 record.save({
                     callback : me.onMessageItemRead,
                     scope    : me
@@ -151,7 +151,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
     /**
      *  Makes sure the folders associated with the specified MessageItems get
-     *  notified of their current isRead state by calling
+     *  notified of their current seen state by calling
      *  {@link conjoon.cn_mail.view.mail.inbox.InboxViewModel#updateUnreadMessageCount}.
      *  The updateUnreadMessageCount will only be called if the computed number
      *  of read/unread messages is anything but 0.
@@ -167,20 +167,20 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             mailFolders = {},
             tmpId,
             rec,
-            isRead;
+            seen;
 
         messageItemRecords = [].concat(messageItemRecords);
 
         for (var i = 0, len = messageItemRecords.length; i <len; i++) {
             rec    = messageItemRecords[i];
             tmpId  = rec.get('mailFolderId');
-            isRead = rec.get('isRead');
+            seen = rec.get('seen');
 
             if (!mailFolders[tmpId]) {
                 mailFolders[tmpId] = 0;
             }
 
-            mailFolders[tmpId] += isRead ? -1 : 1;
+            mailFolders[tmpId] += seen ? -1 : 1;
         }
 
         for (var mailFolderId in mailFolders) {

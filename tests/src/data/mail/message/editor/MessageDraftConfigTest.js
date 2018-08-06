@@ -27,7 +27,7 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         });
         t.expect(config.getTo()).toBeUndefined();
-        t.expect(config.getIsRead()).toBeUndefined();
+        t.expect(config.getSeen()).toBeUndefined();
         t.expect(config.getCc()).toBeUndefined();
         t.expect(config.getBcc()).toBeUndefined();
         t.expect(config.getSubject()).toBeUndefined();
@@ -231,10 +231,10 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                 }
             }, {
                 args : {
-                    isRead : true
+                    seen : true
                 },
                 expected : {
-                    isRead : true
+                    seen : true
                 }
             }, {
                 args : {

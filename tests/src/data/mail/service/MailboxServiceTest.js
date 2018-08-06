@@ -422,7 +422,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             sourceFolder.set("unreadCount", 5);
             targetFolder.set("unreadCount", 0);
 
-            messageItem.set('isRead', false);
+            messageItem.set('seen', false);
 
             let op = service.createOperation({
                 type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
@@ -443,7 +443,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             // no success
             messageItem = createMessageItem(sourceFolderId, "28");
-            messageItem.set('isRead', false);
+            messageItem.set('seen', false);
 
             op = service.createOperation({
                 type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
@@ -474,7 +474,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             sourceFolder.set("unreadCount", 5);
 
-            messageItem.set('isRead', false);
+            messageItem.set('seen', false);
 
             let op = service.createOperation({
                 type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
@@ -491,7 +491,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             // no success
             messageItem = createMessageItem(sourceFolderId, "28");
-            messageItem.set('isRead', false);
+            messageItem.set('seen', false);
 
             op = service.createOperation({
                 type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
@@ -568,7 +568,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             sourceFolder.set("unreadCount", 0);
 
-            messageItem.set('isRead', false);
+            messageItem.set('seen', false);
 
             let op = service.createOperation({
                 type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,

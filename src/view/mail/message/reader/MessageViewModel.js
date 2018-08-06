@@ -231,7 +231,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     /**
      * Sets the message item for this view, or null to clear the view.
      * Once the message was loaded into the view, the associated messageItem's
-     * 'isRead' field will be set to "true".
+     * 'seen' field will be set to "true".
      * Due to the nature of the asynchronous process involved with loading any
      * associated {@link conjoon.cn_mail.model.mail.message.MessageBody},
      * this method will also take care of cancelling any undergoing load-process
@@ -451,8 +451,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             delete  me.abortedRequestMap[record.get('id')];
             me.set('messageBody', record);
 
-            if (item.get('isRead') != true) {
-                item.set('isRead', true);
+            if (item.get('seen') != true) {
+                item.set('seen', true);
                 item.save({
                     callback : me.triggerMessageItemRead,
                     scope   : me

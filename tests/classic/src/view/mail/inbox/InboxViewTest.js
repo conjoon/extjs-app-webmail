@@ -112,8 +112,8 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
                         var messageItem = grid.getStore().getAt(0);
                         t.expect(grid.getStore().getTotalCount()).not.toBe(0);
-                        messageItem.set('isRead', false);
-                        t.expect(messageItem.get('isRead')).toBe(false);
+                        messageItem.set('seen', false);
+                        t.expect(messageItem.get('seen')).toBe(false);
                         grid.getSelectionModel().select(messageItem);
 
                         t.waitForMs(500, function(){

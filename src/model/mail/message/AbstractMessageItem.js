@@ -69,7 +69,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
         },
         validators : 'presence'
     }, {
-        name : 'isRead',
+        name : 'seen',
         type : 'bool'
     }]
 

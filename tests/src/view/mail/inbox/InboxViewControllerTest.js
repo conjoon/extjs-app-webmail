@@ -102,23 +102,23 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             'cn_mail-mailmessageitemread', [
             Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 1,
-                isRead       : true
+                seen       : true
             }),
             Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 1,
-                isRead       : false
+                seen       : false
             }),
             Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 2,
-                isRead       : false
+                seen       : false
             }),
             Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 2,
-                isRead       : true
+                seen       : true
             }),
             Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 2,
-                isRead       : true
+                seen       : true
             })
         ]);
 
@@ -169,7 +169,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         t.expect(CALLED).toBe(0);
         viewController.onMessageItemRead(Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
             mailFolderId : 2,
-            isRead       : false
+            seen       : false
         }));
         t.expect(CALLED).toBe(1);
 
@@ -178,10 +178,10 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         t.expect(CALLED).toBe(0);
         viewController.onMessageItemRead([Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
             mailFolderId : 2,
-            isRead       : false
+            seen       : false
         }), Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
             mailFolderId : 3,
-            isRead       : true
+            seen       : true
         })]);
         t.expect(CALLED).toBe(2);
     });
@@ -194,7 +194,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         let rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 2,
-                isRead       : true
+                seen       : true
             }),
             CALLED = 0;
 
@@ -202,13 +202,13 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             CALLED++;
         }
 
-        t.expect(rec.get('isRead')).toBe(true);
+        t.expect(rec.get('seen')).toBe(true);
         t.expect(CALLED).toBe(0);
 
         viewController.onRowFlyMenuItemClick(null, null, 'markunread', rec);
 
         t.waitForMs(250, function() {
-            t.expect(rec.get('isRead')).toBe(false);
+            t.expect(rec.get('seen')).toBe(false);
             t.expect(CALLED).toBe(1);
         });
 
@@ -277,7 +277,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         let rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 2,
-                isRead       : true
+                seen       : true
             });
 
         t.isCalled('moveOrDeleteMessage', viewController);

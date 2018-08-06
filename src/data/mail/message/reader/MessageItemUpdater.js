@@ -105,7 +105,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
             hasAttachments : attachments.length > 0,
             previewText    : messageBody.get('textPlain'),
             size           : size,
-            isRead         : messageDraft.get('isRead'),
+            seen         : messageDraft.get('seen'),
         });
 
         messageItem.commit();

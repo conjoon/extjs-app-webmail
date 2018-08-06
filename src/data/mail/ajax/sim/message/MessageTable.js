@@ -302,7 +302,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         if (vals.length === 2 && vals.indexOf('id') !== -1 && (
-            vals.indexOf('mailFolderId') !== -1 || vals.indexOf('isRead') !== -1)) {
+            vals.indexOf('mailFolderId') !== -1 || vals.indexOf('seen') !== -1)) {
             skipDate = true;
         }
 
@@ -439,7 +439,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 mailFolderId   : mailFolderId,
                 messageBodyId  : (i + 1) + '',
                 testProp       : i,
-                isRead         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
+                seen         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
 
             });
         }

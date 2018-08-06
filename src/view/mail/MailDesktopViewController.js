@@ -588,7 +588,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         const me        = this,
               cfg       = {
-                  isRead : true
+                  seen : true
               };
 
         let pos,

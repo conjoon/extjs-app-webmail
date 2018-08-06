@@ -95,7 +95,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         cc          : undefined,
         bcc         : undefined,
         subject     : undefined,
-        isRead      : undefined,
+        seen      : undefined,
         textPlain   : undefined,
         textHtml    : undefined,
         attachments : undefined
@@ -141,17 +141,17 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         if (me.getAttachments() !== undefined) {
             obj.attachments = me.getAttachments();
         }
-        if (me.getIsRead() !== undefined) {
-            obj.isRead = me.getIsRead();
+        if (me.getSeen() !== undefined) {
+            obj.seen = me.getSeen();
         }
         return obj;
     },
 
 
     /**
-     * Sets isRead
+     * Sets seen
      *
-     * @param {Boolean} isRead
+     * @param {Boolean} seen
      *
      * @return {Boolean}
      *
@@ -159,17 +159,17 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyIsRead : function(isRead) {
+    applySeen : function(seen) {
         var me = this;
 
-        if (me.getIsRead() !== undefined) {
+        if (me.getSeen() !== undefined) {
             Ext.raise({
-                isRead : me.getIsRead(),
-                msg    : "\"isRead\" is immutable"
+                seen : me.getSeen(),
+                msg    : "\"seen\" is immutable"
             });
         }
 
-        return isRead;
+        return seen;
     },
 
 
