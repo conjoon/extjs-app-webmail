@@ -368,19 +368,22 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               messageView      = view.down('#cn_mail-mailmessagereadermessageview-' + messageDraft.getId()),
               inboxView        = view.down('cn_mail-mailinboxview'),
               EditingModes     = conjoon.cn_mail.data.mail.message.EditingModes,
+              editMode         = editor.editMode,
               inboxMessageView = inboxView
                   ? inboxView.down('cn_mail-mailmessagereadermessageview')
                   : null;
 
         let inboxMessageViewId, messageItem, recInd;
 
-        if(editor.editMode === EditingModes.CREATE) {
+        if (editMode === EditingModes.CREATE) {
             me.updateHistoryForComposedMessage(editor, messageDraft.getId());
+        }
 
-            if (isCreated){
-                inboxView.updateViewForCreatedDraft(messageDraft);
-                return;
-            }
+        if ([EditingModes.CREATE, EditingModes.REPLY_TO,
+            EditingModes.REPLY_ALL, EditingModes.FORWARD].indexOf(editMode) !== -1 &&
+            isCreated){
+            inboxView.updateViewForCreatedDraft(messageDraft);
+            return;
         }
 
 
