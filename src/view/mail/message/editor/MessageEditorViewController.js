@@ -484,6 +484,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 }
             }).then(
                 function(response, opts) {
+                    messageDraft.set('draft', false);
                     view.fireEvent('cn_mail-mailmessagesendcomplete', view, messageDraft);
                 },
                 function(response, opts) {

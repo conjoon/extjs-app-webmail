@@ -152,9 +152,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      */
     getSeen : function() {
 
-        var me = this;
-
-        return me.messageDraft.get('seen')
+        return true;
     },
 
 
@@ -164,10 +162,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      * @return {Boolean}
      */
     getDraft : function() {
-
-        var me = this;
-
-        return me.messageDraft.get('draft')
+        return true;
     },
 
 
@@ -178,9 +173,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      */
     getAnswered : function() {
 
-        var me = this;
-
-        return me.messageDraft.get('answered')
+        return false;
     },
 
 
@@ -191,9 +184,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      */
     getRecent : function() {
 
-        var me = this;
-
-        return me.messageDraft.get('recent')
+        return false;
     },
 
 
@@ -204,9 +195,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      */
     getFlagged : function() {
 
-        var me = this;
-
-        return me.messageDraft.get('flagged')
+       return false;
     },
 
 

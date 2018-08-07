@@ -27,7 +27,6 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         });
         t.expect(config.getTo()).toBeUndefined();
-        t.expect(config.getSeen()).toBeUndefined();
         t.expect(config.getCc()).toBeUndefined();
         t.expect(config.getBcc()).toBeUndefined();
         t.expect(config.getSubject()).toBeUndefined();
@@ -35,10 +34,11 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         t.expect(config.getTextHtml()).toBeUndefined();
         t.expect(config.getAttachments()).toBeUndefined();
 
-        t.expect(config.getRecent()).toBeUndefined();
-        t.expect(config.getAnswered()).toBeUndefined();
-        t.expect(config.getFlagged()).toBeUndefined();
-        t.expect(config.getDraft()).toBeUndefined();
+        t.expect(config.getSeen()).toBe(true);
+        t.expect(config.getRecent()).toBe(false);
+        t.expect(config.getAnswered()).toBe(false);
+        t.expect(config.getFlagged()).toBe(false);
+        t.expect(config.getDraft()).toBe(true);
     });
 
 
@@ -221,7 +221,8 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                 expected : {
                     to  : [{name : 'name.to@domain.tld',  address : 'name.to@domain.tld'}],
                     cc  : [{name : 'name.cc@domain.tld',  address : 'name.cc@domain.tld'}],
-                    bcc : [{name : 'name.bcc@domain.tld', address : 'name.bcc@domain.tld'}]
+                    bcc : [{name : 'name.bcc@domain.tld', address : 'name.bcc@domain.tld'}],
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }, {
                 args : {
@@ -232,49 +233,51 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                     messageBody : {
                         textHtml  : 'foo',
                         textPlain : 'bar'
-                    }
+                    },
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }, {
                 args : {
                     seen : true
                 },
                 expected : {
-                    seen : true
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }, {
                 args : {
                     flagged : true
                 },
                 expected : {
-                    flagged : true
+                    seen : true, recent : false, flagged : true, draft : true, answered : false
                 }
             }, {
                 args : {
                     recent : true
                 },
                 expected : {
-                    recent : true
+                    seen : true, recent : true, flagged : false, draft : true, answered : false
                 }
             }, {
                 args : {
                     answered : true
                 },
                 expected : {
-                    answered : true
+                    seen : true, recent : false, flagged : false, draft : true, answered : true
                 }
             }, {
                 args : {
                     draft : true
                 },
                 expected : {
-                    draft : true
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }, {
                 args : {
                     subject : 'foobar'
                 },
                 expected : {
-                    subject  : 'foobar'
+                    subject  : 'foobar',
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }, {
                 args : {
@@ -309,7 +312,8 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                         sourceId       : '52',
                         previewImgSrc  : 'PREVIEWIMGSRC2',
                         downloadImgUrl : 'DOWNLOADIMGURL2'
-                    }]
+                    }],
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }], test;
 

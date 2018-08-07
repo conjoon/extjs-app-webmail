@@ -211,6 +211,44 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             t.expect(rec.get('replyTo').address).toBe('replyTo@domain.tld');
         });
 
+
+        t.it("field - draft", function(t) {
+
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+            t.expect(rec.get('draft')).toBe(true);
+        });
+
+
+        t.it("field - seen", function(t) {
+
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+            t.expect(rec.get('seen')).toBe(true);
+        });
+
+        t.it("field - answered", function(t) {
+
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+            t.expect(rec.get('answered')).toBe(false);
+        });
+
+        t.it("field - flagged", function(t) {
+
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+            t.expect(rec.get('flagged')).toBe(false);
+        });
+
+        t.it("field - recent", function(t) {
+
+            var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+            t.expect(rec.get('recent')).toBe(false);
+        });
+
+
     });});
 
 

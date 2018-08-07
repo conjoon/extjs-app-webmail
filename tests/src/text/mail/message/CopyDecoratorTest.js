@@ -113,19 +113,19 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
                 toBe : messageDraft.get('subject')
             }, {
                 fn   : 'getSeen',
-                toBe : messageDraft.get('seen')
+                toBe : true
             }, {
                 fn   : 'getRecent',
-                toBe : messageDraft.get('recent')
+                toBe : false
             }, {
                 fn   : 'getDraft',
-                toBe : messageDraft.get('draft')
+                toBe : true
             }, {
                 fn   : 'getAnswered',
-                toBe : messageDraft.get('answered')
+                toBe : false
             }, {
                 fn   : 'getFlagged',
-                toBe : messageDraft.get('flagged')
+                toBe : false
             }, {
                 fn      : 'getFrom',
                 toEqual : messageDraft.get('from')
@@ -230,11 +230,11 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
         t.expect(decorator.getTextHtml()).toBe(messageDraftConfig.getTextHtml());
         t.expect(decorator.getAttachments()).toEqual(messageDraftConfig.getAttachments());
 
-        t.expect(decorator.getSeen()).toEqual(messageDraftConfig.getSeen());
-        t.expect(decorator.getDraft()).toEqual(messageDraftConfig.getDraft());
-        t.expect(decorator.getAnswered()).toEqual(messageDraftConfig.getAnswered());
-        t.expect(decorator.getRecent()).toEqual(messageDraftConfig.getRecent());
-        t.expect(decorator.getFlagged()).toEqual(messageDraftConfig.getFlagged());
+        t.expect(decorator.getSeen()).toBe(true);
+        t.expect(decorator.getDraft()).toBe(true);
+        t.expect(decorator.getAnswered()).toBe(false);
+        t.expect(decorator.getRecent()).toBe(false);
+        t.expect(decorator.getFlagged()).toBe(false);
     });
 
 

@@ -586,11 +586,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     createMessageDraftConfig : function(id) {
 
-        const me        = this,
-              cfg       = {
-                  seen  : true,
-                  draft : true
-              };
+        const me        = this;
 
         let pos,
             addresses,
@@ -602,7 +598,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             encodedId = encodedId.substring(7);
         } else {
             return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', cfg);
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
         }
 
         addresses = '';
@@ -618,12 +614,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (encodedId == "") {
             if (addresses && addresses.length) {
                 return Ext.create(
-                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', Ext.apply(cfg, {
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
                         to     : addresses
-                    }));
+                    });
             }
             return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', cfg);
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
         }
 
         if (!me.parser) {
@@ -653,7 +649,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
             Ext.apply({
                 to     : addresses,
-            }, res, cfg)
+            }, res)
         );
     },
 

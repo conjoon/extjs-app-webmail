@@ -63,6 +63,41 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
             type       : 'cn_core-datavalidatoremailaddresscollection',
             allowEmpty : true
         }]
+    }, {
+        /**
+         * This is by default always true for MessageDrafts
+         */
+        name         : 'draft',
+        type         : 'bool',
+        defaultValue :  true
+    }, {
+        /**
+         * This is by default always true for MessageDrafts
+         */
+        name         : 'seen',
+        type         : 'bool',
+        defaultValue :  true
+    }, {
+        /**
+         * This is by default always false for MessageDrafts
+         */
+        name         : 'flagged',
+        type         : 'bool',
+        defaultValue :  false
+    }, {
+        /**
+         * This is by default always false for MessageDrafts
+         */
+        name         : 'answered',
+        type         : 'bool',
+        defaultValue :  false
+    }, {
+        /**
+         * This is by default always false for MessageDrafts
+         */
+        name         : 'recent',
+        type         : 'bool',
+        defaultValue :  false
     }]
 
 

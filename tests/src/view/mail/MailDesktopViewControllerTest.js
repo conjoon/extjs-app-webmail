@@ -80,16 +80,16 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
         tests = [{
             value    : 'mailto:test@domain.tld',
-            expected : {to : [{name : 'test@domain.tld', address : 'test@domain.tld'}], seen : true, draft : true}
+            expected : {to : [{name : 'test@domain.tld', address : 'test@domain.tld'}], seen : true, draft : true, recent : false, flagged : false, answered : false}
         }, {
             value    : 'mailto:',
-            expected : {seen : true, draft : true}
+            expected : {seen : true, draft : true, recent : false, flagged : false, answered : false}
         }, {
             value    : 'maito:',
-            expected : {seen : true, draft : true}
+            expected : {seen : true, draft : true, recent : false, flagged : false, answered : false}
         },{
             value    : 'mailto%3Atest1@domain.tld',
-            expected :{to : [{name : 'test1@domain.tld', address : 'test1@domain.tld'}], seen : true, draft : true}
+            expected :{to : [{name : 'test1@domain.tld', address : 'test1@domain.tld'}], seen : true, draft : true, recent : false, flagged : false, answered : false}
         }, {
             value    : 'mailto%3Aaddress1@domain1.tld1,address2@domain2.tld2?subject=registerProtocolHandler()%20FTW!&body=Check%20out%20what%20I%20learned%20at%20http%3A%2F%2Fupdates.html5rocks.com%2F2012%2F02%2FGetting-Gmail-to-handle-all-mailto-links-with-registerProtocolHandler%0A%0APlus%2C%20flawless%20handling%20of%20the%20subject%20and%20body%20parameters.%20Bonus%20from%20RFC%202368!',
             expected : {
@@ -98,8 +98,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                 messageBody : {
                     textHtml : 'Check out what I learned at http://updates.html5rocks.com/2012/02/Getting-Gmail-to-handle-all-mailto-links-with-registerProtocolHandler\n\nPlus, flawless handling of the subject and body parameters. Bonus from RFC 2368!'
                 },
-                seen  : true,
-                draft : true
+                seen : true, draft : true, recent : false, flagged : false, answered : false
             }
         }];
 

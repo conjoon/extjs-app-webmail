@@ -961,6 +961,33 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         });
 
 
+        t.it("\"draft\"-flag removed from MessageDraft when sending succeeded", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = createEditorForController(controller);
+
+            let messageDraft = view.getViewModel().get('messageDraft');
+
+            messageDraft.set('to', 'address@domain.tld');
+            messageDraft.set('subject', 'foo');
+            view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+
+            t.waitForMs(250, function() {
+                t.expect(messageDraft.get('draft')).toBe(true);
+
+                controller.onSendButtonClick();
+
+                t.waitForMs(3000, function() {
+                    t.expect(messageDraft.get('draft')).toBe(false);
+                });
+
+            });
+
+
+
+        });
+
 
     });
 });
