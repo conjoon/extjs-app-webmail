@@ -331,12 +331,12 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.updateRowFlyMenu(rec);
 
-            t.expect(getReadItem().title.toLowerCase()).toBe("mark as unread");
+            t.expect(getReadItem().getAttribute('data-qtip').toLowerCase()).toBe("mark as unread");
 
             rec.set('seen', false);
             grid.updateRowFlyMenu(rec);
 
-            t.expect(getReadItem().title.toLowerCase()).toBe("mark as read");
+            t.expect(getReadItem().getAttribute('data-qtip').toLowerCase()).toBe("mark as read");
 
 
         });
