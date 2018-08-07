@@ -439,7 +439,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 mailFolderId   : mailFolderId,
                 messageBodyId  : (i + 1) + '',
                 testProp       : i,
-                seen         : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
+                seen           : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
+                draft          : mailFolderId == 4
+                                 ? true
+                                 : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
 
             });
         }
