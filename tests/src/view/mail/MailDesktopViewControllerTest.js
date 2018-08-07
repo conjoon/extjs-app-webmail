@@ -1417,4 +1417,84 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
     });
 
 
+    t.it("conjoon/app-cn_mail#55", function(t) {
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller: viewController,
+            renderTo: document.body,
+            width: 800,
+            height: 600
+        });
+
+        let inboxView       = panel.down('cn_mail-mailinboxview'),
+            mailFolderTree  = panel.down('cn_mail-mailfoldertree'),
+            messageGrid     = panel.down('cn_mail-mailmessagegrid');
+
+        t.waitForMs(250, function () {
+
+            let draftFolder = mailFolderTree.getStore().getAt(3),
+                inboxFolder = mailFolderTree.getStore().getAt(0);
+
+            t.expect(draftFolder.get('type')).toBe('DRAFT');
+            t.expect(inboxFolder.get('type')).toBe('INBOX');
+
+            mailFolderTree.getSelectionModel().select(inboxFolder);
+
+            t.waitForMs(1750, function () {
+
+                let messageItem = messageGrid.getStore().getAt(0);
+                messageItem.set('draft', false);
+
+                messageGrid.getSelectionModel().select(messageItem);
+
+                t.waitForMs(1750, function() {
+
+                    let editor = viewController.showMailEditor(messageItem.getId(), 'replyAll');
+
+                    t.waitForMs(1750, function() {
+
+                        panel.setActiveTab(inboxView);
+
+                        mailFolderTree.getSelectionModel().select(draftFolder);
+
+                        t.waitForMs(1750, function() {
+
+                            panel.setActiveTab(editor);
+
+                            t.click(editor.down('#saveButton'));
+
+                            t.waitForMs(1750, function() {
+
+                                t.click(editor.down('#sendButton'));
+
+                                t.waitForMs(1750, function() {
+                                    panel.destroy();
+                                    panel = null;
+                                });
+
+                            });
+
+
+                        });
+
+
+                    })
+
+                });
+
+
+
+            });
+        });
+    });
+
+
+
+
+
 });})});});});});
