@@ -1121,7 +1121,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                         panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
                         let subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                        t.expect(subjectCont[0].innerHTML).toBe(myValue);
+                        t.expect(subjectCont[0].innerHTML).toContain(myValue);
 
                         panel.setActiveTab(editor);
 
@@ -1134,7 +1134,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                             panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
                             subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                            t.expect(subjectCont[0].innerHTML).toBe('456');
+                            t.expect(subjectCont[0].innerHTML).toContain('456');
 
                             panel.destroy();
                             panel = null;
@@ -1189,7 +1189,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                         panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
                         let subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                        t.expect(subjectCont[0].innerHTML).toBe(myValue);
+                        t.expect(subjectCont[0].innerHTML).toContain(myValue);
 
                         let rec   = panel.down('cn_mail-mailmessagegrid').getStore().getData().map[1].value[0],
                             recId = rec.getId();
@@ -1208,7 +1208,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                             t.waitForMs(750, function() {
 
                                 subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                                t.expect(subjectCont[0].innerHTML).toBe(myValue);
+                                t.expect(subjectCont[0].innerHTML).toContain(myValue);
 
                                 panel.setActiveTab(editor);
 
@@ -1221,7 +1221,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                                     panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
                                     subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                                    t.expect(subjectCont[0].innerHTML).toBe('456');
+                                    t.expect(subjectCont[0].innerHTML).toContain('456');
 
                                     panel.destroy();
                                     panel = null;
