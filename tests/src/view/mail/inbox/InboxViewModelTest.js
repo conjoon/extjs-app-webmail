@@ -96,42 +96,6 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
     });
 
 
-    t.it("formula - isDraftLoaded()", function(t) {
-            let TYPE = 'DRAFT';
 
-            // mock viewmodel
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
-                getView : function() {
-                    return {
-                        down : function() {
-                            return {
-                                getStore : function() {
-                                    return {
-                                        findExact : function() {
-                                            return 1;
-                                        },
-                                        getAt : function() {
-                                            return {
-                                                get : function() {
-                                                    return TYPE;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            var formulas = viewModel.getFormulas();
-            t.expect(formulas.isDraftLoaded).toBeDefined();
-
-            t.expect(formulas.isDraftLoaded.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
-            TYPE = 'INBOX';
-            t.expect(formulas.isDraftLoaded.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
-    });
 
 });

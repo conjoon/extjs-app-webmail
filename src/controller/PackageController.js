@@ -337,12 +337,11 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     onMailMessageGridSelect : function(selectionModel, record) {
 
         var me             = this,
-            mailFolderTree = me.getMailFolderTree(),
-            type           = mailFolderTree.getSelection()[0].get('type'),
+            isDraft        = record.get('draft'),
             navBar         = me.getNavigationToolbar();
 
-        switch (type) {
-            case 'DRAFT':
+        switch (isDraft) {
+            case true:
                 navBar.down('#cn_mail-nodeNavEditMessage').setDisabled(false);
                 navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(false);
                 break;

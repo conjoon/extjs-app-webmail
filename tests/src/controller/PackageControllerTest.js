@@ -265,7 +265,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             '#cn_mail-nodeNavForward'       : 0,
             '#cn_mail-nodeNavDeleteMessage' : 0
             },
-            NODETYPE,
+            ISDRAFT,
             /**
              * Needed since disabling is usually done by the deselect listener
              */
@@ -302,22 +302,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                 }
             };
         };
-        packageCtrl.getMailFolderTree = function() {
-            return {
-                getSelection : function() {
-
-                    return [{
-                        get: function(name) {
-                            if (name === 'type') {
-                                return NODETYPE;
-                            }
-                            return null;
-                        }
-                    }]
-
-                }
-            };
-        }
+        let rec = {
+            get : function() {
+                return ISDRAFT;
+            }
+        };
 
         t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
@@ -325,8 +314,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
 
-        NODETYPE = "DRAFT"
-        packageCtrl.onMailMessageGridSelect();
+        ISDRAFT = true;
+        packageCtrl.onMailMessageGridSelect(null, rec);
         t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
@@ -334,8 +323,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
         reset();
 
-        NODETYPE = "SENT"
-        packageCtrl.onMailMessageGridSelect();
+        ISDRAFT = false;
+        packageCtrl.onMailMessageGridSelect(null, rec);
         t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);

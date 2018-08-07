@@ -155,7 +155,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     itemId    : 'btn-editdraft',
                     hidden    : true,
                     bind      : {
-                        hidden : '{!isDraftLoaded}'
+                        hidden : '{!messageItem.draft}'
                     }
                 }, {
                     xtype     : 'button',
@@ -168,12 +168,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     },
                     hidden    : true,
                     bind      : {
-                        hidden : '{!isDraftLoaded}'
+                        hidden : '{!messageItem.draft}'
                     }
                 }, {
                     hidden    : true,
                     bind      : {
-                        hidden : '{isDraftLoaded}'
+                        hidden : '{messageItem.draft}'
                     },
                     xtype     : 'splitbutton',
                     scale     : 'small',

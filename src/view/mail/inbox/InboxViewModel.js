@@ -55,34 +55,6 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
         }
     },
 
-    formulas : {
-
-        /**
-         * Returns true if the currently selected MessageItem in the store of the
-         * MessageGrid is laoded from a Draft folder.
-         *
-         * @param get
-         *
-         * @returns {boolean}
-         */
-        isDraftLoaded : function(get) {
-            const me           = this,
-                  view         = me.getView(),
-                  store        = view.down('cn_mail-mailfoldertree').getStore(),
-                  mailFolderId = get('cn_mail_ref_mailmessagegrid.selection.mailFolderId');
-
-
-            let ind = store.findExact('id', mailFolderId);
-
-            if (ind === -1) {
-                return false;
-            }
-
-            return store.getAt(ind).get('type') === 'DRAFT';
-        }
-
-    },
-
     /**
      * Updates the unreadCount of the aasociated {@link conjoon.cn_mail.model.mail.folder.MailFolder}
      * found under the given mailFolderId by the number specified in unreadCount.

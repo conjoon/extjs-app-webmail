@@ -300,6 +300,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                     t.waitForMs(750, function(){
 
                         var messageItem = grid.getStore().getAt(0);
+                        messageItem.set('draft', false);
                         grid.getSelectionModel().select(messageItem);
 
                         t.waitForMs(500, function(){
@@ -309,25 +310,17 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                             t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(false);
                             t.expect(messageView.down('#btn-deletedraft').isVisible()).toBe(false);
 
-                            mailFolder = tree.getStore().getAt(3);
-                            t.expect(mailFolder.get('type')).toBe('DRAFT');
-                            tree.getSelectionModel().select(mailFolder);
+                            messageItem = grid.getStore().getAt(1);
+                            messageItem.set('draft', true);
+                            grid.getSelectionModel().select(messageItem);
 
-                            t.waitForMs(750, function(){
+                            t.waitForMs(250, function(){
+                                t.expect(messageView.down('#btn-replyall').isVisible()).toBe(false);
+                                t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(true);
+                                t.expect(messageView.down('#btn-deletedraft').isVisible()).toBe(true);
 
-                                var messageItem = grid.getStore().getAt(0);
-                                grid.getSelectionModel().select(messageItem);
-
-                                t.waitForMs(500, function(){
-                                    t.expect(messageView.down('#btn-replyall').isVisible()).toBe(false);
-                                    t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(true);
-                                    t.expect(messageView.down('#btn-deletedraft').isVisible()).toBe(true);
-
-                                    view.destroy();
-                                });
-
+                                view.destroy();
                             });
-
 
                         });
 
