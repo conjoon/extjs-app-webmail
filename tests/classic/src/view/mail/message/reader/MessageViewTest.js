@@ -385,11 +385,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
         t.it("fires cn_mail-messageitemload", function(t) {
 
-            t.diag("lowering SimManager-delay to 1");
-            Ext.ux.ajax.SimManager.init({
-                delay : 1
-            });
-
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
@@ -410,5 +405,22 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
         });
 
 
+        t.it("getMessageItem()", function(t) {
 
-});});
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.expect(view.getMessageItem()).toBe(null);
+
+            view.loadMessageItem(1);
+
+            t.waitForMs(750, function() {
+                t.expect(view.getMessageItem()).toBeTruthy();
+                t.expect(view.getMessageItem()).toBe(view.getViewModel().get('messageItem'));
+
+            });
+        });
+
+
+
+    });});

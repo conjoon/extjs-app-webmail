@@ -234,6 +234,19 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
 
 // -------- API
+
+    /**
+     * Returns the "messageItem" of this view's ViewModel.
+     *
+     * @return {null|conjoon.cn_mail.model.mail.message.MessageItem}
+     */
+    getMessageItem : function() {
+        const me = this;
+
+        return me.getViewModel().get('messageItem');
+    },
+
+
     /**
      * Sets the message item for this view, or null to clear the view.
      *
