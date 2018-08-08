@@ -640,9 +640,21 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onMessageEditButtonClick : function(btn) {
-        var me              = this,
-            sel             = me.getMailMessageGrid().getSelection(),
-            id              = sel[0].getId();
+        const me  = this,
+              tab = me.getMailDesktopView().getActiveTab();
+
+        let sel, id = null;
+
+        if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+            id = tab.getMessageItem().getId();
+        } else if (tab === me.getMailInboxView()) {
+            sel = me.getMailMessageGrid().getSelection(),
+            id  = sel[0].getId();
+        }
+
+        if (id === null) {
+            Ext.raise("Unexpected null-value for id.");
+        }
 
         me.showMailEditor(id, 'edit');
     },

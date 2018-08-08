@@ -144,6 +144,19 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     t.it("message edit buttons", function(t) {
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        let activeTab = null;
+
+        packageCtrl.getMailDesktopView = function() {
+
+            return {
+                getActiveTab : function() {
+                    return activeTab;
+                }
+            }
+
+        };
+
         packageCtrl.getMainPackageView = function() {
             return {
                 showMailEditor : function() {
@@ -160,6 +173,12 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                     }]
                 }
             };
+        };
+
+        activeTab = {};
+
+        packageCtrl.getMailInboxView = function() {
+            return activeTab;
         };
 
         t.isCalledNTimes('showMailEditor', packageCtrl, 5);
@@ -953,5 +972,49 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     });
 
 
+    t.it("onEditMessageButtonClick() - active tab is MessageView", function(t) {
+
+        t.it("message edit buttons", function(t) {
+
+            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+            let activeTab = null, ID = null, SETID = '7878977';
+
+            packageCtrl.getMailDesktopView = function() {
+                return {
+                    getActiveTab : function() {
+                        return activeTab;
+                    }
+                }
+            };
+
+            packageCtrl.getMainPackageView = function() {
+                return {
+                    showMailEditor : function(id) {
+                        ID = id;
+                    }
+                }
+            };
+
+            activeTab = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+            activeTab.getMessageItem = function() {
+                return {
+                    getId : function() {
+                        return SETID;
+                    }
+                }
+            };
+            packageCtrl.getMailInboxView = function() {
+                return activeTab;
+            };
+
+            t.expect(ID).toBe(null);
+            packageCtrl.onMessageEditButtonClick();
+            t.expect(ID).toBe(SETID);
+
+        });
+
+
+    });
 
 });
