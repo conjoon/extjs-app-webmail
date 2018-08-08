@@ -230,37 +230,6 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     /**
-     * Internal callback for the cn_mail-messageitemload event of an activated
-     * tab which has not loaded a MessageItem yet, thus cannot provide any
-     * information whether the MessageItem which is about to load is a message
-     * flagged as "draft".
-     *
-     * @param {cconjoon.cn_mail.view.mail.message.reader.MessageView} messageView
-     * @param {conjoon.cn_mail.model.mail.message.MessageItem}} messageItem
-     *
-     * @private
-     */
-    onMailMessageItemLoadForActivatedView : function(messageView, messageItem) {
-
-        const me = this;
-
-        if (!messageItem) {
-            messageItem = messageView.getViewModel().get('messageItem');
-        }
-
-        if (messageItem.get('draft')) {
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(false, false);
-        } else {
-            me.disableEmailActionButtons(false);
-            me.disableEmailEditButtons(true, false);
-        }
-
-        me.observedMessageView = null;
-    },
-
-
-    /**
      * Disables / enables the edit/delete button in the Navigation Toolbar, based
      * on the specified arguments. The first argument represents the disabled-state
      * of the edit-button, the second of the delete-button. If only one argument
@@ -640,17 +609,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onMessageEditButtonClick : function(btn) {
-        const me  = this,
-              tab = me.getMailDesktopView().getActiveTab();
-
-        let sel, id = null;
-
-        if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
-            id = tab.getMessageItem().getId();
-        } else if (tab === me.getMailInboxView()) {
-            sel = me.getMailMessageGrid().getSelection(),
-            id  = sel[0].getId();
-        }
+        const me = this,
+            id = me.getIdFromGridOrMessageView();
 
         if (id === null) {
             Ext.raise("Unexpected null-value for id.");
@@ -679,9 +639,13 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onReplyToButtonClick : function(btn) {
-        var me              = this,
-            sel             = me.getMailMessageGrid().getSelection(),
-            id              = sel[0].getId();
+        const me = this,
+              id = me.getIdFromGridOrMessageView();
+
+        if (id === null) {
+            Ext.raise("Unexpected null-value for id.");
+        }
+
 
         me.showMailEditor(id, 'replyTo');
     },
@@ -693,9 +657,13 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onReplyAllButtonClick : function(btn) {
-        var me              = this,
-            sel             = me.getMailMessageGrid().getSelection(),
-            id              = sel[0].getId();
+        const me = this,
+              id = me.getIdFromGridOrMessageView();
+
+        if (id === null) {
+            Ext.raise("Unexpected null-value for id.");
+        }
+
 
         me.showMailEditor(id, 'replyAll');
     },
@@ -707,9 +675,12 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onForwardButtonClick : function(btn) {
-        var me              = this,
-            sel             = me.getMailMessageGrid().getSelection(),
-            id              = sel[0].getId();
+        const me = this,
+              id = me.getIdFromGridOrMessageView();
+
+        if (id === null) {
+            Ext.raise("Unexpected null-value for id.");
+        }
 
         me.showMailEditor(id, 'forward');
     },
@@ -858,6 +829,61 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     privates : {
+
+        /**
+         * Helper function to retrieve the id of the MessageGrid in the InboxView
+         * or the MessageItem of a MessageView, depending on which tab is currently
+         * active in the MailDesktopView.
+         *
+         * @return {String}
+         *
+         * @private
+         */
+        getIdFromGridOrMessageView : function() {
+
+            const me  = this,
+                tab = me.getMailDesktopView().getActiveTab();
+
+            if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+                return  tab.getMessageItem().getId();
+            } else if (tab === me.getMailInboxView()) {
+                return me.getMailMessageGrid().getSelection()[0].getId();
+            }
+
+            return null;
+        },
+
+
+        /**
+         * Internal callback for the cn_mail-messageitemload event of an activated
+         * tab which has not loaded a MessageItem yet, thus cannot provide any
+         * information whether the MessageItem which is about to load is a message
+         * flagged as "draft".
+         *
+         * @param {cconjoon.cn_mail.view.mail.message.reader.MessageView} messageView
+         * @param {conjoon.cn_mail.model.mail.message.MessageItem}} messageItem
+         *
+         * @private
+         */
+        onMailMessageItemLoadForActivatedView : function(messageView, messageItem) {
+
+            const me = this;
+
+            if (!messageItem) {
+                messageItem = messageView.getViewModel().get('messageItem');
+            }
+
+            if (messageItem.get('draft')) {
+                me.disableEmailActionButtons(true);
+                me.disableEmailEditButtons(false, false);
+            } else {
+                me.disableEmailActionButtons(false);
+                me.disableEmailEditButtons(true, false);
+            }
+
+            me.observedMessageView = null;
+        },
+
 
         /**
          * Opens the MaiLEditor for the specified id and the specified action (
