@@ -24,6 +24,49 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
     var packageCtrl;
 
+    const configureButtonMockCaller = function() {
+            return {
+                '#cn_mail-nodeNavEditMessage'   : 0,
+                '#cn_mail-nodeNavReplyTo'       : 0,
+                '#cn_mail-nodeNavReplyAll'      : 0,
+                '#cn_mail-nodeNavForward'       : 0,
+                '#cn_mail-nodeNavDeleteMessage' : 0
+            };
+        },
+        configurePackageCtrlWithButtonMocks = function(packageCtrl, ENABLED) {
+        packageCtrl.getReplyToButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
+                }
+            }
+        };
+        packageCtrl.getReplyAllButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyAll']++;}
+                }
+            }
+        };
+        packageCtrl.getForwardButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavForward']++;}
+                }
+            }
+        };
+        packageCtrl.getEditButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavEditMessage']++;}
+                }
+            }
+        };
+        packageCtrl.getDeleteButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavDeleteMessage']++;}
+                }
+            }
+        };
+
+    };
+
     t.afterEach(function() {
         if (packageCtrl) {
             packageCtrl.destroy();
@@ -218,30 +261,41 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             '#cn_mail-nodeNavDeleteMessage' : 0
         };
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        packageCtrl.getNavigationToolbar = function() {
-            return {
-                down : function(id) {
-                    if (id === '#cn_mail-nodeNavEditMessage' ||
-                        id === '#cn_mail-nodeNavReplyTo' ||
-                        id === '#cn_mail-nodeNavReplyAll' ||
-                        id === '#cn_mail-nodeNavForward' ||
-                        id === '#cn_mail-nodeNavDeleteMessage') {
-                        return {
-                            setDisabled : function(doIt) {
-                                if (doIt === true) {
-                                    DISABLED[id]++;
-                                }
-                            }
-                        }
-                    }
-                    return {
-                        setDisabled : Ext.emptyFn
-                    }
 
+
+        packageCtrl.getReplyToButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt === true) {DISABLED['#cn_mail-nodeNavReplyTo']++;}
                 }
-            };
+            }
+        };
+        packageCtrl.getReplyAllButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt === true) {DISABLED['#cn_mail-nodeNavReplyAll']++;}
+                }
+            }
+        };
+        packageCtrl.getForwardButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt === true) {DISABLED['#cn_mail-nodeNavForward']++;}
+                }
+            }
+        };
+        packageCtrl.getEditButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt === true) {DISABLED['#cn_mail-nodeNavEditMessage']++;}
+                }
+            }
+        };
+        packageCtrl.getDeleteButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt === true) {DISABLED['#cn_mail-nodeNavDeleteMessage']++;}
+                }
+            }
         };
 
+        t.isCalledOnce('disableEmailActionButtons', packageCtrl);
+        t.isCalledOnce('disableEmailEditButtons', packageCtrl);
 
         t.expect(DISABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
@@ -279,34 +333,43 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                 };
             };
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        packageCtrl.getNavigationToolbar = function() {
-            return {
-                down : function(id) {
-                    if (id === '#cn_mail-nodeNavEditMessage' ||
-                        id === '#cn_mail-nodeNavReplyTo' ||
-                        id === '#cn_mail-nodeNavReplyAll' ||
-                        id === '#cn_mail-nodeNavForward' ||
-                        id === '#cn_mail-nodeNavDeleteMessage') {
-                        return {
-                            setDisabled : function(doIt) {
-                                if (doIt === false) {
-                                    ENABLED[id]++;
-                                }
-                            }
-                        }
-                    }
-                    return {
-                        setDisabled : Ext.emptyFn
-                    }
-
+        packageCtrl.getReplyToButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
                 }
-            };
+            }
+        };
+        packageCtrl.getReplyAllButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyAll']++;}
+                }
+            }
+        };
+        packageCtrl.getForwardButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavForward']++;}
+                }
+            }
+        };
+        packageCtrl.getEditButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavEditMessage']++;}
+                }
+            }
+        };
+        packageCtrl.getDeleteButton = function() {
+            return {setDisabled: function (doIt) {
+                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavDeleteMessage']++;}
+                }
+            }
         };
         let rec = {
             get : function() {
                 return ISDRAFT;
             }
         };
+
+        t.isCalled('activateButtonsForMessageItem', packageCtrl);
 
         t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
@@ -545,5 +608,350 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         packageCtrl.onMailFolderRoute();
 
     });
+
+
+    t.it("disableEmailActionButtons()", function(t){
+
+        let ENABLED = configureButtonMockCaller();
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+        packageCtrl.disableEmailActionButtons(true);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+
+        packageCtrl.disableEmailActionButtons(false);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+    });
+
+
+    t.it("disableEmailEditButtons()", function(t){
+
+        let ENABLED = configureButtonMockCaller();
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+        packageCtrl.disableEmailEditButtons(true);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+
+        packageCtrl.disableEmailEditButtons(false);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+
+        packageCtrl.disableEmailEditButtons(false, false);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(2);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(2);
+
+        packageCtrl.disableEmailEditButtons(true, false);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(2);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(3);
+
+        packageCtrl.disableEmailEditButtons(false, true);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(3);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(3);
+    });
+
+
+    t.it("activateButtonsForMessageItem()", function(t) {
+
+        let ENABLED = configureButtonMockCaller();
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+
+        let ISDRAFT,
+            rec = {
+                get : function() {
+                    return ISDRAFT;
+                }
+            };
+
+        ISDRAFT = false;
+        packageCtrl.activateButtonsForMessageItem(rec);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+
+        ISDRAFT = true;
+        packageCtrl.activateButtonsForMessageItem(rec);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(2);
+
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - panel is MessageView", function(t) {
+
+        let ISDRAFT,
+            ENABLED = configureButtonMockCaller(),
+            panel,
+            activatedPanel;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+        activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+        activatedPanel.getViewModel = function() {
+            return {
+                get : function() {
+                    return {
+                        get : function() {
+                            return ISDRAFT;
+                        }
+                    }
+                }
+            }
+        };
+
+        ISDRAFT = false;
+
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item", function(t) {
+
+        let ISDRAFT,
+            ENABLED = configureButtonMockCaller(),
+            panel, rec,
+            activatedPanel;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+        activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+        activatedPanel.loadingItem = {};
+
+
+        ISDRAFT = true;
+        rec = {
+            get : function() {
+                return ISDRAFT;
+            }
+        };
+
+        t.isCalled('onMailMessageItemLoadForActivatedView', packageCtrl);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        activatedPanel.fireEvent('cn_mail-messageitemload', activatedPanel, rec);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", function(t) {
+
+        let ISDRAFT,
+            ENABLED = configureButtonMockCaller(),
+            panel, rec,
+            activatedPanel, otherPanel;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+        activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+        otherPanel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+        activatedPanel.loadingItem = {};
+
+        // we add a loading item here so we can check that
+        // onMailMessageItemLoadForActivatedView is never called
+        otherPanel.loadingItem = {};
+
+
+        ISDRAFT = false;
+        rec = {
+            get : function() {
+                return ISDRAFT;
+            }
+        };
+
+        t.isntCalled('onMailMessageItemLoadForActivatedView', packageCtrl);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+        packageCtrl.onMailDesktopViewTabChange(null, otherPanel);
+
+        activatedPanel.fireEvent('cn_mail-messageitemload', activatedPanel, rec);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - panel is MailInboxView with selection", function(t) {
+
+        let ENABLED = configureButtonMockCaller(),
+            panel,
+            ISDRAFT = false,
+            rec = {
+                get : function() {
+                    return ISDRAFT;
+                }
+            },
+            activatedPanel = {
+
+            };
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        packageCtrl.getMailInboxView = function() {
+            return activatedPanel;
+        };
+
+        packageCtrl.getMailMessageGrid = function() {
+            return {
+                getSelection : function() {
+                    return [
+                        rec
+                    ];
+                }
+            }
+        };
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - panel is MailInboxView with no selection", function(t) {
+
+        let ENABLED = configureButtonMockCaller(),
+            panel,
+            ISDRAFT = false,
+            rec = {
+                get : function() {
+                    return ISDRAFT;
+                }
+            },
+            activatedPanel = {
+
+            };
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        packageCtrl.getMailInboxView = function() {
+            return activatedPanel;
+        };
+
+        packageCtrl.getMailMessageGrid = function() {
+            return {
+                getSelection : function() {
+                    return [];
+                }
+            }
+        };
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - panel is MessageEditor", function(t) {
+
+        let ENABLED = configureButtonMockCaller(),
+            panel,
+            activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                messageDraft : {
+                    id : '1'
+                }
+            });
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+    });
+
+
+    t.it("onMailDesktopViewTabChange() - no familiar panel", function(t) {
+
+        let ENABLED = configureButtonMockCaller(),
+            panel,
+            activatedPanel = Ext.create('Ext.Panel');
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+    });
+
+
 
 });

@@ -46,6 +46,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      * @param {Array|conjoon.cn_mail.model.mail.message.MessageItem} item
      */
 
+    /**
+     * @event cn_mail-messageitemload
+     * Fires when a MessageItem has been loaded into the view.
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} item
+     */
+
     layout : {
         type : 'vbox',
         align : 'stretch'
@@ -302,7 +309,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
             me.setMessageItem(messageItem);
             vm.set('isLoading', false);
-
+            me.loadingItem = null;
+            me.fireEvent('cn_mail-messageitemload', me, messageItem);
         }
 
     }

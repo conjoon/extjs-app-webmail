@@ -46,7 +46,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     extend : 'conjoon.cn_core.app.PackageController',
 
     requires : [
-        'conjoon.cn_mail.view.mail.MailDesktopView'
+        'conjoon.cn_mail.view.mail.MailDesktopView',
+        'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
+        'conjoon.cn_mail.view.mail.message.reader.MessageView'
     ],
 
     routes : {
@@ -78,6 +80,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     },
 
     control : {
+        'cn_mail-maildesktopview' : {
+            tabchange : 'onMailDesktopViewTabChange'
+        },
         'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree' : {
             selectionchange : 'onMailFolderTreeSelectionChange'
         },
@@ -147,7 +152,185 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     }, {
         ref      : 'switchReadingPaneButton',
         selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane'
+    }, {
+        ref      : 'replyToButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyTo'
+    }, {
+        ref      : 'replyAllButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyAll'
+    }, {
+        ref      : 'forwardButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavForward'
+    }, {
+        ref      : 'editButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage'
+    }, {
+        ref      : 'deleteButton',
+        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavDeleteMessage'
     }],
+
+
+    /**
+     * @private
+     */
+    observedMessageView : null,
+
+
+    /**
+     * Callback for the MailDesktopView's tabchange event. Makes sure the
+     * buttons in the navigation Toolbar are properly activated/deactivated,
+     * based on the activated panel.
+     *
+     * @param {conjoon.cn_mail.view.mail.MailDesktopView} panel
+     * @param {Ext.Panel} activatedPanel
+     */
+    onMailDesktopViewTabChange : function(panel, activatedPanel) {
+
+        const me = this;
+
+        if (me.observedMessageView) {
+            me.observedMessageView.un(
+                'cn_mail-messageitemload',
+                me.onMailMessageItemLoadForActivatedView,
+                me
+            );
+        }
+
+        if (activatedPanel === me.getMailInboxView()) {
+            let selection = me.getMailMessageGrid().getSelection();
+
+            if (selection.length) {
+                me.activateButtonsForMessageItem(selection[0]);
+            } else {
+                me.disableEmailActionButtons(true);
+                me.disableEmailEditButtons(true);
+            }
+
+        } else if (activatedPanel instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditor) {
+
+            me.disableEmailActionButtons(true);
+            me.disableEmailEditButtons(true, false);
+
+        } else if  (activatedPanel instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+
+            if (activatedPanel.loadingItem) {
+                me.observedMessageView = activatedPanel.on('cn_mail-messageitemload',
+                    me.onMailMessageItemLoadForActivatedView,
+                    me, {single : true});
+            } else {
+                me.onMailMessageItemLoadForActivatedView(activatedPanel);
+            }
+
+        } else {
+
+            me.disableEmailActionButtons(true);
+            me.disableEmailEditButtons(true);
+        }
+    },
+
+
+    /**
+     * Internal callback for the cn_mail-messageitemload event of an activated
+     * tab which has not loaded a MessageItem yet, thus cannot provide any
+     * information whether the MessageItem which is about to load is a message
+     * flagged as "draft".
+     *
+     * @param {cconjoon.cn_mail.view.mail.message.reader.MessageView} messageView
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem}} messageItem
+     *
+     * @private
+     */
+    onMailMessageItemLoadForActivatedView : function(messageView, messageItem) {
+
+        const me = this;
+
+        if (!messageItem) {
+            messageItem = messageView.getViewModel().get('messageItem');
+        }
+
+        if (messageItem.get('draft')) {
+            me.disableEmailActionButtons(true);
+            me.disableEmailEditButtons(false, false);
+        } else {
+            me.disableEmailActionButtons(false);
+            me.disableEmailEditButtons(true, false);
+        }
+
+        me.observedMessageView = null;
+    },
+
+
+    /**
+     * Disables / enables the edit/delete button in the Navigation Toolbar, based
+     * on the specified arguments. The first argument represents the disabled-state
+     * of the edit-button, the second of the delete-button. If only one argument
+     * is specified, this will be used for both buttons.
+     *
+     * @param {Boolean} editDis true to disable the edit-button, false to enable
+     * it. Omit the second argument and this coolean value will also be used for
+     * the delete-button
+     * @param {Boolean} deleteDis, optional. True to disable the delete-button,
+     * false to enable it.
+     */
+    disableEmailEditButtons : function(editDis, deleteDis) {
+
+        const me        = this,
+              editBtn   = me.getEditButton(),
+              deleteBtn = me.getDeleteButton();
+
+        if (arguments.length === 1) {
+            deleteDis = editDis;
+        }
+
+        editBtn.setDisabled(editDis);
+        deleteBtn.setDisabled(deleteDis);
+    },
+
+
+    /**
+     * Enables or disables the forward, reply to, reply all buttons based on
+     * disable.
+     *
+     * @param {Boolean} disable true to disable the buttons, false to enable them.
+     */
+    disableEmailActionButtons : function(disable) {
+        const me          = this,
+            replyToBtn  = me.getReplyToButton(),
+            replyAllBtn = me.getReplyAllButton(),
+            forwardBtn  = me.getForwardButton();
+
+        replyToBtn.setDisabled(disable);
+        replyAllBtn.setDisabled(disable);
+        forwardBtn.setDisabled(disable);
+    },
+
+
+    /**
+     * Disables/enables the action/edit buttons for the specified MessageItem.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem} record
+     *
+     * @see disableEmailActionButtons
+     * @see disableEmailEditButtons
+     */
+    activateButtonsForMessageItem : function(record) {
+
+        const me      = this,
+              isDraft = record.get('draft');
+
+        switch (isDraft) {
+            case true:
+                me.disableEmailActionButtons(true);
+                me.disableEmailEditButtons(false, false);
+                break;
+
+            default:
+                me.disableEmailActionButtons(false);
+                me.disableEmailEditButtons(true, false);
+                break;
+        }
+
+    },
 
 
     /**
@@ -316,14 +499,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     onMailMessageGridDeselect : function(selectionModel, record) {
 
-        var me     = this,
-            navBar = me.getNavigationToolbar();
+        const me = this;
 
-        navBar.down('#cn_mail-nodeNavEditMessage').setDisabled(true);
-        navBar.down('#cn_mail-nodeNavReplyTo').setDisabled(true);
-        navBar.down('#cn_mail-nodeNavReplyAll').setDisabled(true);
-        navBar.down('#cn_mail-nodeNavForward').setDisabled(true);
-        navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(true);
+        me.disableEmailActionButtons(true);
+        me.disableEmailEditButtons(true);
    },
 
 
@@ -336,23 +515,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     onMailMessageGridSelect : function(selectionModel, record) {
 
-        var me             = this,
-            isDraft        = record.get('draft'),
-            navBar         = me.getNavigationToolbar();
+        const me = this;
 
-        switch (isDraft) {
-            case true:
-                navBar.down('#cn_mail-nodeNavEditMessage').setDisabled(false);
-                navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(false);
-                break;
-
-            default:
-                navBar.down('#cn_mail-nodeNavReplyTo').setDisabled(false);
-                navBar.down('#cn_mail-nodeNavReplyAll').setDisabled(false);
-                navBar.down('#cn_mail-nodeNavForward').setDisabled(false);
-                navBar.down('#cn_mail-nodeNavDeleteMessage').setDisabled(false);
-                break;
-        }
+        me.activateButtonsForMessageItem(record);
 
     },
 
