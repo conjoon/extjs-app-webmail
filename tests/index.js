@@ -215,6 +215,11 @@ harness.start({
                             'classic/src/view/mail/message/reader/MessageViewTest.js'
                         ]}
                 ]
+            }, {
+                group : 'mixin',
+                items : [
+                    'classic/src/view/mail/mixin/DeleteConfirmDialogTest.js'
+                ]
             },
             'classic/src/view/mail/MailDesktopViewTest.js'
             ]
