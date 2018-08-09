@@ -83,7 +83,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
 
     requires : [
-        'conjoon.cn_mail.model.mail.message.MessageItem',
+        'conjoon.cn_mail.model.mail.message.AbstractMessageItem',
         'conjoon.cn_mail.data.mail.service.mailbox.Operation'
     ],
 
@@ -120,8 +120,10 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
     /**
      * Moves the requested MessageItem to the trash folder or deletes it,
      * depending on the parent folder of the messageItem.
+     * If the messageItem is a phantom record, it will not be moved, and instead
+     * delete will be called on it immediately.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem
      * @param {Object} options An additional, optional argument with the following options
      * @param {Object} options.before A callback for when the operation is about to start
      * @param {Object} options.success A callback for when the operation successfully finished
@@ -162,7 +164,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // check whether we are already in the trashbin
         let sourceMailFolderId = messageItem.get('mailFolderId');
-        if (trashFolderId === sourceMailFolderId) {
+        if (messageItem.phantom === true || trashFolderId === sourceMailFolderId) {
             return me.deleteMessage(messageItem, options);
         }
 
@@ -177,7 +179,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * The unreadCount of the belonging source and target mailFolder will also
      * be updated.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem
      * @param {Object} options An additional, optional argument with the following options
      * @param {Object} options.before A callback for when the operation is about to start
      * @param {Object} options.success A callback for when the operation successfully finished
@@ -223,7 +225,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * The unreadCount of the belonging source and target mailFolder will also
      * be updated.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem
      * @param {String} mailFolderId
      * @param {Object} options An additional, optional argument with the following options
      * @param {Object} options.before A callback for when the operation is about to start
@@ -294,20 +296,20 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
 
     /**
-     * Checks if the specified argument is a MessageItem.
+     * Checks if the specified argument is an AbstractMessageItem.
      *
-     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem
      *
-     * @return {conjoon.cn_mail.model.mail.message.MessageItem}
+     * @return {conjoon.cn_mail.model.mail.message.AbstractMessageItem}
      *
      * @private
      *
-     * @throws if messageItem is not an instance of conjoon.cn_mail.model.mail.message.MessageItem.
+     * @throws if messageItem is not an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem.
      */
     filterMessageItemValue : function(messageItem) {
-        if (!(messageItem instanceof conjoon.cn_mail.model.mail.message.MessageItem)) {
+        if (!(messageItem instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem)) {
             Ext.raise({
-                msg         : "'messageItem' must be an instance of conjoon.cn_mail.model.mail.message.MessageItem",
+                msg         : "'messageItem' must be an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem",
                 messageItem : messageItem
             });
         }

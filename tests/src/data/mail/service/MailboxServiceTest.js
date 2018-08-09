@@ -585,4 +585,34 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("filterMessageItemValue() - accepts AbstractMessageItems", function(t) {
+
+        let service  = createService(),
+            abstract = Ext.create('conjoon.cn_mail.model.mail.message.AbstractMessageItem');
+
+        t.expect(service.filterMessageItemValue(abstract)).toBe(abstract);
+    });
+
+
+    t.it("moveToTrashOrDeleteMessage() - message not moved, deleted directly since it was a phantom", function(t) {
+
+        let service     = createService(),
+            messageItem =  Ext.create('conjoon.cn_mail.model.mail.message.MessageItem');
+
+        t.isntCalled('moveMessage', service);
+        t.isCalled('deleteMessage', service);
+
+        let cbOptions = {success : Ext.emptyFn, failure : Ext.emptyFn};
+
+        t.waitForMs(250, function() {
+            let op = service.moveToTrashOrDeleteMessage(messageItem, cbOptions);
+
+            t.waitForMs(250, function() {
+                t.expect(op.getResult().success).toBe(true);
+            });
+        });
+
+    });
+
+
 });});});
