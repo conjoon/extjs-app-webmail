@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -216,6 +216,30 @@ describe('conjoon.cn_mail.view.mail.message.editor.AttachmentListTest', function
         t.expect(rec.$className).toBe(view.getStore().getModel().getName());
         t.expect(view.el.selectNode('div.attachment')).not.toBe(null);
     });
+
+
+    t.it("Should process beforedestroy properly", function(t) {
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
+                renderTo : document.body,
+                editMode : 'CREATE',
+                store : {
+                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
+                    proxy : {
+                        type : 'memory'
+                    }
+                }
+            });
+
+        t.isntCalled('getRange', view.getStore());
+
+        view.getStore().destroy();
+        view.destroy();
+
+    });
+
+
+
 
 
 
