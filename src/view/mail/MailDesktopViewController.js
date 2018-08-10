@@ -103,16 +103,18 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} inboxView
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
+     * @param {Ext.Panel} requestingView if specified, any opened tab that is this
+     * requestingView will not cancel the delete process
      *
      * @return {Boolean}
      */
-    onBeforeMessageItemDelete : function(inboxView, messageItem) {
+    onBeforeMessageItemDelete : function(inboxView, messageItem, requestingView = null) {
 
         const me   = this,
               view = me.getView(),
               id   = messageItem.getId();
 
-        let editor, itemIds = [
+        let openedView, itemIds = [
             me.getItemIdForMessageEditor(id, 'edit'),
             me.getItemIdForMessageEditor(id, 'replyTo'),
             me.getItemIdForMessageEditor(id, 'replyAll'),
@@ -121,11 +123,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         ];
 
         for (let i = 0, len = itemIds.length; i < len; i++) {
-            editor = view.down('#' + itemIds[i]);
+            openedView = view.down('#' + itemIds[i]);
 
-            if (editor) {
+            if (openedView && openedView !== requestingView) {
                 conjoon.Toast.warn("Please close all related tabs to this message first.");
-                view.setActiveTab(editor);
+                view.setActiveTab(openedView);
                 return false;
             }
         }

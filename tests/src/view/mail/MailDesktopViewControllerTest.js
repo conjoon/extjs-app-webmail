@@ -22,7 +22,26 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) {
 
-    const getRecordCollection = function () {
+    const selectMailFolder = function(panel, storeAt) {
+
+            let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
+
+            panel.down('cn_mail-mailfoldertree').getSelectionModel()
+                .select(folder);
+
+            return folder;
+
+        },
+        selectMessage = function(panel, storeAt) {
+
+            let message = panel.down('cn_mail-mailmessagegrid').getStore().getAt(storeAt);
+
+            panel.down('cn_mail-mailmessagegrid').getSelectionModel()
+                .select(message);
+
+            return message;
+        },
+        getRecordCollection = function () {
             return [
                 Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                     id: '1',
@@ -1494,7 +1513,213 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
     });
 
 
+    t.it("deleting a message draft  - picked from DRAFTS", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller: viewController,
+            renderTo: document.body,
+            width: 800,
+            height: 600
+        });
 
 
+        let editor, draft;
+
+
+        t.waitForMs(750, function() {
+
+            let mailFolder = selectMailFolder(panel, 3);
+            t.expect(mailFolder.get('type')).toBe('DRAFT');
+
+            t.waitForMs(750, function(){
+
+                // intentionally not selected
+                draft = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
+                t.expect(draft.get('mailFolderId')).toBe(mailFolder.getId());
+                editor = viewController.showMailEditor(draft.getId(), 'edit');
+                t.expect(panel.down('cn_mail-mailmessagegrid').getStore().getAt(0).getId()).toBe(draft.getId());
+
+                t.waitForMs(750, function() {
+
+                    panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
+                        draft,
+                        false,
+                        editor
+                    );
+
+                    t.waitForMs(750, function() {
+
+                        let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
+                        t.click(yesButton[0]);
+
+
+                        t.waitForMs(750, function() {
+
+                            editor.close();
+
+                            t.expect(draft.get('mailFolderId')).toBe('5');
+
+                            t.expect(panel.down('cn_mail-mailmessagegrid').getStore().getAt(0).getId()).not.toBe(draft.getId());
+
+                            let trashMailFolder = selectMailFolder(panel, 4);
+                            t.expect(trashMailFolder.get('type')).toBe('TRASH');
+
+                            t.waitForMs(750, function() {
+
+                                let movedRec = panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordById(draft.getId());
+                                t.expect(movedRec).toBeTruthy();
+
+                                editor = viewController.showMailEditor(movedRec.getId(), 'edit');
+
+                                t.waitForMs(750, function() {
+
+                                    draft = editor.getMessageDraft();
+                                    t.expect(movedRec).toBeTruthy();
+                                    panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
+                                        draft,
+                                        false,
+                                        editor
+                                    );
+
+                                    t.waitForMs(750, function() {
+
+                                        yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
+                                        t.click(yesButton[0]);
+
+                                        t.waitForMs(750, function() {
+
+                                            editor.close();
+
+                                            t.expect(draft.erased).toBe(true);
+                                            let removedRec = panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordById(draft.getId());
+                                            t.expect(removedRec).toBe(null);
+
+                                            panel.destroy();
+                                            panel = null;
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+
+    t.it("deleting a message draft  - moved immediately to TRASH", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller: viewController,
+            renderTo: document.body,
+            width: 800,
+            height: 600
+        });
+
+
+        let editor, draft;
+
+
+        t.waitForMs(750, function() {
+
+            let mailFolder = selectMailFolder(panel, 3);
+            t.expect(mailFolder.get('type')).toBe('DRAFT');
+
+            t.waitForMs(750, function(){
+
+                // intentionally not selected
+                draft = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
+                t.expect(draft.get('mailFolderId')).toBe(mailFolder.getId());
+
+                t.waitForMs(750, function() {
+
+                    mailFolder = selectMailFolder(panel, 4);
+                    t.expect(mailFolder.get('type')).toBe('TRASH');
+
+                    t.waitForMs(750, function() {
+
+                        t.expect(panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordById(draft.getId())).toBe(null);
+
+                        editor = viewController.showMailEditor(draft.getId(), 'edit');
+
+                        t.waitForMs(750, function() {
+
+                            panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
+                                draft,
+                                false,
+                                editor
+                            );
+
+                            t.waitForMs(750, function() {
+
+                                let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
+                                t.click(yesButton[0]);
+
+
+                                t.waitForMs(750, function() {
+
+                                    editor.close();
+
+                                    t.expect(panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordById(draft.getId())).not.toBe(null);
+
+                                    panel.destroy();
+                                    panel = null;
+                                });
+                            });
+
+                        });
+
+                    });
+                });
+            });
+        });
+    });
+
+
+    t.it("onBeforeMessageItemDelete() - requestingView", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600
+        });
+
+        let rec       = conjoon.cn_mail.model.mail.message.MessageItem.load('123'),
+            id        = rec.getId() + '',
+            inboxView = panel.down('cn_mail-mailinboxview');
+
+        t.waitForMs(750, function() {
+
+            let edit = viewController.showMailEditor(id, 'edit');
+
+            panel.setActiveTab(inboxView);
+
+            t.expect(viewController.onBeforeMessageItemDelete(edit, rec, edit)).toBe(true);
+
+            t.waitForMs(750, function () {
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+    });
 
 });})});});});});
