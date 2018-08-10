@@ -33,7 +33,13 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
 
         return folder;
 
-    }, selectMessage = function(panel, storeAt) {
+        }, deselectMessage = function(panel, message) {
+            panel.down('cn_mail-mailmessagegrid').getSelectionModel()
+                .deselect(message);
+
+        },
+
+        selectMessage = function(panel, storeAt) {
 
         let message = panel.down('cn_mail-mailmessagegrid').getStore().getAt(storeAt);
 
@@ -281,6 +287,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             });
 
         t.isCalled('moveOrDeleteMessage', viewController);
+
         viewController.onRowFlyMenuItemClick(null, null, 'delete', rec);
     });
 
@@ -373,18 +380,22 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             t.waitForMs(250, function() {
 
-                let messageItem = selectMessage(panel, 3);
+                let messageItem = selectMessage(panel, 3),
+                    owningStore = messageItem.store;
 
-                messageItem.unjoin(messageItem.store);
+
+                messageItem.unjoin(owningStore);
                 messageItem.set('cn_moved',   true);
 
 
                 let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
                     request : {
-                        type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
-                        record : messageItem
+                        type        : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                        record      : messageItem,
+                        owningStore : owningStore
                     }
                 });
+
 
                 t.expect(messageItem.get('cn_moved')).toBe(true);
                 t.expect(viewController.onMessageMovedOrDeletedFailure(op)).toBe(op);
@@ -395,8 +406,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 messageItem.set('cn_deleted', true);
                 op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
                     request : {
-                        type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
-                        record : messageItem
+                        type        : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                        record      : messageItem,
+                        owningStore : owningStore
                     }
                 });
 
@@ -423,13 +435,14 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(750, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(750, function() {
 
-                let messageItem = selectMessage(panel, 3);
+                let messageItem = selectMessage(panel, 3),
+                    owningStore = messageItem.store;
 
                 messageItem.unjoin(messageItem.store);
                 messageItem.set('cn_moved',   true);
@@ -438,7 +451,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                     request : {
                         type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                         record         : messageItem,
-                        targetFolderId : "5"
+                        targetFolderId : "5",
+                        owningStore    : owningStore
                     }
                 });
 
@@ -464,17 +478,18 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(750, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(750, function() {
 
-                let messageItem = selectMessage(panel, 3);
-
+                let messageItem = selectMessage(panel, 3),
+                    owningStore = messageItem.store;
+                deselectMessage(panel, messageItem);
                 selectMailFolder(panel, 4);
 
-                t.waitForMs(250, function() {
+                t.waitForMs(750, function() {
                     messageItem.unjoin(messageItem.store);
                     messageItem.set('cn_moved',   true);
 
@@ -482,7 +497,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                         request : {
                             type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                             record         : messageItem,
-                            targetFolderId : "5"
+                            targetFolderId : "5",
+                            owningStore    : owningStore
                         }
                     });
 
@@ -515,7 +531,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             t.waitForMs(250, function() {
 
-                let messageItem = selectMessage(panel, 3);
+                let messageItem = selectMessage(panel, 3),
+                    owningStore = messageItem.store;
 
                 selectMailFolder(panel, 4);
 
@@ -525,8 +542,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
                     let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
                         request : {
-                            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
-                            record : messageItem
+                            type        : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                            record      : messageItem,
+                            owningStore : owningStore
                         }
                     });
 
@@ -559,15 +577,17 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
             t.waitForMs(250, function() {
 
-                let messageItem = selectMessage(panel, 3);
+                let messageItem = selectMessage(panel, 3),
+                    owningStore = messageItem.store;
 
                     messageItem.unjoin(messageItem.store);
                     messageItem.set('cn_deleted', true);
 
                     let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
                         request : {
-                            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
-                            record : messageItem
+                            type        : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                            record      : messageItem,
+                            owningStore : owningStore
                         }
                     });
 
