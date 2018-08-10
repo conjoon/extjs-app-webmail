@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -762,6 +762,33 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     });
 
+
+    t.it("getMessageDraft()", function(t){
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+
+        view = createWithViewConfig(viewConfig);
+
+        t.waitForMs(250, function() {
+
+            t.expect(view.getMessageDraft()).toBeTruthy();
+            t.expect(view.getMessageDraft()).toBe(view.getViewModel().get('messageDraft'));
+
+        });
+    })
+
+
+    t.it("confirmDialogMask mixin", function(t){
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+
+        view = createWithViewConfig(viewConfig);
+
+        t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
+        t.expect(view.canCloseAfterDelete).toBe(true);
+    })
 
 });
 });

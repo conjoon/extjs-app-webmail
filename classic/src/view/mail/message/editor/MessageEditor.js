@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,10 @@
 Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     extend : 'Ext.form.Panel',
+
+    mixins : [
+        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+    ],
 
     requires : [
         'conjoon.cn_comp.component.LoadMask',
@@ -710,6 +714,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         });
 
         me.loadingMask.show();
+    },
+
+
+    /**
+     * Returns the MessageDraft of this view's ViewModel.
+     *
+     * @returns {conjoon.cn_mail.model.mail.message.MessageDraft}
+     */
+    getMessageDraft : function() {
+        return this.getViewModel().get('messageDraft');
     }
 
 
