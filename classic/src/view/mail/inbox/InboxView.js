@@ -59,6 +59,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      * Gets fired before a MessageItem should be deleted.
      * Return "false" in any listener to prevent the deleting of the specified
      * MessageItem.
+     * @param {Ext.Component} Any component that "owns" this item that is about to
+     * get deleted and which should be involved in this delete-process. Can also be
+     * a container that owns a child component displaying the record which is
+     * about to get deleted
      */
 
     layout  : {
