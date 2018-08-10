@@ -461,7 +461,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
     /**
      * Callback for the MessageGrid's deselect event. Makes sure that editor-
-     * related controls are disabled.
+     * related controls are disabled if the currently active view is the InboxView
      *
      * @param selectionModel
      * @param record
@@ -469,6 +469,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     onMailMessageGridDeselect : function(selectionModel, record) {
 
         const me = this;
+
+        if (me.getMailDesktopView().getActiveTab() !== me.getMailInboxView()) {
+            return;
+        }
 
         me.disableEmailActionButtons(true);
         me.disableEmailEditButtons(true);
@@ -626,10 +630,18 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onMessageDeleteButtonClick : function(btn) {
-        const me  = this,
-              sel = me.getMailMessageGrid().getSelection();
+        const me   = this,
+              item = me.getItemOrDraftFromActiveView();
 
-        me.getMailInboxView().getController().moveOrDeleteMessage(sel[0]);
+        if (item === null) {
+            Ext.raise("Unexpected null-value for item.");
+        }
+
+        me.getMailInboxView().getController().moveOrDeleteMessage(
+            item,
+            false,
+            me.getMailDesktopView().getActiveTab()
+        );
     },
 
 
@@ -830,6 +842,36 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
     privates : {
 
+
+        /**
+         * Returns either a MessageDraft or a MessageItem from the currently
+         * active view, which can be any of the following:
+         *  - MessageEditor
+         *  - MessageView
+         *  - InboxView
+         *
+         *  If the InboxView is opened, the selected MessageItem in the grid
+         *  will be returned.
+         *
+         * @return {null|conjoon.cn_mail.model.mail.message.AbstractMessageItem}
+         */
+        getItemOrDraftFromActiveView : function() {
+
+            const me  = this,
+                  tab = me.getMailDesktopView().getActiveTab();
+
+            if (tab instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditor) {
+                return tab.getMessageDraft();
+            } else if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+                return tab.getMessageItem();
+            } else if (tab === me.getMailInboxView()) {
+                return me.getMailMessageGrid().getSelection()[0];
+            }
+
+            return null;
+        },
+
+
         /**
          * Helper function to retrieve the id of the MessageGrid in the InboxView
          * or the MessageItem of a MessageView, depending on which tab is currently
@@ -842,7 +884,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         getIdFromGridOrMessageView : function() {
 
             const me  = this,
-                tab = me.getMailDesktopView().getActiveTab();
+                  tab = me.getMailDesktopView().getActiveTab();
 
             if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
                 return  tab.getMessageItem().getId();

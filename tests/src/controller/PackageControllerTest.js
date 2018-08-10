@@ -217,6 +217,18 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             };
         };
 
+        packageCtrl.getMailDesktopView = function() {
+            return {
+                getActiveTab : function() {
+
+                }
+            }
+        };
+
+        packageCtrl.getItemOrDraftFromActiveView = function() {
+            return 'foo';
+        }
+
         t.expect(CALLED).toBe(0);
         packageCtrl.onMessageDeleteButtonClick();
         t.expect(CALLED).toBe(1);
@@ -281,6 +293,20 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         };
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
+        let ACTIVETAB     = 1,
+            MAILINBOXVIEW = 2;
+
+        packageCtrl.getMailDesktopView = function() {
+            return {
+                getActiveTab : function() {
+                    return ACTIVETAB;
+                }
+            }
+        };
+
+        packageCtrl.getMailInboxView = function() {
+            return MAILINBOXVIEW;
+        };
 
         packageCtrl.getReplyToButton = function() {
             return {setDisabled: function (doIt) {
@@ -313,14 +339,20 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             }
         };
 
+
         t.isCalledOnce('disableEmailActionButtons', packageCtrl);
         t.isCalledOnce('disableEmailEditButtons', packageCtrl);
+
+        packageCtrl.onMailMessageGridDeselect();
 
         t.expect(DISABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavForward']).toBe(0);
         t.expect(DISABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+
+        MAILINBOXVIEW = ACTIVETAB;
+
         packageCtrl.onMailMessageGridDeselect();
         t.expect(DISABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
         t.expect(DISABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
@@ -1153,6 +1185,50 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             t.expect(ID).toBe(SETID);
 
         });
+    });
+
+
+    t.it("getItemOrDraftFromActiveView()", function(t) {
+
+        let ACTIVETAB = "", MAILINBOXVIEW = "";
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        packageCtrl.getMailDesktopView = function() {
+            return {
+                getActiveTab : function() {
+                    return ACTIVETAB;
+                }
+            }
+        };
+
+        packageCtrl.getMailInboxView = function() {
+            return 3;
+        };
+
+        packageCtrl.getMailMessageGrid = function() {
+            return {
+                getSelection : function() {
+                    return [4];
+                }
+            };
+        };
+
+        ACTIVETAB = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+            messageDraft : 1
+        });
+        ACTIVETAB.getMessageDraft = function() { return 1};
+        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(1);
+
+        ACTIVETAB = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+        ACTIVETAB.getMessageItem = function() { return 2};
+        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(2);
+
+        ACTIVETAB = 3;
+        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(4);
+
+        ACTIVETAB = 4;
+        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(null);
     });
 
 });
