@@ -378,14 +378,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     });
 
 
-    t.it("updateViewForSentDraft() - delegates to controller", function(t){
+    t.it("confirmDialogMask mixin", function(t){
         view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
 
-        t.isCalledOnce('updateViewForSentDraft', view.getController())
-
-        view.updateViewForSentDraft(Ext.create(
-            'conjoon.cn_mail.model.mail.message.MessageDraft', {id : 'foo'}
-        ));
+        t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
+        t.expect(view.canCloseAfterDelete).toBe(false);
     })
 
 

@@ -40,13 +40,16 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
     alias : 'widget.cn_mail-mailinboxview',
 
+    mixins : [
+        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+    ],
+
     requires : [
         'conjoon.cn_mail.view.mail.inbox.InboxViewModel',
         'conjoon.cn_mail.view.mail.inbox.InboxViewController',
         'conjoon.cn_mail.view.mail.folder.MailFolderTree',
         'conjoon.cn_mail.view.mail.message.MessageGrid',
-        'conjoon.cn_mail.view.mail.message.reader.MessageView',
-        'conjoon.cn_comp.component.MessageMask'
+        'conjoon.cn_mail.view.mail.message.reader.MessageView'
     ],
 
     /**
@@ -72,6 +75,13 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
     iconCls : 'fa fa-paper-plane',
 
     title   : 'Emails',
+
+
+    /**
+     * @private
+     */
+    canCloseAfterDelete : false,
+
 
     /**
      * @type {conjoon.cn_comp.component.MessageMask}
@@ -260,45 +270,6 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
 
     /**
-     * Shows a confirm dialog masking this view, requesting the user interaction
-     * regarding deleting of a message.
-     * Will void if there is currently already a mask for confirming deletion of
-     * a message shown.
-     *
-     * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
-     * @param {Function} cb
-     * @param {Object} scope
-     *
-     * @return {conjoon.cn_comp.component.MessageMask}
-     */
-    showMessageDeleteConfirmDialog : function(messageItem, cb, scope) {
-
-        const me   = this;
-
-        if (me.deleteMask) {
-            return me.deleteMask;
-        }
-
-        let mask = Ext.create('conjoon.cn_comp.component.MessageMask', {
-            title    : "Delete Message",
-            message  : "Are you sure you want to delete the message permanently?",
-            target   : me,
-            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
-            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
-            callback : cb,
-            scope    : scope
-        });
-
-        me.mon(mask, 'destroy', function() {this.deleteMask = null}, me);
-        mask.show();
-
-        me.deleteMask = mask;
-
-        return mask;
-    },
-
-
-    /**
      * Advises the the InboxView to update it's child components regarding the
      * creating of a MessageDraft.
      *
@@ -327,6 +298,5 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
         me.getController().updateViewForSentDraft(messageDraft);
     }
-
 
 });
