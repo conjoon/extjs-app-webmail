@@ -30,6 +30,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
     extend: 'Ext.Panel',
 
+    mixins : [
+        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+    ],
+
     requires : [
         'conjoon.cn_mail.model.mail.message.MessageItem',
         'conjoon.cn_mail.view.mail.message.reader.MessageViewModel',

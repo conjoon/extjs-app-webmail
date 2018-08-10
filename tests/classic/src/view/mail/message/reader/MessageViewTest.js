@@ -422,5 +422,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
         });
 
 
+        t.it("confirmDialogMask mixin", function(t){
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
+            t.expect(view.canCloseAfterDelete).toBe(true);
+        })
+
 
     });});
