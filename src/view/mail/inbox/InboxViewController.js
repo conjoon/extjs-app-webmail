@@ -392,12 +392,13 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      */
     onMessageMovedOrDeletedFailure : function(operation) {
 
-        const me          = this,
-              request     = operation.getRequest(),
-              messageItem = request.record,
-              type        = request.type,
-              Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
-              owningStore = request.owningStore;
+        const me           = this,
+              request      = operation.getRequest(),
+              messageItem  = request.record,
+              type         = request.type,
+              Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+              owningStore  = request.owningStore,
+              isDraftClass = messageItem.entityName === 'MessageDraft';
 
         let field;
 
@@ -423,8 +424,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         owningStore && messageItem.join(owningStore);
 
         // set the field property
-        messageItem.set(field, false);
-        messageItem.commit();
+        if (!isDraftClass && owningStore === me.getMessageGrid().getStore()) {
+            messageItem.set(field, false);
+            messageItem.commit();
+        }
 
         return operation;
     },
@@ -443,14 +446,15 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      */
     onMessageMovedOrDeleted : function(operation, requestingView) {
 
-        const me          = this,
-              request     = operation.getRequest(),
-              messageItem = request.record,
-              type        = request.type,
-              Operation   = conjoon.cn_mail.data.mail.service.mailbox.Operation,
-              messageGrid = me.getMessageGrid(),
-              owningStore = request.owningStore,
-              gridReady   = me.getLivegrid().isConfigured();
+        const me           = this,
+              request      = operation.getRequest(),
+              messageItem  = request.record,
+              type         = request.type,
+              Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+              messageGrid  = me.getMessageGrid(),
+              owningStore  = request.owningStore,
+              gridReady    = me.getLivegrid().isConfigured(),
+              isDraftClass = messageItem.entityName === 'MessageDraft';
 
         let field;
 
@@ -470,8 +474,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                 break;
         }
 
-        messageItem.set(field, false);
-        messageItem.commit();
+        if (!isDraftClass && owningStore === me.getMessageGrid().getStore()) {
+            messageItem.set(field, false);
+            messageItem.commit();
+        }
 
         let selectedFolder      = me.getSelectedMailFolder(),
             targetFolderId      = type === Operation.MOVE
@@ -492,8 +498,6 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         switch (type) {
             case (Operation.MOVE):
-
-                let isDraftClass = messageItem.entityName === 'MessageDraft';
 
                 if (gridReady && isTargetSelected) {
                     if (isDraftClass) {

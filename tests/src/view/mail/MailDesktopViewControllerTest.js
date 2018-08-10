@@ -1547,6 +1547,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
                 t.waitForMs(750, function() {
 
+                    draft = editor.getMessageDraft();
+
                     panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
                         draft,
                         false,
@@ -1562,6 +1564,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                         t.waitForMs(750, function() {
 
                             editor.close();
+
+                            t.expect(draft.get('cn_deleted')).toBeUndefined();
+                            t.expect(draft.get('cn_moved')).toBeUndefined();
 
                             t.expect(draft.get('mailFolderId')).toBe('5');
 
@@ -1595,6 +1600,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                                         t.waitForMs(750, function() {
 
                                             editor.close();
+
+                                            t.expect(draft.get('cn_deleted')).toBeUndefined();
+                                            t.expect(draft.get('cn_moved')).toBeUndefined();
 
                                             t.expect(draft.erased).toBe(true);
                                             let removedRec = panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordById(draft.getId());
@@ -1657,6 +1665,8 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
                         t.waitForMs(750, function() {
 
+                            draft = editor.getMessageDraft();
+
                             panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
                                 draft,
                                 false,
@@ -1672,6 +1682,10 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                                 t.waitForMs(750, function() {
 
                                     editor.close();
+
+                                    t.expect(draft.get('cn_deleted')).toBeUndefined();
+                                    t.expect(draft.get('cn_moved')).toBeUndefined();
+
 
                                     t.expect(panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordById(draft.getId())).not.toBe(null);
 
