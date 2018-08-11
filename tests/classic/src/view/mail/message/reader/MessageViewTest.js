@@ -22,10 +22,12 @@
 
 describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t) {
 
+t.requireOk('conjoon.cn_core.util.Date', function() {
+
     var view,
         viewConfig,
         testDate   = new Date(),
-        formatDate = Ext.util.Format.date(testDate, 'd.m.Y H:i')
+        formatDate = conjoon.cn_core.util.Date.getHumanReadableDate(testDate),
         createMessageItem = function(withMessageBody) {
 
             var conf = {
@@ -62,7 +64,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
         };
 
     t.afterEach(function() {
-       if (view) {
+        if (view) {
             view.destroy();
             view = null;
         }
@@ -431,4 +433,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
         })
 
 
-    });});
+    });
+
+
+});});

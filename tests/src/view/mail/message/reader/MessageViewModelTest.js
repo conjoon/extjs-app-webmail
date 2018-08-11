@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2016 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -407,11 +407,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         var MESSAGEBODY = false,
             MESSAGEITEM = false,
             date        = new Date(),
-            expected    = Ext.util.Format.date(date, "d.m.Y H:i"),
+            expected    = Ext.util.Format.date(date, "H:i"),
             formulas    = viewModel.getFormulas(),
             get         = function() {
                 return date
             };
+
+        t.isCalled('getHumanReadableDate', conjoon.cn_core.util.Date);
 
         t.expect(formulas.getFormattedDate(get)).toBe(expected);
     });
