@@ -36,7 +36,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         'conjoon.cn_comp.grid.feature.RowBodySwitch',
         'conjoon.cn_comp.grid.feature.Livegrid',
         'conjoon.cn_mail.store.mail.message.MessageItemStore',
-        'conjoon.cn_comp.grid.feature.RowFlyMenu'
+        'conjoon.cn_comp.grid.feature.RowFlyMenu',
+        'conjoon.cn_core.util.Date'
     ],
 
     alias : 'widget.cn_mail-mailmessagegrid',
@@ -85,7 +86,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         id                 : 'cn_mail-mailMessageFeature-messagePreview',
         getAdditionalData  : function (data, idx, record, orig) {
 
-            var me = this;
+            const me     = this,
+                  CnDate = conjoon.cn_core.util.Date;
 
             if (me.disabled) {
                 return undefined;
@@ -98,7 +100,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
                               (record.get('draft') ? '<span class="draft">[Draft]</span>' : '')+
                               record.get("subject") +
                           '</div>' +
-                          '<div class="date">' + me.grid.getHumanReadableDate(record.get('date')) + '</div>' +
+                          '<div class="date">' + CnDate.getHumanReadableDate(record.get('date')) + '</div>' +
                           '</div>' +
                            '<div class="previewText">' + record.get("previewText") + '</div>',
                 rowBodyCls : 'cn_mail-mailmessagepreviewfeature'
@@ -332,37 +334,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             default:
                 readItem[0].setAttribute("data-qtip",  "Mark as Read");
         }
-    },
-
-
-    /**
-     * Returns a human readable date providing the written weekday and the time
-     * for the last 6 days, starting with the current local time of the user.
-     * If the date is to "Today", only the time will be returned.
-     *
-     * @param {String} date
-     *
-     * @return {String}
-     */
-    getHumanReadableDate : function(date) {
-
-        const today = new Date();
-
-        today.setHours(0);
-        today.setMinutes(0);
-        today.setSeconds(0);
-
-        const daysBetween = Ext.Date.diff(today, date, Ext.Date.DAY);
-
-        if (daysBetween === 0) {
-            return Ext.util.Format.date(date, "H:i");
-        }
-
-        if (daysBetween >= -6 && daysBetween <= -1) {
-            return Ext.util.Format.date(date, "l, H:i");
-        }
-
-        return Ext.util.Format.date(date, "d.m.Y, H:i");
     }
 
 

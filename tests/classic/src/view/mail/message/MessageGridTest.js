@@ -67,7 +67,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowBodySwitch');
             t.expect(feature.disabled).toBeFalsy();
 
-            t.isCalled('getHumanReadableDate', grid);
+            t.isCalled('getHumanReadableDate', conjoon.cn_core.util.Date);
             feature.getAdditionalData(null, null, {get : function() {}}, null);
 
             feature = grid.view.getFeature('cn_mail-mailMessageFeature-livegrid');
@@ -338,31 +338,6 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             t.expect(getReadItem().getAttribute('data-qtip').toLowerCase()).toBe("mark as read");
 
-
-        });
-
-
-        t.it("getHumanReadableDate()", function(t) {
-
-            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
-                width    : 400,
-                height   : 400
-            });
-
-            let dt;
-
-            t.expect(grid.getHumanReadableDate(new Date)).toBe(
-                Ext.util.Format.date(new Date(), "H:i"));
-
-            dt = Ext.Date.subtract(new Date(), Ext.Date.DAY, 1);
-
-            t.expect(grid.getHumanReadableDate(dt)).toContain(
-                Ext.util.Format.date(dt, "l"));
-
-            dt = Ext.Date.subtract(new Date(), Ext.Date.DAY, 7);
-
-            t.expect(grid.getHumanReadableDate(dt)).toBe(
-                Ext.util.Format.date(dt, "d.m.Y, H:i"));
 
         });
 
