@@ -65,6 +65,16 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      * about to get deleted
      */
 
+    /**
+     * Event gets fired when an item was successfully moved.
+     * @event cn_mail-messageitemmove
+     * @param this
+     * @param {conjoon.cn_mail.modelw.mail.message.AbstractMessageItem} messageItem
+     * @param {Ext.Panel}requestingView
+     * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} sourceFolder
+     * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} targetFolder
+     */
+
     layout  : {
         type  : 'hbox',
         align : 'stretch'
