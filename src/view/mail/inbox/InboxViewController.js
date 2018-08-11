@@ -446,15 +446,17 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      */
     onMessageMovedOrDeleted : function(operation, requestingView) {
 
-        const me           = this,
-              request      = operation.getRequest(),
-              messageItem  = request.record,
-              type         = request.type,
-              Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
-              messageGrid  = me.getMessageGrid(),
-              owningStore  = request.owningStore,
-              gridReady    = me.getLivegrid().isConfigured(),
-              isDraftClass = messageItem.entityName === 'MessageDraft';
+        const me               = this,
+              request          = operation.getRequest(),
+              view             = me.getView(),
+              messageItem      = request.record,
+              type             = request.type,
+              Operation        = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+              messageGrid      = me.getMessageGrid(),
+              owningStore      = request.owningStore,
+              gridReady        = me.getLivegrid().isConfigured(),
+              isDraftClass     = messageItem.entityName === 'MessageDraft',
+              mailFolderHelper = me.getMailboxService().getMailFolderHelper();
 
         let field;
 
@@ -513,6 +515,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                 } else if (!isDraftClass) {
                     owningStore && messageItem.join(owningStore);
                 }
+
+                view.fireEvent(
+                    'cn_mail-messageitemmove', view, messageItem, requestingView,
+                    mailFolderHelper.getMailFolder(request.sourceFolderId),
+                    mailFolderHelper.getMailFolder(request.targetFolderId)
+                );
 
                 break;
 

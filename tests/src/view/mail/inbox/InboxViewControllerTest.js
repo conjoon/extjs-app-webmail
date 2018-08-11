@@ -993,4 +993,39 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it('moveOrDeleteMessage() - event \"cn_mail-messageitemmove\" fired', function(t) {
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+            width    : 800,
+            height   : 600,
+            renderTo : document.body
+        });
+
+        const viewController = panel.getController();
+
+        let CALLED = 0;
+
+        panel.on('cn_mail-messageitemmove', function() {
+            CALLED++
+        });
+
+        t.waitForMs(250, function() {
+
+            // should be move operation since selected folder is not of type
+            // TRASH
+            t.expect(selectMailFolder(panel, 1).get('type')).not.toBe('TRASH');
+
+            t.waitForMs(250, function() {
+                let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
+
+                t.expect(CALLED).toBe(0);
+                viewController.moveOrDeleteMessage(messageItem, true);
+
+                t.waitForMs(250, function() {
+                    t.expect(CALLED).toBe(1);
+                })
+            });
+        });
+    });
+
 });});});});});
