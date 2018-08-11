@@ -103,4 +103,35 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
         t.expect(inb1).toBe(inb2);
     });
 
+
+    t.it("showMessageCannotBeDeletedWarning()", function(t) {
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
+
+        let toast = view.showMessageCannotBeDeletedWarning();
+
+        t.isInstanceOf(toast, 'conjoon.cn_comp.window.Toast');
+
+        t.expect(toast.context).toBe("warning");
+
+    });
+
+
+    t.it("showMessageMovedInfo()", function(t) {
+
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
+
+        let toast = view.showMessageMovedInfo(
+            null, null, {get : function() {return 'text';}}
+        );
+
+        t.isInstanceOf(toast, 'conjoon.cn_comp.window.Toast');
+
+        t.expect(toast.context).toBe("info");
+
+    });
+
 });

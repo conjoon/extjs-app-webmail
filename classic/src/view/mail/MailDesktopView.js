@@ -35,7 +35,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
     requires : [
         'conjoon.cn_mail.view.mail.inbox.InboxView',
         'conjoon.cn_mail.view.mail.MailDesktopViewController',
-        'conjoon.cn_mail.data.mail.BaseSchema'
+        'conjoon.cn_mail.data.mail.BaseSchema',
+        'conjoon.cn_comp.window.Toast'
     ],
 
     controller : 'cn_mail-maildesktopviewcontroller',
@@ -107,6 +108,42 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
         const me = this;
 
         return me.getController().showInboxViewFor(mailFolderId);
+    },
+
+
+    /**
+     * Shows an info that the specified messageItem was moved.
+     *
+     * @param {conjoon.cn_mail.modelw.mail.message,AbstractMessageItem} messageItem
+     * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} sourceFolder
+     * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} targetFolder
+     *
+     * @return {conjoon.cn_comp.window.Toast}
+     */
+    showMessageMovedInfo : function(messageItem, sourceFolder, targetFolder) {
+        const me = this;
+
+        return conjoon.Toast.info(
+            Ext.String.format(
+                "The message was moved to the \"{0}\" folder.",
+                targetFolder.get('text')
+            )
+        );
+    },
+
+
+    /**
+     * Shows an information that the specified messageItem cannot be deleted.
+     *
+     * @param {conjoon.cn_mail.modelw.mail.message,AbstractMessageItem} messageItem
+     *
+     * @return {conjoon.cn_comp.window.Toast}
+     */
+    showMessageCannotBeDeletedWarning : function(messageItem) {
+
+        return conjoon.Toast.warn(
+            "Please close all related tabs to this message first.");
+
     }
 
 

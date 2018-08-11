@@ -1046,7 +1046,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                 }
             };
 
-           t.isCalled('warn', conjoon.Toast);
+           t.isCalled('showMessageCannotBeDeletedWarning', panel);
 
             panel.setActiveTab(inboxView);
 
@@ -1733,6 +1733,89 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                 panel = null;
             });
 
+        });
+    });
+
+
+    t.it("onMessageItemMove() - event registered", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600
+        });
+
+        let CALLED    = 0,
+            inboxView = panel.down('cn_mail-mailinboxview');
+
+        viewController.onMessageItemMove = function() {
+            CALLED++;
+        };
+
+        t.expect(CALLED).toBe(0);
+        inboxView.fireEvent('cn_mail-messageitemmove');
+        t.expect(CALLED).toBe(1);
+
+        t.waitForMs(750, function () {
+            panel.destroy();
+            panel = null;
+        });
+    });
+
+
+    t.it("onMessageItemMove() - toast window not shown", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600
+        });
+
+        t.isntCalled('showMessageMovedInfo', panel);
+
+        let inboxView = panel.down('cn_mail-mailinboxview');
+
+        viewController.onMessageItemMove(inboxView, {}, inboxView, {}, {});
+
+        t.waitForMs(750, function () {
+            panel.destroy();
+            panel = null;
+        });
+    });
+
+
+    t.it("onMessageItemMove() - toast window shown", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600
+        });
+
+        t.isCalled('showMessageMovedInfo', panel);
+
+        let inboxView = panel.down('cn_mail-mailinboxview');
+
+        viewController.onMessageItemMove(inboxView, {}, null, {}, {get : function() {}});
+
+        t.waitForMs(750, function () {
+            panel.destroy();
+            panel = null;
         });
     });
 

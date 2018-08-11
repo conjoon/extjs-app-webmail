@@ -37,8 +37,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.text.QueryStringParser',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
-        'conjoon.cn_comp.window.Toast'
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -60,7 +59,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             'cn_mail-mailmessagesendcomplete' : 'onMailMessageSendComplete'
         },
         'cn_mail-maildesktopview > cn_mail-mailinboxview' : {
-            'cn_mail-beforemessageitemdelete' : 'onBeforeMessageItemDelete'
+            'cn_mail-beforemessageitemdelete' : 'onBeforeMessageItemDelete',
+            'cn_mail-messageitemmove'         : 'onMessageItemMove'
         },
         'cn_mail-mailinboxview #btn-replyall' : {
             'click' : 'onInboxViewReplyAllClick'
@@ -107,6 +107,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * requestingView will not cancel the delete process
      *
      * @return {Boolean}
+     *
+     * @see MailDesktopView#showMessageCannotBeDeletedWarning
      */
     onBeforeMessageItemDelete : function(inboxView, messageItem, requestingView = null) {
 
@@ -126,13 +128,35 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             openedView = view.down('#' + itemIds[i]);
 
             if (openedView && openedView !== requestingView) {
-                conjoon.Toast.warn("Please close all related tabs to this message first.");
+                view.showMessageCannotBeDeletedWarning(messageItem);
                 view.setActiveTab(openedView);
                 return false;
             }
         }
 
         return true;
+    },
+
+
+    /**
+     * Callback for the cn_mail-messageitemmove event. Delegates to #showMessageMovedInfo
+     * of this controller's view if the requestingView ist not the embedded InboxView.
+     *
+     * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
+     * @param {conjoon.cn_mail.modelw.mail.message.AbstractMessageItem} messageItem
+     * @param {Ext.Panel}requestingView
+     * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} sourceFolder
+     * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} targetFolder
+     *
+     * @see MailDesktopView#showMessageMovedInfo
+     */
+    onMessageItemMove : function(view, messageItem, requestingView, sourceFolder, targetFolder) {
+
+        const me = this;
+
+        if (requestingView !== view) {
+            me.getView().showMessageMovedInfo(messageItem, sourceFolder, targetFolder);
+        }
     },
 
 
