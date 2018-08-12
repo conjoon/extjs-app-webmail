@@ -414,4 +414,33 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         });
 
 
+        t.it("stringifyTo", function(t) {
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore', {
+                autoLoad : false
+            });
+
+            grid.setStore(store);
+
+            store.load();
+
+            t.waitForMs(750, function() {
+
+                t.expect(grid.stringifyTo([{
+                    address : 'foobar',
+                    name    : 'bar'
+                }, {
+                    address : 'barfoo',
+                    name    : 'foo'
+                }])).toBe('bar, foo');
+            });
+
+        });
+
+
     });})});});

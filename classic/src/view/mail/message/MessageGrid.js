@@ -107,13 +107,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             };
         },
         previewColumnConfig : {
-            'seen'         : {visible : false},
-            'subject'        : {visible : false},
-            'to'             : {visible : false},
-            'from'           : {flex : 1},
-            'date'           : {visible : false},
-            'hasAttachments' : {},
-            'size'           : {visible : false}
+            'seen'                : {visible : false},
+            'subject'             : {visible : false},
+            'to'                  : {visible : false},
+            'from'                : {visible : false},
+            'draftDisplayAddress' : {flex : 1},
+            'date'                : {visible : false},
+            'hasAttachments'      : {},
+            'size'                : {visible : false}
         }
     }, {
         ftype : 'cn_comp-gridfeature-rowflymenu',
@@ -151,6 +152,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     columns : [{
         dataIndex : 'seen',
+        hideable  : false,
         text      : '<span class="x-fa fa-circle"></span>',
         /**
          * @bug
@@ -165,6 +167,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         width        : 40
     }, {
         dataIndex : 'hasAttachments',
+        hideable  : false,
         text      : '<span class="x-fa fa-paperclip"></span>',
         renderer  : function(value) {
             return value ? '<span class="x-fa fa-paperclip"></span>' : '';
@@ -179,12 +182,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         dataIndex : 'to',
         text      : 'To',
         width     : 240,
-        renderer  : function(value) {
-            var names = [];
-            for (var i = 0, len = value.length; i < len; i++) {
-                names.push(value[i].name);
-            }
-            return names.join(', ');
+        renderer  : function(value, meta, record, rowIndex, colIndex, store, view) {
+            return view.grid.stringifyTo(value);
+
         }
     }, {
         dataIndex : 'from',
@@ -199,6 +199,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             }
 
             return value ? value.name : "";
+        }
+    }, {
+        dataIndex    : 'draftDisplayAddress',
+        visible      : false,
+        hideable     : false,
+        text         : 'Draft Display Address',
+        menuDisabled : true,
+        renderer     : function(value, meta, record, rowIndex, colIndex, store, view) {
+
+            var feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+
+            if (!feature.disabled) {
+                meta.tdCls += 'previewLarge';
+                if (record.get('draft')) {
+                    return view.grid.stringifyTo(record.get('to'));
+                }
+            }
+
+            return record.get('from') ?  record.get('from').name : "";
         }
     }, {
         dataIndex : 'date',
@@ -334,6 +353,24 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             default:
                 readItem[0].setAttribute("data-qtip",  "Mark as Read");
         }
+    },
+
+
+    /**
+     * Helper function to return an array containing address-like objects (keyed
+     * with "address" and "name") as a string.
+     *
+     * @param {Array} toAddresses
+     *
+     * @return {String}
+     */
+    stringifyTo :  function(toAddresses) {
+        const names = [];
+
+        for (var i = 0, len = toAddresses.length; i < len; i++) {
+            names.push(toAddresses[i].name);
+        }
+        return names.join(', ');
     }
 
 
