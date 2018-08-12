@@ -424,13 +424,23 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
         var expected    = 'FROM',
             formulas    = viewModel.getFormulas(),
-            get         = function() {
-                return {
-                    get : function() {
-                        return {
-                            name : expected
+            get         = function(value) {
+                if (value === 'messageItem') {
+                    return {
+                        get : function(value) {
+                            if (value === 'draft') {
+                                return false;
+                            }
                         }
-                    }
+                    };
+                }
+
+                if (value === 'messageItem.from') {
+                    return {name : expected};
+                }
+
+                if (value === 'messageItem.to') {
+                    return []
                 }
             };
 
@@ -438,25 +448,59 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
-        t.it("formula.getDisplayAddress - empty", function(t) {
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+    t.it("formula.getDisplayAddress - empty", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
-            var expected    = "",
-                formulas    = viewModel.getFormulas(),
-                get         = function() {
+        var expected    = "",
+            formulas    = viewModel.getFormulas(),
+            get         = function(value) {
+                if (value === 'messageItem') {
+                    return null;
+                }
+                if (value === 'messageItem.from') {
+                    return {};
+                }
+
+                if (value === 'messageItem.to') {
+                    return []
+                }
+            };
+
+        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
+    });
+
+
+    t.it("formula.getDisplayAddress - draft", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        var expected    = 'FROM, FROM1',
+            formulas    = viewModel.getFormulas(),
+            get         = function(value) {
+                if (value === 'messageItem') {
                     return {
-                        get : function() {
-                            return null;
+                        get : function(value) {
+                            if (value === 'draft') {
+                                return true;
+                            }
                         }
-                    }
-                };
-
-            t.expect(formulas.getDisplayAddress(get)).toBe(expected);
-        });
+                    };
+                }
 
 
+                if (value === 'messageItem.to') {
+                    return [{
+                        name : 'FROM'
+                    }, {
+                        name : 'FROM1'
+                    }]
+                }
 
-})});
+            };
 
-});
+        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
+    });
+
+
+
+})})});
 

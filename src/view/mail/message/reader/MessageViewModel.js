@@ -99,13 +99,24 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
          */
         getDisplayAddress : function(get) {
 
-            const messageItem = get('messageItem');
+            const messageItem = get('messageItem'),
+                  to          = get('messageItem.to');
+                  from        = get('messageItem.from');
 
-            if (messageItem && messageItem.get('from')) {
-                return messageItem.get('from').name;
+            if (!messageItem) {
+                return "";
+            }
+            if (messageItem.get('draft')) {
+
+                let res = [];
+                for (let i = 0, len = to.length; i < len; i++) {
+                    res.push(to[i].name);
+                }
+
+                return res.join(', ');
             }
 
-            return "";
+            return from.name;
         },
 
 
