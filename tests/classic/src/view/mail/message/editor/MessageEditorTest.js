@@ -121,6 +121,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     t.it("Should create and show the view along with default config checks", function(t) {
         view = createWithViewConfig(viewConfig);
 
+        t.expect(view.isCnMessageEditor).toBe(true);
 
         // configs
         t.expect(view instanceof Ext.form.Panel).toBe(true);

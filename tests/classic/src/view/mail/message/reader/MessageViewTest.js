@@ -98,6 +98,8 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
+            t.expect(view.isCnMessageView).toBe(true);
+
             t.expect(view instanceof Ext.Container).toBeTruthy();
 
             t.expect(view.alias).toContain('widget.cn_mail-mailmessagereadermessageview');

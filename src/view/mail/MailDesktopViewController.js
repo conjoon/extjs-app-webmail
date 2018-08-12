@@ -141,6 +141,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     /**
      * Callback for the cn_mail-messageitemmove event. Delegates to #showMessageMovedInfo
      * of this controller's view if the requestingView ist not the embedded InboxView.
+     * Will also update all opened views representing this messageItem as an item
+     * or draft with the new mailFolderId.
      *
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
      * @param {conjoon.cn_mail.modelw.mail.message.AbstractMessageItem} messageItem
@@ -149,6 +151,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} targetFolder
      *
      * @see MailDesktopView#showMessageMovedInfo
+     * @see updateMessageItemsFromOpenedViews
      */
     onMessageItemMove : function(view, messageItem, requestingView, sourceFolder, targetFolder) {
 
@@ -157,6 +160,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (requestingView !== view) {
             me.getView().showMessageMovedInfo(messageItem, sourceFolder, targetFolder);
         }
+
+        me.updateMessageItemsFromOpenedViews(
+            messageItem.getId(), 'mailFolderId', targetFolder.getId());
     },
 
 
@@ -810,6 +816,100 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             .down('cn_mail-mailinboxview')
             .down('cn_mail-mailmessagereadermessageview')
             .getViewModel().get('messageItem').getId();
+    },
+
+
+    /**
+     * Returns an array keyed with view and messageItem with all messageItems
+     * available from representing views currently in the MailDesktopView.
+     * Will also consider the MessageView embedded in this MailDesktopView's
+     * InboxView.
+     *
+     * @param {String} messageItemId optional, will return only those items with
+     * the specified id, otherwise all items currently opened will be returned
+     *
+     * @return {Array}
+     *
+     * @private
+     */
+    getMessageItemsFromOpenedViews : function(messageItemId = null) {
+
+        const me           = this,
+              view         = me.getView(),
+              inboxMsgView = view.down('cn_mail-mailinboxview')
+                                 .down('cn_mail-mailmessagereadermessageview');
+
+        let collection = [],
+            add        = function(view, messageItem) {
+                collection.push({
+                    view        : view,
+                    messageItem : messageItem
+                });
+            };
+
+        if (inboxMsgView && inboxMsgView.getMessageItem()) {
+            if (messageItemId === null) {
+                add(inboxMsgView, inboxMsgView.getMessageItem());
+            } else if (inboxMsgView.getMessageItem().getId() === messageItemId) {
+                add(inboxMsgView, inboxMsgView.getMessageItem());
+            }
+        }
+
+        let items = view.items, messageItem;
+
+        items.each(function(item) {
+            messageItem = null;
+
+            if (item.isCnMessageView === true) {
+                messageItem = item.getMessageItem();
+            } else if (item.isCnMessageEditor === true) {
+                messageItem = item.getMessageDraft();
+            }
+
+            if (!messageItem ||
+                (messageItemId !== null && messageItem.getId() !== messageItemId)) {
+                return;
+            }
+
+            add(item, messageItem);
+        });
+
+
+        return collection;
+    },
+
+
+    /**
+     * Updates all items with the specified Model-id in the currently opened
+     * views in the MailDesktopView.
+     *
+     * @param {String} messageItemId
+     * @param {String} field
+     * @param {Mixed} value
+     *
+     * @throws if field is not a defined field in the model.
+     */
+    updateMessageItemsFromOpenedViews : function(messageItemId, field, value) {
+
+        const me         = this,
+              collection = me.getMessageItemsFromOpenedViews(messageItemId);
+
+        let i, messageItem;
+        for (i = 0, len = collection.length; i < len; i++) {
+            messageItem = collection[i].messageItem;
+            if (!messageItem.getField(field)) {
+                Ext.raise({
+                    msg         : "cannot set field \"" + field + "\" since it was not defined in the Model",
+                    field       : field,
+                    messageItem : messageItem
+                });
+            }
+            messageItem.set(field, value);
+            messageItem.commit();
+        }
+
     }
+
+
 
 });

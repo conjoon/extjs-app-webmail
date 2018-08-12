@@ -107,6 +107,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     viewModel : 'cn_mail-mailmessageeditorviewmodel',
 
     /**
+     * @private
+     */
+    isCnMessageEditor : true,
+
+    /**
      * Gets fired when a save of the MessageDraft was initiated and the associated
      * saveBatch is about to get processed.
      * This event is canceable. Return "false" in any attached listener to cancel
