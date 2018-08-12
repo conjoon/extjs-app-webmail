@@ -501,6 +501,18 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
+    t.it("formula.getSubject", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        const formulas       = viewModel.getFormulas(),
+            defaultSubject = viewModel.emptySubjectText;
+
+        t.expect(formulas.getSubject.set).not.toBeDefined();
+        t.expect(formulas.getSubject.get.apply(viewModel, [{}])).toBe(defaultSubject);
+        t.expect(formulas.getSubject.get.apply(viewModel, [{subject : ''}])).toBe(defaultSubject);
+        t.expect(formulas.getSubject.get.apply(viewModel, [{subject : 'foo'}])).toBe('foo');
+    });
+
 
 })})});
 

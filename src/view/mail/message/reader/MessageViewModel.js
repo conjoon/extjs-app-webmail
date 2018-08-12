@@ -68,6 +68,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
      */
     abortedRequestMap : null,
 
+    /**
+     * Default empty subject text for MessageItems.
+     * @i18n
+     * @private
+     */
+    emptySubjectText    :"(No subject)",
+
     data : {
 
         /**
@@ -88,6 +95,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
     formulas : {
 
+        /**
+         * This formula computes the subject to display and returns #emptySubjectText
+         * if the MessageDraft's subject is empty. If the value set via this formula
+         * is empty, the #emptySubjectText will be used instead.
+         *
+         */
+        getSubject : {
+
+            bind : {
+                subject : '{messageItem.subject}'
+            },
+
+            get : function(data) {
+                return data.subject || this.emptySubjectText;
+            }
+        },
 
         /**
          * Returns the  address of the current MessageItem the view should

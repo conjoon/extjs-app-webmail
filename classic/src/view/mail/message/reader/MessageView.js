@@ -127,7 +127,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             bind  : {
                 data : {
                     displayAddress : '{getDisplayAddress}',
-                    subject        : '{messageItem.subject}',
+                    subject        : '{getSubject}',
                     date           : '{getFormattedDate}',
                     hasAttachments : '{messageItem.hasAttachments}',
                     isDraft        : '{messageItem.draft}'

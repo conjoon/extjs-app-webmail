@@ -84,10 +84,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         enableCls          : 'previewEnabled',
         disableCls         : 'previewDisabled',
         id                 : 'cn_mail-mailMessageFeature-messagePreview',
+        /**
+         * Default empty subject text for MessageItems.
+         * @i18n
+         * @private
+         */
+        emptySubjectText    :"(No subject)",
         getAdditionalData  : function (data, idx, record, orig) {
 
             const me     = this,
                   CnDate = conjoon.cn_core.util.Date;
+                  Format = Ext.util.Format;
 
             if (me.disabled) {
                 return undefined;
@@ -98,11 +105,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
                           '<div class="head' + (!record.get('seen') ? ' unread' : '')+'">' +
                           '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' +
                               (record.get('draft') ? '<span class="draft">[Draft]</span>' : '')+
-                              record.get("subject") +
+                          (record.get("subject") === "" ? me.emptySubjectText : record.get("subject")) +
                           '</div>' +
                           '<div class="date">' + CnDate.getHumanReadableDate(record.get('date')) + '</div>' +
                           '</div>' +
-                           '<div class="previewText">' + record.get("previewText") + '</div>',
+                           '<div class="previewText">' + Format.nbsp(record.get("previewText")) + '</div>',
                 rowBodyCls : 'cn_mail-mailmessagepreviewfeature'
             };
         },
