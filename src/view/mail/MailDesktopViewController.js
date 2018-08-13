@@ -248,19 +248,21 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Shows the InboxView and selects the specified mailFolderId.
+     * Shows the InboxView and selects the specified mailFolderId for the
+     * specified mailAccountId.
      * Delegates to #processMailFolderSelectionForRouting. If the store of the
      * MailFolderTree is not yet bound by the MVVM or currently being loaded,
      * the processMailFolderSelectionForRouting-method is invoked as soon as
      * loading of the MailFolderTree's store finished.
      *
+     * @param {String} mailAccountId
      * @param {String} mailFolderId
      *
      * @return conjoon.cn_mail.view.mail.inbox.InboxView
      *
      * @see #processMailFolderSelectionForRouting
      */
-    showInboxViewFor : function(mailFolderId) {
+    showInboxViewFor : function(mailAccountId, mailFolderId) {
 
         const me        = this,
               view      = me.getView(),
@@ -272,11 +274,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             tree.on(
                 'load',
                 Ext.Function.bind(
-                    me.processMailFolderSelectionForRouting, me, [mailFolderId]
+                    me.processMailFolderSelectionForRouting, me, [mailAccountId, mailFolderId]
                 ), me, {single : true}
             );
         } else {
-            me.processMailFolderSelectionForRouting(mailFolderId);
+            me.processMailFolderSelectionForRouting(mailAccountId, mailFolderId);
         }
 
         return view.setActiveTab(inboxView);
@@ -284,25 +286,36 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Selects the MailFolder represented by the mailFolderId and makea sure
-     * that the "cn_href" attribute of the InboxView-tab is being changed to the
-     * "toUrl()"-return value of the selected MailFolder to make the
-     * tabchange-listener working with the deeplinking into ONE panel.
+     * Selects the MailFolder represented by the mailFolderId for the
+     * mailAccountId and makes sure that the "cn_href" attribute of the
+     * InboxView-tab is being changed to the "toUrl()"-return value
+     * of the selected MailFolder to make the tabchange-listener
+     * working with the deeplinking into ONE panel.
      *
+     * @param {String} mailAccountId
      * @param {String} mailFolderId
      *
      * @return {Boolean} false if the specified MailFolder was not found
      *
      * @private
      */
-    processMailFolderSelectionForRouting : function(mailFolderId) {
+    processMailFolderSelectionForRouting : function(mailAccountId, mailFolderId) {
 
         const me        = this,
               view      = me.getView(),
               inboxView = view.down('cn_mail-mailinboxview'),
               tree      = inboxView.down('cn_mail-mailfoldertree');
 
-        let rec = tree.getStore().getNodeById(mailFolderId);
+        let rec,
+            accountNode = tree.getStore().getRoot().findChild(
+                "id", mailAccountId, false
+            );
+
+        if (!accountNode) {
+            return false;
+        }
+
+        rec = accountNode.findChild("id", mailFolderId, true);
 
         if (!rec) {
             return false;

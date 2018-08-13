@@ -697,7 +697,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
         t.isCalledNTimes('processMailFolderSelectionForRouting', viewController, 2);
 
         t.expect(panel.getActiveTab()).toBe(newPanel);
-        t.expect(viewController.showInboxViewFor('2')).toBe(inboxView);
+        t.expect(viewController.showInboxViewFor('dev_sys@conjoon.org', '2')).toBe(inboxView);
         t.expect(panel.getActiveTab()).toBe(inboxView);
 
         t.expect(panel.down('cn_mail-mailinboxview').down('cn_mail-mailfoldertree').getStore().getProxy().type).toBe('memory');
@@ -707,7 +707,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
             t.expect(panel.down('cn_mail-mailinboxview').down('cn_mail-mailfoldertree').getStore().getProxy().type).not.toBe('memory');
             panel.setActiveTab(newPanel);
-            t.expect(viewController.showInboxViewFor('3')).toBe(panel.down('cn_mail-mailinboxview'));
+            t.expect(viewController.showInboxViewFor('dev_sys@conjoon.org', '3')).toBe(panel.down('cn_mail-mailinboxview'));
             t.expect(panel.getActiveTab()).toBe(inboxView);
 
             panel.destroy();
@@ -744,16 +744,16 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
             t.expect(cnhref).toBe(inboxView.cn_href);
 
-            let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(1);
-            t.expect(viewController.processMailFolderSelectionForRouting(1)).toBe(true);
+            let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById('1');
+            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys@conjoon.org', 1)).toBe(true);
             t.expect(inboxView.cn_href).toBe(node.toUrl());
             t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
             t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
 
-            t.expect(viewController.processMailFolderSelectionForRouting(1)).toBe(true);
+            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys@conjoon.org', 1)).toBe(true);
 
             node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
-            t.expect(viewController.processMailFolderSelectionForRouting(2)).toBe(true);
+            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys@conjoon.org', 2)).toBe(true);
             t.expect(inboxView.cn_href).toBe(node.toUrl());
             t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
             t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
@@ -792,14 +792,14 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
             let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(1);
             inboxView.down('cn_mail-mailfoldertree').getSelectionModel().select(node);
-            viewController.showInboxViewFor(1);
+            viewController.showInboxViewFor('dev_sys@conjoon.org', 1);
             t.expect(inboxView.cn_href).toBe(node.toUrl());
 
             panel.setActiveTab(newPanel);
 
             node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
             inboxView.down('cn_mail-mailfoldertree').getSelectionModel().select(node);
-            viewController.showInboxViewFor(2);
+            viewController.showInboxViewFor('dev_sys@conjoon.org', 2);
             t.expect(inboxView.cn_href).toBe(node.toUrl());
 
             panel.setActiveTab(newPanel);
