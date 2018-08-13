@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,19 +95,20 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
 
     /**
      * Creates and shows the InboxView with the MailFolder represented by the
-     * requested mailFolderId loaded/loading into the MessageGrid.
+     * requested mailFolderId loaded/loading into the MessageGrid for the accountId.
      * Delegates to conjoon.cn_mail.view.mail.MailDesktopViewController#showInboxViewFor.
      *
+     * @param {String} accountId
      * @param {String} mailFolderId
      *
      * @return conjoon.cn_mail.view.mail.inbox.InboxView
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showInboxViewFor}
      */
-    showInboxViewFor : function(mailFolderId) {
+    showInboxViewFor : function(accountId, mailFolderId) {
         const me = this;
 
-        return me.getController().showInboxViewFor(mailFolderId);
+        return me.getController().showInboxViewFor(accountId, mailFolderId);
     },
 
 

@@ -95,10 +95,10 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
         t.isCalledNTimes('showInboxViewFor', view.getController(), 2);
 
-        inb1 = view.showInboxViewFor("1");
-        t.isInstanceOf(inb1, 'conjoon.cn_mail.view.mail.inbox.InboxView')
+        inb1 = view.showInboxViewFor("foo", "1");
+        t.isInstanceOf(inb1, 'conjoon.cn_mail.view.mail.inbox.InboxView');
 
-        inb2 = view.showInboxViewFor("2");
+        inb2 = view.showInboxViewFor("foo", "2");
 
         t.expect(inb1).toBe(inb2);
     });
