@@ -43,6 +43,7 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
         t.expect(model.getField('unreadCount').getPersist()).toBe(false);
+        t.expect(model.getField('accountId').critical).toBe(true);
     });
 
     t.it("Test Entity Name", function(t) {
@@ -59,6 +60,7 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
         model.set('type', 'Posteingang');
         t.expect(model.isValid()).toBe(false);
 
+        model.set('accountId', 'foo');
         model.set('type', 'INBOX');
         t.expect(model.isValid()).toBe(true);
         model.set('type', '');
@@ -91,13 +93,29 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
 
         model.set('type', null);
         t.expect(model.isValid()).toBe(false);
+
+        model.set('type', 'ACCOUNT');
+        t.expect(model.isValid()).toBe(true);
+
+        model.set('type', 'foo');
+        t.expect(model.isValid()).toBe(false);
+
+        model.set('type', 'ACCOUNT');
+        model.set('accountId', null);
+        t.expect(model.isValid()).toBe(false);
     });
 
 
     t.it("toUrl()", function(t) {
 
-        t.expect(model.toUrl()).toBe('cn_mail/folder/1');
+        let accountNode =  Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+            id   : 'foo@account',
+            type : 'ACCOUNT'
+        });
+        t.expect(accountNode.toUrl()).toBe('cn_mail/folder/foo@account');
 
+        model.set('accountId', 'foo@account');
+        t.expect(model.toUrl()).toBe('cn_mail/folder/foo@account/1');
     })
 
 

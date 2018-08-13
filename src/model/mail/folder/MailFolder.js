@@ -43,6 +43,13 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         name : 'id',
         type : 'string'
     }, {
+        name       : 'accountId',
+        type       : 'string',
+        critical   : true,
+        validators : [{
+            type : 'presence'
+        }]
+    }, {
         name : 'text',
         type : 'string',
         validators : [{
@@ -72,6 +79,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         me.getField('type').setModelValidators([{
             type : 'inclusion',
             list : [
+                'ACCOUNT',
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.JUNK,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH,
@@ -84,15 +92,25 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
 
     /**
-     * Returns te url represented by an instance of this MailFolder
-     * to be used with redirectTo
+     * Returns the url represented by an instance of this MailFolder
+     * to be used with redirectTo.
      *
      * @returns {string}
+     *
+     * @throws if no parentNode can be found
      */
     toUrl : function() {
-        const me = this;
+        const me     = this,
+              prefix = 'cn_mail/folder/';
 
-        return 'cn_mail/folder/' + me.getId()
+        if (me.get('type') === 'ACCOUNT') {
+            return prefix + me.getId()
+        }
+
+        return prefix +
+               me.get('accountId') +
+               '/' +
+               me.getId()
     }
 
 });
