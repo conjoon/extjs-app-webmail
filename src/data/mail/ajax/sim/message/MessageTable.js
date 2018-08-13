@@ -437,6 +437,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 to             : me.buildAddresses('to', i),
                 cc             : me.buildAddresses('cc', i),
                 mailFolderId   : mailFolderId,
+                mailAccountId  : 'dev_sys@conjoon.org',
                 messageBodyId  : (i + 1) + '',
                 testProp       : i,
                 seen           : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),

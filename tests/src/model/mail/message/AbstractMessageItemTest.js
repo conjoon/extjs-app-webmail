@@ -33,7 +33,9 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
             id            : 1,
-            messageBodyId : 2
+            messageBodyId : 2,
+            mailAccountId : 3,
+            mailFolderId  : 4
         });
 
 

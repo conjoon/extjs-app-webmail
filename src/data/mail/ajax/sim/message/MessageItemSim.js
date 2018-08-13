@@ -120,12 +120,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                     }
                 )};
             } else if (filters) {
-                filters = Ext.decode(filters);
-                id      = filters[0].value;
+                filters       = Ext.decode(filters);
+                id            = filters[0].value;
+                mailAccountId = filters[1].value;
                 var items = Ext.Array.filter(
                     messageItems,
                     function(messageItem) {
-                        return messageItem.mailFolderId === id;
+                        return messageItem.mailFolderId === id &&
+                               messageItem.mailAccountId === mailAccountId;
                     }
                 );
 

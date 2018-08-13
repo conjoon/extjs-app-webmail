@@ -58,8 +58,15 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
         name : 'from',
         type : 'cn_core-datafieldemailaddress'
     }, {
-        name : 'mailFolderId',
-        type : 'string'
+        name       : 'mailFolderId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
+    }, {
+        name       : 'mailAccountId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
     }, {
         name        : 'messageBodyId',
         type        : 'string',
