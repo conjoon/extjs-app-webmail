@@ -58,6 +58,9 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
                 filters : [{
                     property : 'mailFolderId',
                     value    : '{cn_mail_ref_mailfoldertree.selection.id}'
+                }, {
+                    property : 'mailAccountId',
+                    value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
                 }]
             }
         });

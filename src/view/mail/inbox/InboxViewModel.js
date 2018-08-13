@@ -51,6 +51,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
             filters  : [{
                 property : 'mailFolderId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.id}'
+            }, {
+                property : 'mailAccountId',
+                value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
             }]
         }
     },
