@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,36 +33,49 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
 }, function() {
 
     var mailFolders =   [{
-        id          : 1,
-        text        : 'Inbox',
-        unreadCount : 3787,
-        type        : 'INBOX',
-        iconCls     : 'fa fa-inbox',
-        children    : []
-    }, {
-        id          : 2,
-        text        : 'Sent',
-        unreadCount : 0,
-        type        : 'SENT',
-        children    : []
-    }, {
-        id          : 3,
-        text        : 'Junk',
-        unreadCount : 0,
-        type        : 'JUNK',
-        children    : []
-    }, {
-        id          : 4,
-        text        : 'Drafts',
-        unreadCount : 0,
-        type        : 'DRAFT',
-        children    : []
-    }, {
-        id          : 5,
-        text        : 'Trash',
-        unreadCount : 5,
-        type        : 'TRASH',
-        children    : []
+        id            : "demo@conjoon.org",
+        expanded      : true,
+        mailAccountId :  "demo@conjoon.org",
+        type          : 'ACCOUNT',
+        text          : "demo@conjoon.org",
+        children : [{
+            id            : 1,
+            text          : 'Inbox',
+            unreadCount   : 3787,
+            type          : 'INBOX',
+            iconCls       : 'fa fa-inbox',
+            children      : [],
+            mailAccountId :  "demo@conjoon.org",
+
+        }, {
+            id            : 2,
+            text          : 'Sent',
+            unreadCount   : 0,
+            type          : 'SENT',
+            children      : [],
+            mailAccountId :  "demo@conjoon.org",
+        }, {
+            id            : 3,
+            text          : 'Junk',
+            unreadCount   : 0,
+            type          : 'JUNK',
+            children      : [],
+            mailAccountId :  "demo@conjoon.org",
+        }, {
+            id            : 4,
+            text          : 'Drafts',
+            unreadCount   : 0,
+            type          : 'DRAFT',
+            children      : [],
+            mailAccountId :  "demo@conjoon.org",
+        }, {
+            id           : 5,
+            text         : 'Trash',
+            unreadCount  : 5,
+            type         : 'TRASH',
+            children     : [],
+            mailAccountId :  "demo@conjoon.org",
+        }]
     }];
 
 
