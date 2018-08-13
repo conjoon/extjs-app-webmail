@@ -33,11 +33,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
 }, function() {
 
     var mailFolders =   [{
-        id            : "demo@conjoon.org",
+        id            : "dev_sys@conjoon.org",
         expanded      : true,
-        mailAccountId :  "demo@conjoon.org",
+        mailAccountId :  "dev_sys@conjoon.org",
         type          : 'ACCOUNT',
-        text          : "demo@conjoon.org",
+        text          : "dev_sys@conjoon.org",
         children : [{
             id            : 1,
             text          : 'Inbox',
@@ -45,7 +45,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
             type          : 'INBOX',
             iconCls       : 'fa fa-inbox',
             children      : [],
-            mailAccountId :  "demo@conjoon.org",
+            mailAccountId :  "dev_sys@conjoon.org",
 
         }, {
             id            : 2,
@@ -53,28 +53,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
             unreadCount   : 0,
             type          : 'SENT',
             children      : [],
-            mailAccountId :  "demo@conjoon.org",
+            mailAccountId :  "dev_sys@conjoon.org",
         }, {
             id            : 3,
             text          : 'Junk',
             unreadCount   : 0,
             type          : 'JUNK',
             children      : [],
-            mailAccountId :  "demo@conjoon.org",
+            mailAccountId :  "dev_sys@conjoon.org",
         }, {
             id            : 4,
             text          : 'Drafts',
             unreadCount   : 0,
             type          : 'DRAFT',
             children      : [],
-            mailAccountId :  "demo@conjoon.org",
+            mailAccountId :  "dev_sys@conjoon.org",
         }, {
             id           : 5,
             text         : 'Trash',
             unreadCount  : 5,
             type         : 'TRASH',
             children     : [],
-            mailAccountId :  "demo@conjoon.org",
+            mailAccountId :  "dev_sys@conjoon.org",
         }]
     }];
 

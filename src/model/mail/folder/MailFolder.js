@@ -43,7 +43,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         name : 'id',
         type : 'string'
     }, {
-        name       : 'accountId',
+        name       : 'mailAccountId',
         type       : 'string',
         critical   : true,
         validators : [{
@@ -108,7 +108,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         }
 
         return prefix +
-               me.get('accountId') +
+               me.get('mailAccountId') +
                '/' +
                me.getId()
     }

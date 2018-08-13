@@ -75,17 +75,17 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_mail/message/replyAll/:id' : 'onReplyAllRoute',
         'cn_mail/message/forward/:id'  : 'onForwardRoute',
         'cn_mail/message/read/:id'     : 'onReadMessageRoute',
-        'cn_mail/folder/:account/:id'  : {
+        'cn_mail/folder/:mailAccountId/:id'  : {
             action     : 'onMailFolderRoute',
             conditions : {
-                ':account' : '(.+)'
+                ':mailAccountId' : '(.+)'
             },
             before     : 'onBeforePackageRoute'
         },
-        'cn_mail/folder/:account'  : {
+        'cn_mail/folder/:mailAccountId'  : {
             action     : Ext.emptyFn,
             conditions : {
-                ':account' : '(.+)'
+                ':mailAccountId' : '(.+)'
             },
             before     : 'onBeforePackageRoute'
         },
@@ -535,18 +535,18 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     /**
-     * Action for the cn_mail/folder/:account/:id route.
+     * Action for the cn_mail/folder/:mailAccountId/:id route.
      *
-     * @param {String} accountId
+     * @param {String} mailAccountId
      * @param {String} mailFolderId
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailFolderFor}
      */
-    onMailFolderRoute : function(accountId, mailFolderId) {
+    onMailFolderRoute : function(mailAccountId, mailFolderId) {
         const me              = this,
               mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.showInboxViewFor(accountId, mailFolderId);
+        mailDesktopView.showInboxViewFor(mailAccountId, mailFolderId);
     },
 
 
