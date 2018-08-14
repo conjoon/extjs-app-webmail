@@ -37,7 +37,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
     Ext.ux.ajax.SimManager.register({
         type : 'json',
 
-        url  : /cn_mail\/MessageBody(\/\d+)?/,
+        url  : /cn_mail\/MessageBody(\/.+)?/,
 
         doDelete : function() {
 
@@ -134,7 +134,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                 id;
             if (idPart) {
 
-                id = parseInt(idPart.substring(1), 10);
+                id = idPart.substring(1).split('?')[0];
                 console.log("GET", "MessageBody for id", id, new Date());
                 return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
                        .getMessageBody(id);

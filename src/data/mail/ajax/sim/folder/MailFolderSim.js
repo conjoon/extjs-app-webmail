@@ -33,48 +33,48 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
 }, function() {
 
     var mailFolders =   [{
-        id            : "dev_sys@conjoon.org",
+        id            : "dev_sys_conjoon_org",
         expanded      : true,
-        mailAccountId :  "dev_sys@conjoon.org",
+        mailAccountId :  "dev_sys_conjoon_org",
         type          : 'ACCOUNT',
-        text          : "dev_sys@conjoon.org",
+        text          : "dev_sys_conjoon_org",
         children : [{
-            id            : 1,
+            id            : "INBOX",
             text          : 'Inbox',
             unreadCount   : 3787,
             type          : 'INBOX',
             iconCls       : 'fa fa-inbox',
             children      : [],
-            mailAccountId :  "dev_sys@conjoon.org",
+            mailAccountId :  "dev_sys_conjoon_org",
 
         }, {
-            id            : 2,
+            id            : "INBOX.Sent Messages",
             text          : 'Sent',
             unreadCount   : 0,
             type          : 'SENT',
             children      : [],
-            mailAccountId :  "dev_sys@conjoon.org",
+            mailAccountId :  "dev_sys_conjoon_org",
         }, {
-            id            : 3,
+            id            : "INBOX.Junk",
             text          : 'Junk',
             unreadCount   : 0,
             type          : 'JUNK',
             children      : [],
-            mailAccountId :  "dev_sys@conjoon.org",
+            mailAccountId :  "dev_sys_conjoon_org",
         }, {
-            id            : 4,
+            id            : "INBOX.Drafts",
             text          : 'Drafts',
             unreadCount   : 0,
             type          : 'DRAFT',
             children      : [],
-            mailAccountId :  "dev_sys@conjoon.org",
+            mailAccountId :  "dev_sys_conjoon_org",
         }, {
-            id           : 5,
+            id           : "INBOX.Trash",
             text         : 'Trash',
             unreadCount  : 5,
             type         : 'TRASH',
             children     : [],
-            mailAccountId :  "dev_sys@conjoon.org",
+            mailAccountId :  "dev_sys_conjoon_org",
         }]
     }];
 

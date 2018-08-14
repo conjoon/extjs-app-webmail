@@ -39,7 +39,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
     Ext.ux.ajax.SimManager.register({
         type : 'json',
 
-        url  : /cn_mail\/Attachment(\/\d+)?/,
+        url  : /cn_mail\/Attachment(\/.+)?/,
 
         doDelete : function(ctx) {
 
@@ -107,8 +107,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
                 return AttachmentTable.getAttachment(id);
             } else if (filters) {
                 filters = Ext.decode(filters);
-                id      = filters[0].value;
-                attachments = AttachmentTable.getAttachments(id);
+
+                id  = filters[0].value;
+                let folder = filters[1].value;
+                let account = filters[2].value;
+
+                attachments = AttachmentTable.getAttachments(account, folder, id);
                 console.log("GET", "Attachments for Message id", id, new Date());
                 return attachments;
             } else {

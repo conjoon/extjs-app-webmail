@@ -36,7 +36,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
     Ext.ux.ajax.SimManager.register({
         type : 'json',
 
-        url  : /cn_mail\/MessageItem(\/\d+)?/,
+        url  : /cn_mail\/MessageItem(\/.+)?/,
 
         doDelete : function(ctx) {
 
@@ -112,7 +112,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 messageItems = MessageTable.getMessageItems();
 
             if (idPart) {
-                id = parseInt(idPart.substring(1), 10);
+                id = idPart.substring(1).split('?')[0];
                 return {data : Ext.Array.findBy(
                     messageItems,
                     function(messageItem) {
