@@ -31,6 +31,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                     id             : 1,
                     messageBodyId  : 2,
+                    mailAccountId  : 4,
+                    mailFolderId   : 5,
                     size           : 400,
                     subject        : 'SUBJECT',
                     from           : 'FROM',
@@ -92,7 +94,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 delay: 500
             });
 
-            viewModel.setMessageItem(createMessageItem());
+            let msgItem = createMessageItem();
+
+            viewModel.setMessageItem(msgItem);
+
+            t.expect(viewModel.bodyLoadOperation.loadOperation.getParams()).toEqual({
+                mailAccountId : msgItem.get('mailAccountId'),
+                mailFolderId  : msgItem.get('mailFolderId'),
+            });
 
             t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
             t.expect(viewModel.bodyLoadOperation.messageBodyId).toBe('2');
@@ -232,11 +241,30 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 delay: 1000
             });
 
-            viewModel.setMessageItem(createMessageItem());
+            let msgItem = createMessageItem();
+            viewModel.setMessageItem(msgItem);
 
             t.waitForMs(500, function() {
+
                 t.expect(viewModel.attachmentsLoadOperation instanceof Ext.data.operation.Read).toBe(true);
                 t.expect(viewModel.attachmentsLoadOperation.isRunning()).toBe(true);
+
+                let filters = viewModel.attachmentsLoadOperation.getFilters();
+
+                t.expect(filters.length).toBe(3);
+                let exp = [];
+                for (let i = 0, len = filters.length; i < len; i++) {
+                    exp.push({property : filters[i].getProperty(), value : filters[i].getValue()});
+                }
+
+                t.expect(exp).toEqual([{
+                    property : "messageItemId", value : msgItem.getId()
+                }, {
+                    property : "mailFolderId", value : msgItem.get('mailFolderId')
+                },{
+                    property : "mailAccountId", value : msgItem.get('mailAccountId')
+                }]);
+
                 viewModel.abortMessageAttachmentsLoad();
                 t.expect(viewModel.attachmentsLoadOperation).toBe(null);
 

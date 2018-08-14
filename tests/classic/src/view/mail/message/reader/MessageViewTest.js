@@ -241,13 +241,15 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
+            let rec  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
             t.expect(view.getTitle().toLowerCase()).toContain('loading');
 
             t.expect(view.getViewModel().get('messageItem')).toBeFalsy();
 
             t.isCalledNTimes('setMessageItem', view.getViewModel(), 1);
 
-            view.loadMessageItem(1);
+            view.loadMessageItem(rec.mailAccountId, rec.mailFolderId, rec.id);
 
             t.expect(view.getViewModel().get('isLoading')).toBe(true);
 
@@ -359,8 +361,9 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
+            let rec  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
-            view.loadMessageItem(1);
+            view.loadMessageItem(rec.mailAccountId, rec.mailFolderId, rec.id);
 
             t.waitForMs(750, function() {
 
@@ -394,14 +397,17 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
             let CALLED = 0;
 
+            let rec  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
             view.on('cn_mail-messageitemload', function(messageView, item) {
                 CALLED++;
                 t.expect(messageView).toBe(view);
-                t.expect(item.getId()).toBe('1');
+                t.expect(item.getId()).toBe(rec.id);
             });
 
             t.expect(CALLED).toBe(0);
-            view.loadMessageItem(1);
+
+            view.loadMessageItem(rec.mailAccountId, rec.mailFolderId, rec.id);
 
             t.waitForMs(750, function() {
                 t.expect(CALLED).toBe(1);
@@ -416,7 +422,9 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
             t.expect(view.getMessageItem()).toBe(null);
 
-            view.loadMessageItem(1);
+            let rec  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
+            view.loadMessageItem(rec.mailAccountId, rec.mailFolderId, rec.id);
 
             t.waitForMs(750, function() {
                 t.expect(view.getMessageItem()).toBeTruthy();

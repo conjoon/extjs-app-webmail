@@ -277,11 +277,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     /**
      * Loads the MessageItem with the specified id into this view.
      *
+     * @param {String} mailAccountId
+     * @param {String} messageId
      * @param {String} messageId
      *
      * @see onMessageItemLoad
      */
-    loadMessageItem : function(messageId) {
+    loadMessageItem : function(mailAccountId, mailFolderId, messageId) {
 
         var me = this,
             vm = me.getViewModel();
@@ -293,6 +295,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         }
 
         me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.load(messageId, {
+            params  : {
+                mailAccountId : mailAccountId,
+                mailFolderId  : mailFolderId
+            },
             success : me.onMessageItemLoaded,
             scope   : me
         });
