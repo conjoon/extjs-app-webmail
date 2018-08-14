@@ -74,7 +74,15 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_mail/message/replyTo/:id'  : 'onReplyToRoute',
         'cn_mail/message/replyAll/:id' : 'onReplyAllRoute',
         'cn_mail/message/forward/:id'  : 'onForwardRoute',
-        'cn_mail/message/read/:id'     : 'onReadMessageRoute',
+        'cn_mail/message/read/:mailAccountId/:mailFolderId/:id'     : {
+            conditions : {
+                ':mailAccountId' : '(.+)',
+                ':mailFolderId'  : '(.+)',
+                ':id'            : '(.+)'
+            } ,
+            action     : 'onReadMessageRoute',
+            before     : 'onBeforePackageRoute'
+        },
         'cn_mail/folder/:mailAccountId/:id'  : {
             action     : 'onMailFolderRoute',
             conditions : {
@@ -520,17 +528,20 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
     /**
-     * Action for the cn_mail/message/read/:id route.
+     * Action for the cn_mail/message/read/mailAccountId/mailFolderId:id route.
      *
-     * @param messageId
+     * @param {String} mailAccountId
+     * @param {String} mailFolderId
+     * @param {String} messageId
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailMessageViewFor}
      */
-    onReadMessageRoute : function(messageId) {
+    onReadMessageRoute : function(mailAccountId, mailFolderId, messageId) {
+
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.showMailMessageViewFor(messageId);
+        mailDesktopView.showMailMessageViewFor(mailAccountId, mailFolderId, messageId);
     },
 
 

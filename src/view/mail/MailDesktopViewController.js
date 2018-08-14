@@ -334,16 +334,18 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * The associated messageItem record will be queried in the MessageGrid and
      * reused for the new view if possible.
      *
+     * @param {String} mailAccountId
+     * @param {String} mailFolderId
      * @param {String} messageId The id of the message that should be shown
      * in a MessageView.
      *
      * @return {conjoon.cn_mail.view.mail.message.reader.MessageView}
      */
-    showMailMessageViewFor : function(messageId) {
+    showMailMessageViewFor : function(mailAccountId, mailFolderId, messageId) {
 
         var me      = this,
             view    = me.getView(),
-            itemId  = 'cn_mail-mailmessagereadermessageview-' + messageId,
+            itemId  = me.getMessageViewItemId(messageId),
             newView = view.down('#' + itemId),
             msgGrid = view.down('cn_mail-mailmessagegrid'),
             store   = msgGrid ? msgGrid.getStore(): null,
@@ -354,7 +356,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             newView = view.add({
                 xtype   : 'cn_mail-mailmessagereadermessageview',
                 itemId  : itemId,
-                cn_href : 'cn_mail/message/read/'  + messageId,
+                cn_href : 'cn_mail/message/read/' +
+                           mailAccountId + '/' +
+                           mailFolderId + '/' +
+                           messageId,
                 margin  : '12 5 5 0'
             });
 
@@ -362,7 +367,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 newView.setMessageItem(store.getAt(recInd));
             } else {
                 // most likely opened via deeplinking
-                newView.loadMessageItem(messageId);
+                newView.loadMessageItem(mailAccountId, mailFolderId, messageId);
             }
         }
 
@@ -489,7 +494,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
     /**
      * Callback for the embedded MessageGrid's doubleclick event.
-     * Redirects to this PackageController's cn_mail/message/read/:id route.
+     * Redirects to this PackageController's cn_mail/message/read/:mailAccountId/:mailFolderId/:id route.
      *
      * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} record
@@ -498,7 +503,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         var me = this;
 
-        me.redirectTo('cn_mail/message/read/' + record.get('id'));
+        me.redirectTo(
+            'cn_mail/message/read/' +
+            record.get('mailAccountId') + '/' +
+            record.get('mailFolderId') + '/' +
+            record.get('id')
+        );
     },
 
     /**
@@ -921,6 +931,20 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             messageItem.commit();
         }
 
+    },
+
+
+    /**
+     * @param prefix
+     * @param value
+     *
+     * @return {String}
+     *
+     * @private
+     */
+    getMessageViewItemId : function(messageId) {
+        return 'cn_mail-mailmessagereadermessageview-' +
+                Ext.util.Base64.encode(messageId).replace(/[^a-zA-Z0-9]/g,'-');
     }
 
 
