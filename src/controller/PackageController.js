@@ -86,7 +86,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'cn_mail/folder/:mailAccountId/:id'  : {
             action     : 'onMailFolderRoute',
             conditions : {
-                ':mailAccountId' : '(.+)'
+                ':mailAccountId' : '(.+)',
+                ':id'            : '(.+)'
             },
             before     : 'onBeforePackageRoute'
         },
@@ -97,7 +98,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             },
             before     : 'onBeforePackageRoute'
         },
-        'cn_mail/home'                 : 'onHomeTabRoute'
+        'cn_mail/home' : 'onHomeTabRoute'
     },
 
     control : {
@@ -541,7 +542,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.showMailMessageViewFor(mailAccountId, mailFolderId, messageId);
+        mailDesktopView.showMailMessageViewFor(
+            decodeURI(mailAccountId), decodeURI(mailFolderId), decodeURI(messageId)
+        );
     },
 
 
@@ -557,7 +560,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         const me              = this,
               mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.showInboxViewFor(mailAccountId, mailFolderId);
+        mailDesktopView.showInboxViewFor(
+            decodeURI(mailAccountId), decodeURI(mailFolderId)
+        );
     },
 
 
