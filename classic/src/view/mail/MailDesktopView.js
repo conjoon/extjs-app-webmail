@@ -63,15 +63,17 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      * Tries to find an existing MessageView opened in the view and focus it,
      * or create a new one by adding it to the view.
      *
+     * @param {String} mailAccountId
+     * @param {String} mailFolderId
      * @param {String} messageId The id of the message that should be shown
      * in a MessageView.
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailMessageViewFor}
      */
-    showMailMessageViewFor : function(messageId) {
+    showMailMessageViewFor : function(mailAccountId, mailFolderId, messageId) {
         var me = this;
 
-        me.getController().showMailMessageViewFor(messageId);
+        me.getController().showMailMessageViewFor(mailAccountId, mailFolderId, messageId);
     },
 
     /**
