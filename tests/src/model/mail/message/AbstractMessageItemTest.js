@@ -85,4 +85,14 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(model.getField('draft')).toBeTruthy();
     });
 
+    t.it("Test mailFolderId", function(t) {
+        t.expect(model.getField('mailFolderId')).toBeTruthy();
+        t.expect(model.getField('mailFolderId').critical).toBe(true);
+    });
+
+    t.it("Test mailAccountId", function(t) {
+        t.expect(model.getField('mailAccountId')).toBeTruthy();
+        t.expect(model.getField('mailAccountId').critical).toBe(true);
+    });
+
 });

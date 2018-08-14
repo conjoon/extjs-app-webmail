@@ -65,6 +65,16 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractAttachment', {
         name    : 'downloadUrl',
         type    : 'string',
         persist : false
+    }, {
+        name       : 'mailFolderId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
+    }, {
+        name       : 'mailAccountId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
     }]
 
 

@@ -26,7 +26,9 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
 
     t.beforeEach(function() {
         model = Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
-            id : 1
+            id            : 1,
+            mailFolderId  : 4,
+            mailAccountId : 5
         });
     });
 
@@ -53,6 +55,14 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
         t.expect(model.isValid()).toBe(true);
     });
 
+    t.it("Test mailFolderId", function(t) {
+        t.expect(model.getField('mailFolderId')).toBeTruthy();
+        t.expect(model.getField('mailFolderId').critical).toBe(true);
+    });
 
+    t.it("Test mailAccountId", function(t) {
+        t.expect(model.getField('mailAccountId')).toBeTruthy();
+        t.expect(model.getField('mailAccountId').critical).toBe(true);
+    });
 
 });

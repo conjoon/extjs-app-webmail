@@ -102,7 +102,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test addresses load", function(t) {
 
-            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
+            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(
+                conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0).id
+            );
 
             t.waitForMs(500, function() {
                 t.expect(rec.get('to')).toContain(
@@ -115,7 +117,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageBody load", function(t) {
 
-            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
+            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(
+                conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0).id
+            );
 
             t.waitForMs(500, function() {
 
@@ -130,14 +134,23 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test attachments load", function(t) {
 
-            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
+            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(
+                conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0).id
+            );
 
             t.waitForMs(500, function() {
                 t.expect(typeof rec.attachments).toBe('function');
                 t.expect(rec.attachments().getRange().length).toBe(0);
+                rec.attachments().addFilter([{
+                    property : 'mailAccountId',
+                    value    : rec.get('mailAccountId')
+                }, {
+                    property : 'mailFolderId',
+                    value    : rec.get('mailFolderId')
+                }], true);
                 rec.attachments().load();
                 t.waitForMs(500, function() {
-                    t.expect(rec.attachments().getRange().length).not.toBe(0);
+                    t.expect(rec.attachments().isLoaded()).toBe(true);
                 });
             });
 
@@ -146,7 +159,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         t.it("Test MessageDraft save", function(t) {
 
             var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                subject : 'test'
+                subject       : 'test',
+                mailFolderId  : 1,
+                mailAccountId : 3
             });
 
             t.expect(rec.getId()).toContain('MessageDraft');
@@ -167,12 +182,17 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             });
 
             var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                subject : 'test'
+                subject       : 'test',
+                mailFolderId  : 1,
+                mailAccountId : 3
             });
 
             t.expect(rec.isValid()).toBe(false);
 
-            rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+            rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+                mailFolderId  : 1,
+                mailAccountId : 3
+            }));
 
             t.expect(rec.isValid()).toBe(true);
 

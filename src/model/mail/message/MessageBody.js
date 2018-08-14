@@ -44,6 +44,16 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
     }, {
         name : 'textHtml',
         type : 'string'
+    }, {
+        name       : 'mailFolderId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
+    }, {
+        name       : 'mailAccountId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
     }]
 
 
