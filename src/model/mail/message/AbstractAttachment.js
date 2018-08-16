@@ -75,7 +75,12 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractAttachment', {
         type       : 'string',
         critical   : true,
         validators : 'presence'
-    }]
+    }, {
+        name       : 'originalId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
+    },]
 
 
 

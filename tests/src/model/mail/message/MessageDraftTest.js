@@ -194,7 +194,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
                 mailAccountId : 3
             }));
 
-            t.expect(rec.isValid()).toBe(true);
+            t.expect(rec.isValid()).toBe(false);
 
             var rec2 = rec.getMessageBody();
 
@@ -214,6 +214,8 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
             t.waitForMs(1000, function() {
                 t.expect(rec2.getId()).not.toContain('MessageBody');
+                t.expect(rec.get('originalId')).toBeTruthy();
+                t.expect(rec.isValid()).toBe(true);
             });
 
         });

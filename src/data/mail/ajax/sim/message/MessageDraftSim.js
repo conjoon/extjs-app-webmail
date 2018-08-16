@@ -147,6 +147,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             ret.responseText = Ext.JSON.encode({
                 id            : draft.id,
                 mailFolderId  : draft.mailFolderId,
+                mailAccountId : draft.mailAccountId,
+                originalId    : draft.originalId,
                 success       : true
             });
 

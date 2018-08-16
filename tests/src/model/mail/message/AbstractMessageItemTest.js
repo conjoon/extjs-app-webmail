@@ -35,7 +35,8 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
             id            : 1,
             messageBodyId : 2,
             mailAccountId : 3,
-            mailFolderId  : 4
+            mailFolderId  : 4,
+            originalId    : 1
         });
 
 
@@ -93,6 +94,16 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
     t.it("Test mailAccountId", function(t) {
         t.expect(model.getField('mailAccountId')).toBeTruthy();
         t.expect(model.getField('mailAccountId').critical).toBe(true);
+    });
+
+    t.it("id", function(t) {
+        t.expect(model.getIdProperty()).toBe('id');
+    });
+
+    t.it("originalId", function(t) {
+        t.expect(model.getField('originalId')).toBeTruthy();
+        t.expect(model.getField('originalId').critical).toBe(true);
+
     });
 
 });

@@ -41,7 +41,8 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
             id            : 1,
             messageBodyId : 2,
             mailAccountId : 4,
-            mailFolderId  : 5
+            mailFolderId  : 5,
+            originalId    : 1
         });
 
         attachments = [Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
@@ -131,5 +132,6 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
 
 
     });
+
 
 });

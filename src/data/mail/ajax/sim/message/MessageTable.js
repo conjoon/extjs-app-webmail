@@ -243,8 +243,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     createMessageDraft : function(draftData) {
 
         var me            = this,
-            id            = me.getNextMessageDraftKey(),
-            mailFolderId  = '4',
+            originalId    = me.getNextMessageDraftKey(),
+            mailAccountId = 'dev_sys_conjoon_org',
+            id            = mailAccountId + '-' + originalId,
+            mailFolderId  = 'INBOX.Drafts',
             messageDrafts = me.getMessageDrafts(),
             messageItems  = me.getMessageItems(),
             date          = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
@@ -257,21 +259,27 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         messageDrafts.push(Ext.apply(draftData, {
-            id           : id,
-            mailFolderId : mailFolderId,
-            date         : date
+            id            : id,
+            mailFolderId  : mailFolderId,
+            mailAccountId : mailAccountId,
+            originalId    : originalId,
+            date          : date
         }));
 
         messageItems.push(Ext.apply(draftData, {
-            id           : id,
-            mailFolderId : mailFolderId,
-            date         : date
+            id            : id,
+            mailFolderId  : mailFolderId,
+            mailAccountId : mailAccountId,
+            originalId    : originalId,
+            date          : date
         }));
 
         me.baseMessageItems.push(Ext.apply(draftData, {
-            id           : id,
-            mailFolderId : mailFolderId,
-            date         : date
+            id            : id,
+            mailFolderId  : mailFolderId,
+            mailAccountId : mailAccountId,
+            originalId    : originalId,
+            date          : date
         }));
 
 
@@ -456,6 +464,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 cc             : me.buildAddresses('cc', i),
                 mailFolderId   : mailFolderId,
                 mailAccountId  : mailAccountId,
+                originalId     : (i + 1) + '',
                 testProp       : i,
                 seen           : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 draft          : mailFolderId == "INBOX.Drafts"

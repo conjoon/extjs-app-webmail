@@ -54,7 +54,12 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
         type       : 'string',
         critical   : true,
         validators : 'presence'
-    }]
+    }, {
+        name       : 'originalId',
+        type       : 'string',
+        critical   : true,
+        validators : 'presence'
+    },]
 
 
 });
