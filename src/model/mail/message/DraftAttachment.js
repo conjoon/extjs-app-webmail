@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
 
     requires : [
         'conjoon.cn_core.data.proxy.RestForm',
-        'conjoon.cn_core.data.field.Blob'
+        'conjoon.cn_core.data.field.Blob',
+        'conjoon.cn_mail.store.mail.message.MessageAttachmentStore'
     ],
 
     entityName : 'DraftAttachment',
@@ -43,8 +44,13 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
         name      : 'messageItemId',
         type      : 'string',
         reference : {
-            parent  : 'MessageDraft',
-            inverse : 'attachments'
+            parent: 'MessageDraft',
+            inverse: {
+                role : 'attachments',
+                storeConfig: {
+                    type: 'cn_mail-mailmessageattachmentstore'
+                }
+            }
         }
     }, {
         name : 'file',

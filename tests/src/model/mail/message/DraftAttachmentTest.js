@@ -51,6 +51,7 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
         t.it("Should create instance", function(t) {
             t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractAttachment).toBeTruthy();
+            t.expect(model instanceof conjoon.cn_mail.model.mail.CompoundKeyedModel).toBeTruthy();
         });
 
         t.it("Test Entity Name", function(t) {
@@ -65,7 +66,20 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
         t.it("Test sourceId", function(t) {
 
-            var model = conjoon.cn_mail.model.mail.message.DraftAttachment.load(1);
+            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItems();
+            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItems();
+
+            let attachment = conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.getAttachmentAt(0);
+
+            var model = conjoon.cn_mail.model.mail.message.DraftAttachment.load(
+                attachment.id, {
+                    params : {
+                        mailAccountId : attachment.mailAccountId,
+                        mailFolderId  : attachment.mailFolderId,
+                        messageItemId : attachment.messageItemId
+                    }
+                }
+            );
 
             t.waitForMs(500, function() {
                 t.expect(model.get('sourceId')).toBe(model.getId());
@@ -81,17 +95,21 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
                 var setit = rec.set('sourceId');
                 t.expect(setit).toBe(null);
-                t.expect(rec.get('sourceId')).toBe('1');
+                t.expect(rec.get('sourceId')).toBe(attachment.id);
 
-                var newModel = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
+                var newModel = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+                    mailAccountId : attachment.mailAccountId,
+                    mailFolderId  : attachment.mailFolderId,
+                });
 
                 t.expect(newModel.getId()).not.toBe(newModel.get('sourceId'));
 
                 newModel.save();
 
                 t.waitForMs(500, function() {
+                    t.expect(newModel.get('originalId')).toBeTruthy();
+
                     t.expect(newModel.getId()).toBe(newModel.get('sourceId'));
-                    t.expect(newModel.getId()).toBe(parseInt(newModel.get('sourceId'), 10) + "");
                 });
 
             });
