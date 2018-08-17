@@ -21,7 +21,7 @@
  */
 
 /**
- * Abstract base model for app-cn_mail mesage items.
+ * Abstract base model for app-cn_mail message items.
  *
  * The schema used by this model is {@link conjoon.cn_mail.data.mail.BaseSchema}
  *
@@ -38,7 +38,7 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
-    extend : 'conjoon.cn_mail.model.mail.BaseModel',
+    extend : 'conjoon.cn_mail.model.mail.CompoundKeyedModel',
 
     requires : [
         'conjoon.cn_mail.model.mail.message.MessageBody',
@@ -47,9 +47,6 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
 
     fields : [{
-        name : 'id',
-        type : 'string'
-    }, {
         name : 'subject',
         type : 'string'
     }, {
@@ -58,21 +55,6 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     }, {
         name : 'from',
         type : 'cn_core-datafieldemailaddress'
-    }, {
-        name       : 'mailFolderId',
-        type       : 'string',
-        critical   : true,
-        validators : 'presence'
-    }, {
-        name       : 'originalId',
-        type       : 'string',
-        critical   : true,
-        validators : 'presence'
-    }, {
-        name       : 'mailAccountId',
-        type       : 'string',
-        critical   : true,
-        validators : 'presence'
     }, {
         name        : 'messageBodyId',
         type        : 'string',
@@ -97,7 +79,54 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
         name    : 'recent',
         type    : 'bool',
         persist : false
-    }]
+    }],
+
+
+    /**
+     * Overridden to make sure filters for mailAccountId and mailFolderId
+     * are properly set.
+     *
+     * @param {Object} options options-object to be passed to load()
+     *
+     * @return {Ext.data.Store}
+     */
+    loadAttachments : function(options) {
+
+        const me = this;
+
+        me.attachments().addFilter([{
+            property : 'mailAccountId',
+            value    : me.get('mailAccountId')
+        }, {
+            property : 'mailFolderId',
+            value    : me.get('mailFolderId')
+        }], true);
+
+        return  me.attachments().load(options);
+    },
+
+
+    /**
+     * Wrapper for getMessageBody to make sure params mailFolderId and
+     * mailAccountId are submitted when loading.
+     *
+     * @param {Object} options options-object to be passed to getMessageBody()
+     *
+     * @returns {conjoon.cn_mail.model.mail.message.MessageBody}
+     */
+    loadMessageBody : function(options) {
+
+        const me = this;
+
+        options = options || {};
+
+        return me.getMessageBody(Ext.applyIf(options, {
+            params : {
+                mailFolderId  : me.get('mailFolderId'),
+                mailAccountId : me.get('mailAccountId')
+            }
+        }))
+    }
 
 
 });
