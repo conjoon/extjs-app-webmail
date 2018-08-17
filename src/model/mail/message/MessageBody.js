@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,35 +31,17 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
 
-    extend : 'conjoon.cn_mail.model.mail.BaseModel',
+    extend : 'conjoon.cn_mail.model.mail.CompoundKeyedModel',
 
     entityName : 'MessageBody',
 
     fields : [{
-        name :'id',
-        type : 'string'
-    },{
         name : 'textPlain',
         type : 'string'
     }, {
         name : 'textHtml',
         type : 'string'
-    }, {
-        name       : 'mailFolderId',
-        type       : 'string',
-        critical   : true,
-        validators : 'presence'
-    }, {
-        name       : 'mailAccountId',
-        type       : 'string',
-        critical   : true,
-        validators : 'presence'
-    }, {
-        name       : 'originalId',
-        type       : 'string',
-        critical   : true,
-        validators : 'presence'
-    },]
+    }]
 
 
 });
