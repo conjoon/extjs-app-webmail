@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,8 +102,14 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test addresses load", function(t) {
 
+            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(
-                conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0).id
+                messageItem.id,
+                {params : {
+                    mailFolderId  : messageItem.mailFolderId,
+                    mailAccountId : messageItem.mailAccountId
+                }}
             );
 
             t.waitForMs(500, function() {
@@ -117,16 +123,25 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageBody load", function(t) {
 
+            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(
-                conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0).id
+                messageItem.id,
+                {params : {
+                        mailFolderId  : messageItem.mailFolderId,
+                        mailAccountId : messageItem.mailAccountId
+                    }}
             );
+
 
             t.waitForMs(500, function() {
 
-                var mb = rec.getMessageBody();
+                var mb = rec.loadMessageBody();
 
                 t.waitForMs(500, function() {
                     t.expect(mb.get('textHtml')).toBeTruthy();
+                    t.expect(mb.get('mailFolderId')).toBe(rec.get('mailFolderId'));
+                    t.expect(mb.get('mailAccountId')).toBe(rec.get('mailAccountId'));
                 });
             });
 
@@ -134,21 +149,22 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test attachments load", function(t) {
 
+            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.load(
-                conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0).id
+                messageItem.id,
+                {params : {
+                        mailFolderId  : messageItem.mailFolderId,
+                        mailAccountId : messageItem.mailAccountId
+                    }}
             );
 
             t.waitForMs(500, function() {
                 t.expect(typeof rec.attachments).toBe('function');
+                t.isInstanceOf(rec.attachments(), 'conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
+
                 t.expect(rec.attachments().getRange().length).toBe(0);
-                rec.attachments().addFilter([{
-                    property : 'mailAccountId',
-                    value    : rec.get('mailAccountId')
-                }, {
-                    property : 'mailFolderId',
-                    value    : rec.get('mailFolderId')
-                }], true);
-                rec.attachments().load();
+                t.isInstanceOf(rec.loadAttachments(), 'Ext.data.Store');
                 t.waitForMs(500, function() {
                     t.expect(rec.attachments().isLoaded()).toBe(true);
                 });

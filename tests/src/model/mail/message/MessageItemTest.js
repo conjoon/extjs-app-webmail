@@ -87,6 +87,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
     });
 
     t.it("Test attachments", function(t) {
+        t.isInstanceOf(model.attachments(), 'conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
         model.attachments().add(attachments);
         t.expect(model.attachments().getAt(1).get('id')).toBe('2');
         t.expect(model.attachments().getAt(1).getMessageItem()).toBe(model);

@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
 
     t.it("Should create instance", function(t) {
         t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractAttachment).toBeTruthy();
+        t.expect(model instanceof conjoon.cn_mail.model.mail.CompoundKeyedModel).toBeTruthy();
     });
 
     t.it("Test Entity Name", function(t) {
