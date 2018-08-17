@@ -152,6 +152,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 success       : true
             });
 
+
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
                     ret[prop] = me[prop];

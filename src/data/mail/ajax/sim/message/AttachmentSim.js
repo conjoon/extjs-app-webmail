@@ -81,11 +81,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
                 attachment[i] = ctx.xhr.options.records[0].data[i];
             }
 
+
             rec = AttachmentTable.createAttachment(attachment);
 
             ret.responseText = Ext.JSON.encode({
-                id      : rec.id,
-                success : true
+                id            : rec.id,
+                originalId    : rec.originalId,
+                mailAccountId : rec.mailAccountId,
+                mailFolderId  : rec.mailFolderId,
+                success       : true
             });
 
             Ext.Array.forEach(me.responseProps, function (prop) {
@@ -99,12 +103,22 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
         data: function(ctx) {
 
             var idPart  = ctx.url.match(this.url)[1],
-                filters = ctx.params.filter,
+                params  = ctx.params,
+                filters = params.filter,
                 id, attachments;
             if (idPart) {
-                id = parseInt(idPart.substring(1), 10);
-                console.log("GET", "Attachment", id, new Date());
-                return AttachmentTable.getAttachment(id);
+
+                id = idPart.substring(1).split('?')[0];
+                console.log("GET", "Attachment", id, params.mailAccountId,
+                    params.mailFolderId,
+                    params.messageItemId, new Date());
+                return AttachmentTable.getAttachment(
+                    id,
+                    params.mailAccountId,
+                    params.mailFolderId,
+                    params.messageItemId
+                );
+
             } else if (filters) {
                 filters = Ext.decode(filters);
 

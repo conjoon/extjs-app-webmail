@@ -131,13 +131,18 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
         data: function(ctx) {
 
             var idPart = ctx.url.match(this.url)[1],
+                params = ctx.params,
                 id;
             if (idPart) {
 
                 id = idPart.substring(1).split('?')[0];
                 console.log("GET", "MessageBody for id", id, new Date());
                 return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
-                       .getMessageBody(id);
+                       .getMessageBody(
+                           params.mailAccountId,
+                           params.mailFolderId,
+                           id
+                       );
 
             } else {
                 return [{textHtml : 'NOT IMPLEMENTED'}];

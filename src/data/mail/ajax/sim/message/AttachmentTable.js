@@ -38,7 +38,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
     createAttachment : function(attachmentData) {
 
-        var me = this,
+        var me            = this,
             messageItemId = attachmentData.messageItemId;
 
         if (!me.attachments) {
@@ -49,7 +49,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             me.attachments[messageItemId] = [];
         }
 
-        attachmentData.id = ++me.largestAttachmentId;
+        attachmentData.originalId = ++me.largestAttachmentId;
+        attachmentData.id         = 'dev_sys_conjoon_org' + '-' + attachmentData.originalId;
+
         me.attachments[messageItemId].push(attachmentData);
 
         conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.updateAllItemData(messageItemId, {});
@@ -137,6 +139,24 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         return me.attachments[messageItemId];
     },
 
+    getAttachmentAt : function(pos) {
+
+        const me = this;
+
+        let ind = 0;
+
+        for (let messageItemId in me.attachments) {
+            for (let i = 0, len = me.attachments[messageItemId].length; i < len; i++) {
+                if (ind === pos) {
+                    return me.attachments[messageItemId][i];
+                }
+                ind++;
+            }
+        }
+
+        return null;
+    },
+
 
     getAttachment : function(attachmentId, accountId, folderId, messageItemId) {
 
@@ -179,10 +199,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
         if (!me.attachments[messageItemId]) {
             me.attachments[messageItemId] = [];
+
         }
 
         me.attachments[messageItemId].push({
-            id            : attachmentId  + '',
+            id            : 'dev_sys_conjoon_org' + '-' + attachmentId,
+            originalId    : attachmentId  + '',
             messageItemId : messageItemId + '',
             mailFolderId  : folderId,
             mailAccountId : accountId,
