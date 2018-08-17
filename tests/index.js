@@ -98,6 +98,7 @@ harness.start({
                 items : [
                     'src/model/mail/BaseModelTest.js',
                     'src/model/mail/BaseTreeModelTest.js',
+                    'src/model/mail/CompoundKeyedModelTest.js',
                     {
                     group : 'folder',
                     items : [
@@ -126,6 +127,7 @@ harness.start({
                 }, {
                     group : 'message',
                     items : [
+                        'src/store/mail/message/MessageAttachmentStoreTest.js',
                         'src/store/mail/message/MessageItemStoreTest.js'
                     ]
                 }]
