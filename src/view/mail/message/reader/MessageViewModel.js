@@ -345,11 +345,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
          * @bug
          * @see https://www.sencha.com/forum/showthread.php?336578-6-2-1-Ext-data-Model-load-scope-parameters-not-considered-iterating-extra-callbacks&p=1174274#post1174274
          */
-        ret = messageItem.getMessageBody({
-            params : {
-                mailFolderId  : messageItem.get('mailFolderId'),
-                mailAccountId : messageItem.get('mailAccountId'),
-            },
+        ret = messageItem.loadMessageBody({
             reload  : me.abortedRequestMap[messageItem.get('messageBodyId')] === true,
             success : function(record, operation){
                 me.messageBodyLoaded(record, operation);
@@ -392,14 +388,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             messageItem.attachments().on(
                 'beforeload', me.onBeforeAttachmentsLoad, me, {single : true}
             );
-            messageItem.attachments().addFilter([{
-                property : 'mailFolderId',
-                value    : messageItem.get('mailFolderId')
-            }, {
-                property : 'mailAccountId',
-                value    : messageItem.get('mailAccountId')
-            }], true);
-            messageItem.attachments().load({
+            messageItem.loadAttachments({
                 callback : me.messageAttachmentsLoaded,
                 scope    : me
             });

@@ -28,18 +28,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         viewConfig,
         createMessageItem = function() {
 
-            var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id             : 1,
-                    messageBodyId  : 2,
-                    mailAccountId  : 4,
-                    mailFolderId   : 5,
-                    size           : 400,
-                    subject        : 'SUBJECT',
-                    from           : 'FROM',
-                    date           : 'DATE',
-                    to             : 'TO',
-                    hasAttachments : true
-                });
+            const MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
+
+            let item        = MessageTable.getMessageItemAt(0),
+                messageItem = Ext.create(
+                    'conjoon.cn_mail.model.mail.message.MessageItem',
+                    item
+                );
 
             return messageItem;
         },
@@ -65,7 +60,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function () {
-
 
         t.it("1. Should create the ViewModel", function(t) {
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
@@ -104,7 +98,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             });
 
             t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
-            t.expect(viewModel.bodyLoadOperation.messageBodyId).toBe('2');
+            t.expect(viewModel.bodyLoadOperation.messageBodyId).toBe(msgItem.get('messageBodyId'));
             t.expect(viewModel.bodyLoadOperation.loadOperation.isRunning()).toBe(true);
 
             t.expect(wasCalled).toBe(false);
@@ -112,13 +106,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.expect(wasCalled).toBe(true);
-                t.expect(viewModel.get('messageBody').get('id')).toBe('2');
+                t.expect(viewModel.get('messageBody').get('id')).toBe(msgItem.get('messageBodyId'));
                 t.expect(viewModel.get('messageBody').get('textHtml')).toBeTruthy();
                 // we are working with cloned messageItem for the assoziations
-                t.expect(viewModel.get('messageItem').getMessageBody()).not.toBe(viewModel.get('messageBody'));
+                t.expect(viewModel.get('messageItem').loadMessageBody()).not.toBe(viewModel.get('messageBody'));
             });
 
         });
+
 
         t.it("3. Should abort loading the messageBody and reload later on properly", function(t) {
 
@@ -137,26 +132,29 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 delay: 1000
             });
 
-            viewModel.setMessageItem(createMessageItem());
+            let msgItem = createMessageItem();
+            viewModel.setMessageItem(msgItem);
 
             t.waitForMs(500, function() {
                 t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
                 t.expect(viewModel.bodyLoadOperation.loadOperation.isRunning()).toBe(true);
                 t.expect(viewModel.abortedRequestMap).toEqual({});
                 viewModel.abortMessageBodyLoad();
-                t.expect(viewModel.abortedRequestMap).toEqual({'2' : true});
+                let obj = {};
+                obj[msgItem.get('messageBodyId')] = true;
+                t.expect(viewModel.abortedRequestMap).toEqual(obj);
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.waitForMs(1000, function() {
                     t.expect(viewModel.get('messageItem')).not.toBe(null);
-                    t.expect(viewModel.get('messageItem').get('id')).toBe('1');
+                    t.expect(viewModel.get('messageItem').getId()).toBe(msgItem.getId());
                     t.expect(viewModel.get('messageBody')).toBe(null);
 
                     // aborted the load operation, messageItem will continue with
                     // dummy model
-                    t.expect(viewModel.get('messageItem').getMessageBody().get('textHtml')).toBe('');
-                    t.expect(viewModel.get('messageItem').getMessageBody()).not.toBe(null);
-                    t.expect(viewModel.get('messageItem').getMessageBody().getId()).toBe('2');
+                    t.expect(viewModel.get('messageItem').loadMessageBody().get('textHtml')).toBe('');
+                    t.expect(viewModel.get('messageItem').loadMessageBody()).not.toBe(null);
+                    t.expect(viewModel.get('messageItem').loadMessageBody().getId()).toBe(msgItem.get('messageBodyId'));
 
                     Ext.ux.ajax.SimManager.init({
                         delay: 100
@@ -191,7 +189,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.expect(viewModel.get('messageItem').getId()).toBe('2');
-                t.expect(viewModel.get('messageItem').getMessageBody()).toBe(null);
+                t.expect(viewModel.get('messageItem').loadMessageBody()).toBe(null);
                 t.expect(viewModel.get('messageBody')).toEqual(null);
             });
 
@@ -217,7 +215,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 t.expect(viewModel.get('messageBody')).toBeTruthy();
                 t.expect(viewModel.get('attachments')).toBeTruthy();
 
-                t.expect(viewModel.get('messageBody')).not.toBe(viewModel.get('messageItem').getMessageBody());
+                t.expect(viewModel.get('messageBody')).not.toBe(viewModel.get('messageItem').loadMessageBody());
                 // attachment store of original mesage item should not have been
                 // loaded, allthough we have access to attachment data. In
                 // this case, its from the internally cloned messageItem
@@ -260,9 +258,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 t.expect(exp).toEqual([{
                     property : "messageItemId", value : msgItem.getId()
                 }, {
-                    property : "mailFolderId", value : msgItem.get('mailFolderId')
-                },{
                     property : "mailAccountId", value : msgItem.get('mailAccountId')
+                },{
+                    property : "mailFolderId", value : msgItem.get('mailFolderId')
                 }]);
 
                 viewModel.abortMessageAttachmentsLoad();
@@ -270,7 +268,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
                 t.waitForMs(1000, function() {
                     t.expect(viewModel.get('messageItem')).not.toBe(null);
-                    t.expect(viewModel.get('messageItem').get('id')).toBe('1');
+                    t.expect(viewModel.get('messageItem').getId()).toBe(msgItem.getId());
                     t.expect(viewModel.get('attachments')).toEqual([]);
 
                     Ext.ux.ajax.SimManager.init({
@@ -374,7 +372,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             messageDraft, exc, e;
 
         messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-            id      : 1,
+            id      : messageItem.getId(),
             subject : 'subject',
             date    : '2017-07-30 23:45:00',
             to      : 'test@testdomain.tld'
@@ -410,7 +408,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
 
             viewModel.updateMessageItem(messageDraft);
-
             t.expect(viewModel.get('messageBody')).toBeTruthy();
 
 
@@ -420,8 +417,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.expect(viewModel.get('attachments')[0].data).toEqual(messageDraft.attachments().getRange()[0].data);
             t.expect(viewModel.get('attachments')[0]).not.toBe(messageDraft.attachments().getRange()[0]);
 
-            t.expect(viewModel.get('messageBody')).not.toBe(messageDraft.getMessageBody());
-            t.expect(viewModel.get('messageBody').data).toEqual(messageDraft.getMessageBody().data);
+            t.expect(viewModel.get('messageBody')).not.toBe(messageDraft.loadMessageBody());
+            t.expect(viewModel.get('messageBody').data).toEqual(messageDraft.loadMessageBody().data);
 
             // was committed
             t.expect(viewModelItem.dirty).toBe(false);
