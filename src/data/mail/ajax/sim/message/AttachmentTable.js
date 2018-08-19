@@ -102,7 +102,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
     },
 
-    getAttachments : function(accountId, folderId, messageItemId) {
+    getAttachments : function(accountId, folderId, messageItemId, originalMessageItemId) {
         var me         = this,
             attachments = null,
             rec;
@@ -129,7 +129,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             if (!attachments) {
                 attachments = [];
             }
-            rec = me.getAttachment(++me.largestAttachmentId, accountId, folderId, messageItemId);
+            rec = me.getAttachment(++me.largestAttachmentId, accountId, folderId, messageItemId, originalMessageItemId);
 
             attachments.push(rec);
         }
@@ -158,7 +158,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
     },
 
 
-    getAttachment : function(attachmentId, accountId, folderId, messageItemId) {
+    getAttachment : function(attachmentId, accountId, folderId, messageItemId, originalMessageItemId) {
 
         var me = this;
 
@@ -203,15 +203,16 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         }
 
         me.attachments[messageItemId].push({
-            id            : 'dev_sys_conjoon_org' + '-' + attachmentId,
-            originalId    : attachmentId  + '',
-            messageItemId : messageItemId + '',
-            mailFolderId  : folderId,
-            mailAccountId : accountId,
-            text          : attachmentNames[me.getRandom(0, 4)] + '.' +
-                            attachmentTypes[me.getRandom(0, 4)].extension,
-            type          : attachmentTypes[me.getRandom(0, 4)].type,
-            size          : attachmentSizes[me.getRandom(0, 4)]
+            id                    : 'dev_sys_conjoon_org' + '-' + attachmentId,
+            originalId            : attachmentId  + '',
+            originalMessageItemId : originalMessageItemId,
+            messageItemId         : messageItemId + '',
+            mailFolderId          : folderId,
+            mailAccountId         : accountId,
+            text                  : attachmentNames[me.getRandom(0, 4)] + '.' +
+                                    attachmentTypes[me.getRandom(0, 4)].extension,
+            type                  : attachmentTypes[me.getRandom(0, 4)].type,
+            size                  : attachmentSizes[me.getRandom(0, 4)]
         });
 
         return me.attachments[messageItemId][me.attachments[messageItemId].length - 1];

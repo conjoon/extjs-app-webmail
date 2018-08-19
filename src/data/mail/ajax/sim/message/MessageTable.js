@@ -174,12 +174,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         me.messageBodies[id] = {
-            id            : id,
-            originalId    : originalId,
-            mailFolderId  : mailFolderId,
-            mailAccountId : mailAccountId,
-            textHtml      : message,
-            textPlain     : Ext.util.Format.stripTags(message)
+            id                    : id,
+            originalId            : originalId,
+            originalMessageItemId : originalId,
+            mailFolderId          : mailFolderId,
+            mailAccountId         : mailAccountId,
+            textHtml              : message,
+            textPlain             : Ext.util.Format.stripTags(message)
         };
 
         return me.messageBodies[id];
@@ -410,7 +411,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 me.messageItems[i].hasAttachments = AttachmentTable.getAttachments(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id
+                    baseMessageItems[i].id,
+                    baseMessageItems[i].originalId
                 ) ? 1 : 0;
             }
             return me.messageItems;
@@ -423,7 +425,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 hasAttachments : AttachmentTable.getAttachments(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id
+                    baseMessageItems[i].id,
+                    baseMessageItems[i].originalId
                 ) ? 1 : 0,
                 size           : me.buildRandomSizeInBytes(),
                 previewText    : me.buildPreviewText(
