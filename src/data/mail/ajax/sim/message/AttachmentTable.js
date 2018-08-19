@@ -129,7 +129,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             if (!attachments) {
                 attachments = [];
             }
-            rec = me.getAttachment(++me.largestAttachmentId, accountId, folderId, messageItemId, originalMessageItemId);
+            rec = me.getAttachment(++me.largestAttachmentId, accountId, folderId, originalMessageItemId);
 
             attachments.push(rec);
         }
@@ -158,9 +158,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
     },
 
 
-    getAttachment : function(attachmentId, accountId, folderId, messageItemId, originalMessageItemId) {
+    getAttachment : function(attachmentId, accountId, folderId, originalMessageItemId) {
 
-        var me = this;
+        var me            = this,
+            messageItemId = accountId + '-' + originalMessageItemId;
 
         if (!me.attachments) {
             me.attachments = {};

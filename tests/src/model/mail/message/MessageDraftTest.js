@@ -142,6 +142,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
                     t.expect(mb.get('textHtml')).toBeTruthy();
                     t.expect(mb.get('mailFolderId')).toBe(rec.get('mailFolderId'));
                     t.expect(mb.get('mailAccountId')).toBe(rec.get('mailAccountId'));
+                    t.expect(mb.get('originalMessageItemId')).toBe(rec.get('originalId'));
                 });
             });
 

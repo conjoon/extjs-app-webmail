@@ -27,10 +27,11 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.message.AbstractAttachment', {
 
-    extend : 'conjoon.cn_mail.model.mail.CompoundKeyedModel',
+    extend : 'conjoon.cn_mail.model.mail.message.MessageItemChildModel',
 
     requires : [
-        'conjoon.cn_core.data.field.FileSize'
+        'conjoon.cn_core.data.field.FileSize',
+        'conjoon.cn_core.data.field.CompoundKeyField'
     ],
 
     fields : [{

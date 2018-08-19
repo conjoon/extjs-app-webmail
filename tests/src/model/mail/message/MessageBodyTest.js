@@ -29,7 +29,8 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
             id            : 1,
             mailFolderId  : 4,
             mailAccountId : 5,
-            originalId    : 1
+            originalId    : 1,
+            originalMessageItemId : 1
         });
     });
 
@@ -43,7 +44,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.it("Should create instance", function(t) {
-        t.expect(model instanceof conjoon.cn_mail.model.mail.CompoundKeyedModel).toBeTruthy();
+        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.MessageItemChildModel');
     });
 
     t.it("Test Entity Name", function(t) {

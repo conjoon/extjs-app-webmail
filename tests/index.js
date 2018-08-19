@@ -112,6 +112,7 @@ harness.start({
                         'src/model/mail/message/ItemAttachmentTest.js',
                         'src/model/mail/message/MessageBodyTest.js',
                         'src/model/mail/message/MessageItemTest.js',
+                        'src/model/mail/message/MessageItemChildModelTest.js',
                         'src/model/mail/message/MessageDraftTest.js'
                 ]}]
             }]

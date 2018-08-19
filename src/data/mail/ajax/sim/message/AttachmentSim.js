@@ -110,13 +110,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
 
                 id = idPart.substring(1).split('?')[0];
                 console.log("GET", "Attachment", id, params.mailAccountId,
-                    params.mailFolderId,
-                    params.messageItemId, params.originalId, new Date());
+                    params.mailFolderId, params.originalMessageItemId, new Date());
                 return AttachmentTable.getAttachment(
                     id,
                     params.mailAccountId,
                     params.mailFolderId,
-                    params.messageItemId
+                    params.originalMessageItemId
                 );
 
             } else if (filters) {

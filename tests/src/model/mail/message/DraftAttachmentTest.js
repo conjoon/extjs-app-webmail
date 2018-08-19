@@ -26,10 +26,11 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
     t.beforeEach(function() {
         model = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-            id            : 1,
-            mailFolderId  : 4,
-            mailAccountId : 5,
-            originalId    : 1
+            id                    : 1,
+            mailFolderId          : 4,
+            mailAccountId         : 5,
+            originalId            : 1,
+            originalMessageItemId : 1
         });
     });
 
@@ -48,10 +49,8 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
             delay: 1
         });
 
-
         t.it("Should create instance", function(t) {
-            t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractAttachment).toBeTruthy();
-            t.expect(model instanceof conjoon.cn_mail.model.mail.CompoundKeyedModel).toBeTruthy();
+            t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.MessageItemChildModel');
         });
 
         t.it("Test Entity Name", function(t) {
@@ -71,12 +70,13 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
             let attachment = conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.getAttachmentAt(0);
 
+
             var model = conjoon.cn_mail.model.mail.message.DraftAttachment.load(
                 attachment.id, {
                     params : {
-                        mailAccountId : attachment.mailAccountId,
-                        mailFolderId  : attachment.mailFolderId,
-                        messageItemId : attachment.messageItemId
+                        mailAccountId         : attachment.mailAccountId,
+                        mailFolderId          : attachment.mailFolderId,
+                        originalMessageItemId : attachment.originalMessageItemId
                     }
                 }
             );
@@ -98,8 +98,9 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
                 t.expect(rec.get('sourceId')).toBe(attachment.id);
 
                 var newModel = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                    mailAccountId : attachment.mailAccountId,
-                    mailFolderId  : attachment.mailFolderId,
+                    mailAccountId         : attachment.mailAccountId,
+                    mailFolderId          : attachment.mailFolderId,
+                    originalMessageItemId : attachment.originalMessageItemId
                 });
 
                 t.expect(newModel.getId()).not.toBe(newModel.get('sourceId'));
@@ -108,6 +109,7 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
                 t.waitForMs(500, function() {
                     t.expect(newModel.get('originalId')).toBeTruthy();
+                    t.expect(newModel.get('originalMessageItemId')).toBeTruthy();
 
                     t.expect(newModel.getId()).toBe(newModel.get('sourceId'));
                 });
@@ -136,7 +138,12 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
     t.it("originalId", function(t) {
         t.expect(model.getField('originalId')).toBeTruthy();
         t.expect(model.getField('originalId').critical).toBe(true);
-
     });
+
+    t.it("originalMessageItemId", function(t) {
+        t.expect(model.getField('originalMessageItemId')).toBeTruthy();
+        t.isInstanceOf(model.getField('originalMessageItemId'), 'conjoon.cn_core.data.field.CompoundKeyField');
+    });
+
 
 });
