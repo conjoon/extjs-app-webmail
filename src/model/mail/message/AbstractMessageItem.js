@@ -100,6 +100,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
         }, {
             property : 'mailFolderId',
             value    : me.get('mailFolderId')
+        }, {
+            property : 'originalMessageItemId',
+            value    : me.get('originalId')
         }], true);
 
         return  me.attachments().load(options);
@@ -122,8 +125,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
         return me.getMessageBody(Ext.applyIf(options, {
             params : {
-                mailFolderId  : me.get('mailFolderId'),
-                mailAccountId : me.get('mailAccountId')
+                mailFolderId          : me.get('mailFolderId'),
+                mailAccountId         : me.get('mailAccountId'),
+                originalMessageItemId : me.get('originalId')
             }
         }))
     }

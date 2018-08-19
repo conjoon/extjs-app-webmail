@@ -114,7 +114,7 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(model.attachments().getFilters().length).toBe(1);
         model.loadAttachments();
         model.loadAttachments();
-        t.expect(model.attachments().getFilters().length).toBe(3);
+        t.expect(model.attachments().getFilters().length).toBe(4);
 
         let filters = model.attachments().getFilters(), filter;
 
@@ -128,6 +128,10 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 
         filter = filters.getAt(2);
         t.expect(filter.getProperty()).toBe('mailFolderId');
+        t.expect(filter.getValue()).toBeTruthy();
+
+        filter = filters.getAt(3);
+        t.expect(filter.getProperty()).toBe('originalMessageItemId');
         t.expect(filter.getValue()).toBeTruthy();
     });
 
@@ -145,6 +149,7 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 
         t.expect(options.params.mailAccountId).toBe(model.get('mailAccountId'));
         t.expect(options.params.mailFolderId).toBe(model.get('mailFolderId'));
+        t.expect(options.params.originalMessageItemId).toBe(model.get('originalId'));
 
         t.waitForMs(250, function() {
             t.expect(CALLED).toBe(1);
