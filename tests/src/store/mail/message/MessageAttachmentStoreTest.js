@@ -53,6 +53,8 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("not set");
         t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
+        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).not.toContain("mailfolderid");
         exc = undefined;
 
         store.clearFilter(true);
@@ -67,9 +69,32 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("not set");
+        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
         t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
+        t.expect(exc.msg.toLowerCase()).not.toContain("mailaccountid");
         exc = undefined;
 
+
+        store.clearFilter(true);
+
+        store.addFilter([{
+            property : 'originalMessageItemId',
+            value    : "foo"
+        }], true);
+
+
+        try{store.load();} catch(e){exc=e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("not set");
+        t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
+        t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
+        t.expect(exc.msg.toLowerCase()).not.toContain("originalmessageitemid");
+
+        exc = undefined;
+
+
+    //---------------------
 
         store.clearFilter(true);
 
@@ -105,11 +130,29 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         store.clearFilter(true);
 
         store.addFilter([{
+            property : 'originalMessageItemId',
+            value    : ""
+        }], true);
+
+
+        try{store.load();} catch(e){exc=e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("no valid value");
+        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        exc = undefined;
+
+        store.clearFilter(true);
+
+        store.addFilter([{
             property : 'mailFolderId',
             value    : "INBOX.Drafts"
         }, {
             property : 'mailAccountId',
             value    : "foo"
+        }, {
+            property : 'originalMessageItemId',
+            value    : "1"
         }], true);
 
         t.expect(store.load()).toBeTruthy();

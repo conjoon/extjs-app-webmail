@@ -44,8 +44,9 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
         const me          = this,
               filters     = me.getFilters(),
               propertySet = {
-                  mailFolderId  : false,
-                  mailAccountId : false
+                  mailFolderId          : false,
+                  mailAccountId         : false,
+                  originalMessageItemId : false
               };
 
         let filter, property;
@@ -65,19 +66,20 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
                         });
                     }
                 }
-
             }
-
         }
 
+        let properties = [];
         for (property in propertySet) {
             if (!propertySet[property]) {
-                Ext.raise({
-                    msg : "filter \"" + property + "\" not set"
-                })
+                properties.push(property);
             }
         }
-
+        if (properties.length) {
+            Ext.raise({
+                msg : "filters for properties \"[" + properties.join(', ') + "]\" not set"
+            });
+        }
 
         return me.callParent(arguments);
     }
