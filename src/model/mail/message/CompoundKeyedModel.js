@@ -28,7 +28,7 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModel', {
+Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
 
     extend : 'conjoon.cn_mail.model.mail.BaseModel',
@@ -37,21 +37,40 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModel', {
         'conjoon.cn_core.data.field.CompoundKeyField'
     ],
 
-    idProperty : 'id',
+    idProperty : 'localId',
 
     fields : [{
-        name : 'id',
+        name : 'localId',
         type : 'string'
     }, {
-        name : 'mailFolderId',
+        name : 'id',
         type : 'cn_core-datafieldcompoundkey'
     }, {
-        name : 'originalId',
+        name : 'mailFolderId',
         type : 'cn_core-datafieldcompoundkey'
     }, {
         name : 'mailAccountId',
         type : 'cn_core-datafieldcompoundkey'
     }],
+
+
+    inheritableStatics : {
+
+        loadEntity : function(compoundKey, options, session) {
+
+            let id = compoundKey.toLocalId();
+
+            options = options || {};
+
+            options.params = options.params || {};
+
+            Ext.apply(options.params, compoundKey.toObject());
+            debugger;
+            return this.load(id, options, session);
+
+        }
+
+    },
 
 
     /**
@@ -82,10 +101,10 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModel', {
             });
         }
 
-        if (!phantom && !me.get('originalId')) {
+        if (!phantom && !me.get('id')) {
             Ext.raise({
-                msg           : "\"originalId\" must be set before save()",
-                mailAccountId : me.get('originalId')
+                msg           : "\"id\" must be set before save()",
+                mailAccountId : me.get('id')
             });
         }
 
@@ -118,6 +137,13 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModel', {
         if (!params['mailFolderId']) {
             Ext.raise({
                 msg    : "\"mailFolderId\" must be set in params for load()",
+                params : params
+            });
+        }
+
+        if (!params['id']) {
+            Ext.raise({
+                msg    : "\"id\" must be set in params for load()",
                 params : params
             });
         }

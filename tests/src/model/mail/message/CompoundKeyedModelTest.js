@@ -20,14 +20,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('conjoon.cn_mail.model.mail.CompoundKeyedModelTest', function(t) {
+describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t) {
 
     var model,
         messageBody;
 
     t.beforeEach(function() {
 
-        model = Ext.create('conjoon.cn_mail.model.mail.CompoundKeyedModel', {
+        model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         });
 
 
