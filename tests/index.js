@@ -74,6 +74,7 @@ harness.start({
                             'src/data/mail/message/reader/MessageItemUpdaterTest.js'
                         ]
                     },
+                    'src/data/mail/message/CompoundKeyTest.js',
                     'src/data/mail/message/EditingModesTest.js'
                     ]
                 }, {
@@ -98,7 +99,6 @@ harness.start({
                 items : [
                     'src/model/mail/BaseModelTest.js',
                     'src/model/mail/BaseTreeModelTest.js',
-                    'src/model/mail/CompoundKeyedModelTest.js',
                     {
                     group : 'folder',
                     items : [
@@ -108,6 +108,7 @@ harness.start({
                     group : 'message',
                     items : [
                         'src/model/mail/message/AbstractMessageItemTest.js',
+                        'src/model/mail/message/CompoundKeyedModelTest.js',
                         'src/model/mail/message/DraftAttachmentTest.js',
                         'src/model/mail/message/ItemAttachmentTest.js',
                         'src/model/mail/message/MessageBodyTest.js',
