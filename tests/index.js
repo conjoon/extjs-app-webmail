@@ -61,6 +61,14 @@ harness.start({
                 }, {
                     group : 'message',
                     items : [{
+                        group : 'compoundKey',
+                        items : [
+                            'src/data/mail/message/compoundKey/MessageItemCompoundKeyTest.js',
+                            'src/data/mail/message/compoundKey/MessageItemChildCompoundKeyTest.js',
+                            'src/data/mail/message/compoundKey/MessageBodyCompoundKeyTest.js',
+                            'src/data/mail/message/compoundKey/AttachmentItemCompoundKeyTest.js'
+                        ]
+                    }, {
                         group : 'editor',
                         items : [
                             'src/data/mail/message/editor/MessageDraftConfigTest.js',

@@ -51,7 +51,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
 
             if (!(rec instanceof Ext.data.Model)) {
                 Ext.raise({
-                    msg : "\"rec\" must be an instance of conjoon.cn_mail.model.mail.message.CompoundKeyedModel",
+                    msg : "\"rec\" must be an instance of Ext.data.Model",
                     rec : rec
                 });
             }
@@ -176,7 +176,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
     toLocalId : function() {
         const me = this;
 
-        return me.getMailAccountId() + '-' + me.getId();
+        return me.getMailAccountId() + '-' + me.getMailFolderId() + '-' +  me.getId();
     },
 
 

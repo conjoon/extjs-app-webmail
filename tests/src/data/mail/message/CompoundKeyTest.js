@@ -122,7 +122,7 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
         let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
 
         t.expect(key.toLocalId()).toBe(
-            MAILACCOUNTID + "-" + ID
+            MAILACCOUNTID + "-" + MAILFOLDERID + '-' + ID
         );
 
     });
