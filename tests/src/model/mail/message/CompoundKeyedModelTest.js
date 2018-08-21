@@ -46,14 +46,14 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
     });
 
-    t.it("id", function(t) {
-        t.expect(model.getIdProperty()).toBe("id");
+    t.it("idProperty", function(t) {
+        t.expect(model.getIdProperty()).toBe("localId");
     });
 
 
     t.it("Test fields", function(t) {
 
-        let fields = ["mailAccountId", "mailFolderId", "originalId"],
+        let fields = ["mailAccountId", "mailFolderId", "id"],
             field;
 
         for (let i = 0, len = fields.length; i < len; i++) {
@@ -104,10 +104,18 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
         exc = undefined;
 
+        try{model.load({params : {mailAccountId : 'foo', mailFolderId : 'INBOX.Drafts'}});} catch(e){exc=e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
+        t.expect(exc.msg.toLowerCase()).toContain("id");
+        exc = undefined;
+
         t.expect(model.load({
             params : {
                 mailAccountId : 'foo',
-                mailFolderId : 'INBOX.Drafts'
+                mailFolderId : 'INBOX.Drafts',
+                id           : '1'
             }
         })).toBeTruthy();
 
@@ -152,14 +160,63 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be set before save");
-        t.expect(exc.msg.toLowerCase()).toContain("originalid");
+        t.expect(exc.msg.toLowerCase()).toContain("id");
         exc = undefined;
 
 
-        model.set('originalId', "31424");
+        model.set('id', "31424");
 
         t.expect(model.save()).toBeTruthy();
+    });
 
+
+    t.it("loadEntity()", function(t) {
+
+        let exc, e;
+
+        try{conjoon.cn_mail.model.mail.message.CompoundKeyedModel.loadEntity('1');} catch(e){exc=e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+        exc = undefined;
+
+        let key = Ext.create('conjoon.cn_mail.data.mail.message.CompoundKey', {
+                mailAccountId : 'foo',
+                mailFolderId  : 'bar',
+                id            : '1'
+            }),
+            options = {};
+
+        t.isInstanceOf(conjoon.cn_mail.model.mail.message.CompoundKeyedModel.loadEntity(key, options),
+            'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
+
+        t.expect(options.params).toBeDefined();
+
+        t.expect(options.params).toEqual({
+            mailAccountId : 'foo',
+            mailFolderId  : 'bar',
+            id            : '1'
+        });
+
+        options.params = {
+            mailAccountId : '8',
+            mailFolderId  : '1',
+            id            : '1',
+            foobar        : 'foo'
+        };
+
+        conjoon.cn_mail.model.mail.message.CompoundKeyedModel.loadEntity(key, options);
+
+        t.expect(options.params).toBeDefined();
+
+        t.expect(options.params).toEqual({
+            mailAccountId : 'foo',
+            mailFolderId  : 'bar',
+            id            : '1',
+            foobar        : 'foo'
+        });
 
     });
+
+
 });

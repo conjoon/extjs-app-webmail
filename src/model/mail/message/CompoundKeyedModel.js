@@ -34,7 +34,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
     extend : 'conjoon.cn_mail.model.mail.BaseModel',
 
     requires : [
-        'conjoon.cn_core.data.field.CompoundKeyField'
+        'conjoon.cn_core.data.field.CompoundKeyField',
+        'conjoon.cn_mail.data.mail.message.CompoundKey'
     ],
 
     idProperty : 'localId',
@@ -56,7 +57,27 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
     inheritableStatics : {
 
+        /**
+         * Replacement for "load" which will make sure that it is possible to
+         * specify a conjoon.cn_mail.data.mail.message.CompoundKey for which the
+         * localId is computed, and loading is processed then.
+         *
+         * @param {conjoon.cn_mail.data.mail.message.CompoundKey} compoundKey
+         * @param {Object} options
+         * @param {Ext.data.Session} session
+         *
+         * @return {conjoon.cn_mail.model.mail.message.CompoundKeyedModel}
+         *
+         * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.CompoundKey
+         */
         loadEntity : function(compoundKey, options, session) {
+
+            if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.CompoundKey)) {
+                Ext.raise({
+                    msg         : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.CompoundKey",
+                    compoundKey : compoundKey
+                });
+            }
 
             let id = compoundKey.toLocalId();
 
@@ -65,9 +86,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
             options.params = options.params || {};
 
             Ext.apply(options.params, compoundKey.toObject());
-            debugger;
-            return this.load(id, options, session);
 
+            return this.load(id, options, session);
         }
 
     },
@@ -103,8 +123,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         if (!phantom && !me.get('id')) {
             Ext.raise({
-                msg           : "\"id\" must be set before save()",
-                mailAccountId : me.get('id')
+                msg  : "\"id\" must be set before save()",
+                id   : me.get('id')
             });
         }
 
