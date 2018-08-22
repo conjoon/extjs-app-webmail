@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2016 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,38 +22,94 @@
 
 describe('conjoon.cn_mail.model.mail.BaseModelTest', function(t) {
 
-    var model;
+    t.requireOk('conjoon.cn_mail.model.mail.BaseModel', function() {
 
-    t.beforeEach(function() {
-        model = Ext.create('conjoon.cn_mail.model.mail.BaseModel', {
-            id : 1
+        Ext.define('conjoon.cn_mail.model.mail.BaseModelExtended', {
+            extend     : 'conjoon.cn_mail.model.mail.BaseModel',
+            idProperty : 'foo'
         });
-    });
 
-    t.afterEach(function() {
-        model = null;
-    });
+        Ext.define('conjoon.cn_mail.model.mail.BaseModelExtendedNoId', {
+            extend : 'conjoon.cn_mail.model.mail.BaseModel'
+        });
+
+        var model;
+
+
+        t.afterEach(function() {
+            model = null;
+        });
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function(t) {
-        t.expect(model instanceof conjoon.cn_core.data.BaseModel).toBe(true);
-    });
+        t.it("Should not work without setting idProperty in subclass", function(t) {
 
-    t.it("Test Schema", function(t) {
-        t.expect(
-            model.schema instanceof conjoon.cn_mail.data.mail.BaseSchema
-        ).toBeTruthy();
-    });
+            let exc, e;
+            try{Ext.create('conjoon.cn_mail.model.mail.BaseModel');}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
+            exc = undefined;
+
+            try{Ext.create('conjoon.cn_mail.model.mail.BaseModel', {idProperty : 'foo'});}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
+            exc = undefined;
+
+
+            try{Ext.create('conjoon.cn_mail.model.mail.BaseModelExtendedNoId');}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
+            exc = undefined;
+
+            try{Ext.create('conjoon.cn_mail.model.mail.BaseModelExtendedNoId', {idProperty : 'foo'});}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
+            exc = undefined;
+
+        });
+
+
+        t.it("constructor", function(t) {
+
+            model = Ext.create('conjoon.cn_mail.model.mail.BaseModelExtended', {
+                id : 1
+            });
+
+            t.expect(model instanceof conjoon.cn_core.data.BaseModel).toBe(true);
+
+            t.expect(model.getIdProperty()).toBe("foo");
+
+        });
+
+
+        t.it("Test Schema", function(t) {
+            model = Ext.create('conjoon.cn_mail.model.mail.BaseModelExtended', {
+                id : 1
+            });
+
+            t.expect(
+                model.schema instanceof conjoon.cn_mail.data.mail.BaseSchema
+            ).toBeTruthy();
+        });
 
 
 
-    t.it("Test Proxy", function(t) {
+        t.it("Test Proxy", function(t) {
+            model = Ext.create('conjoon.cn_mail.model.mail.BaseModelExtended', {
+                id : 1
+            });
 
-        t.expect(conjoon.cn_mail.model.mail.BaseModel.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
+            t.expect(conjoon.cn_mail.model.mail.BaseModel.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
+        });
+
+
 
     });
 
