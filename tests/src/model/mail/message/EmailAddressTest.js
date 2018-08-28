@@ -20,28 +20,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Base model for app-cn_mail representing an email address.
- *
- * Note:
- * In some cases we do not need two way associations between specific entities
- * and email addresses, thus, some models use fields of the type
- * {@link conjoon.cn_core.data.field.EmailAddressCollection}.
- */
-Ext.define('conjoon.cn_mail.model.mail.message.EmailAddress', {
+describe('conjoon.cn_mail.model.mail.message.EmailAddressTest', function(t) {
 
-    extend : 'conjoon.cn_mail.model.mail.BaseModel',
+    var model;
 
-    entityName : 'EmailAddress',
+    t.beforeEach(function() {
+        model = Ext.create('conjoon.cn_mail.model.mail.message.EmailAddress');
+    });
 
-    idProperty : 'id',
+    t.afterEach(function() {
+        model       = null;
+    });
 
-    fields : [{
-        name : 'name',
-        type : 'string'
-    }, {
-        name : 'address',
-        type : 'string'
-    }]
+
+// +----------------------------------------------------------------------------
+// |                    =~. Unit Tests .~=
+// +----------------------------------------------------------------------------
+
+    t.it("Should create instance", function(t) {
+        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
+    });
+
+    t.it("id", function(t) {
+        t.expect(model.getIdProperty()).toBe('id');
+    });
 
 });
