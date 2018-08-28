@@ -53,7 +53,7 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 // +----------------------------------------------------------------------------
 
     t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.CompoundKeyedModel');
+        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
     });
 
     t.it("Test Record Validity", function(t) {
@@ -96,15 +96,14 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(model.getField('mailAccountId').critical).toBe(true);
     });
 
-    t.it("id", function(t) {
-        t.expect(model.getIdProperty()).toBe('id');
+    t.it("Test id", function(t) {
+        t.expect(model.getField('id')).toBeTruthy();
+        t.expect(model.getField('id').critical).toBe(true);
     });
 
-    t.it("originalId", function(t) {
-        t.expect(model.getField('originalId')).toBeTruthy();
-        t.expect(model.getField('originalId').critical).toBe(true);
+    t.it("localId", function(t) {
+        t.expect(model.getIdProperty()).toBe('localId');
     });
-
 
     t.it("loadAttachments()", function(t) {
         t.isInstanceOf(model.attachments(), 'conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
@@ -114,25 +113,22 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(model.attachments().getFilters().length).toBe(1);
         model.loadAttachments();
         model.loadAttachments();
-        t.expect(model.attachments().getFilters().length).toBe(4);
+        t.expect(model.attachments().getFilters().length).toBe(3);
 
         let filters = model.attachments().getFilters(), filter;
 
         filter = filters.getAt(0);
-        t.expect(filter.getProperty()).toBe('messageItemId');
-        t.expect(filter.getValue()).toBeTruthy();
-
-        filter = filters.getAt(1);
         t.expect(filter.getProperty()).toBe('mailAccountId');
         t.expect(filter.getValue()).toBeTruthy();
 
-        filter = filters.getAt(2);
+        filter = filters.getAt(1);
         t.expect(filter.getProperty()).toBe('mailFolderId');
         t.expect(filter.getValue()).toBeTruthy();
 
-        filter = filters.getAt(3);
-        t.expect(filter.getProperty()).toBe('originalMessageItemId');
+        filter = filters.getAt(2);
+        t.expect(filter.getProperty()).toBe('parentMessageItemId');
         t.expect(filter.getValue()).toBeTruthy();
+
     });
 
 
@@ -149,7 +145,8 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 
         t.expect(options.params.mailAccountId).toBe(model.get('mailAccountId'));
         t.expect(options.params.mailFolderId).toBe(model.get('mailFolderId'));
-        t.expect(options.params.originalMessageItemId).toBe(model.get('originalId'));
+        t.expect(options.params.id).toBe(model.get('id'));
+        t.expect(options.params.parentMessageItemId).toBe(model.get('id'));
 
         t.waitForMs(250, function() {
             t.expect(CALLED).toBe(1);

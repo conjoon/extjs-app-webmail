@@ -38,7 +38,7 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
-    extend : 'conjoon.cn_mail.model.mail.CompoundKeyedModel',
+    extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
 
     requires : [
         'conjoon.cn_mail.model.mail.message.MessageBody',
@@ -83,8 +83,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
 
     /**
-     * Overridden to make sure filters for mailAccountId and mailFolderId
-     * are properly set.
+     * Implemented to make sure filters for mailAccountId, mailFolderId and
+     * parentMessageItemId are properly set.
      *
      * @param {Object} options options-object to be passed to load()
      *
@@ -94,6 +94,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
         const me = this;
 
+        me.attachments().clearFilter(true);
+
         me.attachments().addFilter([{
             property : 'mailAccountId',
             value    : me.get('mailAccountId')
@@ -101,8 +103,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
             property : 'mailFolderId',
             value    : me.get('mailFolderId')
         }, {
-            property : 'originalMessageItemId',
-            value    : me.get('originalId')
+            property : 'parentMessageItemId',
+            value    : me.get('id')
         }], true);
 
         return  me.attachments().load(options);
@@ -125,9 +127,10 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
         return me.getMessageBody(Ext.applyIf(options, {
             params : {
-                mailFolderId          : me.get('mailFolderId'),
-                mailAccountId         : me.get('mailAccountId'),
-                originalMessageItemId : me.get('originalId')
+                mailFolderId        : me.get('mailFolderId'),
+                mailAccountId       : me.get('mailAccountId'),
+                id                  : me.get('id'),
+                parentMessageItemId : me.get('id')
             }
         }))
     }
