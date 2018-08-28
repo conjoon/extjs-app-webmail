@@ -44,9 +44,9 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
         const me          = this,
               filters     = me.getFilters(),
               propertySet = {
-                  mailFolderId          : false,
-                  mailAccountId         : false,
-                  originalMessageItemId : false
+                  mailFolderId        : false,
+                  mailAccountId       : false,
+                  parentMessageItemId : false
               };
 
         let filter, property;

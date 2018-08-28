@@ -53,7 +53,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("not set");
         t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
-        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         t.expect(exc.msg.toLowerCase()).not.toContain("mailfolderid");
         exc = undefined;
 
@@ -69,7 +69,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("not set");
-        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
         t.expect(exc.msg.toLowerCase()).not.toContain("mailaccountid");
         exc = undefined;
@@ -78,7 +78,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         store.clearFilter(true);
 
         store.addFilter([{
-            property : 'originalMessageItemId',
+            property : 'parentMessageItemId',
             value    : "foo"
         }], true);
 
@@ -89,7 +89,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         t.expect(exc.msg.toLowerCase()).toContain("not set");
         t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
         t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
-        t.expect(exc.msg.toLowerCase()).not.toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).not.toContain("parentmessageitemid");
 
         exc = undefined;
 
@@ -130,7 +130,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         store.clearFilter(true);
 
         store.addFilter([{
-            property : 'originalMessageItemId',
+            property : 'parentMessageItemId',
             value    : ""
         }], true);
 
@@ -139,7 +139,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("no valid value");
-        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         exc = undefined;
 
         store.clearFilter(true);
@@ -151,7 +151,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
             property : 'mailAccountId',
             value    : "foo"
         }, {
-            property : 'originalMessageItemId',
+            property : 'parentMessageItemId',
             value    : "1"
         }], true);
 
