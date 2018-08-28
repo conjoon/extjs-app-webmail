@@ -26,11 +26,11 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
 
     t.beforeEach(function() {
         model = Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
-            id                    : 1,
-            mailFolderId          : 4,
-            mailAccountId         : 5,
-            originalId            : 1,
-            originalMessageItemId : 1
+            localId             : 1,
+            mailFolderId        : 4,
+            mailAccountId       : 5,
+            id                  : 1,
+            parentMessageItemId : 1
         });
     });
 
@@ -45,6 +45,7 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
 
     t.it("Should create instance", function(t) {
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.MessageItemChildModel');
+        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.AbstractAttachment');
     });
 
     t.it("Test Entity Name", function(t) {
@@ -60,26 +61,27 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
     t.it("Test mailFolderId", function(t) {
         t.expect(model.getField('mailFolderId')).toBeTruthy();
         t.expect(model.getField('mailFolderId').critical).toBe(true);
+        t.isInstanceOf(model.getField('mailFolderId'), 'conjoon.cn_core.data.field.CompoundKeyField');
     });
 
     t.it("Test mailAccountId", function(t) {
         t.expect(model.getField('mailAccountId')).toBeTruthy();
         t.expect(model.getField('mailAccountId').critical).toBe(true);
+        t.isInstanceOf(model.getField('mailAccountId'), 'conjoon.cn_core.data.field.CompoundKeyField');
+    });
+
+    t.it("localId", function(t) {
+        t.expect(model.getIdProperty()).toBe('localId');
     });
 
     t.it("id", function(t) {
-        t.expect(model.getIdProperty()).toBe('id');
+        t.expect(model.getField('id')).toBeTruthy();
+        t.expect(model.getField('id').critical).toBe(true);
+        t.isInstanceOf(model.getField('id'), 'conjoon.cn_core.data.field.CompoundKeyField');
     });
 
-    t.it("originalId", function(t) {
-        t.expect(model.getField('originalId')).toBeTruthy();
-        t.expect(model.getField('originalId').critical).toBe(true);
-
-    });
-
-    t.it("originalMessageItemId", function(t) {
-        t.expect(model.getField('originalMessageItemId')).toBeTruthy();
-        t.isInstanceOf(model.getField('originalMessageItemId'), 'conjoon.cn_core.data.field.CompoundKeyField');
+    t.it("parentMessageItemId", function(t) {
+        t.expect(model.getField('parentMessageItemId')).toBeTruthy();
     });
 
 });
