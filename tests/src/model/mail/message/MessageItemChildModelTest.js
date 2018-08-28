@@ -43,13 +43,13 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 // +----------------------------------------------------------------------------
 
     t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.CompoundKeyedModel');
+        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
     });
 
 
     t.it("Test fields", function(t) {
 
-        let fields = ["originalMessageItemId"],
+        let fields = ["parentMessageItemId"],
             field;
 
         for (let i = 0, len = fields.length; i < len; i++) {
@@ -83,7 +83,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
-        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         exc = undefined;
 
     });
@@ -97,7 +97,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be set before save");
-        t.expect(exc.msg.toLowerCase()).toContain("originalmessageitemid");
+        t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         exc = undefined;
 
     });

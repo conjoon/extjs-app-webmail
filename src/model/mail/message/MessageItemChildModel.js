@@ -29,17 +29,16 @@
 Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
 
 
-    extend : 'conjoon.cn_mail.model.mail.CompoundKeyedModel',
+    extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
 
     requires : [
         'conjoon.cn_core.data.field.CompoundKeyField'
     ],
 
     fields : [{
-        name : 'originalMessageItemId',
+        name : 'parentMessageItemId',
         type : 'cn_core-datafieldcompoundkey'
     }],
-
 
     /**
      * Overrides parent implementation to make sure originalMessageItemId is set.
@@ -52,10 +51,10 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
 
         const me      = this;
 
-        if (!me.get('originalMessageItemId')) {
+        if (!me.get('parentMessageItemId')) {
             Ext.raise({
-                msg           : "\"originalMessageItemId\" must be set before save()",
-                mailAccountId : me.get('originalMessageItemId')
+                msg                 : "\"parentMessageItemId\" must be set before save()",
+                parentMessageItemId : me.get('parentMessageItemId')
             });
         }
 
@@ -77,9 +76,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
 
         params = params || {};
 
-        if (!params['originalMessageItemId']) {
+        if (!params['parentMessageItemId']) {
             Ext.raise({
-                msg    : "\"originalMessageItemId\" must be set in params for load()",
+                msg    : "\"parentMessageItemId\" must be set in params for load()",
                 params : params
             });
         }
