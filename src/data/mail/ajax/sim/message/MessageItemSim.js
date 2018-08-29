@@ -111,7 +111,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 messageItems = MessageTable.getMessageItems();
 
-            if (idPart) {
+            if (idPart) {debugger;
                 id = idPart.substring(1).split('?')[0];
                 return {data : Ext.Array.findBy(
                     messageItems,

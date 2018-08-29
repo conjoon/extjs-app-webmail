@@ -145,12 +145,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             draft = MessageTable.createMessageDraft(draft);
 
             ret.responseText = Ext.JSON.encode({
-                id            : draft.id,
-                mailFolderId  : draft.mailFolderId,
-                mailAccountId : draft.mailAccountId,
-                originalId    : draft.originalId,
-                success       : true
-            });
+                success: true,
+                data : {
+                    id: draft.id,
+                    mailFolderId: draft.mailFolderId,
+                    mailAccountId: draft.mailAccountId
+            }});
 
 
             Ext.Array.forEach(me.responseProps, function (prop) {

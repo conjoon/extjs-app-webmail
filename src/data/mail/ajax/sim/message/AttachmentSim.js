@@ -121,12 +121,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
             } else if (filters) {
                 filters = Ext.decode(filters);
 
-                id  = filters[0].value;
-                let folder     = filters[1].value;
-                let account    = filters[2].value;
-                let originalId = filters[3].value;
-                attachments = AttachmentTable.getAttachments(account, folder, id);
-                console.log("GET", "Attachments for Message id", account, folder, id, originalId, new Date(), attachments);
+
+                let account             = filters[0].value;
+                let folder              = filters[1].value;
+                let parentMessageItemId = filters[2].value;
+                attachments = AttachmentTable.getAttachments(account, folder, parentMessageItemId);
+                console.log("GET", "Attachments for Message id", account, folder, parentMessageItemId, new Date(), attachments);
                 return attachments;
             } else {
                 return [{text : "NOT SUPPORTED"}];

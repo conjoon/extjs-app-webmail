@@ -102,7 +102,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
     },
 
-    getAttachments : function(accountId, folderId, messageItemId, originalMessageItemId) {
+    getAttachments : function(accountId, folderId, parentMessageItemId) {
         var me         = this,
             attachments = null,
             rec;
@@ -114,14 +114,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             me.attachments = {};
         }
 
-        if (me.attachments.hasOwnProperty(messageItemId)) {
-            return me.attachments[messageItemId];
+        if (me.attachments.hasOwnProperty(parentMessageItemId)) {
+            return me.attachments[parentMessageItemId];
         }
 
         if (!wasEmpty) {
             if (!me.getRandom(0, 1)) {
-                me.attachments[messageItemId] = null;
-                return me.attachments[messageItemId];
+                me.attachments[parentMessageItemId] = null;
+                return me.attachments[parentMessageItemId];
             }
         }
 
@@ -129,14 +129,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             if (!attachments) {
                 attachments = [];
             }
-            rec = me.getAttachment(++me.largestAttachmentId, accountId, folderId, originalMessageItemId);
+            rec = me.getAttachment(++me.largestAttachmentId, accountId, folderId, parentMessageItemId);
 
             attachments.push(rec);
         }
 
-        me.attachments[messageItemId] = attachments;
+        me.attachments[parentMessageItemId] = attachments;
 
-        return me.attachments[messageItemId];
+        return me.attachments[parentMessageItemId];
     },
 
     getAttachmentAt : function(pos) {
@@ -158,10 +158,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
     },
 
 
-    getAttachment : function(attachmentId, accountId, folderId, originalMessageItemId) {
+    getAttachment : function(attachmentId, accountId, folderId, parentMessageItemId) {
 
         var me            = this,
-            messageItemId = accountId + '-' + originalMessageItemId;
+            messageItemId = parentMessageItemId;
 
         if (!me.attachments) {
             me.attachments = {};
@@ -204,16 +204,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         }
 
         me.attachments[messageItemId].push({
-            id                    : 'dev_sys_conjoon_org' + '-' + attachmentId,
-            originalId            : attachmentId  + '',
-            originalMessageItemId : originalMessageItemId,
-            messageItemId         : messageItemId + '',
-            mailFolderId          : folderId,
-            mailAccountId         : accountId,
-            text                  : attachmentNames[me.getRandom(0, 4)] + '.' +
-                                    attachmentTypes[me.getRandom(0, 4)].extension,
-            type                  : attachmentTypes[me.getRandom(0, 4)].type,
-            size                  : attachmentSizes[me.getRandom(0, 4)]
+            id                  : attachmentId,
+            parentMessageItemId : messageItemId,
+            messageItemId       : messageItemId + '',
+            mailFolderId        : folderId,
+            mailAccountId       : accountId,
+            text                : attachmentNames[me.getRandom(0, 4)] + '.' +
+                                  attachmentTypes[me.getRandom(0, 4)].extension,
+            type                : attachmentTypes[me.getRandom(0, 4)].type,
+            size                : attachmentSizes[me.getRandom(0, 4)]
         });
 
         return me.attachments[messageItemId][me.attachments[messageItemId].length - 1];

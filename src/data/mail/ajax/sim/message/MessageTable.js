@@ -28,7 +28,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     singleton : true,
 
     requires : [
-        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable'
+        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey'
     ],
 
     messageBodies : null,
@@ -48,10 +49,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return me.buildRandomNumber(1, 10000000);
     },
 
-    buildPreviewText : function(mailAccountId, mailFolderId, id, originalId = null) {
+    buildPreviewText : function(mailAccountId, mailFolderId, id) {
         var me = this;
 
-        return me.getMessageBody(mailAccountId, mailFolderId, id, originalId).textPlain.substring(0, 200);
+        return me.getMessageBody(mailAccountId, mailFolderId, id).textPlain.substring(0, 200);
     },
 
     buildRandomDate : function() {
@@ -94,6 +95,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
     },
 
+
     createMessageBody : function(data) {
 
         var me  = this,
@@ -118,10 +120,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         inc++;
 
-        me.messageBodies[inc] = Ext.applyIf({id : inc}, data);
+        me.messageBodies[inc] = Ext.applyIf({
+            id                  : inc,
+            parentMessageItemId : inc
+        }, data);
 
         return me.messageBodies[inc];
     },
+
 
     updateMessageBody : function(id, data) {
 
@@ -144,10 +150,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return message;
     },
 
-    getMessageBody : function(mailAccountId, mailFolderId, id, originalId) {
+    getMessageBody : function(mailAccountId, mailFolderId, id) {
 
         var me = this,
             message;
+
 
         if (!me.messageBodies) {
             me.messageBodies = {};
@@ -164,19 +171,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         message = messages[me.buildRandomNumber(0, 2)];
 
-        if (!originalId) {
-            for (let i = 0, len = me.messageItems.length; i < len; i++) {
-                if (me.messageItems[i].id === id) {
-                    originalId = me.messageItems[i].originalId;
-                    break;
-                }
-            }
-        }
-
         me.messageBodies[id] = {
             id                    : id,
-            originalId            : originalId,
-            originalMessageItemId : originalId,
+            parentMessageItemId   : id,
             mailFolderId          : mailFolderId,
             mailAccountId         : mailAccountId,
             textHtml              : message,
@@ -256,9 +253,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     createMessageDraft : function(draftData) {
 
         var me            = this,
-            originalId    = me.getNextMessageDraftKey(),
+            id            = me.getNextMessageDraftKey(),
             mailAccountId = 'dev_sys_conjoon_org',
-            id            = mailAccountId + '-' + originalId,
             mailFolderId  = 'INBOX.Drafts',
             messageDrafts = me.getMessageDrafts(),
             messageItems  = me.getMessageItems(),
@@ -267,7 +263,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         //manually fake attachments and messageBody
         conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.attachments[id] = null;
         if (!me.messageBodies || !me.messageBodies[id]) {
-            me.getMessageBody(mailAccountId, mailFolderId, id, originalId);
+            me.getMessageBody(mailAccountId, mailFolderId, id);
             me.messageBodies[id] = {textPlain : "", textHtml : ""};
         }
 
@@ -275,7 +271,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             id            : id,
             mailFolderId  : mailFolderId,
             mailAccountId : mailAccountId,
-            originalId    : originalId,
             date          : date
         }));
 
@@ -283,7 +278,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             id            : id,
             mailFolderId  : mailFolderId,
             mailAccountId : mailAccountId,
-            originalId    : originalId,
             date          : date
         }));
 
@@ -291,7 +285,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             id            : id,
             mailFolderId  : mailFolderId,
             mailAccountId : mailAccountId,
-            originalId    : originalId,
             date          : date
         }));
 
@@ -404,15 +397,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 me.messageItems[i].previewText    = me.buildPreviewText(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id,
-                    baseMessageItems[i].originalId
+                    baseMessageItems[i].id
                 );
 
                 me.messageItems[i].hasAttachments = AttachmentTable.getAttachments(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id,
-                    baseMessageItems[i].originalId
+                    baseMessageItems[i].id
                 ) ? 1 : 0;
             }
             return me.messageItems;
@@ -425,15 +416,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 hasAttachments : AttachmentTable.getAttachments(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id,
-                    baseMessageItems[i].originalId
+                    baseMessageItems[i].id
                 ) ? 1 : 0,
                 size           : me.buildRandomSizeInBytes(),
                 previewText    : me.buildPreviewText(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id,
-                    baseMessageItems[i].originalId
+                    baseMessageItems[i].id
                 )
             }, baseMessageItems[i]));
         }
@@ -482,7 +471,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             mailFolderId = mailFolders[me.buildRandomNumber(0, 4)];
 
             let cfg = {
-                id            : mailAccountId + '-' + (i + 1) + '',
+                id            :  (i + 1) + '',
                 date           : me.buildRandomDate(i < 100),
                 // leave first one as unread for tests
                 subject        : /*mailFolderId + ' - ' + (i) + ' - ' +*/ subjects[me.buildRandomNumber(0, 5)],
@@ -493,7 +482,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 cc             : me.buildAddresses('cc', i),
                 mailFolderId   : mailFolderId,
                 mailAccountId  : mailAccountId,
-                originalId     : (i + 1) + '',
                 testProp       : i,
                 seen           : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 draft          : mailFolderId == "INBOX.Drafts"
@@ -501,7 +489,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                                  : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
             };
 
-            cfg.messageBodyId = cfg.id;
+            cfg.messageBodyId = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey.createFor(
+                cfg.mailAccountId,
+                cfg.mailFolderId,
+                cfg.id,
+                cfg.id
+            ).toLocalId();
 
             baseMessageItems.push(cfg);
         }

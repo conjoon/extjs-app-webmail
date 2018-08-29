@@ -113,11 +113,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
                      .createMessageBody(body);
 
 
-            ret.responseText = Ext.JSON.encode({
-                id        : newRec.id,
-                success   : true,
-                textPlain : newRec.textPlain,
-                textHtml  : newRec.textHtml
+            ret.responseText = Ext.JSON.encode({success : true, data: {
+                    id        : newRec.id,
+                    parentMessageItemId : newRec.parentMessageItemId,
+                    mailFolderId  : newRec.mailFolderId,
+                    mailAccountId : newRec.mailAccountId,
+                    textPlain : newRec.textPlain,
+                    textHtml  : newRec.textHtml
+                }
             });
 
             Ext.Array.forEach(me.responseProps, function (prop) {
@@ -132,17 +135,18 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
             var idPart = ctx.url.match(this.url)[1],
                 params = ctx.params,
-                id;
+                id, localId;
             if (idPart) {
 
-                id = idPart.substring(1).split('?')[0];
-                console.log("GET", "MessageBody for id", id, new Date());
-                return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                localId = idPart.substring(1).split('?')[0];
+                id = params.id;
+                console.log("GET", "MessageBody for id", id, localId, new Date());
+                return {success : true, data : conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
                        .getMessageBody(
                            params.mailAccountId,
                            params.mailFolderId,
                            id
-                       );
+                       )};
 
             } else {
                 return [{textHtml : 'NOT IMPLEMENTED'}];
