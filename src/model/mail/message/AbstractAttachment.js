@@ -46,13 +46,6 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractAttachment', {
         persist : false
     }, {
         /**
-         * Local id to keep track he association to local File until destroyed.
-         */
-        name    : 'localId',
-        type    : 'string',
-        persist : false
-    }, {
-        /**
          * previewImgSrc property for base64 strings to preview attachments on the client
          * (FileReader).
          */
