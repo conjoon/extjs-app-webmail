@@ -29,8 +29,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
             id            : 1,
             mailFolderId  : 4,
             mailAccountId : 5,
-            originalId    : 1,
-            originalMessageItemId : 1
+            parentMessageItemId : 1
         });
     });
 
@@ -67,14 +66,13 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
         t.expect(model.getField('mailAccountId').critical).toBe(true);
     });
 
-    t.it("id", function(t) {
-        t.expect(model.getIdProperty()).toBe('id');
+    t.it("localId", function(t) {
+        t.expect(model.getIdProperty()).toBe('localId');
     });
 
-    t.it("originalId", function(t) {
-        t.expect(model.getField('originalId')).toBeTruthy();
-        t.expect(model.getField('originalId').critical).toBe(true);
-
+    t.it("id", function(t) {
+        t.expect(model.getField('id')).toBeTruthy();
+        t.expect(model.getField('id').critical).toBe(true);
     });
 
 });
