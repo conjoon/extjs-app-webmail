@@ -118,6 +118,7 @@ harness.start({
                         'src/model/mail/message/AbstractMessageItemTest.js',
                         'src/model/mail/message/CompoundKeyedModelTest.js',
                         'src/model/mail/message/DraftAttachmentTest.js',
+                        'src/model/mail/message/EmailAddressTest.js',
                         'src/model/mail/message/ItemAttachmentTest.js',
                         'src/model/mail/message/MessageBodyTest.js',
                         'src/model/mail/message/MessageItemTest.js',
