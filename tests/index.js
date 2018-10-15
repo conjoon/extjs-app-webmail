@@ -79,6 +79,7 @@ harness.start({
                     {
                         group : 'reader',
                         items : [
+                            'src/data/mail/message/reader/MessageItemJsonReaderTest.js',
                             'src/data/mail/message/reader/MessageItemUpdaterTest.js'
                         ]
                     },
