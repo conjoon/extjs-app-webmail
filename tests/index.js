@@ -75,6 +75,11 @@ harness.start({
                             'src/data/mail/message/editor/MessageDraftCopierTest.js',
                             'src/data/mail/message/editor/MessageDraftCopyRequestTest.js'
                         ]
+                    },{
+                      group : 'proxy',
+                      items : [
+                          'src/data/mail/message/proxy/MessageItemProxyTest.js'
+                      ]
                     },
                     {
                         group : 'reader',
