@@ -39,6 +39,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
 
     idParam : 'localId',
 
+    appendId : false,
 
     /**
      * @inheritdoc
@@ -61,24 +62,45 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
         const me     = this,
               params = request.getParams();
 
-        let url = me.getUrl(request), rec, source;
+        let url = me.getUrl(request),
+            action = request.getAction(),
+            rec = request.getRecords() ? request.getRecords()[0] : null,
+            source;
 
         if (!url.match(me.slashRe)) {
             url += '/';
         }
 
 
-        rec = request.getRecords()[0];
-
-        if (request.getAction() === 'read') {
+        if (action === 'read') {
             source = params;
+            if (rec && !source.id) {
+                source.id = rec.data.id;
+            }
         } else {
             source = rec.data;
+        }
+
+        if (!source.mailAccountId || !source.mailFolderId) {
+            Ext.raise({
+                msg    : "Missing compound keys.",
+                source : source
+            });
         }
 
         url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
                'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
                'MessageItems';
+
+        if (action !== 'create') {
+            if (!source.id) {
+                Ext.raise({
+                    msg    : "Missing id.",
+                    source : source
+                });
+            }
+            url += '/' + source.id;
+        }
 
         request.setUrl(url);
 
