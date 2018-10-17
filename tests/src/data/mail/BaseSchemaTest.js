@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,25 +22,42 @@
 
 describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
 
-    t.it("Should properly create the schema and check for default config", function(t) {
+    t.requireOk('conjoon.cn_mail.model.mail.message.MessageItem', function(){
+    t.requireOk('conjoon.cn_mail.model.mail.message.MessageDraft', function(){
 
-        var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
+        t.it("Should properly create the schema and check for default config", function(t) {
 
-        t.expect(schema instanceof conjoon.cn_core.data.schema.BaseSchema).toBe(true);
+            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
 
-        t.expect(schema.alias).toContain('schema.cn_mail-mailbaseschema');
+            t.expect(schema instanceof conjoon.cn_core.data.schema.BaseSchema).toBe(true);
 
-        t.expect(schema.getProxy() instanceof Ext.util.ObjectTemplate ).toBe(true);
-        t.expect(schema.getProxy().template.type).toBe('rest');
+            t.expect(schema.alias).toContain('schema.cn_mail-mailbaseschema');
+
+            t.expect(schema.getProxy() instanceof Ext.util.ObjectTemplate ).toBe(true);
+            t.expect(schema.getProxy().template.type).toBe('rest');
+            t.expect(schema.getNamespace()).toBe('conjoon.cn_mail.model.mail.');
+
+            t.expect(schema.id).toBe('cn_mail-baseschema');
+
+            t.expect(schema.getUrlPrefix()).toBe('cn_mail');
+        });
 
 
-        t.expect(schema.getNamespace()).toBe('conjoon.cn_mail.model.mail.');
+        t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageItemProxy", function(t) {
 
-        t.expect(schema.id).toBe('cn_mail-baseschema');
+            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
 
-        t.expect(schema.getUrlPrefix()).toBe('cn_mail');
+            var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem);
+
+            t.expect(ret.type).toBe('cn_mail-mailmessageitemproxy');
+
+            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
+
+            t.expect(ret.type).toBe('cn_mail-mailmessageitemproxy');
+        });
 
 
     });
 
-});
+
+})});

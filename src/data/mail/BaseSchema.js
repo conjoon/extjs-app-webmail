@@ -31,6 +31,13 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
     extend : 'conjoon.cn_core.data.schema.BaseSchema',
 
+    requires : [
+        'conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey',
+        'conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey'
+    ],
+
     alias : 'schema.cn_mail-mailbaseschema',
 
     namespace : 'conjoon.cn_mail.model.mail',
@@ -41,7 +48,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
     proxy : {
         type : 'rest',
-        url  : '{prefix}/{entityName}'
+        url  : '{prefix}'
     },
 
     privates : {
@@ -68,14 +75,57 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                                  : tmpData.entityName
                 });
 
-            proxy.url = tmpProxy.url;
 
-            if (tmpData.entityName === 'MessageItem') {
+            const MessageItemCompoundKey    = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey,
+                  MessageBodyCompoundKey    = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey,
+                  AttachmentItemCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey;
+
+            //proxy.url = tmpProxy.url;
+
+            if (tmpData.entityName === 'MessageItem' || tmpData.entityName === 'MessageDraft') {
+
+                proxy.prefix = '{prefix}';
+                proxy.type = 'cn_mail-mailmessageitemproxy';
+
+            } else if (tmpData.entityName === 'MessageBody') {
+
+                proxy.idParam = 'localId';
+
+                proxy.url = tmpProxy.url;
+
                 proxy.reader = {
                     type         : 'json',
-                    rootProperty : 'data'
+                    rootProperty : 'data',
+                    transform    : function(data) {
+
+                        if (Ext.isObject(data) && Ext.isArray(data.data)) {
+
+                            let records = data.data, i, len = records.length, rec;
+
+                            for (i = 0; i < len; i++) {
+                                rec = records[i];
+                                if (!rec.localId) {
+
+                                    rec.localId = MessageBodyCompoundKey.createFor(
+                                        rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId, rec.id
+                                    ).toLocalId();
+                                }
+
+                            }
+                        } else if (Ext.isObject(data) && Ext.isObject(data.data)) {
+                            // POST / PUT
+                            data.data.localId = MessageBodyCompoundKey.createFor(
+                                data.data.mailAccountId, data.data.mailFolderId, data.data.parentMessageItemId, data.data.id
+                            ).toLocalId();
+                        }
+
+
+                        return data;
+
+                    }
                 };
             }
+
 
             return proxy;
         }
