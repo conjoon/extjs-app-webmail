@@ -95,39 +95,20 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
     /**
      * Overrides parent implementation to make sure mailFolderId, mailAccountId,
-     * originalId are sent with each request.
+     * id are sent with each request.
      *
      * @param {Object}  options
      *
      * @throws if mailAccountId or mailFolderId are not set for this model, or
      * if this model instance is not a phantom and does not send originalId
+     *
+     * @see checkForeignKeys
      */
     save : function(options) {
 
-        const me      = this,
-              phantom = me.phantom;
+        const me = this;
 
-        if (!me.get('mailAccountId')) {
-            Ext.raise({
-                msg           : "\"mailAccountId\" must be set before save()",
-                mailAccountId : me.get('mailAccountId')
-            });
-        }
-
-        if (!me.get('mailFolderId')) {
-            Ext.raise({
-                msg           : "\"mailFolderId\" must be set before save()",
-                mailAccountId : me.get('mailFolderId')
-            });
-        }
-
-        if (!phantom && !me.get('id')) {
-            Ext.raise({
-                msg  : "\"id\" must be set before save()",
-                id   : me.get('id')
-            });
-        }
-
+        me.checkForeignKeysForAction(me.data, 'save');
 
         return me.callParent(arguments);
     },
@@ -147,28 +128,75 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         params = params || {};
 
-        if (!params['mailAccountId']) {
-            Ext.raise({
-                msg    : "\"mailAccountId\" must be set in params for load()",
-                params : params
-            });
-        }
-
-        if (!params['mailFolderId']) {
-            Ext.raise({
-                msg    : "\"mailFolderId\" must be set in params for load()",
-                params : params
-            });
-        }
-
-        if (!params['id']) {
-            Ext.raise({
-                msg    : "\"id\" must be set in params for load()",
-                params : params
-            });
-        }
+        me.checkForeignKeysForAction(params, 'read');
 
         return me.callParent(arguments);
+    },
+
+
+    /**
+     * Overrides parent implementation to make sure mailFolderId, mailAccountId,
+     * id are sent with each request if applicable.
+     *
+     * @param {Object}  options
+     *
+     * @throws if mailAccountId or mailFolderId are not set for this model, or
+     * if this model instance is not a phantom and does not send id
+     *
+     * @see checkForeignKeys
+     */
+    erase : function(options) {
+
+        const me = this;
+
+        me.checkForeignKeysForAction(me.data, 'erase');
+
+        return me.callParent(arguments);
+    },
+
+
+    /**
+     * Helper function to make sure foreign keys are available in "source".
+     *
+     * @param {Object} source
+     * @param {String} action
+     *
+     * @return {Boolean}
+     *
+     * @throws id mailAccount or mailFolder is not set, or if id is not set and
+     * record is not phantom or action is read.
+     */
+    checkForeignKeysForAction : function(source, action) {
+
+        const me = this,
+              phantom = me.phantom
+              source = source || {};
+
+        if (!source.mailAccountId) {
+            Ext.raise({
+                msg           : "\"mailAccountId\" must be set",
+                action        : action,
+                mailAccountId : source.mailAccountId
+            });
+        }
+
+        if (!source.mailFolderId) {
+            Ext.raise({
+                msg           : "\"mailFolderId\" must be set",
+                action        : action,
+                mailAccountId : source.mailFolderId
+            });
+        }
+
+        if ((action === 'read' || !phantom) && !source.id) {
+            Ext.raise({
+                msg    : "\"id\" must be set before",
+                action : action,
+                id     : source.id
+            });
+        }
+
+        return true;
     }
 
 });

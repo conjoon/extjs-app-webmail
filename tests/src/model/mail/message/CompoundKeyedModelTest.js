@@ -83,41 +83,16 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
         let exc, e;
 
-        try{model.load();} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
-        exc = undefined;
+        t.isCalledNTimes('checkForeignKeysForAction', model, 1);
 
-
-        try{model.load({params : {mailFolderId : 'INBOX.Drafts'}});} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
-        t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
-        exc = undefined;
-
-        try{model.load({params : {mailAccountId : 'foo'}});} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
-        t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
-        exc = undefined;
-
-        try{model.load({params : {mailAccountId : 'foo', mailFolderId : 'INBOX.Drafts'}});} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
-        t.expect(exc.msg.toLowerCase()).toContain("id");
-        exc = undefined;
-
-        t.expect(model.load({
+        model.load({
             params : {
                 mailAccountId : 'foo',
                 mailFolderId : 'INBOX.Drafts',
                 id           : '1'
             }
-        })).toBeTruthy();
+        });
+
 
     });
 
@@ -126,47 +101,24 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
         let exc, e;
 
-        model.set('mailAccountId', "");
+        model.set('mailAccountId', "a");
         model.set('mailFolderId', "INBOX.Drafts");
-
-        try{model.save();} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set before save");
-        t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
-        exc = undefined;
-
-
-        model.set('mailAccountId', "foo");
-        model.set('mailFolderId', "");
-
-        try{model.save();} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set before save");
-        t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
-        exc = undefined;
-
-
-        model.set('mailAccountId', "foo");
-        model.set('mailFolderId', "INBOX.Drafts");
-
-        t.expect(model.save()).toBeTruthy();
-
-        model.commit();
-        t.expect(model.phantom).toBe(false);
-
-        try{model.save();} catch(e){exc=e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set before save");
-        t.expect(exc.msg.toLowerCase()).toContain("id");
-        exc = undefined;
-
-
         model.set('id', "31424");
 
+        t.isCalledNTimes('checkForeignKeysForAction', model, 1);
         t.expect(model.save()).toBeTruthy();
+    });
+
+    t.it("erase()", function(t) {
+
+        let exc, e;
+
+        model.set('mailAccountId', "a");
+        model.set('mailFolderId', "INBOX.Drafts");
+        model.set('id', "31424");
+
+        t.isCalled('checkForeignKeysForAction', model);
+        t.expect(model.erase()).toBeTruthy();
     });
 
 
@@ -215,6 +167,57 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
             id            : '1',
             foobar        : 'foo'
         });
+
+    });
+
+
+    t.it("checkForeignKeysForAction()", function(t) {
+
+         model.set('mailAccountId', "");
+         model.set('mailFolderId', "INBOX.Drafts");
+
+         try{model.checkForeignKeysForAction(model.data, 'save');} catch(e){exc=e};
+         t.expect(exc).toBeDefined();
+         t.expect(exc.msg).toBeDefined();
+         t.expect(exc.msg.toLowerCase()).toContain("must be set");
+         t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
+         t.expect(exc.action).toBe("save");
+         exc = undefined;
+
+
+         model.set('mailAccountId', "foo");
+         model.set('mailFolderId', "");
+
+         try{model.checkForeignKeysForAction(model.data, 'save');} catch(e){exc=e};
+         t.expect(exc).toBeDefined();
+         t.expect(exc.msg).toBeDefined();
+         t.expect(exc.msg.toLowerCase()).toContain("must be set");
+         t.expect(exc.msg.toLowerCase()).toContain("mailfolderid");
+         t.expect(exc.action).toBe("save");
+         exc = undefined;
+
+
+         model.set('mailAccountId', "foo");
+         model.set('mailFolderId', "INBOX.Drafts");
+
+         t.expect(model.save()).toBeTruthy();
+
+         model.commit();
+         t.expect(model.phantom).toBe(false);
+
+         try{model.checkForeignKeysForAction(model.data, 'save');} catch(e){exc=e};
+         t.expect(exc).toBeDefined();
+         t.expect(exc.msg).toBeDefined();
+         t.expect(exc.msg.toLowerCase()).toContain("must be set");
+         t.expect(exc.msg.toLowerCase()).toContain("id");
+         t.expect(exc.action).toBe("save");
+         exc = undefined;
+
+        t.expect(model.checkForeignKeysForAction({
+            mailAccountId : 'foo',
+            mailFolderId : 'INBOX.Drafts',
+            id           : '1'
+        }, 'read')).toBe(true);
 
     });
 
