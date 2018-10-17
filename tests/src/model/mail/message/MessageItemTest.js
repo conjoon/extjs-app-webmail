@@ -71,6 +71,55 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
         t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
     });
 
+    t.it("Test for proper proxy and urls", function(t) {
+        t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy");
+
+        // READ
+        let op,
+            m = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.createFor(
+                'a', 'b', 'c'
+            )
+        );
+        t.expect(m.loadOperation.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a/MailFolders/b/MessageItems/c?');
+
+        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 'b1',
+            mailAccountId : 'a1',
+            id : 'c1',
+            localId : 'foo'
+        });
+
+
+        // ERASE
+        op = m.erase();
+        t.expect(op.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a1/MailFolders/b1/MessageItems/c1?');
+
+
+        // UPDATE
+        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 'b2',
+            mailAccountId : 'a2',
+            id : 'c2',
+            localId : 'foo'
+        });
+
+        m.set('foo', 'bar');
+        op = m.save();
+        t.expect(op.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a2/MailFolders/b2/MessageItems/c2?');
+
+        // CREATE
+        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            mailFolderId : 'b3',
+            mailAccountId : 'a3'
+        });
+
+        m.set('foo', 'bar');
+        op = m.save();
+        t.expect(op.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a3/MailFolders/b3/MessageItems?');
+
+    });
+
     t.it("Test Entity Name", function(t) {
         t.expect(
             model.entityName
