@@ -180,7 +180,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
         }
 
         return parentMessageItemId;
-    },
+    }
 
 
 });
