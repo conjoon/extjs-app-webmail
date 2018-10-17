@@ -78,7 +78,7 @@ harness.start({
                     },{
                       group : 'proxy',
                       items : [
-                          'src/data/mail/message/proxy/MessageItemProxyTest.js'
+                          'src/data/mail/message/proxy/MessageEntityProxyTest.js'
                       ]
                     },
                     {

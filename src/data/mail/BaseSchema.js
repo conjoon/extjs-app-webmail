@@ -32,7 +32,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
     extend : 'conjoon.cn_core.data.schema.BaseSchema',
 
     requires : [
-        'conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy',
+        'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey',
         'conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey'
@@ -84,8 +84,9 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
             if (tmpData.entityName === 'MessageItem' || tmpData.entityName === 'MessageDraft') {
 
+                proxy.entityName = tmpData.entityName;
                 proxy.prefix = '{prefix}';
-                proxy.type = 'cn_mail-mailmessageitemproxy';
+                proxy.type = 'cn_mail-mailmessageentityproxy';
 
             } else if (tmpData.entityName === 'MessageBody') {
 

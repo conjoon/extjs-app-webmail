@@ -72,7 +72,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
     });
 
     t.it("Test for proper proxy and urls", function(t) {
-        t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy");
+        t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
 
         // READ
         let op,

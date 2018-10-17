@@ -21,9 +21,10 @@
  */
 
 /**
- * Specialized version of a REST-proxy for a MessageItem.
+ * Specialized version of a REST-proxy to be used with
+ * MessageItems and MessageDrafts
  */
-Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
+Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
 
     extend : 'Ext.data.proxy.Rest',
 
@@ -31,7 +32,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
          'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'
     ],
 
-    alias : 'proxy.cn_mail-mailmessageitemproxy',
+    alias : 'proxy.cn_mail-mailmessageentityproxy',
 
     reader : {
         type : 'cn_mail-mailmessageitemjsonreader'
@@ -41,12 +42,28 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
 
     appendId : false,
 
+    validEntityNames : [
+        'MessageDraft',
+        'MessageItem'
+    ],
+
+
+    /**
+     * The entity being used with this Proxy. Can be any of MessageItem,
+     * MessageDraft or MessageBody.
+     * @cfg {string}
+     */
+    entityName : null,
+
+
     /**
      * @inheritdoc
      *
      * @param {Ext.data.Request} request
      *
      * @return {Object}
+     *
+     * @throws if #entityName is not in the list of #validEntityNames
      */
     buildUrl: function(request) {
 
@@ -57,10 +74,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
             });
         }
 
-       // /MailAccounts/{id}/MailFolder/{id}
-
         const me     = this,
               params = request.getParams();
+
+        if (me.validEntityNames.indexOf(me.entityName) === -1) {
+            Ext.raise({
+                msg : "The entityName (\"" + me.entityName + "\") is not allowed to be used with the url builder of this proxy.",
+                entityName : me.entityName
+            });
+        }
 
         let url = me.getUrl(request),
             action = request.getAction(),
@@ -90,7 +112,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemProxy', {
 
         url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
                'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
-               'MessageItems';
+               me.entityName + 's';
 
         if (action !== 'create') {
             if (!source.id) {

@@ -49,11 +49,11 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
 
             var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem);
 
-            t.expect(ret.type).toBe('cn_mail-mailmessageitemproxy');
+            t.expect(ret.type).toBe('cn_mail-mailmessageentityproxy');
 
             ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
 
-            t.expect(ret.type).toBe('cn_mail-mailmessageitemproxy');
+            t.expect(ret.type).toBe('cn_mail-mailmessageentityproxy');
         });
 
 
