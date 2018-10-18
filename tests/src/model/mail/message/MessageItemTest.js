@@ -77,7 +77,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
         // READ
         let op,
             m = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
-            conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.createFor(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
                 'a', 'b', 'c'
             )
         );
