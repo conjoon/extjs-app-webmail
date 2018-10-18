@@ -41,7 +41,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
 
         t.expect(proxy.alias).toContain('proxy.cn_mail-mailmessageentityproxy');
 
-        t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
+        t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
 
 
     });

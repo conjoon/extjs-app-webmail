@@ -29,13 +29,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
     extend : 'Ext.data.proxy.Rest',
 
     requires : [
-         'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'
+         'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'
     ],
 
     alias : 'proxy.cn_mail-mailmessageentityproxy',
 
     reader : {
-        type : 'cn_mail-mailmessageitemjsonreader'
+        type : 'cn_mail-mailmessageentityjsonreader'
     },
 
     idParam : 'localId',
