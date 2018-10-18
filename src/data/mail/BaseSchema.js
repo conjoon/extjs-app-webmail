@@ -32,10 +32,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
     extend : 'conjoon.cn_core.data.schema.BaseSchema',
 
     requires : [
-        'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey',
-        'conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey'
+        'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy'
     ],
 
     alias : 'schema.cn_mail-mailbaseschema',
@@ -64,8 +61,10 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
          * @returns {*|Object}
          */
         constructProxy: function (Model) {
-            var me       = this,
-                proxy    = me.callParent(arguments),
+
+            const me = this;
+
+            let proxy    = me.callParent(arguments),
                 tmpData  = Ext.Object.chain(Model),
                 tmpProxy = me.getProxy().apply({
                     prefix     : me.getUrlPrefix(),
@@ -73,60 +72,22 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                                  tmpData.entityName === 'ItemAttachment'
                                  ? tmpData.entityName = 'Attachment'
                                  : tmpData.entityName
+                }),
+                entityName = tmpData.entityName;
+
+
+            if (entityName === 'MessageItem' || entityName === 'MessageDraft' ||
+                entityName === 'MessageBody') {
+
+                proxy.entityName = entityName;
+                proxy.prefix     = '{prefix}';
+                proxy.type       = 'cn_mail-mailmessageentityproxy';
+
+            } else {
+                Ext.raise({
+                    msg : "Unexpected entity for this schema."
                 });
-
-
-            const MessageItemCompoundKey    = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey,
-                  MessageBodyCompoundKey    = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey,
-                  AttachmentItemCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey;
-
-            //proxy.url = tmpProxy.url;
-
-            if (tmpData.entityName === 'MessageItem' || tmpData.entityName === 'MessageDraft') {
-
-                proxy.entityName = tmpData.entityName;
-                proxy.prefix = '{prefix}';
-                proxy.type = 'cn_mail-mailmessageentityproxy';
-
-            } else if (tmpData.entityName === 'MessageBody') {
-
-                proxy.idParam = 'localId';
-
-                proxy.url = tmpProxy.url;
-
-                proxy.reader = {
-                    type         : 'json',
-                    rootProperty : 'data',
-                    transform    : function(data) {
-
-                        if (Ext.isObject(data) && Ext.isArray(data.data)) {
-
-                            let records = data.data, i, len = records.length, rec;
-
-                            for (i = 0; i < len; i++) {
-                                rec = records[i];
-                                if (!rec.localId) {
-
-                                    rec.localId = MessageBodyCompoundKey.createFor(
-                                        rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId, rec.id
-                                    ).toLocalId();
-                                }
-
-                            }
-                        } else if (Ext.isObject(data) && Ext.isObject(data.data)) {
-                            // POST / PUT
-                            data.data.localId = MessageBodyCompoundKey.createFor(
-                                data.data.mailAccountId, data.data.mailFolderId, data.data.parentMessageItemId, data.data.id
-                            ).toLocalId();
-                        }
-
-
-                        return data;
-
-                    }
-                };
             }
-
 
             return proxy;
         }
