@@ -25,35 +25,27 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKeyTe
     const create = function(cfg) {
             return Ext.create('conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey', cfg);
         },
-        MAILACCOUNTID       = "foo",
-        MAILFOLDERID        = "bar",
-        PARENTMESSAGEITEMID = "barfoo",
-        ID                  = "foobar";
+        MAILACCOUNTID = "foo",
+        MAILFOLDERID  = "bar",
+        ID            = "foobar";
 
 
     t.it("constructor() / apply*()", function(t) {
 
-        let key = create({
-            mailAccountId       : MAILACCOUNTID,
-            mailFolderId        : MAILFOLDERID,
-            parentMessageItemId : PARENTMESSAGEITEMID,
-            id                  : ID
-        });
+        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
 
         t.expect(key.getMailAccountId()).toBe(MAILACCOUNTID);
         t.expect(key.getMailFolderId()).toBe(MAILFOLDERID);
-        t.expect(key.getParentMessageItemId()).toBe(PARENTMESSAGEITEMID);
         t.expect(key.getId()).toBe(ID);
 
-        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey');
-
+        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.CompoundKey');
     });
 
 
     t.it("fromRecord()", function(t) {
 
         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey.fromRecord(Ext.create('Ext.data.Model', {
-            mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, parentMessageItemId : PARENTMESSAGEITEMID, id : ID
+            mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID
         }));
 
         t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey');
@@ -64,10 +56,9 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKeyTe
     t.it("createFor()", function(t) {
 
         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey.createFor(
-            MAILACCOUNTID, MAILFOLDERID, PARENTMESSAGEITEMID, ID
+            MAILACCOUNTID, MAILFOLDERID, ID
         );
 
         t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey');
     });
-
 });

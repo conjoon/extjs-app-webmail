@@ -26,5 +26,5 @@
  */
 Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey', {
 
-    extend : 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey'
+    extend : 'conjoon.cn_mail.data.mail.message.CompoundKey'
 });
