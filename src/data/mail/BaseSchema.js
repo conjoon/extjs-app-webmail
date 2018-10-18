@@ -84,9 +84,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                 proxy.type       = 'cn_mail-mailmessageentityproxy';
 
             } else {
-                Ext.raise({
-                    msg : "Unexpected entity for this schema."
-                });
+                proxy.url = '{prefix}/{entityName}';
             }
 
             return proxy;
