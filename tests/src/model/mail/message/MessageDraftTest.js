@@ -58,6 +58,10 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
         });
 
+        t.it("Test for proper proxy", function(t) {
+            t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
+        });
+
         t.it("Test Entity Name", function(t) {
             t.expect(
                 model.entityName
@@ -65,7 +69,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         });
 
         t.it("Test Record Validity", function(t) {
-            // messageBody is missing
+            // messageBody is missingb
             t.expect(model.isValid()).toBe(false);
 
             for (var i = 0, vs = ['to', 'cc', 'bcc'], len = vs.length; i < len; i++) {
@@ -105,7 +109,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
-                conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.createFor(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
                     messageItem.mailAccountId,
                     messageItem.mailFolderId,
                     messageItem.id
@@ -126,7 +130,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
-                conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.createFor(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
                     messageItem.mailAccountId,
                     messageItem.mailFolderId,
                     messageItem.id
@@ -135,14 +139,12 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
 
             t.waitForMs(500, function() {
-
                 var mb = rec.loadMessageBody();
 
-                t.waitForMs(500, function() {
+                t.waitForMs(1500, function() {
                     t.expect(mb.get('textHtml')).toBeTruthy();
                     t.expect(mb.get('mailFolderId')).toBe(rec.get('mailFolderId'));
                     t.expect(mb.get('mailAccountId')).toBe(rec.get('mailAccountId'));
-                    t.expect(mb.get('parentMessageItemId')).toBe(rec.get('id'));
                     t.expect(mb.get('id')).toBe(rec.get('id'));
 
                     t.expect(mb.getId()).toContain(rec.getId())
@@ -151,12 +153,13 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         });
 
+
         t.it("Test attachments load", function(t) {
 
             let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
-                conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.createFor(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
                     messageItem.mailAccountId,
                     messageItem.mailFolderId,
                     messageItem.id
@@ -192,7 +195,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
             t.waitForMs(750, function() {
 
-                let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.fromRecord(rec);
+                let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec);
 
                 t.expect(rec.get('id')).not.toBeFalsy();
                 t.expect(rec.getId()).toBe(key.toLocalId());
@@ -241,12 +244,12 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
             t.waitForMs(1000, function() {
 
-                let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.fromRecord(rec);
-                let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey.fromRecord(rec2);
+                let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec);
+                let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec2);
 
                 t.expect(rec2.getId()).toBe(bodyKey.toLocalId());
                 t.expect(rec.getId()).toBe(msgKey.toLocalId());
-                t.expect(rec2.get('parentMessageItemId')).toBe(rec.get('id'));
+                t.expect(rec2.get('id')).toBe(rec.get('id'));
 
                 t.expect(rec.isValid()).toBe(true);
             });
