@@ -22,7 +22,7 @@
 
 /**
  * Specialized version of a REST-proxy to be used with
- * MessageItems and MessageDrafts
+ * MessageItems and MessageDrafts.
  */
 Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
 
@@ -44,7 +44,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
 
     validEntityNames : [
         'MessageDraft',
-        'MessageItem'
+        'MessageItem',
+        'MessageBody'
     ],
 
 
@@ -110,9 +111,20 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             });
         }
 
-        url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
-               'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
-               me.entityName + 's';
+        if (me.entityName === 'MessageBody') {
+            url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
+                'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
+                'MessageItems';
+
+            request.setParams(Ext.apply(request.getParams() || {}, {
+                target : 'MessageBody'
+            }));
+        } else {
+            url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
+                'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
+                me.entityName + 's';
+
+        }
 
         if (action !== 'create') {
             if (!source.id) {
