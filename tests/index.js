@@ -63,9 +63,8 @@ harness.start({
                     items : [{
                         group : 'compoundKey',
                         items : [
-                            'src/data/mail/message/compoundKey/MessageItemCompoundKeyTest.js',
+                            'src/data/mail/message/compoundKey/MessageEntityCompoundKeyTest.js',
                             'src/data/mail/message/compoundKey/MessageItemChildCompoundKeyTest.js',
-                            'src/data/mail/message/compoundKey/MessageBodyCompoundKeyTest.js',
                             'src/data/mail/message/compoundKey/AttachmentItemCompoundKeyTest.js'
                         ]
                     }, {
@@ -84,7 +83,7 @@ harness.start({
                     {
                         group : 'reader',
                         items : [
-                            'src/data/mail/message/reader/MessageItemJsonReaderTest.js',
+                            'src/data/mail/message/reader/MessageEntityJsonReaderTest.js',
                             'src/data/mail/message/reader/MessageItemUpdaterTest.js'
                         ]
                     },

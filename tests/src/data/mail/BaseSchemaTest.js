@@ -43,7 +43,7 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
         });
 
 
-        t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageItemProxy", function(t) {
+        t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntitytyProxy", function(t) {
 
             var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
 
@@ -65,4 +65,4 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
     });
 
 
-})});
+})})
