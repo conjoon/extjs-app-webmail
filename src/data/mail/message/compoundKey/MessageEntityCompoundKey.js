@@ -21,10 +21,10 @@
  */
 
 /**
- * CompoundKey for MessageBodies.
+ * CompoundKey for MessageItem, MessageDraft and MessageBody.
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey', {
+Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', {
 
     extend : 'conjoon.cn_mail.data.mail.message.CompoundKey'
 });

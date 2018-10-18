@@ -20,10 +20,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKeyTest', function(t) {
+describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKeyTest', function(t) {
 
     const create = function(cfg) {
-            return Ext.create('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey', cfg);
+            return Ext.create('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', cfg);
         },
         MAILACCOUNTID = "foo",
         MAILFOLDERID  = "bar",
@@ -44,21 +44,21 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKeyTe
 
     t.it("fromRecord()", function(t) {
 
-        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.fromRecord(Ext.create('Ext.data.Model', {
+        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(Ext.create('Ext.data.Model', {
             mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID
         }));
 
-        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey');
+        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey');
 
     });
 
 
     t.it("createFor()", function(t) {
 
-        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey.createFor(
+        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID, ID
         );
 
-        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey');
+        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey');
     });
 });
