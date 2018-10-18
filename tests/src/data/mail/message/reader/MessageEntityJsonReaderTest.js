@@ -20,12 +20,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', function(t) {
+describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest', function(t) {
 
 
     t.it("Should successfully create and test instance", function(t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
 
         });
 
@@ -33,14 +33,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
 
         t.expect(reader.getRootProperty()).toBe('data');
 
-        t.expect(reader.alias).toContain('reader.cn_mail-mailmessageitemjsonreader');
+        t.expect(reader.alias).toContain('reader.cn_mail-mailmessageentityjsonreader');
 
     });
 
 
     t.it("applyCompoundKey - exception", function(t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'),
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
             exc, e, data;
 
         try{reader.applyCompoundKey(data);} catch(e) {exc = e;}
@@ -68,9 +68,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
 
     t.it("applyCompoundKey()", function(t) {
 
-        const MessageItemCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey;
+        const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'),
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
             ret,
             keys = {
                 mailAccountId : 'a',
@@ -84,7 +84,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
                     mailAccountId : 'a',
                     mailFolderId : 'b',
                     id : 'c',
-                    localId : MessageItemCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.id).toLocalId()
+                    localId : MessageEntityCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.id).toLocalId()
                 }]
             };
 
@@ -103,7 +103,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
 
     t.it("readRecords()", function(t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
 
         t.isCalledNTimes('applyCompoundKey', reader, 1);
 

@@ -21,17 +21,20 @@
  */
 
 /**
- * Specialized version of a JSON Reader used by MessageItemProxyMessageItem.
+ * Specialized version of a JSON Reader used by MessageEntityProxy.
  */
-Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
+/*This has to be refactres intp MessageEntityJsonReader which takes care of the entities MessageDraft,
+    MessageBody and MessageItem; additionally, compound keys for messagebody and messageitem has to be
+merged into MessageEntityCompoundKey*/
+Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
 
     extend : 'Ext.data.reader.Json',
 
     requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey'
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
-    alias : 'reader.cn_mail-mailmessageitemjsonreader',
+    alias : 'reader.cn_mail-mailmessageentityjsonreader',
 
     rootProperty : 'data',
 
@@ -58,7 +61,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
     /**
      * Computes the localId which is treated as the primary key for MessageItems
-     * by utilizing conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey
+     * by utilizing conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      *
      * @param {Object} data
      *
@@ -67,7 +70,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
     applyCompoundKey : function(data) {
 
         const me                    = this,
-            MessageItemCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemCompoundKey;
+            MessageEntityCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
 
         if (Ext.isObject(data)) {
@@ -79,7 +82,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
                 for (i = 0; i < len; i++) {
                     rec = records[i];
                     if (!rec.localId) {
-                        rec.localId = MessageItemCompoundKey.createFor(
+                        rec.localId = MessageEntityCompoundKey.createFor(
                             rec.mailAccountId, rec.mailFolderId, rec.id
                         ).toLocalId();
                     }
@@ -90,7 +93,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
             } else if (Ext.isObject(data.data)) {
                 // POST / PUT
-                data.data.localId = MessageItemCompoundKey.createFor(
+                data.data.localId = MessageEntityCompoundKey.createFor(
                     data.data.mailAccountId, data.data.mailFolderId, data.data.id
                 ).toLocalId();
 
