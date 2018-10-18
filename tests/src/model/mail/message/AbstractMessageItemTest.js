@@ -146,13 +146,30 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(options.params.mailAccountId).toBe(model.get('mailAccountId'));
         t.expect(options.params.mailFolderId).toBe(model.get('mailFolderId'));
         t.expect(options.params.id).toBe(model.get('id'));
-        t.expect(options.params.parentMessageItemId).toBe(model.get('id'));
+        t.expect(options.params.parentMessageItemId).toBeFalsy();
 
         t.waitForMs(250, function() {
             t.expect(CALLED).toBe(1);
         });
     });
 
+
+    t.it("loadMessageBody() - exception", function(t) {
+
+        let exc, e;
+
+        t.isntCalled('getMessageBody', model);
+
+        t.expect(model.get('mailAccountId')).toBeTruthy();
+        model.set('mailAccountId', undefined);
+        t.expect(model.get('mailFolderId')).toBeTruthy();
+
+        try{model.loadMessageBody()}catch(e){exc=e;};
+
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("compound keys missing");
+    });
 
 
 });
