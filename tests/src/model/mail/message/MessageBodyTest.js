@@ -28,8 +28,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
         model = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
             id            : 1,
             mailFolderId  : 4,
-            mailAccountId : 5,
-            parentMessageItemId : 1
+            mailAccountId : 5
         });
     });
 
@@ -43,7 +42,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.MessageItemChildModel');
+        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
     });
 
     t.it("Test Entity Name", function(t) {
