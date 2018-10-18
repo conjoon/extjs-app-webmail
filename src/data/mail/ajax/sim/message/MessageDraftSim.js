@@ -36,7 +36,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
     Ext.ux.ajax.SimManager.register({
         type : 'json',
 
-        url  : /cn_mail\/MessageDraft(\/\d+)?/,
+        //url  : /cn_mail\/MessageAccounts(\/\d+)?/,
+
+        url : /cn_mail\/MailAccounts\/(.+)\/MailFolders\/(.+)\/MessageDrafts(\/.+)?/im,
+
 
         doDelete : function(ctx) {
 
@@ -115,12 +118,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
 
         doPost : function(ctx) {
 
-            console.log("POST MessageDraft", ctx.xhr.options.jsonData);
+            console.log("POST MessageDraft", ctx, ctx.xhr.options.jsonData);
 
             var me            = this,
                 draft         = {},
                 ret           = {},
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
+
+
+            console.log(ctx.url.match(new RegExp(this.url)));
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -171,8 +177,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 messageDrafts;
 
             if (idPart) {
-                id = parseInt(idPart.substring(1), 10);
-                return MessageTable.getMessageDraft(id);
+                var parts = ctx.url.split('/');
+                id = parts.pop().split('?')[0];
+
+                return {data : MessageTable.getMessageDraft(id)};
             } else if (filters) {
                 messageDrafts = MessageTable.getMessageDrafts();
                 filters = Ext.decode(filters);

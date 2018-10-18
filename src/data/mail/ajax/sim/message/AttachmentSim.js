@@ -106,6 +106,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
                 params  = ctx.params,
                 filters = params.filter,
                 id, attachments;
+
             if (idPart) {
 
                 id = idPart.substring(1).split('?')[0];

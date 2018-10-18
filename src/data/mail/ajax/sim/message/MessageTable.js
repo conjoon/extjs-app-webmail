@@ -29,7 +29,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
     requires : [
         'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey'
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     messageBodies : null,
@@ -173,7 +173,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         me.messageBodies[id] = {
             id                    : id,
-            parentMessageItemId   : id,
             mailFolderId          : mailFolderId,
             mailAccountId         : mailAccountId,
             textHtml              : message,
@@ -489,10 +488,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                                  : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
             };
 
-            cfg.messageBodyId = conjoon.cn_mail.data.mail.message.compoundKey.MessageBodyCompoundKey.createFor(
+            cfg.messageBodyId = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
                 cfg.mailAccountId,
                 cfg.mailFolderId,
-                cfg.id,
                 cfg.id
             ).toLocalId();
 

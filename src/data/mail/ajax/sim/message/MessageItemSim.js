@@ -36,13 +36,18 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
     Ext.ux.ajax.SimManager.register({
         type : 'json',
 
-        url  : /cn_mail\/MessageItem(\/.+)?/,
+        url : /cn_mail\/MailAccounts\/(.+)\/MailFolders\/(.+)\/MessageItems(\/.*)?/im,
 
         doDelete : function(ctx) {
 
             const me     = this,
                   idPart = ctx.url.match(this.url)[1],
                   id     = idPart ? idPart.substring(1) : null;
+
+            if (ctx.params.target === 'MessageBody') {
+                Ext.raise("Not implemented");
+            }
+
 
             if (!id) {
                 console.log("DELETE MessageItem - no numeric id specified.");
@@ -77,12 +82,24 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             return ret;
         },
 
+        doPost : function(ctx) {
+
+            if (ctx.params.target === 'MessageBody') {
+                return this.postMessageBody(ctx);
+            }
+
+        },
+
         doPut : function(ctx) {
 
             var me           = this,
                 ret          = {},
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 values       = {};
+
+            if (ctx.params.target === 'MessageBody') {
+                Ext.raise("Not implemented");
+            }
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -111,6 +128,17 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 messageItems = MessageTable.getMessageItems();
 
+            if (ctx.params.target === 'MessageBody') {
+                var pt = ctx.url.split('/');
+                var id = pt.pop().split('?')[0],
+                    mailFolderId = pt.pop(),
+                    mailFolderId = pt.pop(),
+                    mailAccountId = pt.pop(),
+                    mailAccountId = pt.pop();
+
+                return this.getMessageBody(mailAccountId, mailFolderId, id);
+            }
+
             if (idPart) {debugger;
                 id = idPart.substring(1).split('?')[0];
                 return {data : Ext.Array.findBy(
@@ -135,7 +163,67 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             } else {
                 return messageItems;
             }
-        }
+        },
+
+        getMessageBody : function(mailAccountId, mailFolderId, id) {
+
+            return {success : true, data : conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                .getMessageBody(
+                    mailAccountId,
+                    mailFolderId,
+                    id
+                )};
+
+
+        },
+
+
+        postMessageBody : function(ctx) {
+
+            console.log("POST MessageBody", ctx.xhr.options.jsonData);
+
+            var me    = this,
+                body  = {},
+                ret   = {},
+                newRec;
+
+            for (var i in ctx.xhr.options.jsonData) {
+                if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
+                    continue;
+                }
+
+                body[i] = ctx.xhr.options.jsonData[i];
+            }
+
+
+            if (!body.textPlain && body.textHtml) {
+                body.textPlain = Ext.util.Format.stripTags(body.textHtml);
+            } else {
+                body.textHtml = body.textPlain;
+            }
+
+            newRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                .createMessageBody(body);
+
+
+            ret.responseText = Ext.JSON.encode({success : true, data: {
+                id        : newRec.id,
+                parentMessageItemId : newRec.parentMessageItemId,
+                mailFolderId  : newRec.mailFolderId,
+                mailAccountId : newRec.mailAccountId,
+                textPlain : newRec.textPlain,
+                textHtml  : newRec.textHtml
+            }
+            });
+
+            Ext.Array.forEach(me.responseProps, function (prop) {
+                if (prop in me) {
+                    ret[prop] = me[prop];
+                }
+            });
+            return ret;
+        },
+
     });
 
 
