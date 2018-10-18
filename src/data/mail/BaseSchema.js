@@ -80,7 +80,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                 entityName === 'MessageBody') {
 
                 proxy.entityName = entityName;
-                proxy.prefix     = '{prefix}';
+                proxy.prefix     = me.getUrlPrefix();
                 proxy.type       = 'cn_mail-mailmessageentityproxy';
 
             } else if (tmpData.entityName === 'Attachment') {
