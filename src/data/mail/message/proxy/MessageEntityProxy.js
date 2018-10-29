@@ -34,6 +34,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
 
     alias : 'proxy.cn_mail-mailmessageentityproxy',
 
+    // default reader, gets set by BaseSchema for MessageItem and MessageDraft individually
     reader : {
         type : 'cn_mail-mailmessageentityjsonreader'
     },

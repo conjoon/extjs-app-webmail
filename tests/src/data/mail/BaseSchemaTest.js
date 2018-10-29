@@ -43,7 +43,7 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
         });
 
 
-        t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntitytyProxy", function(t) {
+        t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntityProxy", function(t) {
 
             var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
 
@@ -59,6 +59,27 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
             ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
 
             t.expect(ret.type).toBe('cn_mail-mailmessageentityproxy');
+        });
+
+
+        t.it("Make sure configured reader for MessageDraft and MessageItem is of type MessageItemJsonReader", function(t) {
+
+            let schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema'),
+                ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem),
+                proxy;
+
+            proxy = Ext.Factory.proxy(ret);
+            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
+
+            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
+            proxy = Ext.Factory.proxy(ret);
+            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
+
+
+            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
+            proxy = Ext.Factory.proxy(ret);
+            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+            t.expect(proxy.getReader() instanceof conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader).toBe(false);
         });
 
 

@@ -32,7 +32,8 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
     extend : 'conjoon.cn_core.data.schema.BaseSchema',
 
     requires : [
-        'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy'
+        'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
+        'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'
     ],
 
     alias : 'schema.cn_mail-mailbaseschema',
@@ -82,6 +83,11 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                 proxy.entityName = entityName;
                 proxy.prefix     = me.getUrlPrefix();
                 proxy.type       = 'cn_mail-mailmessageentityproxy';
+
+                if (entityName !== 'MessageBody')  {
+                    proxy.reader = 'cn_mail-mailmessageitemjsonreader';
+                }
+
 
             } else {
                 proxy.url = me.getUrlPrefix() + '/' + tmpData.entityName;
