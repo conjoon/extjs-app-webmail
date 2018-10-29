@@ -94,10 +94,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             url += '/';
         }
 
-
         if (action === 'read') {
             source = params;
-            if (rec && !source.id) {
+            if (source.filter) {
+                let fl = Ext.decode(source.filter), np = {};
+                for (let i = 0, len = fl.length; i < len; i++) {
+                    np[fl[i].property] = fl[i].value;
+                }
+                source = Ext.apply(source, np);
+            } else if (rec && !source.id) {
                 source.id = rec.data.id;
             }
         } else {
@@ -127,13 +132,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
         }
 
         if (action !== 'create') {
-            if (!source.id) {
-                Ext.raise({
-                    msg    : "Missing id.",
-                    source : source
-                });
+            if (source.hasOwnProperty('id')) {
+                url += '/' + source.id;
             }
-            url += '/' + source.id;
+
         }
 
         request.setUrl(url);

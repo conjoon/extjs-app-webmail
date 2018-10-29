@@ -105,7 +105,30 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
     });
 
 
-    t.it("buildUrl() - exception missing id with read", function(t) {
+    t.it("buildUrl() - no exception missing id with read", function(t) {
+
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
+                entityName : 'MessageItem'
+            }),
+
+            params = {
+                mailAccountId : 'a',
+                mailFolderId : 'b'
+            },
+            request = Ext.create('Ext.data.Request', {
+                action : 'read',
+                params : params,
+                operation : Ext.create('Ext.data.operation.Read')
+            }),
+            exc, e;
+
+        proxy.buildUrl(request);
+
+        t.expect(request.getUrl()).toBe('/MailAccounts/a/MailFolders/b/MessageItems');
+    });
+
+
+    t.it("buildUrl() - no exception id falsy with read", function(t) {
 
         let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
                 entityName : 'MessageItem'
@@ -113,12 +136,11 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
             recs = [Ext.create('Ext.data.Model', {
                 mailAccountId : 'a',
                 mailFolderId : 'b',
-                id : 0 // set this explicitely to 0 - it is used as the default primary key
-                       // so a value will be available automatically which will break the test
+                id : 0
             })],
             params = {
-                mailAccountId : 'c',
-                mailFolderId : 'd'
+                mailAccountId : 'a',
+                mailFolderId : 'b'
             },
             request = Ext.create('Ext.data.Request', {
                 action : 'read',
@@ -130,11 +152,9 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
             }),
             exc, e;
 
-        try{proxy.buildUrl(request);}catch(e){exc = e;}
+        proxy.buildUrl(request);
 
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("missing id");
+        t.expect(request.getUrl()).toBe('/MailAccounts/a/MailFolders/b/MessageItems/0');
     });
 
 
@@ -311,6 +331,40 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().target).toBe('MessageBody');
+    });
+
+
+    t.it("buildUrl() - consider filters in params", function(t) {
+
+        let filters = [{
+                property : 'mailAccountId',
+                value : 'a'
+            }, {
+                property : 'mailFolderId',
+                value : 'b'
+            }, {
+                property : 'id',
+                value : 'c'
+            }],
+            params = {
+                filter : Ext.encode(filters)
+            },
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
+                entityName : 'MessageItem'
+            }),
+            request = Ext.create('Ext.data.Request', {
+                action : 'read',
+                params : params,
+                operation : Ext.create('Ext.data.operation.Read'),
+            }),
+            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/c';
+
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+
+
+        proxy.buildUrl(request);
+
+        t.expect(request.getUrl()).toBe(targetUrl);
     });
 
 
