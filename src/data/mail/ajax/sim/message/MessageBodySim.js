@@ -23,6 +23,8 @@
 /**
  * Ext.ux.ajax.SimManager hook for {@link conjoon.cn_mail.model.mail.message.MessageBody}
  * data.
+ *
+ * @deprecated MessageBodys no longer represented by own resource, see MessageItemSim
  */
 Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
 
