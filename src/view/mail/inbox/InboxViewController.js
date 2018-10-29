@@ -60,7 +60,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         'cn_mail-mailmessagegrid' : {
             'cn_comp-rowflymenu-itemclick'      : 'onRowFlyMenuItemClick',
             'cn_comp-rowflymenu-beforemenushow' : 'onRowFlyMenuBeforeShow'
-        },
+        }
     },
 
     /**
