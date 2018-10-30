@@ -47,7 +47,7 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
         t.expect(model.suspendSetter).toBe(false);
 
-        t.expect(model.compoundKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'id', 'localId']);
+        t.expect(model.compoundKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'id']);
     });
 
     t.it("idProperty", function(t) {
@@ -232,6 +232,19 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
     });
 
 
+    t.it("updateLocalId()", function(t) {
+
+        let modelLeft = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel'),
+            exc, e;
+
+        try{modelLeft.updateLocalId();}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("is abstract");
+        exc = undefined;
+    });
+
+
     t.it("set()", function(t) {
 
         let modelLeft = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel'),
@@ -239,10 +252,13 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
             fields = {
                 mailAccountId : 'foo',
                 mailFolderId : 'bar',
-                id : 'snafu',
-                localId : 'NEWID'
+                id : 'snafu'
+            },
+            CALLED = 0;
 
-            };
+        modelRight.updateLocalId = function() {
+            CALLED++;
+        };
 
         modelLeft.getAssociatedCompoundKeyedData = function() {
             return [modelRight];
@@ -258,8 +274,10 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
             t.expect(modelLeft.modified.hasOwnProperty(i)).toBe(true);
         }
 
-        t.expect(modelLeft.getId()).toBe(fields.localId);
-        t.expect(modelLeft.getId()).toBe(modelRight.getId());
+        modelLeft.setId('NEWID');
+        t.expect(CALLED).toBeGreaterThan(0);
+        t.expect(modelLeft.getId()).toBe('NEWID');
+        t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
 
     });
 

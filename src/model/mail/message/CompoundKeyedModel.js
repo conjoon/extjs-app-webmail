@@ -80,7 +80,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
     /**
      * @private
      */
-    compoundKeyFields : ['mailAccountId', 'mailFolderId', 'id', 'localId'],
+    compoundKeyFields : ['mailAccountId', 'mailFolderId', 'id'],
 
 
     inheritableStatics : {
@@ -247,6 +247,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * server was or is updated accordingly due to the relationships of the entities.
      * (Hint: a MessageBody is in fact a MessageDraft/Item and just decoupled
      * to ease the process of loading data into the memory.)
+     * Once foreignKey fields where updated, associated models are forced to
+     * update their primary key by calling updateLocalId().
 
      * @param {String|Object} key
      * @param {Mixed} value
@@ -254,6 +256,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * @return {*|Object}
      *
      * @see getAssociatedCompoundKeyedData
+     * @see updateLocalId
      */
     set : function(key, value) {
 
@@ -289,6 +292,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
                 assoc.set(curr, val, {dirty : false});
             }
 
+            assoc.updateLocalId();
             assoc.suspendSetter = false;
         }
 
@@ -366,6 +370,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         }
 
         return true;
+    },
+
+
+    /**
+     * Gets called by set() of an association if the foreign key was updated.
+     * Forces this record to update its localId, which is the primary.
+     *
+     * @abstract
+     */
+    updateLocalId : function() {
+        Ext.raise({
+            msg : "Method is abstract and needs to be overriden."
+        });
     }
 
 });
