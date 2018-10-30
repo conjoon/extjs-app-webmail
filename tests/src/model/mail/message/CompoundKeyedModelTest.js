@@ -44,6 +44,10 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
     t.it("Should create instance", function(t) {
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
+
+        t.expect(model.suspendSetter).toBe(false);
+
+        t.expect(model.compoundKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'id', 'localId']);
     });
 
     t.it("idProperty", function(t) {
@@ -220,6 +224,163 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         }, 'read')).toBe(true);
 
     });
+
+
+    t.it("getAssociatedCompoundKeyedData()", function(t){
+        t.expect(model.getAssociatedCompoundKeyedData()).toEqual([]);
+
+    });
+
+
+    t.it("set()", function(t) {
+
+        let modelLeft = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel'),
+            modelRight = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel'),
+            fields = {
+                mailAccountId : 'foo',
+                mailFolderId : 'bar',
+                id : 'snafu',
+                localId : 'NEWID'
+
+            };
+
+        modelLeft.getAssociatedCompoundKeyedData = function() {
+            return [modelRight];
+        };
+
+        for (var i in fields) {
+            t.expect(modelRight.get(i)).not.toBe(fields[i]);
+            modelLeft.set(i, fields[i]);
+            t.expect(modelRight.get(i)).toBe(fields[i]);
+            t.expect(modelLeft.get(i)).toBe(fields[i]);
+            t.expect(modelRight.modified).toBeFalsy();
+            t.expect(modelLeft.modified).toBeTruthy();
+            t.expect(modelLeft.modified.hasOwnProperty(i)).toBe(true);
+        }
+
+        t.expect(modelLeft.getId()).toBe(fields.localId);
+        t.expect(modelLeft.getId()).toBe(modelRight.getId());
+
+    });
+
+
+    t.it("compareAndApplyCompoundKeys()", function(t) {
+
+        let createModel = function(fields) {
+                return Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
+                    Ext.apply({}, fields)
+                );
+            },
+            field4 = {
+                mailAccountId : 'foo',
+                mailFolderId : 'bar',
+                id : 'snafu',
+                localId : 'NEWID'
+            },
+            field3 = {
+                mailAccountId : 'foo',
+                mailFolderId : 'bar',
+                localId : 'NEWID'
+            },
+            field2 = {
+                mailAccountId : 'ACCOUNT',
+                mailFolderId : 'FOLDER'
+            },
+            field1 = {
+                id : 'ID'
+            },
+            field0 = {},
+            modelLeft, modelRight, newFields, exc, e;
+
+        // left 4 right 4 fields same
+        modelLeft = createModel(field4);
+        modelRight = createModel(field4);
+        t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
+
+        // left 4 right 4 fields not same
+        modelLeft = createModel(field4);
+        modelRight = createModel(Ext.applyIf({mailFolderId : 'meh.'}, field4));
+        try{modelLeft.compareAndApplyCompoundKeys(modelRight, true);}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("compound key differs");
+        exc = undefined;
+
+        // left 4 right 4 fields same BUT localId
+        modelLeft = createModel(field4);
+        modelRight = createModel(Ext.applyIf({localId : 'meh.'}, field4));
+        t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
+
+        // left 2 right 2 not setting localId
+        modelLeft = createModel(Ext.apply({localId : 'mmm'}, field2));
+        modelRight = createModel(Ext.apply({localId : 'nnn'}, field2));
+        t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
+        t.expect(modelLeft.getId()).toBe('mmm');
+        t.expect(modelRight.getId()).toBe('nnn');
+
+        // left 2 right 1, presedence
+        modelLeft = createModel(field2);
+        modelRight = createModel(field1);
+        modelLeft.compareAndApplyCompoundKeys(modelRight, true);
+        for (let i in field2) {
+            t.expect(modelRight.get(i)).toBe(modelLeft.get(i));
+        }
+
+        // left 2 right 1, not presedence
+        modelLeft = createModel(field2);
+        modelRight = createModel(field1);
+        modelLeft.compareAndApplyCompoundKeys(modelRight, false);
+        for (let i in field2) {
+            t.expect(modelRight.get(i)).toBe(modelLeft.get(i));
+        }
+
+        // left 1 right 2, presedence
+        modelLeft = createModel(field1);
+        modelRight = createModel(field2);
+        modelLeft.compareAndApplyCompoundKeys(modelRight, true);
+        for (let i in field2) {
+            t.expect(modelRight.get(i)).toBe(modelLeft.get(i));
+        }
+
+        // left 1 right 2, not presedence
+        modelLeft = createModel(field1);
+        modelRight = createModel(field2);
+        modelLeft.compareAndApplyCompoundKeys(modelRight, false);
+        for (let i in field1) {
+            t.expect(modelRight.get(i)).toBe(modelLeft.get(i));
+        }
+        for (let i in field2) {
+            t.expect(modelLeft.get(i)).not.toBe(modelRight.get(i));
+        }
+
+        modelLeft = createModel({});
+        modelRight = createModel({mailFolderId : '4', mailAccountId : '5', id : '6', localId : 'zzz'});
+        modelLeft.compareAndApplyCompoundKeys(modelRight);
+        t.expect(modelLeft.get('mailFolderId')).toBe(modelRight.get('mailFolderId'));
+        t.expect(modelLeft.get('mailAccountId')).toBe(modelRight.get('mailAccountId'));
+        t.expect(modelLeft.get('mailAccountId')).toBe(modelRight.get('mailAccountId'));
+        t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
+
+        modelLeft = createModel({mailFolderId : '4', mailAccountId : '5', id : '6', localId : 'zzz'});
+        modelRight = createModel({});
+        modelLeft.compareAndApplyCompoundKeys(modelRight);
+        t.expect(modelLeft.get('mailFolderId')).toBe(modelRight.get('mailFolderId'));
+        t.expect(modelLeft.get('mailAccountId')).toBe(modelRight.get('mailAccountId'));
+        t.expect(modelLeft.get('mailAccountId')).toBe(modelRight.get('mailAccountId'));
+        t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
+
+        modelLeft = createModel({});
+        modelRight = createModel({mailFolderId : '4', mailAccountId : '5', id : '6', localId : 'zzz'});
+        modelLeft.compareAndApplyCompoundKeys(modelRight, false);
+        t.expect(modelLeft.get('mailFolderId')).not.toBe(modelRight.get('mailFolderId'));
+        t.expect(modelLeft.get('mailAccountId')).not.toBe(modelRight.get('mailAccountId'));
+        t.expect(modelLeft.get('mailAccountId')).not.toBe(modelRight.get('mailAccountId'));
+        t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
+
+
+    });
+
+
 
 
 });
