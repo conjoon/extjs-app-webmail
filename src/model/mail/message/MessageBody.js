@@ -39,13 +39,29 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
 
     entityName : 'MessageBody',
 
+
     fields : [{
         name : 'textPlain',
         type : 'string'
     }, {
         name : 'textHtml',
         type : 'string'
-    }]
+    }],
 
+
+    /**
+     * @inheritdoc
+     */
+    getAssociatedCompoundKeyedData : function() {
+        const me = this;
+
+        let data =  (me.messageDrafts && me.messageDrafts()
+                    ? me.messageDrafts().getRange() : []).concat(
+                    me.messageItems && me.messageItems()
+                    ? me.messageItems().getRange() : []
+                     );
+
+        return data;
+    }
 
 });

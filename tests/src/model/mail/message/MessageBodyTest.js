@@ -74,4 +74,58 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
         t.expect(model.getField('id').critical).toBe(true);
     });
 
+
+    t.it("getAssociatedCompoundKeyedData() - MessageDraft", function(t) {
+
+        var session = Ext.create('Ext.data.Session', {
+            schema : 'cn_mail-mailbaseschema'
+        });
+
+        var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            subject       : 'test',
+            mailFolderId  : 1,
+            mailAccountId : 3
+        });
+
+
+        rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+            mailFolderId  : 1,
+            mailAccountId : 3
+        }));
+
+        var rec2 = rec.getMessageBody();
+
+        session.adopt(rec);
+
+        t.expect(rec2.getAssociatedCompoundKeyedData().length).toBe(1);
+        t.expect(rec2.getAssociatedCompoundKeyedData()[0]).toBe(rec);
+    });
+
+
+    t.it("getAssociatedCompoundKeyedData() - MessageItems", function(t) {
+
+        var session = Ext.create('Ext.data.Session', {
+            schema : 'cn_mail-mailbaseschema'
+        });
+
+        var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            subject       : 'test',
+            mailFolderId  : 1,
+            mailAccountId : 3
+        });
+
+
+        rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+            mailFolderId  : 1,
+            mailAccountId : 3
+        }));
+
+        var rec2 = rec.getMessageBody();
+
+        session.adopt(rec);
+
+        t.expect(rec2.getAssociatedCompoundKeyedData().length).toBe(1);
+        t.expect(rec2.getAssociatedCompoundKeyedData()[0]).toBe(rec);
+    });
+
 });
