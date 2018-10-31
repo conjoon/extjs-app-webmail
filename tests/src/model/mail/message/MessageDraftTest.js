@@ -229,8 +229,6 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
             session.adopt(rec);
 
-            t.expect(rec2.getId()).toContain('MessageBody');
-
             rec2.set('textHtml', 'Hallo Welt');
 
             var saveBatch = session.getSaveBatch();
@@ -238,7 +236,6 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             saveBatch.on('operationcomplete', function() {
 
             });
-
 
             saveBatch.start();
 
@@ -305,6 +302,143 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
             t.expect(rec.get('recent')).toBe(false);
         });
+
+
+        t.it("Test MessageDraft save MessageBody updated mailFolderId", function(t) {
+
+            var session = Ext.create('Ext.data.Session', {
+                schema : 'cn_mail-mailbaseschema'
+            }), newFolder = "INBOX.TRASH";
+
+            var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject       : 'test',
+                mailFolderId  : 1,
+                mailAccountId : 3
+            });
+
+            draft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+                mailAccountId : 3
+            }));
+
+            var body = draft.getMessageBody();
+
+
+
+            draft.set('mailFolderId', newFolder);
+            t.expect(draft.get('mailFolderId')).toBe(newFolder);
+            t.expect(draft.get('mailFolderId')).toBe(body.get('mailFolderId'));
+
+            session.adopt(draft);
+
+            t.expect(body.getId()).toContain('MessageBody');
+
+            var saveBatch = session.getSaveBatch();
+
+            saveBatch.start();
+
+
+            t.waitForMs(1000, function() {
+
+                let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft);
+                let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(body);
+
+                t.expect(body.getId()).toBe(bodyKey.toLocalId());
+                t.expect(draft.getId()).toBe(msgKey.toLocalId());
+
+                t.expect(body.get('id')).toBe(draft.get('id'));
+                t.expect(body.get('mailFolderId')).toBe(newFolder);
+                t.expect(body.get('mailAccountId')).toBe(draft.get('mailAccountId'));
+                t.expect(body.get('mailFolderId')).toBe(draft.get('mailFolderId'));
+            });
+
+        });
+
+
+        t.it("Test MessageDraft save MessageDraft updated id", function(t) {
+
+            var session = Ext.create('Ext.data.Session', {
+                schema : 'cn_mail-mailbaseschema'
+            }), newFolder = "INBOX.TRASH";
+
+            var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject       : 'test',
+                mailFolderId  : 1,
+                mailAccountId : 3
+            });
+
+            draft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+                mailFolderId  : 1,
+                mailAccountId : 3
+            }));
+
+            var body = draft.getMessageBody();
+
+            session.adopt(draft);
+
+            t.expect(body.getId()).toContain('MessageBody');
+
+            var saveBatch = session.getSaveBatch();
+
+            saveBatch.start();
+
+            t.waitForMs(1000, function() {
+
+                let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft);
+                let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(body);
+
+                t.expect(body.getId()).toBe(bodyKey.toLocalId());
+                t.expect(draft.getId()).toBe(msgKey.toLocalId());
+
+                t.expect(body.get('id')).toBe(draft.get('id'));
+            });
+
+        });
+
+
+        t.it("Test MessageDraft save MessageDraft updated mailFolderId for Body", function(t) {
+
+            var session = Ext.create('Ext.data.Session', {
+                schema : 'cn_mail-mailbaseschema'
+            }), newFolder = "INBOX.TRASH";
+
+            var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject       : 'test',
+                mailFolderId  : 1,
+                mailAccountId : 3
+            });
+
+            draft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+                mailFolderId  : 1,
+                mailAccountId : 3
+            }));
+
+            var body = draft.getMessageBody();
+
+            session.adopt(draft);
+
+            t.expect(body.getId()).toContain('MessageBody');
+
+            body.set('mailFolderId', newFolder);
+
+            var saveBatch = session.getSaveBatch();
+
+            saveBatch.start();
+
+            t.waitForMs(1000, function() {
+
+                let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft);
+                let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(body);
+
+                t.expect(body.getId()).toBe(bodyKey.toLocalId());
+                t.expect(draft.getId()).toBe(msgKey.toLocalId());
+
+                t.expect(body.get('id')).toBe(draft.get('id'));
+                t.expect(body.get('mailFolderId')).toBe(newFolder);
+                t.expect(body.get('mailFolderId')).toBe(draft.get('mailFolderId'));
+            });
+
+        });
+
 
 
     });});
