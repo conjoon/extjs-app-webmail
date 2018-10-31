@@ -51,7 +51,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
     requires : [
         'conjoon.cn_core.data.field.CompoundKeyField',
-        'conjoon.cn_mail.data.mail.message.CompoundKey'
+        'conjoon.cn_mail.data.mail.message.CompoundKey',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     idProperty : 'localId',
@@ -380,9 +381,17 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * @abstract
      */
     updateLocalId : function() {
-        Ext.raise({
-            msg : "Method is abstract and needs to be overriden."
-        });
+        const me = this;
+
+        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                me.get('mailAccountId') || Ext.id(),
+                me.get('mailFolderId') || Ext.id(),
+                me.get('id') || Ext.id()
+            ).toLocalId();
+
+
+        me.setId(key);
+        return key;
     }
 
 });

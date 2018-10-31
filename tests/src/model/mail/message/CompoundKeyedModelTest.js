@@ -234,14 +234,30 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
     t.it("updateLocalId()", function(t) {
 
-        let modelLeft = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel'),
-            exc, e;
+        let m = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+                id            : "foo-1",
+                mailAccountId : "foo",
+                mailFolderId  : "INBOX.Drafts"
+            }),
+            MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message
+                .compoundKey.MessageEntityCompoundKey;
 
-        try{modelLeft.updateLocalId();}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("is abstract");
-        exc = undefined;
+        let expected =
+            MessageEntityCompoundKey.createFor(
+                m.get('mailAccountId'),
+                m.get('mailFolderId'),
+                m.get('id')
+            ).toLocalId();
+
+        t.expect(m.getId()).not.toBe(expected);
+        t.expect(m.updateLocalId()).toBe(expected);
+        t.expect(m.getId()).toBe(expected);
+
+
+        m = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
+        expected = m.updateLocalId();
+        t.expect(m.getId()).toBe(expected);
+
     });
 
 
