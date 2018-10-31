@@ -172,4 +172,32 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
     });
 
 
+    t.it("getAssociatedCompoundKeyedData()", function(t) {
+
+        t.expect(model.getAssociatedCompoundKeyedData()).toEqual([]);
+
+        model.loadMessageBody();
+
+        t.waitForMs(250, function() {
+            t.expect(model.getAssociatedCompoundKeyedData().length).toBe(1);
+            t.expect(model.getAssociatedCompoundKeyedData()[0]).toBe(model.getMessageBody());
+        });
+    });
+
+
+    t.it("onAssociatedRecordSet() - MessageBody", function(t) {
+
+        t.isCalled('compareAndApplyCompoundKeys', model);
+        model.onAssociatedRecordSet(messageBody);
+
+    });
+
+
+    t.it("onAssociatedRecordSet() - no MessageBody", function(t) {
+
+        t.isntCalled('compareAndApplyCompoundKeys', model);
+        model.onAssociatedRecordSet(Ext.create("Ext.data.Model"));
+
+    });
+
 });

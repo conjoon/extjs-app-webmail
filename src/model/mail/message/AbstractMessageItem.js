@@ -139,6 +139,40 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
                 id                  : me.get('id')
             }
         }))
+    },
+
+
+    /**
+     * @inheritdoc
+     */
+    getAssociatedCompoundKeyedData : function() {
+        const me = this;
+
+        return me._messageBody ? [me._messageBody] : [];
+    },
+
+
+    privates : {
+
+        /**
+         * Overridden to make sure message items are aware of MessageBodys being set
+         * and comparing their compound keys can be done.
+         *
+         * @inheritdoc
+         *
+         * @see compareAndApplyCompoundKeys
+         */
+        onAssociatedRecordSet : function(record, role) {
+            const me = this;
+
+            if (record.entityName === 'MessageBody') {
+                me.compareAndApplyCompoundKeys(record, true);
+            }
+
+            return me.callParent(arguments);
+        }
+
+
     }
 
 
