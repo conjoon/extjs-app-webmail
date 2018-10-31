@@ -251,12 +251,13 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
         t.expect(m.getId()).not.toBe(expected);
         t.expect(m.updateLocalId()).toBe(expected);
+        t.expect(m.modified).toBeFalsy();
         t.expect(m.getId()).toBe(expected);
 
 
         m = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
         expected = m.updateLocalId();
-        t.expect(m.getId()).toBe(expected);
+        t.expect(null).toBe(expected);
 
     });
 

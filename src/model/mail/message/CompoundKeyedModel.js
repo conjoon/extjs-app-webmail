@@ -378,19 +378,27 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * Gets called by set() of an association if the foreign key was updated.
      * Forces this record to update its localId, which is the primary.
      *
-     * @abstract
+     *
+     * @return null if ay compound key information was missing, and thus the
+     * localId could not be computed and wasn't changed, otherwise the newly
+     * created localId
      */
     updateLocalId : function() {
         const me = this;
 
+        if (!(me.get('mailAccountId') && me.get('mailFolderId') && me.get('id'))) {
+            return null;
+        }
+
         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                me.get('mailAccountId') || Ext.id(),
-                me.get('mailFolderId') || Ext.id(),
-                me.get('id') || Ext.id()
+                me.get('mailAccountId'),
+                me.get('mailFolderId'),
+                me.get('id')
             ).toLocalId();
 
 
-        me.setId(key);
+        me.setId(key, {dirty : false});
+
         return key;
     }
 
