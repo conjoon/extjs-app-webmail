@@ -28,8 +28,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     singleton : true,
 
     requires : [
-        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable'
     ],
 
     messageBodies : null,
@@ -79,6 +78,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         );
     },
 
+
     buildAddresses : function(type, i) {
         // special for tests
         if (i == 1 && type !== 'to') {
@@ -92,14 +92,31 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             name    : 'Firstname 1 Lastname 2' + type,
             address : 'name1' + type + '@domain1.tld'
         }]
-
     },
 
+    remove : function(record) {
+        const me = this;
 
-    createMessageBody : function(data) {
+        let items = me.messageItems;
+        console.log("REMOVING", record.getId())
+        for (var i = 0, len = items.length; i < len; i++) {
+            if (items[i].id === record.getId()) {
+                items.splice(i, 1);
+                console.log("REMOVED, NEW LENGTH ", items.length)
+                return;
+            }
+        }
+    },
+
+    createMessageBody : function(mailAccountId, mailFolderId, data) {
+
+        if (arguments.length !== 3) {
+            Ext.raise("Unexpected missing arguments");
+        }
 
         var me  = this,
-            inc = 0;
+            inc = Ext.id(),
+            newId = 0;
 
         // make sure alls message items are initialized along withh their
         // messagebodies
@@ -110,29 +127,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         for (var i in me.messageBodies) {
-            if (!me.messageBodies.hasOwnProperty(i)) {
-                continue;
-            }
-            if (parseInt(i, 10) > inc) {
-                inc = parseInt(i, 10);
-            }
+            var tmp = parseInt(me.messageBodies[i].id, 10);
+            newId = Math.max(tmp, newId);
         }
 
-        inc++;
-
         me.messageBodies[inc] = Ext.applyIf({
-            id                  : inc,
-            parentMessageItemId : inc
+            id : ++newId,
+            mailAccountId : mailAccountId,
+            mailFolderId : mailFolderId
         }, data);
 
         return me.messageBodies[inc];
     },
 
 
-    updateMessageBody : function(id, data) {
+    updateMessageBody : function(mailAccountId, mailFolderId, id, data) {
+
+        if (arguments.length !== 4) {
+            Ext.raise("Unexpected missing arguments");
+        }
 
         var me      = this,
-            message = me.getMessageBody(id);
+            message = me.getMessageBody(mailAccountId, mailFolderId, id);
 
         // just in case
         delete data.id;
@@ -142,25 +158,32 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         Ext.apply(message, data);
-        me.messageBodies[id] = message;
 
         // force to refresh the date
-        me.updateAllItemData(id, {});
+        me.updateAllItemData(mailAccountId, mailFolderId, id, {});
 
         return message;
     },
 
     getMessageBody : function(mailAccountId, mailFolderId, id) {
 
+        if (arguments.length !== 3) {
+            Ext.raise("Unexpected missing arguments");
+        }
+
         var me = this,
+            key = mailAccountId + ' - ' + mailFolderId + '-' + id.
             message;
 
 
         if (!me.messageBodies) {
             me.messageBodies = {};
         }
-        if (me.messageBodies[id]) {
-            return me.messageBodies[id];
+
+        for (var i in me.messageBodies) {
+            if (me.messageBodies[key]) {
+                return me.messageBodies[key];
+            }
         }
 
         var messages = [
@@ -171,7 +194,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         message = messages[me.buildRandomNumber(0, 2)];
 
-        me.messageBodies[id] = {
+        me.messageBodies[key] = {
             id                    : id,
             mailFolderId          : mailFolderId,
             mailAccountId         : mailAccountId,
@@ -179,7 +202,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             textPlain             : Ext.util.Format.stripTags(message)
         };
 
-        return me.messageBodies[id];
+        return me.messageBodies[key];
     },
 
     getNextMessageDraftKey : function() {
@@ -189,12 +212,19 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     },
 
 
-    getMessageDraft : function(id) {
+    getMessageDraft : function(mailAccountId, mailFolderId, id) {
+
+        if (arguments.length !== 3) {
+            Ext.raise("Unexpected missing arguments");
+        }
+
         var me     = this,
             drafts = me.getMessageDrafts();
 
         for (var i = 0, len = drafts.length; i < len; i++) {
-            if (drafts[i]['id'] == id) {
+            if (drafts[i]['mailAccountId'] == mailAccountId &&
+                drafts[i]['mailFolderId'] == mailFolderId &&
+                drafts[i]['id'] == id) {
                 return drafts[i];
             }
         }
@@ -232,39 +262,50 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     },
 
 
-    updateMessageDraft : function(id, values) {
+    updateMessageDraft : function(mailAccountId, mailFolderId, id, values) {
+
+        if (arguments.length !== 4) {
+            Ext.raise("Unexpected missing arguments");
+        }
+
 
         var me = this;
 
-        me.updateAllItemData(id, values);
+        me.updateAllItemData(mailAccountId, mailFolderId, id, values);
 
     },
 
 
-    updateMessageItem : function(id, values) {
+    updateMessageItem : function(mailAccountId, mailFolderId, id, values) {
+
+        if (arguments.length !== 4) {
+            Ext.raise("Unexpected missing arguments");
+        }
 
         var me = this;
 
-        me.updateAllItemData(id, values);
+        me.updateAllItemData(mailAccountId, mailFolderId, id, values);
     },
 
 
-    createMessageDraft : function(draftData) {
+    createMessageDraft : function(mailAccountId, mailFolderId, draftData) {
+
+        if (arguments.length != 3) {
+            Ext.raise("Unexpected missing argument");
+        }
 
         var me            = this,
             id            = me.getNextMessageDraftKey(),
-            mailAccountId = 'dev_sys_conjoon_org',
-            mailFolderId  = 'INBOX.Drafts',
             messageDrafts = me.getMessageDrafts(),
             messageItems  = me.getMessageItems(),
             date          = Ext.util.Format.date(new Date(), 'Y-m-d H:i');
 
         //manually fake attachments and messageBody
         conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.attachments[id] = null;
-        if (!me.messageBodies || !me.messageBodies[id]) {
-            me.getMessageBody(mailAccountId, mailFolderId, id);
-            me.messageBodies[id] = {textPlain : "", textHtml : ""};
-        }
+
+        var mb = me.getMessageBody(mailAccountId, mailFolderId, id);
+        mb.textPlain = "";
+        mb.textHtml = "";
 
         messageDrafts.push(Ext.apply(draftData, {
             id            : id,
@@ -296,11 +337,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     },
 
 
-    updateAllItemData : function(id, values) {
+    updateAllItemData : function(mailAccountId, mailFolderId, id, values) {
+
+        if (arguments.length !== 4) {
+            Ext.raise("Unexpected missing arguments");
+        }
 
         var me     = this,
-            draft  = me.getMessageDraft(id),
-            item   = me.getMessageItem(id),
+            draft  = me.getMessageDraft(mailAccountId, mailFolderId, id),
+            item   = me.getMessageItem(mailAccountId, mailFolderId, id),
             dataItems = [draft, item],
             dataItems, item, skipDate = false;
 
@@ -369,12 +414,17 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
     },
 
-    getMessageItem : function(id) {
+    getMessageItem : function(mailAccountId, mailFolderId, id) {
+        if (arguments.length !== 3) {
+            Ext.raise("Unexpected missing arguments");
+        }
         var me    = this,
             items = me.getMessageItems();
 
         for (var i = 0, len = items.length; i < len; i++) {
-            if (items[i]['id'] == id) {
+            if (items[i]['mailAccountId'] == mailAccountId &&
+                items[i]['mailFolderId'] == mailFolderId &&
+                items[i]['id'] == id) {
                 return items[i];
             }
         }
@@ -431,6 +481,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         return me.messageItems;
     },
 
+
+    /**
+     * Builds the base message items to be used as the data for Sims.
+     *
+     * @return {Array}
+     */
     buildBaseMessageItems : function() {
         var me = this,
             baseMessageItems = subjects = sender = [];
@@ -488,11 +544,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                                  : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
             };
 
-            cfg.messageBodyId = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                cfg.mailAccountId,
-                cfg.mailFolderId,
-                cfg.id
-            ).toLocalId();
 
             baseMessageItems.push(cfg);
         }
@@ -500,20 +551,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         me.baseMessageItems = baseMessageItems;
 
         return me.baseMessageItems;
-    },
-
-    remove : function(record) {
-        const me = this;
-
-        let items = me.messageItems;
-        console.log("REMOVING", record.getId())
-        for (var i = 0, len = items.length; i < len; i++) {
-            if (items[i].id === record.getId()) {
-                items.splice(i, 1);
-                console.log("REMOVED, NEW LENGTH ", items.length)
-                return;
-            }
-        }
     }
 
 

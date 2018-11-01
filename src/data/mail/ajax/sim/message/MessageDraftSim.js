@@ -104,7 +104,19 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
 
             }
 
-            MessageTable.updateMessageDraft(ctx.xhr.options.jsonData.id, values);
+            MessageTable.updateMessageDraft(
+                ctx.xhr.options.jsonData.mailAccountId,
+                ctx.xhr.options.jsonData.mailFolderId,
+                ctx.xhr.options.jsonData.id,
+                values
+            );
+
+            delete values.localId;
+
+            ret.responseText = Ext.JSON.encode({
+                success: true,
+                data : values
+            });
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
@@ -117,7 +129,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
         },
 
         doPost : function(ctx) {
-
             console.log("POST MessageDraft", ctx, ctx.xhr.options.jsonData);
 
             var me            = this,
@@ -125,10 +136,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 ret           = {},
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
 
-
-            console.log(ctx.url.match(new RegExp(this.url)));
-
-            for (var i in ctx.xhr.options.jsonData) {
+    for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
                     continue;
                 }
@@ -148,7 +156,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
 
             }
 
-            draft = MessageTable.createMessageDraft(draft);
+
+            draft = MessageTable.createMessageDraft(draft.mailAccountId, draft.mailFolderId, draft);
 
             ret.responseText = Ext.JSON.encode({
                 success: true,
@@ -170,9 +179,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
 
         data: function(ctx) {
 
-            var idPart  = ctx.url.match(this.url)[1],
+            var me = this,
+                idPart  = ctx.url.match(this.url)[1],
                 filters = ctx.params.filter,
-                id,
+                mailAccountId, mailFolderId, id,
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 messageDrafts;
 
@@ -180,7 +190,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 var parts = ctx.url.split('/');
                 id = parts.pop().split('?')[0];
 
-                return {data : MessageTable.getMessageDraft(id)};
+                [mailAccountId, mailFolderId, id] = me.extractCompoundKey(ctx.url);
+
+                return {data : MessageTable.getMessageDraft(mailAccountId, mailFolderId, id)};
             } else if (filters) {
                 messageDrafts = MessageTable.getMessageDrafts();
                 filters = Ext.decode(filters);
@@ -191,6 +203,27 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             } else {
                 return MessageTable.getMessageDrafts();
             }
+        },
+
+
+        /**
+         * Returns a numeric array with the following values:
+         * mailAccountId, mailFolderId, id
+         *
+         * @param url
+         * @returns {*[]}
+         */
+        extractCompoundKey : function(url) {
+
+            var mailAccountId, mailFolderId, id,
+                pt = url.split('/'),
+                id = pt.pop().split('?')[0],
+                mailFolderId = pt.pop(),
+                mailFolderId = pt.pop(),
+                mailAccountId = pt.pop(),
+                mailAccountId = pt.pop();
+
+            return [mailAccountId, mailFolderId, id];
         }
     });
 

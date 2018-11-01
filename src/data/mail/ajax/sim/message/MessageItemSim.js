@@ -33,6 +33,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
 }, function() {
 
+    const MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
+
     Ext.ux.ajax.SimManager.register({
         type : 'json',
 
@@ -122,19 +124,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
         data: function(ctx) {
 
-            var idPart  = ctx.url.match(this.url)[1],
+            var me = this,
+                idPart  = ctx.url.match(this.url)[1],
                 filters = ctx.params.filter,
                 id,
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 messageItems = MessageTable.getMessageItems();
 
             if (ctx.params.target === 'MessageBody') {
-                var pt = ctx.url.split('/');
-                var id = pt.pop().split('?')[0],
-                    mailFolderId = pt.pop(),
-                    mailFolderId = pt.pop(),
-                    mailAccountId = pt.pop(),
-                    mailAccountId = pt.pop();
+               [mailAccountId, mailFolderId, id] = me.extractCompoundKey(ctx.url);
 
                 return this.getMessageBody(mailAccountId, mailFolderId, id);
             }
@@ -202,13 +200,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 body.textHtml = body.textPlain;
             }
 
-            newRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
-                .createMessageBody(body);
-
+            let draft = MessageTable.createMessageDraft(body.mailAccountId, body.mailFolderId, {});
+            newRec = MessageTable.updateMessageBody(body.mailAccountId, body.mailFolderId, draft.id, {
+                textPlain :  body.textPlain,
+                textHtml : body.textHtml
+            });
 
             ret.responseText = Ext.JSON.encode({success : true, data: {
                 id        : newRec.id,
-                parentMessageItemId : newRec.parentMessageItemId,
                 mailFolderId  : newRec.mailFolderId,
                 mailAccountId : newRec.mailAccountId,
                 textPlain : newRec.textPlain,
@@ -223,6 +222,27 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             });
             return ret;
         },
+
+
+        /**
+         * Returns a numeric array with the following values:
+         * mailAccountId, mailFolderId, id
+         *
+         * @param url
+         * @returns {*[]}
+         */
+        extractCompoundKey : function(url) {
+
+            var mailAccountId, mailFolderId, id,
+                pt = url.split('/'),
+                id = pt.pop().split('?')[0],
+                mailFolderId = pt.pop(),
+                mailFolderId = pt.pop(),
+                mailAccountId = pt.pop(),
+                mailAccountId = pt.pop();
+
+            return [mailAccountId, mailFolderId, id];
+        }
 
     });
 

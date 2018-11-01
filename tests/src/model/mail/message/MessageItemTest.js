@@ -33,16 +33,20 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
             longString += '0';
         }
 
+        let mid = Ext.id();
+
         messageBody = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-            id : 2
+            localId       : mid,
+            mailAccountId : 4,
+            mailFolderId  : 5
         });
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            localId       : '4-5-1',
+            messageBodyId : mid,
             id            : 1,
-            messageBodyId : 2,
             mailAccountId : 4,
-            mailFolderId  : 5,
-            originalId    : 1
+            mailFolderId  : 5
         });
 
         attachments = [Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
@@ -179,8 +183,6 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
 
         model.set('cn_moved', true);
         t.expect(model.get('cn_moved')).toBe(true);
-
-
     });
 
 

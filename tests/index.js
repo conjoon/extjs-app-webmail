@@ -53,7 +53,19 @@ harness.start({
             group : 'data',
             items : [{
                 group : 'mail',
+
                 items : [{
+                    group : 'ajax',
+                    items : [{
+                        group : 'sim',
+                        items : [{
+                            group : 'message',
+                            items : [
+                                'src/data/mail/ajax/sim/message/MessageTableTest.js'
+                            ]
+                        }]
+                    }]
+                }, {
                     group : 'folder',
                     items : [
                         'src/data/mail/folder/MailFolderTypesTest.js'
@@ -83,6 +95,7 @@ harness.start({
                     {
                         group : 'reader',
                         items : [
+                            'src/data/mail/message/reader/MessageItemJsonReaderTest.js',
                             'src/data/mail/message/reader/MessageEntityJsonReaderTest.js',
                             'src/data/mail/message/reader/MessageItemUpdaterTest.js'
                         ]
