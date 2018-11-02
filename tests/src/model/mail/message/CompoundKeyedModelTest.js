@@ -416,6 +416,42 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
     });
 
 
+    t.it("isCompoundKeySet()", function(t) {
+        let model;
+
+        model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+        });
+        t.expect(model.isCompoundKeySet()).toBe(false);
+
+        model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            id : 1
+        });
+        t.expect(model.isCompoundKeySet()).toBe(false);
+
+        model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            id : 1,
+            mailAccountId : 'foo'
+        });
+        t.expect(model.isCompoundKeySet()).toBe(false);
+
+        model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            id : 1,
+            mailAccountId : 'foo',
+            mailFolderId : undefined
+        });
+        t.expect(model.isCompoundKeySet()).toBe(false);
+
+
+        model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            id : 1,
+            mailAccountId : 'foo',
+            mailFolderId : 'bar'
+        });
+        t.expect(model.isCompoundKeySet()).toBe(true);
+
+    });
+
+
 
 
 });

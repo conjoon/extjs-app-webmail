@@ -400,6 +400,23 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         me.setId(key, {dirty : false});
 
         return key;
+    },
+
+
+    /**
+     * Returns true if all compound keys are known to this instance, i.e. every
+     * corresponding field has a value.
+     *
+     * @return {Boolean}
+     */
+    isCompoundKeySet : function() {
+
+        const me = this;
+
+        // loosely check for truthy values
+        return !!(me.get('mailAccountId') &&
+               me.get('mailFolderId') &&
+               me.get('id'));
     }
 
 });
