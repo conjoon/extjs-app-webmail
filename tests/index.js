@@ -100,6 +100,12 @@ harness.start({
                             'src/data/mail/message/reader/MessageItemUpdaterTest.js'
                         ]
                     },
+                    {
+                        group : 'session',
+                        items : [
+                            'src/data/mail/message/session/MessageCompoundBatchVisitorTest.js'
+                        ]
+                    },
                     'src/data/mail/message/CompoundKeyTest.js',
                     'src/data/mail/message/EditingModesTest.js'
                     ]
