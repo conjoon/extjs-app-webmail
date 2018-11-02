@@ -49,6 +49,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function() {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
@@ -206,8 +207,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageDraft save MessageBody with session", function(t) {
 
-            var session = Ext.create('Ext.data.Session', {
-                schema : 'cn_mail-mailbaseschema'
+            var session = Ext.create('conjoon.cn_core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             });
 
             var rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
@@ -306,8 +308,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageDraft save MessageBody updated mailFolderId", function(t) {
 
-            var session = Ext.create('Ext.data.Session', {
-                schema : 'cn_mail-mailbaseschema'
+            var session = Ext.create('conjoon.cn_core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             }), newFolder = "INBOX.TRASH";
 
             var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
@@ -356,8 +359,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageDraft save MessageDraft updated id", function(t) {
 
-            var session = Ext.create('Ext.data.Session', {
-                schema : 'cn_mail-mailbaseschema'
+            var session = Ext.create('conjoon.cn_core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             }), newFolder = "INBOX.TRASH";
 
             var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
@@ -397,8 +401,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageDraft save MessageDraft updated mailFolderId for Body", function(t) {
 
-            var session = Ext.create('Ext.data.Session', {
-                schema : 'cn_mail-mailbaseschema'
+            var session = Ext.create('conjoon.cn_core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             }), newFolder = "INBOX.TRASH";
 
             var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
@@ -441,7 +446,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
 
 
+
     });});
 
 
+});
 });
