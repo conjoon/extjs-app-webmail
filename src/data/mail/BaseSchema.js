@@ -33,6 +33,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
     requires : [
         'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
+        'conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy',
         'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'
     ],
 
@@ -67,18 +68,9 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
             let proxy    = me.callParent(arguments),
                 tmpData  = Ext.Object.chain(Model),
-                tmpProxy = me.getProxy().apply({
-                    prefix     : me.getUrlPrefix(),
-                    entityName : tmpData.entityName === 'DraftAttachment' ||
-                                 tmpData.entityName === 'ItemAttachment'
-                                 ? tmpData.entityName = 'Attachment'
-                                 : tmpData.entityName
-                }),
                 entityName = tmpData.entityName;
 
-
-            if (entityName === 'MessageItem' || entityName === 'MessageDraft' ||
-                entityName === 'MessageBody') {
+            if (['MessageItem', 'MessageDraft', 'MessageBody'].indexOf(entityName) !== -1) {
 
                 proxy.entityName = entityName;
                 proxy.prefix     = me.getUrlPrefix();
@@ -88,6 +80,11 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                     proxy.reader = 'cn_mail-mailmessageitemjsonreader';
                 }
 
+            } else if (["DraftAttachment", "ItemAttachment"].indexOf(entityName) !==  -1) {
+
+                proxy.entityName = entityName;
+                proxy.prefix     = me.getUrlPrefix();
+                proxy.type       = 'cn_mail-mailmessageitemchildproxy';
 
             } else {
                 proxy.url = me.getUrlPrefix() + '/' + tmpData.entityName;

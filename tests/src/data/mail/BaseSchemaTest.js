@@ -83,6 +83,19 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
         });
 
 
+        t.it("Make sure proxy for DraftAttachment and ItemAttachment is of type MessageItemChildProxy", function(t) {
+
+            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
+
+            var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.DraftAttachment);
+
+            t.expect(ret.type).toBe('cn_mail-mailmessageitemchildproxy');
+
+            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.ItemAttachment);
+
+            t.expect(ret.type).toBe('cn_mail-mailmessageitemchildproxy');
+        });
+
     });
 
 
