@@ -82,6 +82,34 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
         }
 
         return me.callParent(arguments);
+    },
+
+
+    /**
+     * Overriden to make sure the associated entities with this store processes
+     * the record's association.
+     *
+     * @inheritdoc
+     *
+     * @param {Array|Ext.data.Model} record
+     *
+     * @returns {*|Object}
+     */
+    add : function(record) {
+
+        const me = this,
+              recs = [].concat(record),
+              ret = me.callParent(arguments);
+
+        let assoc = me.getAssociatedEntity();
+
+        if (assoc && assoc.entityName === 'MessageDraft') {
+            for (let i = 0, len = recs.length; i < len; i++) {
+                assoc.processRecordAssociation(recs[i]);
+            }
+        }
+
+        return ret;
     }
 
 

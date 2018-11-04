@@ -162,4 +162,45 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
     });
 
 
+    t.it("add()", function(t) {
+
+
+        let exc, e,
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageAttachmentStore'),
+            ret, anon;;
+
+        let att1  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+            att2  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+            att3  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+            att4  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+            draft1 = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft'),
+            item1 = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem');
+
+        anon = Ext.create('Ext.data.Model');
+        ret = store.add(anon);
+
+        t.expect(Ext.isArray(ret)).toBe(true);
+        t.expect(ret.length).toBe(1);
+        t.expect(ret[0]).toBe(anon);
+
+        t.isCalledNTimes('processRecordAssociation', draft1, 2);
+        store.getAssociatedEntity = function() {
+            return draft1;
+        };
+
+        store.add([att3, att4]);
+
+        t.isntCalled('processRecordAssociation', item1);
+        store.getAssociatedEntity = function() {
+            return item1;
+        };
+
+        store.add([att3, att4]);
+
+
+        store.destroy();
+        store = null;
+    });
+
+
 });
