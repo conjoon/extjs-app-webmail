@@ -24,15 +24,15 @@
  * Specialized version of a REST-proxy to be used with
  * MessageItem child entities, such as attachments.
  */
-Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
 
-    extend : 'Ext.data.proxy.Rest',
+    extend : 'conjoon.cn_core.data.proxy.RestForm',
 
     requires : [
          'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
     ],
 
-    alias : 'proxy.cn_mail-mailmessageitemchildproxy',
+    alias : 'proxy.cn_mail-mailmessageattachmentproxy',
 
     reader : {
         type : 'cn_mail-mailmessageitemchildjsonreader'

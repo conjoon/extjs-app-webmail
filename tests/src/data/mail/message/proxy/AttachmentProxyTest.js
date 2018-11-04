@@ -20,14 +20,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', function(t) {
+describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function(t) {
 
 
     t.it("Should successfully create and test instance", function(t) {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy');
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy');
 
-        t.isInstanceOf(proxy, 'Ext.data.proxy.Rest');
+        t.isInstanceOf(proxy, 'conjoon.cn_core.data.proxy.RestForm');
 
         t.expect(proxy.getIdParam()).toBe('localId');
 
@@ -39,7 +39,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
 
         t.expect(proxy.entityName).toBe(null);
 
-        t.expect(proxy.alias).toContain('proxy.cn_mail-mailmessageitemchildproxy');
+        t.expect(proxy.alias).toContain('proxy.cn_mail-mailmessageattachmentproxy');
 
         t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader');
 
@@ -48,7 +48,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
 
     t.it("buildUrl() - exception", function(t) {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy'),
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy'),
             request = Ext.create('Ext.data.Request', {
                 records : [{}]
             }),
@@ -64,7 +64,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
 
     t.it("buildUrl() - exception", function(t) {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'ItemAttachment'
             }),
             request = Ext.create('Ext.data.Request', {
@@ -82,7 +82,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
 
     t.it("buildUrl() - exception missing compound keys", function(t) {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             recs = [Ext.create('Ext.data.Model', {
@@ -107,7 +107,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
 
     t.it("buildUrl() - no exception missing id with read", function(t) {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
 
@@ -131,7 +131,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
 
     t.it("buildUrl() - no exception id falsy with read", function(t) {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             recs = [Ext.create('Ext.data.Model', {
@@ -168,7 +168,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
                 mailFolderId : 'b',
                 parentMessageItemId : 'c'
             })],
-            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             request = Ext.create('Ext.data.Request', {
@@ -209,7 +209,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
                 parentMessageItemId : 'e',
                 id : 'd'
             })],
-            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             request = Ext.create('Ext.data.Request', {
@@ -245,7 +245,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
                 id : 'd',
                 parentMessageItemId : 'e'
             })],
-            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             request = Ext.create('Ext.data.Request', {
@@ -283,7 +283,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
                 mailFolderId : 'b',
                 parentMessageItemId : 'e'
             },
-            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             request = Ext.create('Ext.data.Request', {
@@ -326,7 +326,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageItemChildProxyTest', fu
             params = {
                 filter : Ext.encode(filters)
             },
-            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageItemChildProxy', {
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
             request = Ext.create('Ext.data.Request', {
