@@ -264,7 +264,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         const me = this;
 
         let ret    = me.callParent(arguments),
-            valids = me.compoundKeyFields,
+            valids = [],
             keys = {}, curr, val, range, assoc;
 
         if (me.suspendSetter === true) {
@@ -280,17 +280,26 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         range = me.getAssociatedCompoundKeyedData();
 
         for (let a = 0, lena = range.length; a < lena; a++) {
+            let target;
             assoc = range[a];
+            valids = Ext.isArray(me.compoundKeyFields)
+                     ? me.compoundKeyFields
+                     : me.compoundKeyFields[assoc.entityName];
             assoc.suspendSetter = true;
 
             for (curr in keys) {
-                if (valids.indexOf(curr) === -1) {
+                target = curr;
+                if ((Ext.isArray(valids) && valids.indexOf(curr) === -1) ||
+                    (!Ext.isArray(valids) & !valids[curr])) {
                     continue;
+                }
+                if (!Ext.isArray(valids)) {
+                     target = valids[curr];
                 }
 
                 val = keys[curr];
 
-                assoc.set(curr, val, {dirty : false});
+                assoc.set(target, val, {dirty : false});
             }
 
             assoc.updateLocalId();
@@ -317,56 +326,80 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      */
     compareAndApplyCompoundKeys : function(addedRecord, givePresedence = true) {
 
-        const me = this,
-              fields = me.compoundKeyFields
+        const me = this;
 
-        let field, i, len, myVal, addedVal, values;
+        let fields = Ext.isArray(me.compoundKeyFields)
+                     ? me.compoundKeyFields
+                     : me.compoundKeyFields[addedRecord.entityName],
+            field, i, len, myVal, addedVal, values, targetField, tmp = {};
 
-        for (i = 0, len = fields.length; i < len; i++) {
-            field = fields[i];
+        if (Ext.isArray(me.compoundKeyFields)) {
+            for (let i = 0, len = me.compoundKeyFields.length; i < len; i++) {
+                tmp[me.compoundKeyFields[i]] = me.compoundKeyFields[i];
+            }
+
+            fields = tmp;
+        }
+
+        for (let i in fields) {
+            field  = i;
+            targetField = fields[i];
 
             myVal = me.get(field);
-            addedVal = addedRecord.get(field);
+            addedVal = addedRecord.get(targetField);
 
-            if (myVal && addedVal && myVal !== addedVal && field !== me.getIdProperty()) {
+            if (myVal && addedVal && myVal !== addedVal && field !== me.getIdProperty()
+                && targetField !== addedRecord.getIdProperty()) {
                 Ext.raise({
                     msg : "Added record's compound key differs from this key.",
                     field : field,
+                    targetField : targetField,
                     leftVal : myVal,
                     rightVal : addedVal
                 });
             }
         }
 
+
         let left = 0, right = 0, target, source;
-        for (i = 0; i < len; i++) {
-            field = fields[i];
+
+        for (let i in fields) {
+            field  = i;
+            targetField = fields[i];
 
             if (me.get(field)) {
                 left++;
             }
-            if (addedRecord.get(field)){
+            if (addedRecord.get(targetField)){
                 right++;
             }
         }
 
+
+
         // give right record presedence if more info is available than in left
+        let swapped = false;
         if (right >= left && givePresedence === true) {
             target = me;
             source = addedRecord;
+            swapped = true;
         } else {
             target = addedRecord;
             source = me;
         }
 
-        for (i = 0; i < len; i++) {
-            field = fields[i];
-            // we're not setting the id proeprty
-            if (field === me.getIdProperty()) {
+        for (let i in fields) {
+
+            field  =  swapped ? fields[i] : i;
+            targetField = swapped ? i : fields[i];
+
+            // we're not setting the id property of any record
+            if (field === me.getIdProperty() ||
+                targetField === addedRecord.getIdProperty()) {
                 continue;
             }
             if (source.get(field)) {
-                target.set(field, source.get(field), {dirty : false});
+                target.set(targetField, source.get(field), {dirty : false});
             }
         }
 
