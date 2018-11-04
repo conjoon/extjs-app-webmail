@@ -114,10 +114,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', {
             newRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
                      .createMessageBody(body);
 
-
             ret.responseText = Ext.JSON.encode({success : true, data: {
                     id        : newRec.id,
-                    parentMessageItemId : newRec.parentMessageItemId,
                     mailFolderId  : newRec.mailFolderId,
                     mailAccountId : newRec.mailAccountId,
                     textPlain : newRec.textPlain,
