@@ -55,11 +55,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
     }, {
         name : 'file',
         type : 'cn_core-datafieldblob'
-    }],
-
-    proxy : {
-        type : 'cn_core-dataproxyrestform'
-    }
+    }]
 
 
 });
