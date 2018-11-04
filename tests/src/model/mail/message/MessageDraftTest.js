@@ -69,8 +69,40 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             ).toBe('MessageDraft');
         });
 
+        t.it("compoundKeyFields", function(t) {
+            t.expect(
+                model.compoundKeyFields
+            ).toEqual({
+                    MessageBody : ['mailAccountId', 'mailFolderId', 'id'],
+                    DraftAttachment : {
+                        'mailAccountId' : 'mailAccountId',
+                        'mailFolderId'  : 'mailFolderId',
+                        'id'            :  'parentMessageItemId'
+                    }
+                });
+        });
+
+
+        t.it("processRecordAssociation() - not called", function(t) {
+
+            t.isntCalled('compareAndApplyCompoundKeys', model);
+
+            model.processRecordAssociation(Ext.create("Ext.data.Model"));
+
+        });
+
+
+        t.it("processRecordAssociation() - called", function(t) {
+
+            t.isCalledOnce('compareAndApplyCompoundKeys', model);
+
+            model.processRecordAssociation(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment"));
+
+        });
+
+
         t.it("Test Record Validity", function(t) {
-            // messageBody is missingb
+            // messageBody is missing
             t.expect(model.isValid()).toBe(false);
 
             for (var i = 0, vs = ['to', 'cc', 'bcc'], len = vs.length; i < len; i++) {
@@ -422,6 +454,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             session.adopt(draft);
 
             t.expect(body.getId()).toContain('MessageBody');
+
 
             body.set('mailFolderId', newFolder);
 

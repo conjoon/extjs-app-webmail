@@ -38,6 +38,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
 
     entityName : 'MessageDraft',
 
+    /**
+     * @private
+     */
+    compoundKeyFields : {
+        MessageBody : ['mailAccountId', 'mailFolderId', 'id'],
+        DraftAttachment : {
+            'mailAccountId' : 'mailAccountId',
+            'mailFolderId'  : 'mailFolderId',
+            'id'            :  'parentMessageItemId'
+        }
+    },
+
+
     fields : [{
         name      : 'replyTo',
         type      : 'cn_core-datafieldemailaddress',
@@ -98,7 +111,23 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         name         : 'recent',
         type         : 'bool',
         defaultValue :  false
-    }]
+    }],
+
+
+    /**
+     *@inheritdoc
+     */
+    processRecordAssociation : function(record) {
+
+        const me = this;
+
+        me.callParent(arguments);
+
+        if (record.entityName === 'DraftAttachment') {
+            me.compareAndApplyCompoundKeys(record, false);
+        }
+    }
+
 
 
 });
