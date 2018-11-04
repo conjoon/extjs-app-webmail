@@ -333,9 +333,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
                      : me.compoundKeyFields[addedRecord.entityName],
             field, i, len, myVal, addedVal, values, targetField, tmp = {};
 
-        if (Ext.isArray(me.compoundKeyFields)) {
-            for (let i = 0, len = me.compoundKeyFields.length; i < len; i++) {
-                tmp[me.compoundKeyFields[i]] = me.compoundKeyFields[i];
+        if (Ext.isArray(fields)) {
+            for (let i = 0, len = fields.length; i < len; i++) {
+                tmp[fields[i]] = fields[i];
             }
 
             fields = tmp;
@@ -350,6 +350,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
             if (myVal && addedVal && myVal !== addedVal && field !== me.getIdProperty()
                 && targetField !== addedRecord.getIdProperty()) {
+
                 Ext.raise({
                     msg : "Added record's compound key differs from this key.",
                     field : field,

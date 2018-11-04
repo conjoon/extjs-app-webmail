@@ -662,8 +662,48 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
     });
 
+
     t.it("processRecordAssociation()", function(t) {
         t.expect(model.processRecordAssociation).toBe(Ext.emptyFn);
+    });
+
+
+    t.it("compareAndApplyCompoundKeys() - entity mapping, but field is array", function(t) {
+
+        let modelLeft = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            // enforcing a bug that should be fixed with this test
+            '1' : 1
+        });
+
+        modelLeft.compoundKeyFields= {
+            'foo' : {
+                'bar' : 'x'
+            },
+            'testModel' : [
+                'accountField',
+                'folderField',
+                'idField'
+            ]
+        };
+
+        let modelRight = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            'accountField' : 'x',
+            'folderField'  : 'y',
+            'idField'      : 'z'
+        });
+        modelRight.entityName = 'testModel';
+
+        t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
+
+        t.expect(modelRight.get('accountField')).toBe('x');
+        t.expect(modelRight.get('folderField')).toBe('y');
+        t.expect(modelRight.get('idField')).toBe('z');
+
+        t.expect(modelLeft.get('accountField')).toBe('x');
+        t.expect(modelLeft.get('folderField')).toBe('y');
+        t.expect(modelLeft.get('idField')).toBe('z');
+
+
     });
 
 });
