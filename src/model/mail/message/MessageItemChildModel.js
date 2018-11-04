@@ -32,7 +32,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
     extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
 
     requires : [
-        'conjoon.cn_core.data.field.CompoundKeyField'
+        'conjoon.cn_core.data.field.CompoundKeyField',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey'
     ],
 
     fields : [{
@@ -84,6 +85,31 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
         }
 
         return me.callParent(arguments);
+    },
+
+    /**
+     * @inheritdoc
+     */
+    updateLocalId : function() {
+        const me = this;
+
+        if (!(me.get('mailAccountId') && me.get('mailFolderId') &&
+            me.get('parentMessageItemId') && me.get('id'))) {
+            return null;
+        }
+
+        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.createFor(
+            me.get('mailAccountId'),
+            me.get('mailFolderId'),
+            me.get('parentMessageItemId'),
+            me.get('id')
+        ).toLocalId();
+
+
+        me.setId(key, {dirty : false});
+
+        return key;
     }
+
 
 });

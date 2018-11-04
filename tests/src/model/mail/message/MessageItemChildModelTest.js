@@ -101,4 +101,38 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
         exc = undefined;
 
     });
+
+
+
+    t.it("updateLocalId()", function(t) {
+
+        let m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
+                id            : "foo-1",
+                mailAccountId : "foo",
+                mailFolderId  : "INBOX.Drafts",
+                parentMessageItemId : 'bar'
+            }),
+            MessageItemChildCompoundKey = conjoon.cn_mail.data.mail.message
+                .compoundKey.MessageItemChildCompoundKey;
+
+        let expected =
+            MessageItemChildCompoundKey.createFor(
+                m.get('mailAccountId'),
+                m.get('mailFolderId'),
+                m.get('parentMessageItemId'),
+                m.get('id')
+            ).toLocalId();
+
+        t.expect(m.getId()).not.toBe(expected);
+        t.expect(m.updateLocalId()).toBe(expected);
+        t.expect(m.modified).toBeFalsy();
+        t.expect(m.getId()).toBe(expected);
+
+
+        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel');
+        expected = m.updateLocalId();
+        t.expect(null).toBe(expected);
+
+    });
+
 });
