@@ -89,11 +89,11 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
 
             var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.DraftAttachment);
 
-            t.expect(ret.type).toBe('cn_mail-mailmessageitemchildproxy');
+            t.expect(ret.type).toBe('cn_mail-mailmessageattachmentproxy');
 
             ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.ItemAttachment);
 
-            t.expect(ret.type).toBe('cn_mail-mailmessageitemchildproxy');
+            t.expect(ret.type).toBe('cn_mail-mailmessageattachmentproxy');
         });
 
     });
