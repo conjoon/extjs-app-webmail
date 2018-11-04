@@ -450,6 +450,18 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         return !!(me.get('mailAccountId') &&
                me.get('mailFolderId') &&
                me.get('id'));
-    }
+    },
+
+
+    /**
+     * Processes the association for this model. Implementing classes should
+     * take care of assigning compound keys once the association was set.
+     *
+     * @param {Ext.data.Model} record
+     *
+     * @see compareAndApplyCompoundKeys
+     */
+    processRecordAssociation : Ext.emptyFn
+
 
 });

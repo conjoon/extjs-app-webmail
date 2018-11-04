@@ -160,19 +160,28 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
          *
          * @inheritdoc
          *
-         * @see compareAndApplyCompoundKeys
+         * @see processRecordAssociation
          */
         onAssociatedRecordSet : function(record, role) {
             const me = this;
 
-            if (record.entityName === 'MessageBody') {
-                me.compareAndApplyCompoundKeys(record, true);
-            }
+            me.processRecordAssociation(record);
 
             return me.callParent(arguments);
         }
+    },
 
 
+    /**
+     * @inheritdoc
+     */
+    processRecordAssociation : function(record) {
+
+        const me = this;
+
+        if (record.entityName === 'MessageBody') {
+            me.compareAndApplyCompoundKeys(record, true);
+        }
     }
 
 

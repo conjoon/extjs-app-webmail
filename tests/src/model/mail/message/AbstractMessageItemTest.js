@@ -187,16 +187,24 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 
     t.it("onAssociatedRecordSet() - MessageBody", function(t) {
 
-        t.isCalled('compareAndApplyCompoundKeys', model);
+        t.isCalled('processRecordAssociation', model);
         model.onAssociatedRecordSet(messageBody);
 
     });
 
+    
+    t.it("processRecordAssociation() - MessageBody", function(t) {
 
-    t.it("onAssociatedRecordSet() - no MessageBody", function(t) {
+        t.isCalled('compareAndApplyCompoundKeys', model);
+        model.processRecordAssociation(messageBody);
+
+    });
+
+
+    t.it("processRecordAssociation() - no MessageBody", function(t) {
 
         t.isntCalled('compareAndApplyCompoundKeys', model);
-        model.onAssociatedRecordSet(Ext.create("Ext.data.Model"));
+        model.processRecordAssociation(Ext.create("Ext.data.Model"));
 
     });
 

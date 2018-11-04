@@ -54,7 +54,6 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-
     t.it("Test fields", function(t) {
 
         let fields = ["mailAccountId", "mailFolderId", "id"],
@@ -663,5 +662,8 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
     });
 
+    t.it("processRecordAssociation()", function(t) {
+        t.expect(model.processRecordAssociation).toBe(Ext.emptyFn);
+    });
 
 });
