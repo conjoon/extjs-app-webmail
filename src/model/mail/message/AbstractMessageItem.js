@@ -148,7 +148,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     getAssociatedCompoundKeyedData : function() {
         const me = this;
 
-        return me._messageBody ? [me._messageBody] : [];
+        let data = me._messageBody ? [me._messageBody] : [];
+
+        return data.concat(me.attachments().getRange());
     },
 
 

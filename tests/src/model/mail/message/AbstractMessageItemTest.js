@@ -185,6 +185,22 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
     });
 
 
+    t.it("getAssociatedCompoundKeyedData() - 2",  function(t) {
+
+        let att, body;
+
+        att = Ext.create("conjoon.cn_mail.model.mail.message.ItemAttachment");
+        body = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody");
+
+        model.attachments().add(att);
+        model.setMessageBody(body);
+
+        t.expect(model.getAssociatedCompoundKeyedData()).toContain(att);
+        t.expect(model.getAssociatedCompoundKeyedData()).toContain(body);
+
+    });
+
+
     t.it("onAssociatedRecordSet() - MessageBody", function(t) {
 
         t.isCalled('processRecordAssociation', model);
@@ -192,7 +208,7 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
 
     });
 
-    
+
     t.it("processRecordAssociation() - MessageBody", function(t) {
 
         t.isCalled('compareAndApplyCompoundKeys', model);
