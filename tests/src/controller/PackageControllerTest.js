@@ -22,6 +22,8 @@
 
 describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
+t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
+
     var packageCtrl;
 
     const configureButtonMockCaller = function() {
@@ -34,38 +36,38 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             };
         },
         configurePackageCtrlWithButtonMocks = function(packageCtrl, ENABLED) {
-        packageCtrl.getReplyToButton = function() {
-            return {setDisabled: function (doIt) {
+            packageCtrl.getReplyToButton = function() {
+                return {setDisabled: function (doIt) {
                     if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
                 }
-            }
-        };
-        packageCtrl.getReplyAllButton = function() {
-            return {setDisabled: function (doIt) {
+                }
+            };
+            packageCtrl.getReplyAllButton = function() {
+                return {setDisabled: function (doIt) {
                     if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyAll']++;}
                 }
-            }
-        };
-        packageCtrl.getForwardButton = function() {
-            return {setDisabled: function (doIt) {
+                }
+            };
+            packageCtrl.getForwardButton = function() {
+                return {setDisabled: function (doIt) {
                     if (doIt !== true) {ENABLED['#cn_mail-nodeNavForward']++;}
                 }
-            }
-        };
-        packageCtrl.getEditButton = function() {
-            return {setDisabled: function (doIt) {
+                }
+            };
+            packageCtrl.getEditButton = function() {
+                return {setDisabled: function (doIt) {
                     if (doIt !== true) {ENABLED['#cn_mail-nodeNavEditMessage']++;}
                 }
-            }
-        };
-        packageCtrl.getDeleteButton = function() {
-            return {setDisabled: function (doIt) {
+                }
+            };
+            packageCtrl.getDeleteButton = function() {
+                return {setDisabled: function (doIt) {
                     if (doIt !== true) {ENABLED['#cn_mail-nodeNavDeleteMessage']++;}
                 }
-            }
-        };
+                }
+            };
 
-    };
+        };
 
     t.afterEach(function() {
         if (packageCtrl) {
@@ -74,6 +76,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         }
     });
 
+    const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
     t.it("Should create the Controller", function(t) {
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
@@ -96,20 +99,29 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
     t.it("showMailEditor()", function(t) {
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        packageCtrl.getMainPackageView = function() {
-            return {
-                getActiveTab : function() {
-                    return {
-                        cn_href : CN_HREF
-                    };
-                },
-                showMailEditor : function() {
-                }
+        let mvp = {
+            getActiveTab : function() {
+                return {
+                    cn_href : CN_HREF
+                };
+            },
+            showMailEditor : function() {
             }
         };
+        packageCtrl.getMainPackageView = function() {
+            return mvp;
+        };
 
-        t.isCalledNTimes('showMailEditor', packageCtrl, 1);
-        packageCtrl.showMailEditor();
+        t.isCalledNTimes('showMailEditor', mvp, 1);
+
+        packageCtrl.showMailEditor('a', 'compose');
+
+        let exc, e;
+        try {packageCtrl.showMailEditor();}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("expects an instance");
+
     });
 
 
@@ -135,18 +147,17 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             return mpv;
         };
 
-
         t.isCalledNTimes('showMailMessageViewFor',  mpv, 1);
         t.isCalledNTimes('showMailEditor', packageCtrl, 6);
-        packageCtrl.onComposeMessageRoute();
-        packageCtrl.onEditMessageRoute();
-        packageCtrl.onReplyToRoute();
-        packageCtrl.onReplyAllRoute();
-        packageCtrl.onForwardRoute();
-        packageCtrl.onComposeMailtoMessageRoute();
+        packageCtrl.onComposeMessageRoute('a');
+        packageCtrl.onEditMessageRoute(1, 2, 3);
+        packageCtrl.onReplyToRoute(1, 2, 3);
+        packageCtrl.onReplyAllRoute(1, 2, 3);
+        packageCtrl.onForwardRoute(1, 2, 3);
+        packageCtrl.onComposeMailtoMessageRoute('b');
 
 
-        packageCtrl.onReadMessageRoute();
+        packageCtrl.onReadMessageRoute(1, 2, 3);
 
     });
 
@@ -177,8 +188,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             return {
                 getSelection : function() {
                     return [{
-                        getId : function() {
-                            return 1;
+                        getCompoundKey : function() {
+                            return MessageEntityCompoundKey.createFor(1, 2, 3);
                         }
                     }]
                 }
@@ -320,32 +331,32 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
         packageCtrl.getReplyToButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt === true) {DISABLED['#cn_mail-nodeNavReplyTo']++;}
-                }
+                if (doIt === true) {DISABLED['#cn_mail-nodeNavReplyTo']++;}
+            }
             }
         };
         packageCtrl.getReplyAllButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt === true) {DISABLED['#cn_mail-nodeNavReplyAll']++;}
-                }
+                if (doIt === true) {DISABLED['#cn_mail-nodeNavReplyAll']++;}
+            }
             }
         };
         packageCtrl.getForwardButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt === true) {DISABLED['#cn_mail-nodeNavForward']++;}
-                }
+                if (doIt === true) {DISABLED['#cn_mail-nodeNavForward']++;}
+            }
             }
         };
         packageCtrl.getEditButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt === true) {DISABLED['#cn_mail-nodeNavEditMessage']++;}
-                }
+                if (doIt === true) {DISABLED['#cn_mail-nodeNavEditMessage']++;}
+            }
             }
         };
         packageCtrl.getDeleteButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt === true) {DISABLED['#cn_mail-nodeNavDeleteMessage']++;}
-                }
+                if (doIt === true) {DISABLED['#cn_mail-nodeNavDeleteMessage']++;}
+            }
             }
         };
 
@@ -374,17 +385,17 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
     t.it('onMailMessageGridSelect()', function(t) {
         var ENABLED = {
-            '#cn_mail-nodeNavEditMessage'   : 0,
-            '#cn_mail-nodeNavReplyTo'       : 0,
-            '#cn_mail-nodeNavReplyAll'      : 0,
-            '#cn_mail-nodeNavForward'       : 0,
-            '#cn_mail-nodeNavDeleteMessage' : 0
+                '#cn_mail-nodeNavEditMessage'   : 0,
+                '#cn_mail-nodeNavReplyTo'       : 0,
+                '#cn_mail-nodeNavReplyAll'      : 0,
+                '#cn_mail-nodeNavForward'       : 0,
+                '#cn_mail-nodeNavDeleteMessage' : 0
             },
             ISDRAFT,
             /**
              * Needed since disabling is usually done by the deselect listener
              */
-            reset = function() {
+                reset = function() {
                 ENABLED = {
                     '#cn_mail-nodeNavEditMessage'   : 0,
                     '#cn_mail-nodeNavReplyTo'       : 0,
@@ -396,32 +407,32 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         packageCtrl.getReplyToButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
-                }
+                if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
+            }
             }
         };
         packageCtrl.getReplyAllButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyAll']++;}
-                }
+                if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyAll']++;}
+            }
             }
         };
         packageCtrl.getForwardButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavForward']++;}
-                }
+                if (doIt !== true) {ENABLED['#cn_mail-nodeNavForward']++;}
+            }
             }
         };
         packageCtrl.getEditButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavEditMessage']++;}
-                }
+                if (doIt !== true) {ENABLED['#cn_mail-nodeNavEditMessage']++;}
+            }
             }
         };
         packageCtrl.getDeleteButton = function() {
             return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavDeleteMessage']++;}
-                }
+                if (doIt !== true) {ENABLED['#cn_mail-nodeNavDeleteMessage']++;}
+            }
             }
         };
         let rec = {
@@ -659,8 +670,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         let pv = {
-                showInboxViewFor : function() {}
-            };
+            showInboxViewFor : function() {}
+        };
         packageCtrl.getMainPackageView = function() {
             return pv;
         };
@@ -1020,7 +1031,9 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
             packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
-            let activeTab = null, ID = null, SETID = '7878977';
+            let activeTab = null, ID = null,
+                COMPOUNDKEY = MessageEntityCompoundKey.createFor(
+                    1, 2, 3), SETKEY = null;
 
             packageCtrl.getMailDesktopView = function() {
                 return {
@@ -1032,8 +1045,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
             packageCtrl.getMainPackageView = function() {
                 return {
-                    showMailEditor : function(id) {
-                        ID = id;
+                    showMailEditor : function(key) {
+                        SETKEY = key;
                     }
                 }
             };
@@ -1041,8 +1054,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             activeTab = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
             activeTab.getMessageItem = function() {
                 return {
-                    getId : function() {
-                        return SETID;
+                    getCompoundKey : function() {
+                        return COMPOUNDKEY;
                     }
                 }
             };
@@ -1050,11 +1063,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                 return activeTab;
             };
 
-            t.isCalledOnce('getIdFromGridOrMessageView', packageCtrl);
+            t.isCalledOnce('getCompoundKeyFromGridOrMessageView', packageCtrl);
 
-            t.expect(ID).toBe(null);
+            t.expect(SETKEY).toBe(null);
             packageCtrl.onMessageEditButtonClick();
-            t.expect(ID).toBe(SETID);
+            t.expect(SETKEY).toBe(COMPOUNDKEY);
 
         });
     });
@@ -1066,7 +1079,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
             packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
-            let activeTab = null, ID = null, SETID = '7878977';
+            let activeTab = null, KEY = null,
+                SETKEY = MessageEntityCompoundKey.createFor(1, 2, 3);
 
             packageCtrl.getMailDesktopView = function() {
                 return {
@@ -1078,8 +1092,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
             packageCtrl.getMainPackageView = function() {
                 return {
-                    showMailEditor : function(id) {
-                        ID = id;
+                    showMailEditor : function(key) {
+                        KEY = key;
                     }
                 }
             };
@@ -1087,8 +1101,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             activeTab = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
             activeTab.getMessageItem = function() {
                 return {
-                    getId : function() {
-                        return SETID;
+                    getCompoundKey : function() {
+                        return SETKEY;
                     }
                 }
             };
@@ -1096,11 +1110,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                 return activeTab;
             };
 
-            t.isCalledOnce('getIdFromGridOrMessageView', packageCtrl);
+            t.isCalledOnce('getCompoundKeyFromGridOrMessageView', packageCtrl);
 
-            t.expect(ID).toBe(null);
+            t.expect(KEY).toBe(null);
             packageCtrl.onReplyToButtonClick();
-            t.expect(ID).toBe(SETID);
+            t.expect(KEY).toBe(SETKEY);
 
         });
     });
@@ -1112,7 +1126,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
             packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
-            let activeTab = null, ID = null, SETID = '7878977';
+            let activeTab = null, KEY = null,
+                SETKEY = MessageEntityCompoundKey.createFor(1, 2, 3);
 
             packageCtrl.getMailDesktopView = function() {
                 return {
@@ -1125,7 +1140,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             packageCtrl.getMainPackageView = function() {
                 return {
                     showMailEditor : function(id) {
-                        ID = id;
+                        KEY = id;
                     }
                 }
             };
@@ -1133,8 +1148,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             activeTab = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
             activeTab.getMessageItem = function() {
                 return {
-                    getId : function() {
-                        return SETID;
+                    getCompoundKey : function() {
+                        return SETKEY;
                     }
                 }
             };
@@ -1142,11 +1157,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                 return activeTab;
             };
 
-            t.isCalledOnce('getIdFromGridOrMessageView', packageCtrl);
+            t.isCalledOnce('getCompoundKeyFromGridOrMessageView', packageCtrl);
 
-            t.expect(ID).toBe(null);
+            t.expect(KEY).toBe(null);
             packageCtrl.onReplyAllButtonClick();
-            t.expect(ID).toBe(SETID);
+            t.expect(KEY).toBe(SETKEY);
 
         });
     });
@@ -1158,7 +1173,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
             packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
-            let activeTab = null, ID = null, SETID = '7878977';
+            let activeTab = null, KEY = null,
+                SETKEY = MessageEntityCompoundKey.createFor(1, 2, 3);
 
             packageCtrl.getMailDesktopView = function() {
                 return {
@@ -1171,7 +1187,7 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             packageCtrl.getMainPackageView = function() {
                 return {
                     showMailEditor : function(id) {
-                        ID = id;
+                        KEY = id;
                     }
                 }
             };
@@ -1179,8 +1195,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
             activeTab = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
             activeTab.getMessageItem = function() {
                 return {
-                    getId : function() {
-                        return SETID;
+                    getCompoundKey : function() {
+                        return SETKEY;
                     }
                 }
             };
@@ -1188,11 +1204,11 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
                 return activeTab;
             };
 
-            t.isCalledOnce('getIdFromGridOrMessageView', packageCtrl);
+            t.isCalledOnce('getCompoundKeyFromGridOrMessageView', packageCtrl);
 
-            t.expect(ID).toBe(null);
+            t.expect(KEY).toBe(null);
             packageCtrl.onForwardButtonClick();
-            t.expect(ID).toBe(SETID);
+            t.expect(KEY).toBe(SETKEY);
 
         });
     });
@@ -1240,5 +1256,8 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         ACTIVETAB = 4;
         t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(null);
     });
+
+
+});
 
 });

@@ -71,11 +71,47 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             },
             before : 'onBeforePackageRoute'
         },
-        'cn_mail/message/edit/:id'     : 'onEditMessageRoute',
-        'cn_mail/message/replyTo/:id'  : 'onReplyToRoute',
-        'cn_mail/message/replyAll/:id' : 'onReplyAllRoute',
-        'cn_mail/message/forward/:id'  : 'onForwardRoute',
-        'cn_mail/message/read/:mailAccountId/:mailFolderId/:id'     : {
+        'cn_mail/message/edit/:mailAccountId/:mailFolderId/:id'     : {
+            conditions : {
+                ':mailAccountId' : '(.+)',
+                ':mailFolderId'  : '(.+)',
+                ':id'            : '(.+)'
+
+            } ,
+            action     : 'onEditMessageRoute',
+            before     : 'onBeforePackageRoute'
+        },
+        'cn_mail/message/replyTo/:mailAccountId/:mailFolderId/:id'  : {
+            conditions : {
+                ':mailAccountId' : '(.+)',
+                ':mailFolderId'  : '(.+)',
+                ':id'            : '(.+)'
+
+            } ,
+            action     : 'onReplyToRoute',
+            before     : 'onBeforePackageRoute'
+        },
+        'cn_mail/message/replyAll/:mailAccountId/:mailFolderId/:id' : {
+            conditions : {
+                ':mailAccountId' : '(.+)',
+                ':mailFolderId'  : '(.+)',
+                ':id'            : '(.+)'
+
+            } ,
+            action     : 'onApplyAllRoute',
+            before     : 'onBeforePackageRoute'
+        },
+        'cn_mail/message/forward/:mailAccountId/:mailFolderId/:id'  : {
+            conditions : {
+                ':mailAccountId' : '(.+)',
+                ':mailFolderId'  : '(.+)',
+                ':id'            : '(.+)'
+
+            } ,
+            action     : 'onForwardRoute',
+            before     : 'onBeforePackageRoute'
+        },
+        'cn_mail/message/read/:mailAccountId/:mailFolderId/:id'   : {
             conditions : {
                 ':mailAccountId' : '(.+)',
                 ':mailFolderId'  : '(.+)',
@@ -607,8 +643,11 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onEditMessageRoute : function(id) {
-        this.showMailEditor(id, 'edit');
+    onEditMessageRoute : function(mailAccountId, mailFolderId, id) {
+        this.showMailEditor(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                mailAccountId, mailFolderId, id
+            ), 'edit');
     },
 
 
@@ -617,8 +656,11 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onReplyToRoute : function(id) {
-        this.showMailEditor(id, 'replyTo');
+    onReplyToRoute : function(mailAccountId, mailFolderId, id) {
+        this.showMailEditor(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                mailAccountId, mailFolderId, id
+            ), 'replyTo');
     },
 
 
@@ -627,8 +669,11 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onReplyAllRoute : function(id) {
-        this.showMailEditor(id, 'replyAll');
+    onReplyAllRoute : function(mailAccountId, mailFolderId, id) {
+        this.showMailEditor(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                mailAccountId, mailFolderId, id
+            ), 'replyAll');
     },
 
 
@@ -637,8 +682,11 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onForwardRoute : function(id) {
-        this.showMailEditor(id, 'forward');
+    onForwardRoute : function(mailAccountId, mailFolderId, id) {
+        this.showMailEditor(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                mailAccountId, mailFolderId, id
+            ), 'forward');
     },
 
 
@@ -648,14 +696,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onMessageEditButtonClick : function(btn) {
-        const me = this,
-            id = me.getIdFromGridOrMessageView();
+        const me  = this,
+              key = me.getCompoundKeyFromGridOrMessageView();
 
-        if (id === null) {
-            Ext.raise("Unexpected null-value for id.");
-        }
-
-        me.showMailEditor(id, 'edit');
+        me.showMailEditor(key, 'edit');
     },
 
 
@@ -686,15 +730,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onReplyToButtonClick : function(btn) {
-        const me = this,
-              id = me.getIdFromGridOrMessageView();
+        const me  = this,
+            key = me.getCompoundKeyFromGridOrMessageView();
 
-        if (id === null) {
-            Ext.raise("Unexpected null-value for id.");
-        }
-
-
-        me.showMailEditor(id, 'replyTo');
+        me.showMailEditor(key, 'replyTo');
     },
 
 
@@ -704,15 +743,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onReplyAllButtonClick : function(btn) {
-        const me = this,
-              id = me.getIdFromGridOrMessageView();
+        const me  = this,
+              key = me.getCompoundKeyFromGridOrMessageView();
 
-        if (id === null) {
-            Ext.raise("Unexpected null-value for id.");
-        }
-
-
-        me.showMailEditor(id, 'replyAll');
+        me.showMailEditor(key, 'replyAll');
     },
 
 
@@ -722,14 +756,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {Ext.Button} btn
      */
     onForwardButtonClick : function(btn) {
-        const me = this,
-              id = me.getIdFromGridOrMessageView();
+        const me  = this,
+            key = me.getCompoundKeyFromGridOrMessageView();
 
-        if (id === null) {
-            Ext.raise("Unexpected null-value for id.");
-        }
-
-        me.showMailEditor(id, 'forward');
+        me.showMailEditor(key, 'forward');
     },
 
 
@@ -908,23 +938,23 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
 
         /**
-         * Helper function to retrieve the id of the MessageGrid in the InboxView
-         * or the MessageItem of a MessageView, depending on which tab is currently
-         * active in the MailDesktopView.
+         * Helper function to retrieve the compound key of the selected record in
+         * the MessageGrid in the InboxView OR of the MessageItem of a MessageView,
+         * depending on which tab is currently active in the MailDesktopView.
          *
-         * @return {String}
+         * @return {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
          *
          * @private
          */
-        getIdFromGridOrMessageView : function() {
+        getCompoundKeyFromGridOrMessageView : function() {
 
             const me  = this,
                   tab = me.getMailDesktopView().getActiveTab();
 
             if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
-                return  tab.getMessageItem().getId();
+                return  tab.getMessageItem().getCompoundKey();
             } else if (tab === me.getMailInboxView()) {
-                return me.getMailMessageGrid().getSelection()[0].getId();
+                return me.getMailMessageGrid().getSelection()[0].getCompoundKey();
             }
 
             return null;
@@ -966,16 +996,29 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
          * Opens the MaiLEditor for the specified id and the specified action (
          * one of edit, compose, replyTo, replyAll, forward).
          *
-         * @param {String} id
+         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
+         *
          * @param {String type
          *
          * @private
+         *
+         * @throws if type is not "compose" and key is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
          */
-        showMailEditor : function(id, type) {
+        showMailEditor : function(key, type) {
+
             var me              = this,
                 mailDesktopView = me.getMainPackageView();
 
-            mailDesktopView.showMailEditor(id, type);
+            if (type !== 'compose' &&
+                !(key instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
+                Ext.raise({
+                    msg : "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                    key : key,
+                    type : type
+                });
+            }
+
+            mailDesktopView.showMailEditor(key, type);
         }
 
     }
