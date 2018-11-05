@@ -357,10 +357,16 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             vals.push(a);
         }
 
-        if (vals.length === 2 && vals.indexOf('id') !== -1 && (
-            vals.indexOf('mailFolderId') !== -1 || vals.indexOf('seen') !== -1)) {
-            skipDate = true;
+        if (vals.indexOf('localId') !== -1 &&
+            vals.indexOf('mailAccountId') !== -1 &&
+            vals.indexOf('id') !== -1 &&
+            vals.indexOf('mailFolderId') !== -1) {
+            if (vals.length === 4  ||
+                (vals.length === 5 && vals.indexOf('seen') !== -1)) {
+                skipDate = true;
+            }
         }
+
 
         for (var i = 0, len = dataItems.length; i < len; i++) {
 
