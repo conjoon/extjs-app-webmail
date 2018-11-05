@@ -82,11 +82,13 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
 
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function () {
+// place AttachmentSim before MessageItemSim due to similiar regex
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', function () {
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim', function () {
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function () {
+t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function () {
 
+    const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
     Ext.ux.ajax.SimManager.init({
         delay: 1
@@ -154,7 +156,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
         t.expect(Ext.validIdRe.test(value)).toBe(false);
         t.expect(Ext.validIdRe.test(ctrl.getMessageViewItemId(value))).toBe(true);
-        
+
         ctrl.destroy();
 
     });
@@ -264,60 +266,74 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                 ctrl  = panel.getController(),
                 store, rec, rec2, view;
 
+            let exc, e;
+
+        try {ctrl.showMailMessageViewFor('foo');}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+
+
+        t.waitForMs(500, function() {
+
+            panel.down('cn_mail-mailfoldertree').setSelection(panel.down('cn_mail-mailfoldertree').getStore().getAt(1));
+
             t.waitForMs(500, function() {
 
-                panel.down('cn_mail-mailfoldertree').setSelection(panel.down('cn_mail-mailfoldertree').getStore().getAt(1));
+                store = panel.down('cn_mail-mailmessagegrid').getStore();
+                rec   = store.getAt(0);
+                rec2  = store.getAt(1);
+
+                t.expect(rec).toBeTruthy();
+                t.expect(rec2).toBeTruthy();
+
+                t.expect(rec.get('id')).toBe(rec.get('id') + '');
+
+                // existing records reused from store
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getId()))).toBe(null);
+                view = ctrl.showMailMessageViewFor(
+                    MessageEntityCompoundKey.createFor(
+                        rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id')
+                    )
+                );
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getId()))).not.toBe(null);
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec.getId())));
+                t.expect(panel.getActiveTab()).toBe(view);
+
+
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getId()))).toBe(null);
+                view = ctrl.showMailMessageViewFor(MessageEntityCompoundKey.createFor(rec2.get('mailAccountId'), rec2.get('mailFolderId'), rec2.get('id')));
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getId()))).not.toBe(null);
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec2.getId())));
+                t.expect(panel.getActiveTab()).toBe(view);
+
+                t.expect(panel.down('#' + ctrl.getMessageViewItemId(rec.getId()))).not.toBe(null);
+                view = ctrl.showMailMessageViewFor(MessageEntityCompoundKey.createFor(rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id')));
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(rec.getId())));
+                t.expect(panel.getActiveTab()).toBe(view);
+
+                // remote Loading
+                let remoteRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0),
+                    remoteCompoundKey = MessageEntityCompoundKey.createFor(remoteRec.mailAccountId, remoteRec.mailFolderId, remoteRec.id),
+                    remoteLocalId = remoteCompoundKey.toLocalId();
+
+                t.expect(store.findExact('localId', remoteLocalId)).toBe(-1);
+                t.expect(panel.down('#' + ctrl.getMessageViewItemId(remoteLocalId))).toBe(null);
+                view = ctrl.showMailMessageViewFor(remoteCompoundKey);
+                t.expect(panel.getActiveTab()).toBe(view);
 
                 t.waitForMs(500, function() {
 
-                    store = panel.down('cn_mail-mailmessagegrid').getStore();
-                    rec   = store.getAt(0);
-                    rec2  = store.getAt(1);
-
-                    t.expect(rec).toBeTruthy();
-                    t.expect(rec2).toBeTruthy();
-
-                    t.expect(rec.get('id')).toBe(rec.get('id') + '');
-
-                    // existing records reused from store
-                    t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.get('id')))).toBe(null);
-                    view = ctrl.showMailMessageViewFor(rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id'));
-                    t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.get('id')))).not.toBe(null);
-                    t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec.get('id'))));
-                    t.expect(panel.getActiveTab()).toBe(view);
-
-
-                    t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.get('id')))).toBe(null);
-                    view = ctrl.showMailMessageViewFor(rec2.get('mailAccountId'), rec2.get('mailFolderId'), rec2.get('id'));
-                    t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.get('id')))).not.toBe(null);
-                    t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec2.get('id'))));
-                    t.expect(panel.getActiveTab()).toBe(view);
-
-                    t.expect(panel.down('#' + ctrl.getMessageViewItemId(rec.get('id')))).not.toBe(null);
-                    view = ctrl.showMailMessageViewFor(rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id'));
-                    t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(rec.get('id'))));
-                    t.expect(panel.getActiveTab()).toBe(view);
-
-                    // remote Loading
-                    let remoteRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
-                    t.expect(store.findExact('id', remoteRec.id)).toBe(-1);
-                    t.expect(panel.down('#' + ctrl.getMessageViewItemId(remoteRec.id))).toBe(null);
-                    view = ctrl.showMailMessageViewFor(remoteRec.mailAccountId, remoteRec.mailFolderId, remoteRec.id);
-                    t.expect(panel.getActiveTab()).toBe(view);
+                    t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(remoteLocalId)));
 
                     t.waitForMs(500, function() {
-
-                        t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(remoteRec.id)));
-
-
-                        t.waitForMs(500, function() {
-                            panel.destroy();
-                            panel = null;
-                        });
+                        panel.destroy();
+                        panel = null;
                     });
-
                 });
+
             });
+        });
 
     });
 
@@ -327,30 +343,40 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
         ), exc, e, tests, res, results = [];
 
+
+        let key = MessageEntityCompoundKey.createFor(1, 2, 3);
+
         tests = [{
             args     : [2],
-            expected : 'Exception'
+            expected : 'Exception',
+            contains : 'valid value'
         }, {
-            args     : [8797, 'edit'],
-            expected : 'cn_mail-mailmessageeditor-edit-8797'
+            args     : [key, 'edit'],
+            expected : 'cn_mail-mailmessageeditor-edit-' + key.toLocalId()
         }, {
-            args     : ['8', 'replyTo'],
-            expected : 'cn_mail-mailmessageeditor-replyTo-8'
+            args     : [key, 'replyTo'],
+            expected : 'cn_mail-mailmessageeditor-replyTo-' + key.toLocalId()
         }, {
-            args     : ['7', 'replyAll'],
-            expected : 'cn_mail-mailmessageeditor-replyAll-7'
+            args     : [key, 'replyAll'],
+            expected : 'cn_mail-mailmessageeditor-replyAll-' + key.toLocalId()
         }, {
-            args     : ['9', 'forward'],
-            expected : 'cn_mail-mailmessageeditor-forward-9'
+            args     : [key, 'forward'],
+            expected : 'cn_mail-mailmessageeditor-forward-' + key.toLocalId()
         }, {
             args     : ['8797dssdggddsg', 'compose'],
             expected : 'cn_mail-mailmessageeditor-compose-8797dssdggddsg'
         }, {
             args     : [false],
-            expected : 'Exception'
+            expected : 'Exception',
+            contains : 'valid value'
         }, {
             args     : [{}],
-            expected : 'Exception'
+            expected : 'Exception',
+            contains : 'valid value'
+        }, {
+            args     : ['a', 'edit'],
+            expected : 'Exception',
+            contains : 'expects an instance'
         }];
 
         for (var i = 0, len = tests.length; i < len; i++) {
@@ -360,7 +386,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
                     exc = e;
                 }
                 t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toContain("valid value");
+                t.expect(exc.msg).toContain(tests[i].contains);
             } else {
                 res = ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args);
                 t.expect(res).toContain('cn_mail-mailmessageeditor-' + tests[i].args[1]);
@@ -380,7 +406,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
         ctrl.destroy();
     });
 
-
+return;
     t.it("getCnHrefForMessageEditor()", function(t) {
         var ctrl = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -516,7 +542,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function
 
     });
 
-
+    return;
     t.it("onMailMessageSaveComplete() - no related views opened.", function(t) {
 
         var viewController = Ext.create(

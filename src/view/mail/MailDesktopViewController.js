@@ -37,7 +37,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.text.QueryStringParser',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -167,23 +168,25 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Creates a new mail editor for writing an email message, adding the
-     * cn_href-property 'cn_mail/message/compose/[id]' to the tab.
+     * Creates a new mail editor for writing an email message, adding a
+     * cn_href-property  to the tab.
      * This controller method distinguishes between to datatypes specified with
-     * id: Number and String. If id is a number, it is assumed that a regular,
+     * id:< Number and String. If id is a number, it is assumed that a regular,
      * blank composer instance should be opened. If id is a string, it is assumed
      * that the passed id is part of the value of the mailto: protocol, and the
      * created MessageEitor will be adjusted to hold the information as specified
      * in the string.
      *
-     * @param {Number/String} id an id to be able to track this MessageEditor later on
-     * when routing is triggered. if id is a string, it is assumed to be either
-     * a key for the message to edit or it follows the syntax of the mailto scheme
-     * (including protocol), and mights still be uri encoded.
+     * @param {Number/String/conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey} id
+     *  n id to be able to track this MessageEditor later on
+     * when routing is triggered. if id is a string, it is assumed to be a
+     * syntax of the mailto scheme (including protocol), and mights still be uri encoded.
+     * A compound key is used when te editor is opened in a context other than
+     * compose
+     *
      * @param {String} type The context in which the mail editor was opened in
      * (edit/compose)
-     *
-     *
+
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      *
      * @throws if no valid id was specified (bubbles exceptions from
@@ -334,32 +337,39 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * The associated messageItem record will be queried in the MessageGrid and
      * reused for the new view if possible.
      *
-     * @param {String} mailAccountId
-     * @param {String} mailFolderId
-     * @param {String} messageId The id of the message that should be shown
-     * in a MessageView.
+     * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
      *
      * @return {conjoon.cn_mail.view.mail.message.reader.MessageView}
+     *
+     * @throws id compoundKey is not an instance of
      */
-    showMailMessageViewFor : function(mailAccountId, mailFolderId, messageId) {
+    showMailMessageViewFor : function(compoundKey) {
+
+        if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
+            Ext.raise({
+                msg : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey : compoundKey
+            });
+        }
 
         var me      = this,
             view    = me.getView(),
-            itemId  = me.getMessageViewItemId(messageId),
+            localId = compoundKey.toLocalId(),
+            itemId  = me.getMessageViewItemId(localId),
             newView = view.down('#' + itemId),
             msgGrid = view.down('cn_mail-mailmessagegrid'),
             store   = msgGrid ? msgGrid.getStore(): null,
-            recInd  = store ? store.findExact('id', messageId + '') : null;
+            recInd  = store ? store.findByCompoundKey(compoundKey) : null;
 
         if (!newView) {
 
             newView = view.add({
                 xtype   : 'cn_mail-mailmessagereadermessageview',
                 itemId  : itemId,
-                cn_href : 'cn_mail/message/read/' +
-                           mailAccountId + '/' +
-                           mailFolderId + '/' +
-                           messageId,
+                cn_href : [
+                    'cn_mail/message/read',
+                    compoundKey.toArray().join('/')
+                ].join('/'),
                 margin  : '12 5 5 0'
             });
 
@@ -367,7 +377,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 newView.setMessageItem(store.getAt(recInd));
             } else {
                 // most likely opened via deeplinking
-                newView.loadMessageItem(mailAccountId, mailFolderId, messageId);
+                newView.loadMessageItem(compoundKey);
             }
         }
 
@@ -504,10 +514,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         var me = this;
 
         me.redirectTo(
-            'cn_mail/message/read/' +
-            record.get('mailAccountId') + '/' +
-            record.get('mailFolderId') + '/' +
-            record.get('id')
+            ['cn_mail/message/read',
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
+                   .fromRecord(record).toArray().join('/')
+            ].join('/'),
+
         );
     },
 
@@ -544,13 +555,18 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @private
      *
-     * @throws if id or type is not valid
+     * @throws if id or type is not valid, or if the context is not compose and
+     * id is not a compound key
      */
     getItemIdForMessageEditor : function(id, type) {
 
-        var me, newId;
+        const me = this;
 
-        if (!id || (!Ext.isString(id) && !Ext.isNumber(id))) {
+        let newId;
+
+        if (!id || (!Ext.isString(id) && !Ext.isNumber(id) && !(
+            id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
+            ))) {
             Ext.raise({
                 id  : id,
                 msg : "\"id\" is not a valid value"
@@ -564,15 +580,23 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             })
         }
 
+        let isInstance = id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        me    = this;
+        if (type !== 'compose' && !isInstance) {
+            Ext.raise({
+                msg : "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                id : id,
+                type : type
+            });
+        }
+
         newId = 'cn_mail-mailmessageeditor-' + type + '-' + Ext.id();
 
         if (!me.editorIdMap) {
             me.editorIdMap = {};
         }
 
-        id = type + id;
+        id = type + (isInstance ? id.toLocalId() : id);
 
 
         if (!me.editorIdMap[id]) {
