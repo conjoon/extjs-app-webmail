@@ -702,8 +702,18 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.expect(modelLeft.get('accountField')).toBe('x');
         t.expect(modelLeft.get('folderField')).toBe('y');
         t.expect(modelLeft.get('idField')).toBe('z');
+    });
 
 
+    t.it("getCompoundKey()", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            'mailFolderId' : 'x',
+            'mailAccountId'  : 'y',
+            'id'      : 'z'
+        });
+
+        t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey');
     });
 
 });

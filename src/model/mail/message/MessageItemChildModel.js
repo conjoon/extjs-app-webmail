@@ -109,7 +109,16 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
         me.setId(key, {dirty : false});
 
         return key;
+    },
+
+
+    /**
+     * @inheritdoc
+     */
+    getCompoundKey : function() {
+        return conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.fromRecord(this);
     }
+
 
 
 });

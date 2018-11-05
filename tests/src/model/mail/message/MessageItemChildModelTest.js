@@ -135,4 +135,18 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 
     });
 
+
+    t.it("getCompoundKey()", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
+            'mailFolderId' : 'x',
+            'mailAccountId'  : 'y',
+            'parentMessageItemId' : 'v',
+            'id'      : 'z'
+        });
+
+        t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey');
+    });
+
+
 });

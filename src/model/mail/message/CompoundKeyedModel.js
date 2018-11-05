@@ -462,7 +462,17 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      *
      * @see compareAndApplyCompoundKeys
      */
-    processRecordAssociation : Ext.emptyFn
+    processRecordAssociation : Ext.emptyFn,
+
+
+    /**
+     * Returns the compound key representing this model
+     *
+     * @return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
+     */
+    getCompoundKey : function() {
+        return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(this);
+    }
 
 
 });
