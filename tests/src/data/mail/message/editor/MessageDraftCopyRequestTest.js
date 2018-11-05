@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,25 +22,31 @@
 
 describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequestTest', function(t) {
 
+t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
+
+    const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
     t.it("constructor()", function(t) {
 
         var exc, e, config;
 
+        let key = MessageEntityCompoundKey.createFor(1, 2, 3),
+            key2 = MessageEntityCompoundKey.createFor(1, 2, 5);
+
         try {
             config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
             });
         } catch (e) {
-            exc = e
+            exc = e;
         }
 
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toContain("\"id\" must be specified");
+        t.expect(exc.msg).toContain("\"compoundKey\" must be specified");
         exc = e = undefined;
 
         try {
             config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                id : 'foo'
+                compoundKey : key
             });
         } catch (e) {
             exc = e
@@ -53,7 +59,7 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequestTest',
 
         try {
             config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                id       : 'foo',
+                compoundKey : key,
                 editMode : 'somemode'
             });
         } catch (e) {
@@ -65,20 +71,28 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequestTest',
         exc = e = undefined;
 
 
-        t.isCalledNTimes('applyId', conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest.prototype, 2);
-        t.isCalledNTimes('applyEditMode', conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest.prototype, 2);
+
+        try {
+            Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                compoundKey : 'foo',
+                editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+            });
+        } catch (e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("must be an instance of");
+        exc = e = undefined;
 
         config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-            id       : 'foo',
+            compoundKey : key,
             editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
         });
 
-        t.expect(config.getId()).toBe('foo');
+        t.expect(config.getCompoundKey()).toBe(key);
         t.expect(config.getEditMode()).toBe(conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO);
 
-        try {config.setId('bar');} catch (e) {exc = e}
+        try {config.setCompoundKey(key2);} catch (e) {exc = e}
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toContain("\"id\" was already set");
+        t.expect(exc.msg).toContain("\"compoundKey\" was already set");
         exc = e = undefined;
 
         try {config.setEditMode(conjoon.cn_mail.data.mail.message.EditingModes.REPLY_ALL);} catch (e) {exc = e}
@@ -86,6 +100,10 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequestTest',
         t.expect(exc.msg).toContain("\"editMode\" was already set");
         exc = e = undefined;
     });
+
+
+
+});
 
 
 });

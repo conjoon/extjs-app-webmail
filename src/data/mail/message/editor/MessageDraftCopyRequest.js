@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
  *
  *     var request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
  *
- *          id : '5',
+ *          compoundKey : conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(1, 2, 3),
  *
  *          editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
  *     ));
@@ -41,15 +41,16 @@
 Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
 
     requires : [
-        'conjoon.cn_mail.data.mail.message.EditingModes'
+        'conjoon.cn_mail.data.mail.message.EditingModes',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     config : {
         /**
-         * The id of the MessageDraft to copy.
-         * @type {String}
+         * The compound key of the MessageDraft to copy.
+         * @type {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
          */
-        id : undefined,
+        compoundKey : undefined,
 
         /**
          * The edit mode of the copy request.
@@ -66,7 +67,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      *
      * @param {Object} config
      *
-     * @throws if id or editMode are not specified in the passed config object.
+     * @throws if compoundKey or editMode are not specified in the passed config object.
      *
      * @see applyId(), applyEditMode()
      */
@@ -76,20 +77,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
 
         config = config || {};
 
-        if (!config.hasOwnProperty('id')) {
+        if (!config.hasOwnProperty('compoundKey')) {
             Ext.raise({
                 config : config,
-                msg    : "Property \"id\" must be specified.",
-                cls :Ext.getClassName(me)
-            })
+                msg    : "Property \"compoundKey\" must be specified."
+            });
         }
 
         if (!config.hasOwnProperty('editMode')) {
             Ext.raise({
                 config : config,
-                msg    : "Property \"editMode\" must be specified.",
-                cls :Ext.getClassName(me)
-            })
+                msg    : "Property \"editMode\" must be specified."
+            });
         }
 
         me.initConfig(config)
@@ -98,23 +97,30 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
 
 
     /**
-     * Hook for setId()
-     * @throws if id was already set
+     * Hook for setCompoundKey()
+     * @throws if id was already set or if compoundKey is not an instance of
+     * conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      * @private
      */
-    applyId : function(id) {
+    applyCompoundKey : function(compoundKey) {
 
         var me = this;
 
-        if (me.getId() !== undefined) {
+        if (me.getCompoundKey() !== undefined) {
             Ext.raise({
-                id  : me.getId(),
-                msg : "Property \"id\" was already set.",
-                cls :Ext.getClassName(me)
-            })
+                compoundKey  : me.getCompoundKey(),
+                msg : "Property \"compoundKey\" was already set."
+            });
         }
 
-        return id;
+        if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
+            Ext.raise({
+                msg : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey  : compoundKey
+            });
+        }
+
+        return compoundKey;
     },
 
     /**
@@ -134,7 +140,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
             Ext.raise({
                 editMode : me.getEditMode(),
                 msg      : "Property \"editMode\" was already set."
-            })
+            });
         }
 
         EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
@@ -151,7 +157,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                     "Property \"editMode\" must be one of {0}.",
                     modes.join(", ")
                 )
-            })
+            });
         }
 
         return editMode;
