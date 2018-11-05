@@ -282,7 +282,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         var me = this;
 
-        me.updateAllItemData(mailAccountId, mailFolderId, id, values);
+        return me.updateAllItemData(mailAccountId, mailFolderId, id, values);
     },
 
 
@@ -401,6 +401,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             }
 
         }
+
+        return item;
     },
 
 

@@ -95,6 +95,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
         doPut : function(ctx) {
 
             var me           = this,
+                keys         = me.extractCompoundKey(ctx.url),
                 ret          = {},
                 MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 values       = {};
@@ -110,7 +111,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 values[i] = ctx.xhr.options.jsonData[i];
             }
 
-            MessageTable.updateMessageItem(ctx.xhr.options.jsonData.id, values);
+            let result = MessageTable.updateMessageItem(keys.mailAccountId, keys.mailFolderId, keys.id, values);
+
+
+            ret.responseText = Ext.JSON.encode({success : true, data: result});
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {

@@ -103,11 +103,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
     },
 
-    getAttachments : function(accountId, folderId, parentMessageItemId) {
+    getAttachments : function(mailAccountId, mailFolderId, parentMessageItemId) {
         var me         = this,
             attachments = null,
             rec,
-            key = accountId, folderId, parentMessageItemId;
+            key = mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId;
 
         let wasEmpty = false;
 
@@ -131,7 +131,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             if (!attachments) {
                 attachments = [];
             }
-            rec = me.getAttachment(accountId, folderId, parentMessageItemId, ++me.largestAttachmentId);
+            rec = me.getAttachment(mailAccountId, mailFolderId, parentMessageItemId, ++me.largestAttachmentId);
 
             attachments.push(rec);
         }
@@ -160,20 +160,21 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
     },
 
 
-    getAttachment : function(accountId, folderId, parentMessageItemId, attachmentId) {
+    getAttachment : function(mailAccountId, mailFolderId, parentMessageItemId, attachmentId) {
 
         var me            = this,
-            messageItemId = parentMessageItemId;
+            messageItemId = parentMessageItemId,
+            key           = mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId;
 
         if (!me.attachments) {
             me.attachments = {};
         }
 
 
-        if (me.attachments[messageItemId]) {
-            for (var i = 0, len = me.attachments[messageItemId].length; i < len; i++) {
-                if (me.attachments[messageItemId][i].id == attachmentId) {
-                    return me.attachments[messageItemId][i];
+        if (me.attachments[key]) {
+            for (var i = 0, len = me.attachments[key].length; i < len; i++) {
+                if (me.attachments[key][i].id == attachmentId) {
+                    return me.attachments[key][i];
                 }
             };
         }
@@ -200,23 +201,23 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
                 '46337773'
             ];
 
-        if (!me.attachments[messageItemId]) {
-            me.attachments[messageItemId] = [];
+        if (!me.attachments[key]) {
+            me.attachments[key] = [];
 
         }
 
-        me.attachments[messageItemId].push({
+        me.attachments[key].push({
             id                  : attachmentId,
-            parentMessageItemId : messageItemId,
-            mailFolderId        : folderId,
-            mailAccountId       : accountId,
+            parentMessageItemId : parentMessageItemId,
+            mailFolderId        : mailFolderId,
+            mailAccountId       : mailAccountId,
             text                : attachmentNames[me.getRandom(0, 4)] + '.' +
                                   attachmentTypes[me.getRandom(0, 4)].extension,
             type                : attachmentTypes[me.getRandom(0, 4)].type,
             size                : attachmentSizes[me.getRandom(0, 4)]
         });
 
-        return me.attachments[messageItemId][me.attachments[messageItemId].length - 1];
+        return me.attachments[key][me.attachments[key].length - 1];
 
     }
 

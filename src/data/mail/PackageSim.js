@@ -29,7 +29,6 @@ Ext.define('conjoon.cn_mail.data.mail.PackageSim', {
         'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim',
         'conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim',
         'conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageBodySim',
         'conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim',
         'conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim'
     ]

@@ -130,7 +130,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
                 );
 
             } else if (!id)  {
-                filters = Ext.decode(filters);
 
                 attachments = AttachmentTable.getAttachments(
                     keys.mailAccountId,
