@@ -562,33 +562,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         const me = this;
 
-        let newId;
-
-        if (!id || (!Ext.isString(id) && !Ext.isNumber(id) && !(
-            id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
-            ))) {
-            Ext.raise({
-                id  : id,
-                msg : "\"id\" is not a valid value"
-            })
-        }
-
-        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward'].indexOf(type) === -1) {
-            Ext.raise({
-                type  : type,
-                msg : "\"type\" is not a valid value"
-            })
-        }
-
-        let isInstance = id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
-
-        if (type !== 'compose' && !isInstance) {
-            Ext.raise({
-                msg : "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-                id : id,
-                type : type
-            });
-        }
+        let newId,
+            isInstance = me.checkArgumentsForEditor(id, type);
 
         newId = 'cn_mail-mailmessageeditor-' + type + '-' + Ext.id();
 
@@ -617,23 +592,17 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @private
      *
-     * @throws if id or type is not valid
+     * @throws from #checkArgumentsForEditor
+     *
+     * @see checkArgumentsForEditor
      */
     getCnHrefForMessageEditor : function(id, type) {
 
-        if (!id || (!Ext.isString(id) && !Ext.isNumber(id))) {
-            Ext.raise({
-                id  : id,
-                msg : "\"id\" is not a valid value"
-            })
-        }
+        const me = this;
 
-        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward'].indexOf(type) === -1) {
-            Ext.raise({
-                type  : type,
-                msg : "\"type\" is not a valid value"
-            })
-        }
+        let isInstance = me.checkArgumentsForEditor(id, type);
+
+        id = isInstance ? id.toLocalId() : id;
 
         switch (type) {
             case 'edit':
@@ -969,6 +938,48 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     getMessageViewItemId : function(messageId) {
         return 'cn_mail-mailmessagereadermessageview-' +
                 Ext.util.Base64.encode(messageId).replace(/[^a-zA-Z0-9]/g,'-');
+    },
+
+
+    /**
+     * Helper function for checking arguments when creating an editor instance.
+     *
+     * @param {Mixed} id
+     * @param {String} type
+     *
+     * @returns {boolean} true if is an an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
+     *
+     * @throws if id or type is not valid, or if the context is not compose and
+     * id is not a compound key
+     */
+    checkArgumentsForEditor : function(id, type) {
+        if (!id || (!Ext.isString(id) && !Ext.isNumber(id) && !(
+            id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
+            ))) {
+            Ext.raise({
+                id  : id,
+                msg : "\"id\" is not a valid value"
+            })
+        }
+
+        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward'].indexOf(type) === -1) {
+            Ext.raise({
+                type  : type,
+                msg : "\"type\" is not a valid value"
+            })
+        }
+
+        let isInstance = id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+
+        if (type !== 'compose' && !isInstance) {
+            Ext.raise({
+                msg : "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                id : id,
+                type : type
+            });
+        }
+
+        return isInstance;
     }
 
 

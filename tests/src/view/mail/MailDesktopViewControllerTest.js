@@ -406,39 +406,48 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ctrl.destroy();
     });
 
-return;
+
     t.it("getCnHrefForMessageEditor()", function(t) {
         var ctrl = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
         ), exc, e, tests;
 
+        let key = MessageEntityCompoundKey.createFor(1, 2, 3);
+
         tests = [{
             args     : [8797],
-            expected : 'Exception'
+            expected : 'Exception',
+            contains : 'valid value'
+        }, {
+            args     : [8797, 'edit'],
+            expected : 'Exception',
+            contains : 'expects an instance'
         }, {
             args     : [8797, 'compose'],
             expected : 'cn_mail/message/compose/8797'
         }, {
-            args     : [8797, 'edit'],
-            expected : 'cn_mail/message/edit/8797'
+            args     : [key, 'edit'],
+            expected : 'cn_mail/message/edit/' + key.toLocalId()
         }, {
-            args     : [8, 'replyTo'],
-            expected : 'cn_mail/message/replyTo/8'
+            args     : [key, 'replyTo'],
+            expected : 'cn_mail/message/replyTo/' + key.toLocalId()
         }, {
-            args     : [9, 'replyAll'],
-            expected : 'cn_mail/message/replyAll/9'
+            args     : [key, 'replyAll'],
+            expected : 'cn_mail/message/replyAll/' + key.toLocalId()
         }, {
-            args     : [10, 'forward'],
-            expected : 'cn_mail/message/forward/10'
+            args     : [key, 'forward'],
+            expected : 'cn_mail/message/forward/' + key.toLocalId()
         }, {
             args     : ["8797dssdggddsg", 'compose'],
             expected : 'cn_mail/message/compose/8797dssdggddsg'
         }, {
             args     : [false],
-            expected : 'Exception'
+            expected : 'Exception',
+            contains : 'valid value'
         }, {
             args     : [{}],
-            expected : 'Exception'
+            expected : 'Exception',
+            contains : 'valid value'
         }];
 
         for (var i = 0, len = tests.length; i < len; i++) {
@@ -448,7 +457,7 @@ return;
                     exc = e;
                 }
                 t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toContain("valid value");
+                t.expect(exc.msg).toContain(tests[i].contains);
             } else {
                 t.expect(ctrl.getCnHrefForMessageEditor.apply(ctrl, tests[i].args)).toBe(
                     tests[i].expected);
@@ -459,7 +468,7 @@ return;
         ctrl = null;
     });
 
-
+    return;
     t.it("showMailEditor()", function(t) {
 
         var panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
