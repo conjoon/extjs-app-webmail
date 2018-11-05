@@ -48,7 +48,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
     requires : [
         'conjoon.cn_mail.view.mail.MailDesktopView',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
-        'conjoon.cn_mail.view.mail.message.reader.MessageView'
+        'conjoon.cn_mail.view.mail.message.reader.MessageView',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     routes : {
@@ -79,6 +80,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 ':mailAccountId' : '(.+)',
                 ':mailFolderId'  : '(.+)',
                 ':id'            : '(.+)'
+
             } ,
             action     : 'onReadMessageRoute',
             before     : 'onBeforePackageRoute'
@@ -533,18 +535,21 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      *
      * @param {String} mailAccountId
      * @param {String} mailFolderId
-     * @param {String} messageId
+     * @param {String} id
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailMessageViewFor}
      */
-    onReadMessageRoute : function(mailAccountId, mailFolderId, messageId) {
+    onReadMessageRoute : function(mailAccountId, mailFolderId, id) {
 
-        var me              = this,
-            mailDesktopView = me.getMainPackageView();
+        const me              = this,
+              mailDesktopView = me.getMainPackageView();
+              compoundKey     = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                  decodeURI(mailAccountId),
+                  decodeURI(mailFolderId),
+                  decodeURI(id)
+              );
 
-        mailDesktopView.showMailMessageViewFor(
-            decodeURI(mailAccountId), decodeURI(mailFolderId), decodeURI(messageId)
-        );
+        mailDesktopView.showMailMessageViewFor(compoundKey);
     },
 
 

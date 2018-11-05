@@ -117,19 +117,26 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
 
         var CN_HREF = 'foo';
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        packageCtrl.getMainPackageView = function() {
-            return {
-                getActiveTab : function() {
-                    return {
-                        cn_href : CN_HREF
-                    };
-                },
-                showMailEditor : function() {
-                }
+        let mpv = {
+            getActiveTab : function() {
+                return {
+                    cn_href : CN_HREF
+                };
+            },
+            showMailEditor : function() {
+            },
+
+            showMailMessageViewFor : function() {
             }
         };
 
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl.getMainPackageView = function() {
+            return mpv;
+        };
+
+
+        t.isCalledNTimes('showMailMessageViewFor',  mpv, 1);
         t.isCalledNTimes('showMailEditor', packageCtrl, 6);
         packageCtrl.onComposeMessageRoute();
         packageCtrl.onEditMessageRoute();
@@ -137,6 +144,9 @@ describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
         packageCtrl.onReplyAllRoute();
         packageCtrl.onForwardRoute();
         packageCtrl.onComposeMailtoMessageRoute();
+
+
+        packageCtrl.onReadMessageRoute();
 
     });
 
