@@ -223,7 +223,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 mailAccountId = pt.pop(),
                 mailAccountId = pt.pop();
 
-            return [mailAccountId, mailFolderId, id];
+            return [
+                decodeURIComponent(mailAccountId),
+                decodeURIComponent(mailFolderId),
+                decodeURIComponent(id)
+            ];
         }
     });
 

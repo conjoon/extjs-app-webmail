@@ -125,6 +125,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
         data: function(ctx) {
 
             var me = this,
+                keys = me.extractCompoundKey(ctx.url),
                 idPart  = ctx.url.match(this.url)[1],
                 filters = ctx.params.filter,
                 id,
@@ -132,28 +133,26 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 messageItems = MessageTable.getMessageItems();
 
             if (ctx.params.target === 'MessageBody') {
-               [mailAccountId, mailFolderId, id] = me.extractCompoundKey(ctx.url);
 
-                return this.getMessageBody(mailAccountId, mailFolderId, id);
+
+                return this.getMessageBody(keys.mailAccountId, keys.mailFolderId, keys.id);
             }
 
-            if (idPart) {debugger;
-                id = idPart.substring(1).split('?')[0];
+            if (keys.id) {
+                id = keys.id;
                 return {data : Ext.Array.findBy(
                     messageItems,
                     function(messageItem) {
                         return messageItem.id === '' + id;
                     }
                 )};
-            } else if (filters) {
-                filters       = Ext.decode(filters);
-                id            = filters[0].value;
-                mailAccountId = filters[1].value;
+            } else if (!id) {
+
                 var items = Ext.Array.filter(
                     messageItems,
                     function(messageItem) {
-                        return messageItem.mailFolderId === id &&
-                               messageItem.mailAccountId === mailAccountId;
+                        return messageItem.mailAccountId === keys.mailAccountId &&
+                               messageItem.mailFolderId === keys.mailFolderId;
                     }
                 );
 
@@ -233,15 +232,25 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
          */
         extractCompoundKey : function(url) {
 
-            var mailAccountId, mailFolderId, id,
-                pt = url.split('/'),
+            let pt = url.split('/'),
                 id = pt.pop().split('?')[0],
-                mailFolderId = pt.pop(),
-                mailFolderId = pt.pop(),
-                mailAccountId = pt.pop(),
-                mailAccountId = pt.pop();
+                mailFolderId,mailAccountId;
 
-            return [mailAccountId, mailFolderId, id];
+            if (id == 'MessageItems') {
+                id = undefined;
+                pt.push('foo');
+            }
+
+            mailFolderId = pt.pop();
+            mailFolderId = pt.pop();
+            mailAccountId = pt.pop();
+            mailAccountId = pt.pop();
+
+            return {
+                mailAccountId : decodeURIComponent(mailAccountId),
+                mailFolderId : decodeURIComponent(mailFolderId),
+                id : id ? decodeURIComponent(id) : undefined
+            };
         }
 
     });

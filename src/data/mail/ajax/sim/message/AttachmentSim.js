@@ -176,10 +176,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
             mailAccountId = pt.pop();
 
             return {
-                mailAccountId : mailAccountId,
-                mailFolderId : mailFolderId,
-                parentMessageItemId : parentMessageItemId,
-                id : id
+                mailAccountId : decodeURIComponent(mailAccountId),
+                mailFolderId : decodeURIComponent(mailFolderId),
+                parentMessageItemId : decodeURIComponent(parentMessageItemId),
+                id : id ? decodeURIComponent(id) : undefined
             };
         }
     });
