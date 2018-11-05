@@ -30,7 +30,8 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
     extend : 'Ext.data.BufferedStore',
 
     requires : [
-        'conjoon.cn_mail.model.mail.message.MessageItem'
+        'conjoon.cn_mail.model.mail.message.MessageItem',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     alias : 'store.cn_mail-mailmessageitemstore',
@@ -67,6 +68,31 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
         }
 
         return me.callParent(arguments);
+    },
+
+
+    /**
+     * Tries to return the index of the record represented by the compoundKey.
+     * Returns -1 if not found.
+     *
+     * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
+     *
+     * @return -1 if not found, otherwise teh index of the record in the store.
+     *
+     * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
+     */
+    findByCompoundKey : function(compoundKey) {
+
+        if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
+            Ext.raise({
+                msg : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey : compoundKey
+            });
+        }
+
+        const me = this;
+
+        return me.findExact('localId', compoundKey.toLocalId());
     }
 
 

@@ -61,8 +61,13 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
 
 
             // data range
-            store.load();
-            t.waitForMs(250, function() {
+            store.load({
+                params : {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : 'INBOX'
+                }
+            });
+            t.waitForMs(500, function() {
                 t.expect(store.getTotalCount()).toBeGreaterThan(0);
             });
         })
@@ -95,6 +100,35 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
             t.expect(exc).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("only one sorter allowed");
 
+
+        });
+
+        t.it("findByCompoundKey()", function(t) {
+
+            let store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore');
+
+
+            let exc, e;
+
+            try{store.findByCompoundKey('foo');}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+
+            store.load({
+                params : {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : 'INBOX'
+                }
+            });
+
+            t.waitForMs(500, function() {
+                let draft = store.getAt(0);
+
+                t.expect(draft).toBe(store.getAt(store.findByCompoundKey(
+                    conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft)
+                )));
+            });
 
         });
 
