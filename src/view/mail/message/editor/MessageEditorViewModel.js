@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier',
-        'conjoon.cn_core.Util'
+        'conjoon.cn_core.Util',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
+        'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
+        'conjoon.cn_core.data.Session'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
@@ -170,13 +173,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * which can be any of:
      * - conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
      * - conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest
-     * - string (id of MessageDraft to edit)
+     * - conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey (compoundKey representing  MessageDraft to edit)
      *
      * @see #createAddressFormulas
      *
      * @throws if config or config.messageDraft is not set, and if messageDraft
      * is not an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig,
-     * conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest or of type string.
+     * conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest or of type string,
+     * or if the session used does not use the conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor
      */
     constructor : function(config) {
 
@@ -197,13 +201,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             formulas : me.createAddressFormulas()
         });
 
-        // MessageDraft is an id
-        if ((typeof messageDraft).toLowerCase() === 'string') {
+        let MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+
+        if (messageDraft instanceof MessageEntityCompoundKey) {
+            // deprecated
             Ext.apply(config, {
                 links : {
                     messageDraft : {
-                        type : 'MessageDraft',
-                        id   : messageDraft
+                        type          : 'MessageDraft',
+                        localId       : messageDraft.toLocalId(),
+                        mailFolderId  : messageDraft.getMailFolderId(),
+                        mailAccountId : messageDraft.getMailAccountId(),
+                        id            : messageDraft.getId()
                     }
                 }
             });
@@ -213,6 +222,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
 
         me.callParent([config]);
+
+        let session = me.getSession();
+        if (!(session instanceof conjoon.cn_core.data.Session) ||
+            !(session.getBatchVisitor() instanceof conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor)) {
+            Ext.raise({
+                msg     : "This ViewModel requires a data session configured with a MessageCompoundBatchVisitor",
+                session : session
+            })
+        }
+
         switch (true) {
             case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig):
                 // MessageDraft is MessageDraftConfig
@@ -234,8 +253,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         Ext.raise({
             messageDraft : messageDraft,
             msg          : "\"messageDraft\" must either be an instance of " +
-                           "MessageDraftConfig, of MessageDraftCopyRequest or " +
-                           "of type string."
+                           "MessageDraftConfig, of MessageDraftCopyRequest or of " +
+                           "MessageEntityCompoundKey."
         });
     },
 

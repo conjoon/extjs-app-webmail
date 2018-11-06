@@ -22,15 +22,17 @@
 
 describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', function(t) {
 
+
+
     var viewModel;
 
-    var view,
-        viewConfig,
+    var view, viewConfig,
         createWithSession = function() {
             return Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'),
-                session      : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
+                session      : Ext.create('conjoon.cn_core.data.Session', {
+                    schema : 'cn_mail-mailbaseschema',
+                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
                 })
             });
         },
@@ -38,8 +40,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             view = Ext.create('Ext.Panel');
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 view    : view,
-                session : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
+                session      : Ext.create('conjoon.cn_core.data.Session', {
+                    schema : 'cn_mail-mailbaseschema',
+                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
                 }),
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                     editMode : editMode,
@@ -113,6 +116,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
     });
 
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function(){
+    t.requireOk('conjoon.cn_core.data.Session', function(){
+    t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function(){
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         Ext.ux.ajax.SimManager.init({
@@ -137,10 +142,20 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             try {Ext.create(cls, {messageDraft : 1});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toContain("MessageCompoundBatchVisitor");
+
+
+            try {Ext.create(cls, {
+                messageDraft : 1,
+                session      : Ext.create('conjoon.cn_core.data.Session', {
+                    schema : 'cn_mail-mailbaseschema',
+                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+                })});} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
             t.expect(exc.msg).toContain("must either be an instance");
 
         });
-
+return;
 
         t.it('constructor() - messageDraft is messageDraftConfig', function(t) {
 
@@ -460,4 +475,4 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
     })});
 
-});
+    });});});
