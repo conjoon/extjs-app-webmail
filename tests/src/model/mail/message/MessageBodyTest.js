@@ -41,6 +41,13 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(){
+t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function(){
+
+    Ext.ux.ajax.SimManager.init({
+        delay: 1
+    });
+
     t.it("Should create instance", function(t) {
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
     });
@@ -127,5 +134,59 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
         t.expect(rec2.getAssociatedCompoundKeyedData().length).toBe(1);
         t.expect(rec2.getAssociatedCompoundKeyedData()[0]).toBe(rec);
     });
+
+    t.it("load() - with session and proper param settings when loaded in session", function(t) {
+
+
+        var createKey = function(id1, id2, id3) {
+                return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+            },
+            getMessageItemAt = function(messageIndex) {
+                return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            },
+            createKeyForExistingMessage = function(messageIndex){
+                let item = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+
+                let key = createKey(
+                    item.mailAccountId, item.mailFolderId, item.id
+                );
+
+                return key;
+            },
+            createSession = function() {
+                return Ext.create('conjoon.cn_core.data.Session', {
+                    schema : 'cn_mail-mailbaseschema',
+                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+                })
+            };
+
+        let session = createSession(),
+            item    = getMessageItemAt(1),
+            key     = createKeyForExistingMessage(1);
+
+        let model = session.getRecord('MessageDraft', key.toLocalId(), {params : key.toObject()});
+
+
+        t.waitForMs(500, function() {
+
+            model.getMessageBody();
+
+            t.waitForMs(500, function() {
+                t.expect(model.getMessageBody().get('mailAccountId')).toBe(model.data.mailAccountId);
+                t.expect(model.getMessageBody().get('mailAccountId')).toBe(item.mailAccountId);
+
+                t.expect(model.getMessageBody().get('mailFolderId')).toBe(model.data.mailFolderId);
+                t.expect(model.getMessageBody().get('mailFolderId')).toBe(item.mailFolderId);
+
+                t.expect(model.getMessageBody().get('mailFolderId')).toBe(model.data.mailFolderId);
+                t.expect(model.getMessageBody().get('id')).toBe(item.id);
+            });
+        });
+    });
+
+
+})})
+
+
 
 });

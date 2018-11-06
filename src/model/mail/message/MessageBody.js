@@ -62,6 +62,33 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
                      );
 
         return data;
+    },
+
+
+    /**
+     * Overridden to make sure existing associations are checked. Sessions
+     * might invalidate stubs and force the loading of FKs without the FKs
+     * being applied to the left side beforehand. In this case, we simply apply
+     * the compound key of the MessageDraft.
+     *
+     * @param {Object} options
+     *
+     * @return {Ext.data.operation.Read}
+     */
+   load : function(options) {
+
+        const me      = this,
+              assoc   = me.getAssociatedCompoundKeyedData();
+
+        options = options || {};
+
+        options.params = options.params || {};
+
+        if (assoc && assoc.length === 1 && assoc[0].entityName === 'MessageDraft') {
+            Ext.applyIf(options.params, assoc[0].getCompoundKey().toObject());
+        }
+
+       return me.callParent([options]);
     }
 
 });
