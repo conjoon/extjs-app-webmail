@@ -177,8 +177,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * created MessageEitor will be adjusted to hold the information as specified
      * in the string.
      *
-     * @param {Number/String/conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey} id
-     *  n id to be able to track this MessageEditor later on
+     * @param {Number/String/conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey} key
+     * an id to be able to track this MessageEditor later on
      * when routing is triggered. if id is a string, it is assumed to be a
      * syntax of the mailto scheme (including protocol), and mights still be uri encoded.
      * A compound key is used when te editor is opened in a context other than
@@ -192,7 +192,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @throws if no valid id was specified (bubbles exceptions from
      * #getItemIdForMessageEditor and #getCnHrefForMessageEditor)
      */
-    showMailEditor : function(id, type) {
+    showMailEditor : function(key, type) {
         var me      = this,
             view    = me.getView(),
             newView, cn_href, itemId,
@@ -202,34 +202,34 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
             CopyRequest  = 'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest';
 
-        itemId  = me.getItemIdForMessageEditor(id, type);
-        cn_href = me.getCnHrefForMessageEditor(id, type);
+        itemId  = me.getItemIdForMessageEditor(key, type);
+        cn_href = me.getCnHrefForMessageEditor(key, type);
 
 
         // MessageDraft === MessageDraftCopyRequest
-        // MessageDraft === id
+        // MessageDraft === key
         // MessageDraft === MessageDraftConfig
         switch (type) {
             case 'edit':
-                initialConfig.messageDraft = id + '';
+                initialConfig.messageDraft = key;
                 break;
             case 'replyTo':
                 initialConfig.messageDraft = Ext.create(CopyRequest, {
-                    id : id + '', editMode : EditingModes.REPLY_TO
+                    compoundKey : key, editMode : EditingModes.REPLY_TO
                 });
                 break;
             case 'replyAll':
                 initialConfig.messageDraft = Ext.create(CopyRequest, {
-                    id : id + '', editMode : EditingModes.REPLY_ALL
+                    compoundKey : key, editMode : EditingModes.REPLY_ALL
                 });
                 break;
             case 'forward':
                 initialConfig.messageDraft = Ext.create(CopyRequest, {
-                    id : id + '', editMode : EditingModes.FORWARD
+                    compoundKey : key, editMode : EditingModes.FORWARD
                 });
                 break;
             default:
-                initialConfig.messageDraft = me.createMessageDraftConfig(id);
+                initialConfig.messageDraft = me.createMessageDraftConfig(key);
                 break;
         }
 
@@ -631,19 +631,28 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @param {String} id
      *
      * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig/Mixed}
-
      *
      * @private
+     *
+     * @throws if id is not set or if it is not a string or not a number
      */
     createMessageDraftConfig : function(id) {
 
-        const me        = this;
+        const me = this;
+
+        if (!id || (!Ext.isString(id) && !Ext.isNumber(id))) {
+            Ext.raise({
+                key  : id,
+                msg : "\"id\" is not a valid value"
+            })
+        }
 
         let pos,
             addresses,
             res,
             tmpId,
             encodedId = decodeURIComponent(id + '');
+
 
         if (Ext.String.startsWith(encodedId, 'mailto:', true)) {
             encodedId = encodedId.substring(7);
@@ -699,7 +708,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         return Ext.create(
             'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
             Ext.apply({
-                to     : addresses,
+                to     : addresses
             }, res)
         );
     },

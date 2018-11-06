@@ -105,6 +105,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.isInstanceOf(ctrl.createMessageDraftConfig("jhkjhkj"), conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig);
 
         tests = [{
+            value    : {},
+            expected : 'Exception',
+            contains : 'not a valid value'
+        }, {
             value    : 'mailto:test@domain.tld',
             expected : {to : [{name : 'test@domain.tld', address : 'test@domain.tld'}], seen : true, draft : true, recent : false, flagged : false, answered : false}
         }, {
@@ -130,7 +134,14 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         for (var i = 0, len = tests.length; i < len; i++) {
             test = tests[i];
-            if (!Ext.isObject(test.expected)) {
+            if (test.expected === 'Exception') {
+
+                try{ctrl.createMessageDraftConfig(test.value);}catch(e){exc=e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain(test.contains);
+
+            } else if (!Ext.isObject(test.expected)) {
                 t.expect(ctrl.createMessageDraftConfig(test.value)).toBe(test.expected);
             } else {
 
@@ -145,7 +156,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ctrl.destroy();
     });
 
-
+return;
     t.it("getMessageViewItemId()", function(t) {
 
         let ctrl = Ext.create(
@@ -468,7 +479,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ctrl = null;
     });
 
-    return;
+
     t.it("showMailEditor()", function(t) {
 
         var panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
