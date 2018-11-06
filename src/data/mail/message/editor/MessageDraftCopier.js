@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
 
 
     /**
-     * Loads a copy of the MessageDraft with the specified id and applies a copy
-     * of its data to this vm, so it can be saved with a new id.
+     * Loads a copy of the MessageDraft with the specified compound key and
+     * creates a copy of its data, so it can be saved with a new id.
      *
      * @param {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest} messageDraftCopyRequest
      * @param {Function} callback for the loadoperation of the MessageDraft and
@@ -76,7 +76,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
      */
     loadMessageDraftCopy : function(messageDraftCopyRequest, callback, scope) {
         var me = this,
-            id, editMode;
+            key, editMode;
 
         if (!(messageDraftCopyRequest instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest)) {
             Ext.raise({
@@ -92,11 +92,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
             });
         }
 
-        id       = messageDraftCopyRequest.getId();
+        key       = messageDraftCopyRequest.getCompoundKey();
         editMode = messageDraftCopyRequest.getEditMode();
 
-        conjoon.cn_mail.model.mail.message.MessageDraft.load(
-            id, {
+        conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+            key, {
             success : Ext.Function.bind(
                 me.onMessageDraftLoad, me, [editMode, callback, scope], true
             ),
@@ -125,7 +125,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
 
             var me = this;
 
-            record.getMessageBody({
+            record.loadMessageBody({
                 success : Ext.Function.bind(
                     me.onMessageBodyLoad, me, [record, editMode, callback, scope], true
                 ),
@@ -156,7 +156,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
 
             var me = this;
 
-            messageDraft.attachments().load({
+            messageDraft.loadAttachments({
                 callback : Ext.Function.bind(
                     me.onAttachmentsLoad, me, [messageDraft, editMode, callback, scope], true
                 ),

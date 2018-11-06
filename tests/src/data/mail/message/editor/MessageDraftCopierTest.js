@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,21 @@
 describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', function(t) {
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
+
+        const createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+            },
+            createKeyForExistingMessage = function(messageIndex){
+                let item = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+
+                let key = createKey(
+                    item.mailAccountId, item.mailFolderId, item.id
+                );
+
+                return key;
+            };
+
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
@@ -54,8 +69,8 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
 
 
             request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                id       : '1',
-                editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+                compoundKey : createKeyForExistingMessage(1),
+                editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
             });
 
             try {
@@ -82,8 +97,8 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
                     DRAFTCONFIG = draftConfig;
                 },
                 request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                    id       : '1',
-                    editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+                    compoundKey : createKeyForExistingMessage(1),
+                    editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
                 }),
                 copier;
             copier = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier');
@@ -105,4 +120,4 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
 
     });
 
-});
+});});
