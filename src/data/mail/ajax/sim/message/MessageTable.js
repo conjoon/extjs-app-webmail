@@ -213,6 +213,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     getMessageDraft : function(mailAccountId, mailFolderId, id) {
 
         if (arguments.length !== 3) {
+            debugger;
             Ext.raise("Unexpected missing arguments");
         }
 
@@ -385,7 +386,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             for (var prop in values) {
 
                 if (!item.hasOwnProperty(prop)) {
-                    continue;
+                    // we are updating an existing item with properties that might not
+                    // existed previously - dont skip!
+                    //continue;
                 }
 
                 switch (prop) {

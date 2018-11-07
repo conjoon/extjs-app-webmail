@@ -111,7 +111,19 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 values
             );
 
+            let draft = MessageTable.getMessageDraft(
+                ctx.xhr.options.jsonData.mailAccountId,
+                ctx.xhr.options.jsonData.mailFolderId,
+                ctx.xhr.options.jsonData.id
+            );
+
             delete values.localId;
+
+            for (var i in values) {
+                if (draft[i]) {
+                    values[i] = draft[i];
+                }
+            }
 
             ret.responseText = Ext.JSON.encode({
                 success: true,

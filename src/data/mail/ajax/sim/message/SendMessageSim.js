@@ -47,7 +47,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
                 MessageTable    = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 MailFolderTable = conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderTable,
                 id              = ctx.xhr.options.params.id,
-                draft           = MessageTable.getMessageDraft(id);
+                mailAccountId   = ctx.xhr.options.params.mailAccountId,
+                mailFolderId    = ctx.xhr.options.params.mailFolderId,
+                draft           = MessageTable.getMessageDraft(mailAccountId, mailFolderId, id);
 
             if (draft['subject'] === 'SENDFAIL') {
                 ret.responseText = Ext.JSON.encode({
@@ -57,7 +59,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
             }
 
             MessageTable.updateMessageDraft(
-                id, {
+                mailAccountId, mailFolderId, id, {
                     mailFolderId : MailFolderTable.getFolderIdForType('SENT'),
                     draft        : false
                 }
