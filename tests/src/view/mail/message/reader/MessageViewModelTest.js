@@ -26,15 +26,34 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
     var view,
         viewConfig,
+        createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+        },
+        getMessageItemAt = function(messageIndex) {
+            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+        },
+        createKeyForExistingMessage = function(messageIndex){
+            let item = getMessageItemAt(messageIndex);
+
+            let key = createKey(
+                item.mailAccountId, item.mailFolderId, item.id
+            );
+
+            return key;
+        },
         createMessageItem = function() {
 
             const MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
 
-            let item        = MessageTable.getMessageItemAt(0),
-                messageItem = Ext.create(
-                    'conjoon.cn_mail.model.mail.message.MessageItem',
-                    item
-                );
+            let item = getMessageItemAt(1),
+                messageItem;
+
+            item.messageBodyId = createKeyForExistingMessage(1).toLocalId();
+
+            messageItem = Ext.create(
+                'conjoon.cn_mail.model.mail.message.MessageItem',
+                item
+            );
 
             return messageItem;
         },
@@ -42,6 +61,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
             var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 id            : 2,
+                mailFolderId  : 'INBOX',
+                mailAccountId : 'dev_sys_conjoon_org',
                 subject       : 'SUBJECT',
                 from          : 'FROM',
                 date          : 'DATE'
@@ -95,6 +116,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.expect(viewModel.bodyLoadOperation.loadOperation.getParams()).toEqual({
                 mailAccountId : msgItem.get('mailAccountId'),
                 mailFolderId  : msgItem.get('mailFolderId'),
+                id            : msgItem.get('id')
             });
 
             t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
@@ -106,7 +128,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.expect(wasCalled).toBe(true);
-                t.expect(viewModel.get('messageBody').get('id')).toBe(msgItem.get('messageBodyId'));
+                t.expect(viewModel.get('messageBody').getId()).toBe(msgItem.get('messageBodyId'));
                 t.expect(viewModel.get('messageBody').get('textHtml')).toBeTruthy();
                 // we are working with cloned messageItem for the assoziations
                 t.expect(viewModel.get('messageItem').loadMessageBody()).not.toBe(viewModel.get('messageBody'));
@@ -173,6 +195,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
         });
 
+
         t.it("4. Should not trigger an error if no message body was specified", function(t) {
 
             var wasCalled = false,
@@ -182,13 +205,15 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 view : view
             });
 
-            viewModel.setMessageItem(createMessageItemWoBody());
+            let item = createMessageItemWoBody();
+
+            viewModel.setMessageItem(item);
 
 
             t.waitForMs(1500, function() {
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
-                t.expect(viewModel.get('messageItem').getId()).toBe('2');
+                t.expect(viewModel.get('messageItem').getId()).toBe(item.getId());
                 t.expect(viewModel.get('messageItem').loadMessageBody()).toBe(null);
                 t.expect(viewModel.get('messageBody')).toEqual(null);
             });
@@ -256,11 +281,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 }
 
                 t.expect(exp).toEqual([{
-                    property : "messageItemId", value : msgItem.getId()
-                }, {
                     property : "mailAccountId", value : msgItem.get('mailAccountId')
-                },{
+                }, {
                     property : "mailFolderId", value : msgItem.get('mailFolderId')
+                },{
+                    property : "parentMessageItemId", value : msgItem.get('id')
                 }]);
 
                 viewModel.abortMessageAttachmentsLoad();
@@ -372,10 +397,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             messageDraft, exc, e;
 
         messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-            id      : messageItem.getId(),
-            subject : 'subject',
-            date    : '2017-07-30 23:45:00',
-            to      : 'test@testdomain.tld'
+            localId       : messageItem.getId(),
+            mailAccountId : messageItem.get('mailAccountId'),
+            mailFolderId  : messageItem.get('mailFolderId'),
+            id            : messageItem.get('id'),
+            subject       : 'subject',
+            date          : '2017-07-30 23:45:00',
+            to            : 'test@testdomain.tld'
         });
 
         messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {

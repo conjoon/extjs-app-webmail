@@ -486,7 +486,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             }
 
             // everything okay, mark item as read and set messageBody
-            delete  me.abortedRequestMap[record.get('id')];
+            delete  me.abortedRequestMap[record.getId()];
             me.set('messageBody', record);
 
             if (item.get('seen') != true) {

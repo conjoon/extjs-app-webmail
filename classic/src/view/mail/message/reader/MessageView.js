@@ -38,7 +38,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         'conjoon.cn_mail.model.mail.message.MessageItem',
         'conjoon.cn_mail.view.mail.message.reader.MessageViewModel',
         'conjoon.cn_mail.view.mail.message.reader.AttachmentList',
-        'conjoon.cn_mail.model.mail.message.MessageItem'
+        'conjoon.cn_mail.model.mail.message.MessageItem',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     alias : 'widget.cn_mail-mailmessagereadermessageview',
@@ -275,18 +276,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
 
     /**
-     * Loads the MessageItem with the specified id into this view.
+     * Loads the MessageItem with the specified compoundKey into this view.
      *
-     * @param {String} mailAccountId
-     * @param {String} messageId
-     * @param {String} messageId
+     * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
      *
      * @see onMessageItemLoad
+     *
+     * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
-    loadMessageItem : function(mailAccountId, mailFolderId, messageId) {
+    loadMessageItem : function(compoundKey) {
 
         var me = this,
             vm = me.getViewModel();
+
+        if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
+            Ext.raise({
+               msg          : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey : compoundKey
+            });
+        }
 
         vm.set('isLoading', true);
 
@@ -294,11 +302,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             me.loadingItem.abort();
         }
 
-        me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.load(messageId, {
-            params  : {
-                mailAccountId : mailAccountId,
-                mailFolderId  : mailFolderId
-            },
+        me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
             success : me.onMessageItemLoaded,
             scope   : me
         });
@@ -307,7 +311,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
     /**
      * Updates this message item with teh data from the specified MessageDraft.
-     * This method should be called whenever a MessageDraft was updated to make
+     * This method should be called whenever a MessageDraft was updated to ma
+     * ke
      * sure the changes are reflected in this view.
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
