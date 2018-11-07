@@ -42,7 +42,7 @@
  * to be able to handle the associations of the used data models properly.
  * The constructor overrides any specified session by creating an individual
  * session of the type {@link conjoon.cn_core.Session} with a
- * {@link conjoon.cn_core.session.SplitBatchVisitor} to make sure multiple
+ * {@link conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor} to make sure multiple
  * attachments are uploaded in single requests.
  *
  *
@@ -58,9 +58,9 @@
  * the MessageDraft that should be used.
  * A "messageDraft" config must be available at any time, and can be any of the following:
  *
- *  -String:
- *  --------
- *  Treated as the id of the MessageDraft to load. The Editor will then be in
+ *  - instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey:
+ *  ------------------------------------------------------------------------------------
+ *  Treated as the compound key of the MessageDraft to load. The Editor will then be in
  *  editMode "EDIT"
  *
  *  - instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig:
@@ -94,10 +94,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.model.mail.message.EmailAddress',
         'conjoon.cn_mail.data.mail.BaseSchema',
         'conjoon.cn_core.data.Session',
-        'conjoon.cn_core.data.session.SplitBatchVisitor',
+        'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
         'conjoon.cn_comp.component.MessageMask',
         'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
+        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     alias : 'widget.cn_mail-mailmessageeditor',
@@ -383,7 +384,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         Ext.apply(config, {
             session : Ext.create('conjoon.cn_core.data.Session', {
                 schema                : 'cn_mail-mailbaseschema',
-                batchVisitorClassName : 'conjoon.cn_core.data.session.SplitBatchVisitor'
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             }),
             viewModel : {
                 type         : 'cn_mail-mailmessageeditorviewmodel',
@@ -393,7 +394,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         me.editMode =  EditingModes.CREATE;
 
-        if (typeof messageDraft === 'string') {
+        if (messageDraft instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey) {
             me.editMode = EditingModes.EDIT;
         } else if (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest) {
             me.editMode = messageDraft.getEditMode();

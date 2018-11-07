@@ -25,6 +25,21 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
     var view,
         viewConfig,
         controller,
+        createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+        },
+        getMessageItemAt = function(messageIndex) {
+            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+        },
+        createKeyForExistingMessage = function(messageIndex){
+            let item = getMessageItemAt(messageIndex);
+
+            let key = createKey(
+                item.mailAccountId, item.mailFolderId, item.id
+            );
+
+            return key;
+        },
         createOperation = function() {
             return Ext.create('Ext.data.operation.Create', {
                 entityType : {
@@ -47,8 +62,10 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             switch (editMode) {
                 case 'CREATE':
                     messageDraft = Ext.create(
-                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
-                    );
+                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+                            mailAccountId : 'dev@conjoon',
+                            mailFolderId : 'INBOX'
+                    });
                     break;
             }
 
@@ -84,6 +101,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+        t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
@@ -787,7 +805,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     controller : controller,
-                    messageDraft : "1"
+                    messageDraft : createKeyForExistingMessage(1)
                 });
 
             t.isCalledOnce('showMessageDraftLoadingNotice', view);
@@ -839,7 +857,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     controller   : controller,
                     renderTo     : document.body,
-                    messageDraft : "1"
+                    messageDraft :  createKeyForExistingMessage(1)
                 });
 
             let CALLED = 0;
@@ -879,7 +897,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     controller   : controller,
                     renderTo     : document.body,
-                    messageDraft : "1"
+                    messageDraft :  createKeyForExistingMessage(1)
                 });
 
             let CALLED = 0;
@@ -990,4 +1008,4 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
 
     });
-});
+});});

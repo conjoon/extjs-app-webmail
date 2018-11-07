@@ -479,9 +479,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
             Ext.Ajax.request({
                 url    : './cn_mail/SendMessage',
-                params : {
-                    id : messageDraft.get('id')
-                }
+                params : messageDraft.getCompoundKey().toObject()
             }).then(
                 function(response, opts) {
                     messageDraft.set('draft', false);
