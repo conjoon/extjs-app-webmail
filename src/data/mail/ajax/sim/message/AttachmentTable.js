@@ -121,7 +121,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         }
 
         if (!wasEmpty) {
-            if (!me.getRandom(0, 1)) {
+            if (!me.getRandom(0, 1) && (parentMessageItemId + "" !== "1")) {
                 me.attachments[key] = null;
                 return me.attachments[key];
             }

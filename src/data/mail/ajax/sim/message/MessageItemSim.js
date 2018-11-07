@@ -138,7 +138,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
             if (ctx.params.target === 'MessageBody') {
 
-
+                console.log("GET MessageBody ", ctx.url, keys);
                 return this.getMessageBody(keys.mailAccountId, keys.mailFolderId, keys.id);
             }
 
