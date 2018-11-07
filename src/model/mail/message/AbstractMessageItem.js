@@ -125,6 +125,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
         options = options || {};
 
+        options.params = options.params || {};
+
         if (!me.get('mailFolderId') || !me.get('mailAccountId') || !me.get('id')) {
             Ext.raise({
                 msg : "Cannot load MessageBody, compound keys missing",
@@ -132,13 +134,13 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
             });
         }
 
-        return me.getMessageBody(Ext.applyIf(options, {
-            params : {
-                mailFolderId        : me.get('mailFolderId'),
-                mailAccountId       : me.get('mailAccountId'),
-                id                  : me.get('id')
-            }
-        }))
+        Ext.applyIf(options.params, {
+            mailFolderId        : me.get('mailFolderId'),
+            mailAccountId       : me.get('mailAccountId'),
+            id                  : me.get('id')
+        });
+
+        return me.getMessageBody(options);
     },
 
 
