@@ -201,26 +201,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             formulas : me.createAddressFormulas()
         });
 
-        let MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
-
-        if (messageDraft instanceof MessageEntityCompoundKey) {
-            // deprecated
-            Ext.apply(config, {
-                links : {
-                    messageDraft : {
-                        type          : 'MessageDraft',
-                        localId       : messageDraft.toLocalId(),
-                        mailFolderId  : messageDraft.getMailFolderId(),
-                        mailAccountId : messageDraft.getMailAccountId(),
-                        id            : messageDraft.getId()
-                    }
-                }
-            });
-            me.callParent([config]);
-            return;
-        }
-
-
         me.callParent([config]);
 
         let session = me.getSession();
@@ -232,7 +212,27 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             })
         }
 
+        let MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+
         switch (true) {
+
+
+
+            case (messageDraft instanceof MessageEntityCompoundKey):
+
+                let localId = messageDraft.toLocalId(),
+                    options = {
+                        params  : messageDraft.toObject(),
+                        scope   : me
+                    };
+
+                // instead of setting links property, this should have the
+                // same effect. We can, however, submit additional options
+                // which are considered in the request
+                me.set('messageDraft', session.getRecord('MessageDraft', localId, options));
+
+                return;
+
             case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig):
                 // MessageDraft is MessageDraftConfig
                 me.createDraftFromData(messageDraft);
@@ -466,7 +466,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             this.set('messageDraft.' + type, addresses);
             return addresses;
         }
-
     }
 
 });

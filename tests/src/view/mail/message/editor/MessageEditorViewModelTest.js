@@ -27,34 +27,50 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
     var viewModel;
 
     var view, viewConfig,
+        createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+        },
+        getMessageItemAt = function(messageIndex) {
+            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+        },
+        createKeyForExistingMessage = function(messageIndex){
+            let item = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+
+            let key = createKey(
+                item.mailAccountId, item.mailFolderId, item.id
+            );
+
+            return key;
+        },
+        createSession = function() {
+            return Ext.create('conjoon.cn_core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+            })
+        },
         createWithSession = function() {
             return Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'),
-                session      : Ext.create('conjoon.cn_core.data.Session', {
-                    schema : 'cn_mail-mailbaseschema',
-                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-                })
+                session      : createSession()
             });
         },
         testEditorMode = function(t, editMode) {
             view = Ext.create('Ext.Panel');
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 view    : view,
-                session      : Ext.create('conjoon.cn_core.data.Session', {
-                    schema : 'cn_mail-mailbaseschema',
-                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-                }),
+                session      : createSession(),
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                    editMode : editMode,
-                    id        : '1'
+                    editMode    : editMode,
+                    compoundKey : createKeyForExistingMessage(1)
                 })
             });
 
-            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.load(1);
-            t.waitForMs(100, function() {
-                var body = draft.getMessageBody();
-                draft.attachments().load();
-                t.waitForMs(100, function() {
+            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(createKeyForExistingMessage(1));
+
+            t.waitForMs(500, function() {
+                var body = draft.loadMessageBody();
+                draft.loadAttachments();
+                t.waitForMs(500, function() {
                     var attachments = draft.attachments().getRange();
                     var messageDraft = viewModel.get('messageDraft');
                     var messageBody  = viewModel.get('messageDraft.messageBody');
@@ -64,11 +80,11 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
                     t.expect(messageDraft).toBeDefined();
                     t.expect(messageDraft.phantom).toBe(true);
-                    t.expect(messageDraft.get('id')).not.toBe(draft.get('id'));
+                    t.expect(messageDraft.getId()).not.toBe(draft.getId());
 
                     t.expect(messageBody).toBeDefined();
                     t.expect(messageBody.phantom).toBe(true);
-                    t.expect(messageBody.get('id')).not.toBe(body.get('id'));
+                    t.expect(messageBody.getId()).not.toBe(body.getId());
 
                     t.expect(messageDraft.get('subject')).toContain(draft.get('subject'));
 
@@ -88,7 +104,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                             t.expect(attachments.length).toBeGreaterThan(0);
 
                             for (var i = 0, len = draftAttachments.length; i < len; i++) {
-                                t.expect(draftAttachments[i].get('id')).not.toBe(attachments[i].get('id'));
+                                t.expect(draftAttachments[i].getId()).not.toBe(attachments[i].getId());
                                 var cmp1 = Ext.copy({}, draftAttachments[i].data, 'sourceId,size,text,type');
                                 var cmp2 = Ext.copy({}, attachments[i].data, 'sourceId,size,text,type');
                                 t.expect(cmp1).toEqual(cmp2);
@@ -115,10 +131,14 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
         }
     });
 
+
+    t.requireOk('conjoon.cn_mail.data.mail.message.EditingModes', function(){
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function(){
     t.requireOk('conjoon.cn_core.data.Session', function(){
     t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function(){
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+
+
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
@@ -147,24 +167,20 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             try {Ext.create(cls, {
                 messageDraft : 1,
-                session      : Ext.create('conjoon.cn_core.data.Session', {
-                    schema : 'cn_mail-mailbaseschema',
-                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-                })});} catch (e) {exc = e;}
+                session      : createSession()
+            });} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toContain("must either be an instance");
 
         });
-return;
+
 
         t.it('constructor() - messageDraft is messageDraftConfig', function(t) {
 
             t.isCalledOnce('createDraftFromData', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype)
 
             Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session      : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
+                session      : createSession(),
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
             });
 
@@ -176,11 +192,9 @@ return;
             t.isCalledOnce('onMessageDraftCopyLoad', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype)
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session      : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
+                session      : createSession(),
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                    id       : '1',
+                    compoundKey  : createKeyForExistingMessage(1),
                     editMode : conjoon.cn_mail.data.mail.message.EditingModes.FORWARD
                 })
             });
@@ -191,21 +205,25 @@ return;
 
         });
 
+        t.it('constructor() - messageDraft is compound key', function(t) {
 
-        t.it('constructor() - messageDraft is string', function(t) {
+            let index = 1;
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session      : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
-                messageDraft : '1'
+                session      : createSession(),
+                messageDraft : createKeyForExistingMessage(index)
             });
 
+            let messageItem = getMessageItemAt(index);
+
             t.waitForMs(500, function() {
-                t.expect(viewModel.get('messageDraft').getId()).toBe('1');
+                t.expect(viewModel.get('messageDraft').get('id')).toBe(messageItem.id);
+                t.expect(viewModel.get('messageDraft').get('mailAccountId')).toBe(messageItem.mailAccountId);
+                t.expect(viewModel.get('messageDraft').get('mailFolderId')).toBe(messageItem.mailFolderId);
             });
 
         });
+
 
 
         t.it('createDraftFromData()', function(t) {
@@ -283,16 +301,16 @@ return;
 
         t.it("Should create the ViewModel with data from the backend", function(t) {
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
-                session : Ext.create('Ext.data.Session', {
-                    schema : 'cn_mail-mailbaseschema'
-                }),
-                messageDraft : '1'
+                session : createSession(),
+                messageDraft : createKeyForExistingMessage(1)
             });
+
+            let item = getMessageItemAt(1);
 
             t.waitForMs(500, function() {
                 t.expect(viewModel.get('messageDraft')).toBeDefined();
                 t.expect(viewModel.get('messageDraft').phantom).toBe(false);
-                t.expect(viewModel.get('messageDraft').get('id')).toBe('1');
+                t.expect(viewModel.get('messageDraft').get('id')).toBe(item.id);
             });
         });
 
@@ -475,4 +493,4 @@ return;
 
     })});
 
-    });});});
+    });});});});
