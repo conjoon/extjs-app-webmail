@@ -131,7 +131,12 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
                 renderTo : document.body
             });
 
-            grid.getStore().load();
+            grid.getStore().load({
+                params : {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : 'INBOX'
+                }
+            });
 
             t.waitForMs(250, function() {
                 try {
@@ -209,7 +214,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             t.expect(ULOAD).toBe(0);
             t.expect(UBEFORELOAD).toBe(0);
 
-            store.load();
+            store.load({
+                params : {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : 'INBOX'
+            }});
 
             t.waitForMs(850, function() {
                 t.expect(ULOAD).toBe(1);
@@ -217,7 +226,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
                 grid.unbindStore(store);
 
-                store.reload();
+                store.reload({
+                params : {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : 'INBOX'
+                }});
 
                 t.waitForMs(850, function() {
                     t.expect(ULOAD).toBe(1);
@@ -243,7 +256,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.setStore(store);
 
-            store.load();
+            store.load({
+                params : {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : 'INBOX'
+            }});
 
             t.waitForMs(850, function() {
 
@@ -392,7 +409,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.setStore(store);
 
-            store.load();
+            store.load({
+            params : {
+                mailAccountId : 'dev_sys_conjoon_org',
+                mailFolderId  : 'INBOX'
+            }});
 
             t.waitForMs(1250, function() {
 
@@ -427,7 +448,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.setStore(store);
 
-            store.load();
+            store.load({
+            params : {
+                mailAccountId : 'dev_sys_conjoon_org',
+                mailFolderId  : 'INBOX'
+            }});
 
             t.waitForMs(750, function() {
 
