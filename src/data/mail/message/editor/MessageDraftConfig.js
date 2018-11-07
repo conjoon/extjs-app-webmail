@@ -27,7 +27,7 @@
  * purpose is to be passed to the constructor of an MessageEditor, which
  * will in turn automatically provide a valid instance of
  * conjoon.cn_mail.model.mail.message.MessageDraft to work with.
- * The toObject() method will return a native js object with keys keys mapping
+ * The toObject() method will return a native js object with keys mapping
  * the structure of the conjoon.cn_mail.model.mail.message.MessageDraft:
  * - to:Array
  * - cc:Array
@@ -40,18 +40,22 @@
  *
  *      @example
  *      var c = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
- *          to          : 'name@domainname.tld',
- *          cc          : ['ccname@domainname.tld', 'ccname2@domainname.tld'],
- *          bcc         : ['bccname@domainname.tld'],
- *          subject     : 'This is the subject',
- *          textPlain   : 'Text for this message',
- *          textHtml    : '<b>Text for this message</b>',
- *          attachments : [{type:'image/jpg', text:'image1.jpg', sourceId : '1'}]
+ *          mailAccountId : 'dev@conjoon',
+ *          mailFolderId  : 'INBOX',
+ *          to            : 'name@domainname.tld',
+ *          cc            : ['ccname@domainname.tld', 'ccname2@domainname.tld'],
+ *          bcc           : ['bccname@domainname.tld'],
+ *          subject       : 'This is the subject',
+ *          textPlain     : 'Text for this message',
+ *          textHtml      : '<b>Text for this message</b>',
+ *          attachments   : [{type:'image/jpg', text:'image1.jpg', sourceId : '1'}]
  *     });
  *
  *     console.log(c.toObject());
  *     // output:
  *     // {
+ *     //     mailAccountId : 'dev@conjoon',
+ *     //     mailFolderId  : 'INBOX',
  *     //     to : [{
  *     //         name    : 'name@domainname.tld',
  *     //         address : 'name@domainname.tld'
@@ -74,8 +78,7 @@
  *     //    },
  *     //    attachments : [{
  *     //        type     : 'image/jpg',
- *     //        text     : 'image1.jpg',
- *     //        sourceId : '1'
+ *     //        text     : 'image1.jpg'
  *     //    }]
  *     // }
  *     //
@@ -91,18 +94,20 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
 
     config : {
-        to          : undefined,
-        cc          : undefined,
-        bcc         : undefined,
-        subject     : undefined,
-        seen        : true,
-        textPlain   : undefined,
-        textHtml    : undefined,
-        attachments : undefined,
-        answered    : false,
-        recent      : false,
-        draft       : true,
-        flagged     : false,
+        to            : undefined,
+        cc            : undefined,
+        bcc           : undefined,
+        subject       : undefined,
+        seen          : true,
+        textPlain     : undefined,
+        textHtml      : undefined,
+        attachments   : undefined,
+        answered      : false,
+        recent        : false,
+        draft         : true,
+        flagged       : false,
+        mailAccountId : undefined,
+        mailFolderId  : undefined
     },
 
 
@@ -159,6 +164,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         }
         if (me.getRecent() !== undefined) {
             obj.recent = me.getRecent();
+        }
+        if (me.getMailFolderId() !== undefined) {
+            obj.mailFolderId = me.getMailFolderId();
+        }
+        if (me.getMailAccountId() !== undefined) {
+            obj.mailAccountId = me.getMailAccountId();
         }
         return obj;
     },
@@ -360,6 +371,56 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         }
 
         return subject;
+    },
+
+
+    /**
+     * Sets mailFolderId
+     *
+     * @param {String} mailFolderId
+     *
+     * @return {String}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyMailFolderId : function(mailFolderId) {
+        var me = this;
+
+        if (me.getMailFolderId() !== undefined) {
+            Ext.raise({
+                subject : me.getMailFolderId(),
+                msg     : "\"mailFolderId\" is immutable"
+            });
+        }
+
+        return mailFolderId;
+    },
+
+
+    /**
+     * Sets mailAccountId
+     *
+     * @param {String} mailAccountId
+     *
+     * @return {String}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyMailAccountId : function(mailAccountId) {
+        var me = this;
+
+        if (me.getMailAccountId() !== undefined) {
+            Ext.raise({
+                subject : me.getMailAccountId(),
+                msg     : "\"mailAccountId\" is immutable"
+            });
+        }
+
+        return mailAccountId;
     },
 
 

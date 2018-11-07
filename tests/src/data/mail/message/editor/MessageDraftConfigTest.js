@@ -33,6 +33,8 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         t.expect(config.getTextPlain()).toBeUndefined();
         t.expect(config.getTextHtml()).toBeUndefined();
         t.expect(config.getAttachments()).toBeUndefined();
+        t.expect(config.getMailFolderId()).toBeUndefined();
+        t.expect(config.getMailAccountId()).toBeUndefined();
 
         t.expect(config.getSeen()).toBe(true);
         t.expect(config.getRecent()).toBe(false);
@@ -149,6 +151,7 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
     });
 
 
+
     t.it("applyAttachments()", function(t) {
         var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         });
@@ -222,6 +225,16 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
                     to  : [{name : 'name.to@domain.tld',  address : 'name.to@domain.tld'}],
                     cc  : [{name : 'name.cc@domain.tld',  address : 'name.cc@domain.tld'}],
                     bcc : [{name : 'name.bcc@domain.tld', address : 'name.bcc@domain.tld'}],
+                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                }
+            }, {
+                args : {
+                    mailFolderId  : 'foo',
+                    mailAccountId : 'bar'
+                },
+                expected : {
+                    mailFolderId  : 'foo',
+                    mailAccountId : 'bar',
                     seen : true, recent : false, flagged : false, draft : true, answered : false
                 }
             }, {
