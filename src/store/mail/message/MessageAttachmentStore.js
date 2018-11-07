@@ -36,50 +36,20 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
 
     /**
      * Overriden to make sure check for filters is processed.
+     * If no filter is set or if any is missing, the data from the associatedEntity
+     * will be used, if this associated entity is a MessageDraft.
      *
      * @returns {Ext.data.Store}
+     *
+     * @throws if compound keys are not available in the filter
+     *
+     * @see checkAndBuildCompoundKeyFilters
      */
     load : function() {
 
-        const me          = this,
-              filters     = me.getFilters(),
-              propertySet = {
-                  mailFolderId        : false,
-                  mailAccountId       : false,
-                  parentMessageItemId : false
-              };
+        const me = this;
 
-        let filter, property;
-
-        for (property in propertySet) {
-
-            for (let i = 0, len = filters.length; i < len; i++) {
-
-                filter = filters.getAt(i);
-
-                if (filter.getProperty() === property) {
-                    propertySet[property] = true;
-                    if (!filter.getValue()) {
-                        Ext.raise({
-                            msg          : "no valid value set for filter \"" + property + "\"",
-                            mailFolderId : filter.getValue()
-                        });
-                    }
-                }
-            }
-        }
-
-        let properties = [];
-        for (property in propertySet) {
-            if (!propertySet[property]) {
-                properties.push(property);
-            }
-        }
-        if (properties.length) {
-            Ext.raise({
-                msg : "filters for properties \"[" + properties.join(', ') + "]\" not set"
-            });
-        }
+        me.checkAndBuildCompoundKeyFilters();
 
         return me.callParent(arguments);
     },
@@ -110,7 +80,81 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
         }
 
         return ret;
+    },
+
+
+    /**
+     * Helper function to be called before any load-operation to make sure
+     * compound key filters are set. Will be build out of information available
+     * in #associatedEntity if available and needed.
+     *
+     * @private
+     *
+     * @throws if any compound key information is missing
+     */
+    checkAndBuildCompoundKeyFilters : function() {
+
+        const me          = this,
+            filters     = me.getFilters(),
+            propertySet = {
+                mailFolderId        : false,
+                mailAccountId       : false,
+                parentMessageItemId : false
+            },
+            assocEntity = me.getAssociatedEntity() && me.getAssociatedEntity().entityName === 'MessageDraft'
+                ? me.getAssociatedEntity()
+                : null;
+
+        let filter, property;
+
+        for (property in propertySet) {
+
+            for (let i = 0, len = filters.length; i < len; i++) {
+
+                filter = filters.getAt(i);
+
+                if (filter.getProperty() === property) {
+                    propertySet[property] = i;
+                    if (!filter.getValue()) {
+                        Ext.raise({
+                            msg          : "no valid value set for filter \"" + property + "\"",
+                            mailFolderId : filter.getValue()
+                        });
+                    }
+                }
+            }
+        }
+
+        let properties = [];
+        for (property in propertySet) {
+            // test for false since index 0 might be set
+            if (propertySet[property] === false) {
+                properties.push(property);
+            }
+        }
+
+        if (properties.length) {
+
+            if (assocEntity) {
+                for (let i in propertySet) {
+                    me.removeFilter(filters[propertySet[i]], true);
+                }
+
+                for (let i in propertySet) {
+                    me.addFilter({
+                        property : i,
+                        value    : i === 'parentMessageItemId'
+                            ? assocEntity.get('id')
+                            : assocEntity.get(i)
+                    }, true);
+                }
+            } else {
+                Ext.raise({
+                    msg : "filters for properties \"[" + properties.join(', ') + "]\" not set"
+                });
+            }
+        }
+
+        return true;
     }
-
-
 });
