@@ -52,7 +52,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
         /**
          * @type {Number} CANCELED
          */
-        CANCELED : 5
+        CANCELED : 5,
+
+        /**
+         * @type {Number} INVALID_TARGET
+         */
+        INVALID_TARGET : 6
     },
 
 

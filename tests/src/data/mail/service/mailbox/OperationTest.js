@@ -45,7 +45,8 @@ describe('conjoon.cn_mail.data.mail.service.mailbox.OperationTest', function(t) 
             conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
             conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
             conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
-            conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED
+            conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED,
+            conjoon.cn_mail.data.mail.service.mailbox.Operation.INVALID_TARGET
         ];
 
         for (let i = 0, len = coll.length; i < len; i++) {
