@@ -139,6 +139,12 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         let source;
 
+        // step out, we are currently erasing a phantom record that does not
+        // need a check for the compound keys
+        if (me.dropped && me.phantom) {
+            return me.callParent(arguments);
+        }
+
         if (me.phantom) {
             source = me.data;
         } else {
@@ -166,35 +172,6 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         params = params || {};
 
         me.checkForeignKeysForAction(params, 'read');
-
-        return me.callParent(arguments);
-    },
-
-
-    /**
-     * Overrides parent implementation to make sure mailFolderId, mailAccountId,
-     * id are sent with each request if applicable.
-     *
-     * @param {Object}  options
-     *
-     * @throws if mailAccountId or mailFolderId are not set for this model, or
-     * if this model instance is not a phantom and does not send id
-     *
-     * @see checkForeignKeys
-     */
-    erase : function(options) {
-
-        const me = this;
-
-        let source;
-
-        if (me.phantom) {
-            source = me.data;
-        } else {
-           source = Ext.applyIf(Ext.apply({}, me.modified), me.data);
-        }
-
-        me.checkForeignKeysForAction(source, 'erase');
 
         return me.callParent(arguments);
     },

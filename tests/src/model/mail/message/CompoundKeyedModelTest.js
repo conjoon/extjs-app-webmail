@@ -112,7 +112,9 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.expect(model.save()).toBeTruthy();
     });
 
-    t.it("erase()", function(t) {
+
+
+    t.it("erase() - phantom", function(t) {
 
         let exc, e;
 
@@ -120,6 +122,23 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         model.set('mailFolderId', "INBOX.Drafts");
         model.set('id', "31424");
 
+        t.expect(model.phantom).toBe(true);
+        t.isntCalled('checkForeignKeysForAction', model);
+        t.expect(model.erase()).toBeTruthy();
+    });
+
+
+    t.it("erase()", function(t) {
+
+        let exc, e;
+
+        model.set('localId', "abcd");
+        model.set('mailAccountId', "a");
+        model.set('mailFolderId', "INBOX.Drafts");
+        model.set('id', "31424");
+        model.commit();
+
+        t.expect(model.phantom).toBe(false);
         t.isCalled('checkForeignKeysForAction', model);
         t.expect(model.erase()).toBeTruthy();
     });
