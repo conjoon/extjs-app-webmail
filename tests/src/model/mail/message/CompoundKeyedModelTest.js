@@ -716,4 +716,139 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey');
     });
 
+
+    t.it("save() - consider modified (UPDATE)", function(t) {
+
+        let exc, e;
+
+        model.set('mailAccountId', "a");
+        model.set('mailFolderId', "INBOX.Drafts");
+        model.set('id', "31424");
+
+        model.commit();
+
+        t.expect(model.phantom).toBe(false);
+
+        // will use modified for keys
+        model.set('mailFolderId', "meh.");
+        model.set('mailFolderId', undefined);
+
+
+        let ret = model.save();
+
+        t.expect(ret).toBeTruthy();
+
+        let jsonData = ret.getRequest().getJsonData();
+
+        t.expect(jsonData.hasOwnProperty('mailFolderId')).toBe(true);
+        t.expect(jsonData.mailFolderId).toBeUndefined();
+
+        t.waitForMs(500, function() {
+
+        });
+    });
+
+
+    t.it("save() - consider modified (CREATE)", function(t) {
+
+        let exc, e;
+
+        model.set('mailAccountId', "a");
+        model.set('mailFolderId', "INBOX.Drafts");
+        model.set('id', "31424");
+
+
+        t.expect(model.phantom).toBe(true);
+        model.set('mailFolderId', undefined);
+
+        try{model.save();}catch(e){exc = e;}
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg).toContain("must be set");
+
+
+        t.waitForMs(500, function() {
+
+        });
+    });
+
+
+    t.it("erase() - consider modified (NO PHANTOM)", function(t) {
+
+        let exc, e;
+
+        model.set('mailAccountId', "a");
+        model.set('mailFolderId', "INBOX.Drafts");
+        model.set('id', "31424");
+
+        model.commit();
+
+        t.expect(model.phantom).toBe(false);
+
+        // will use modified for keys
+        model.set('mailFolderId', "meh.");
+        model.set('mailFolderId', undefined);
+
+
+        let ret = model.erase();
+
+        t.expect(ret).toBeTruthy();
+
+        t.waitForMs(500, function() {
+
+        });
+    });
+
+
+    t.it("erase() - consider modified (PHANTOM) ", function(t) {
+
+        let exc, e;
+
+        model.set('mailAccountId', "a");
+        model.set('mailFolderId', "INBOX.Drafts");
+        model.set('id', "31424");
+
+
+        t.expect(model.phantom).toBe(true);
+        model.set('mailFolderId', undefined);
+
+        try{model.save();}catch(e){exc = e;}
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg).toContain("must be set");
+
+
+        t.waitForMs(500, function() {
+
+        });
+    });
+
+
+    t.it("set/reject - association is also reset", function(t) {
+
+        let modelL = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            mailAccountId : 'meh.'
+        });
+
+
+        let modelR = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+            mailFolderId : 'YO!',
+            mailAccountId : 'snafu'
+        });
+
+
+        modelL.getAssociatedCompoundKeyedData = function() {
+            return [modelR];
+        };
+
+        modelL.set('mailAccountId', 'foobar');
+
+        t.expect(modelR.get('mailAccountId')).toBe('foobar');
+
+        modelL.reject();
+
+        t.expect(modelR.get('mailAccountId')).toBe('meh.');
+
+
+    })
+
+
 });

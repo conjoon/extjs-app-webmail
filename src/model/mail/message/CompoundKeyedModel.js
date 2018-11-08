@@ -137,7 +137,15 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         const me = this;
 
-        me.checkForeignKeysForAction(me.data, 'save');
+        let source;
+
+        if (me.phantom) {
+            source = me.data;
+        } else {
+            source = Ext.applyIf(Ext.apply({}, me.modified), me.data);
+        }
+
+        me.checkForeignKeysForAction(source, 'save');
 
         return me.callParent(arguments);
     },
@@ -178,7 +186,15 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         const me = this;
 
-        me.checkForeignKeysForAction(me.data, 'erase');
+        let source;
+
+        if (me.phantom) {
+            source = me.data;
+        } else {
+           source = Ext.applyIf(Ext.apply({}, me.modified), me.data);
+        }
+
+        me.checkForeignKeysForAction(source, 'erase');
 
         return me.callParent(arguments);
     },
@@ -263,18 +279,22 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         const me = this;
 
-        let ret    = me.callParent(arguments),
+        // key might be a refrence to modified for example,
+        // which gets erased later on in a call to the parent implementation
+        // in the worst case, leaving us with an empty object. clone here
+        let cK     = Ext.isString(key) ? key : Ext.clone(key),
+            ret    = me.callParent(arguments),
             valids = [],
-            keys = {}, curr, val, range, assoc;
+            keys   = {}, curr, val, range, assoc;
 
         if (me.suspendSetter === true) {
             return ret;
         }
 
-        if (Ext.isString(key)) {
-            keys[key] = value;
+        if (Ext.isString(cK)) {
+            keys[cK] = value;
         } else {
-            keys = key;
+            keys = cK;
         }
 
         range = me.getAssociatedCompoundKeyedData();
