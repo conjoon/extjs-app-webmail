@@ -198,6 +198,16 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams()).toEqual({foo : 'bar', target : 'MessageBody'});
 
+        // modified
+        t.expect(request.getRecords()[0].phantom).toBe(true);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+        t.expect(request.getRecords()[0].get('mailFolderId')).toBe('xyz');
+        t.expect(request.getOperation().getRecords()[0].get('mailFolderId')).toBe('xyz');
+        targetUrl = '/MailAccounts/a/MailFolders/xyz/MessageDrafts';
+        proxy.entityName = 'MessageDraft';
+        request.setUrl("");
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
 
     });
 
@@ -243,6 +253,17 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().target).toBe('MessageBody');
 
+        // modified
+        t.expect(request.getRecords()[0].phantom).toBe(false);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+        t.expect(request.getRecords()[0].get('mailFolderId')).toBe('xyz');
+        t.expect(request.getOperation().getRecords()[0].get('mailFolderId')).toBe('xyz');
+        targetUrl = '/MailAccounts/a/MailFolders/b/MessageDrafts/d';
+        proxy.entityName = 'MessageDraft';
+        request.setUrl("");
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
+
     });
 
 
@@ -284,6 +305,18 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().target).toBe('MessageBody');
+
+
+        // modified
+        t.expect(request.getRecords()[0].phantom).toBe(false);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+        t.expect(request.getRecords()[0].get('mailFolderId')).toBe('xyz');
+        t.expect(request.getOperation().getRecords()[0].get('mailFolderId')).toBe('xyz');
+        targetUrl = '/MailAccounts/a/MailFolders/b/MessageDrafts/d';
+        proxy.entityName = 'MessageDraft';
+        request.setUrl("");
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
     });
 
 

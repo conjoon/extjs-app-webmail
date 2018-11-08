@@ -115,7 +115,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 source.id = rec.data.id;
             }
         } else {
-            source = rec.data;
+
+            if (rec.phantom) {
+                source = rec.data;
+            } else {
+                source = Ext.applyIf(Ext.apply({}, rec.modified), rec.data);
+            }
+
         }
 
         if (!source.mailAccountId || !source.mailFolderId || !source.parentMessageItemId) {

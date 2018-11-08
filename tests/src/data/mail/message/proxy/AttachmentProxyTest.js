@@ -196,6 +196,17 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected entity");
+
+        // modified
+        t.expect(request.getRecords()[0].phantom).toBe(true);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+        t.expect(request.getRecords()[0].get('mailFolderId')).toBe('xyz');
+        t.expect(request.getOperation().getRecords()[0].get('mailFolderId')).toBe('xyz');
+        targetUrl = '/MailAccounts/a/MailFolders/xyz/MessageItems/c/Attachments';
+        request.setUrl("");
+        proxy.entityName = 'DraftAttachment';
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
     });
 
 
@@ -233,6 +244,17 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected entity");
+
+        // modified
+        t.expect(request.getRecords()[0].phantom).toBe(false);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+        t.expect(request.getRecords()[0].get('mailFolderId')).toBe('xyz');
+        t.expect(request.getOperation().getRecords()[0].get('mailFolderId')).toBe('xyz');
+        targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/e/Attachments/d';
+        request.setUrl("");
+        proxy.entityName = 'DraftAttachment';
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
     });
 
 
@@ -269,6 +291,18 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected entity");
+
+        // modified
+        t.expect(request.getRecords()[0].phantom).toBe(false);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+        t.expect(request.getRecords()[0].get('mailFolderId')).toBe('xyz');
+        t.expect(request.getOperation().getRecords()[0].get('mailFolderId')).toBe('xyz');
+        targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/e/Attachments/d';
+        request.setUrl("");
+        proxy.entityName = 'DraftAttachment';
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
+
     });
 
 

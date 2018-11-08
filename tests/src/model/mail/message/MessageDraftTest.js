@@ -478,6 +478,65 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         });
 
 
+        t.it("save() - phantom", function(t) {
+            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
+            delete messageItem.localId;
+
+            let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", messageItem);
+
+            t.expect(draft.phantom).toBe(true);
+
+            draft.set('mailFolderId', "foo");
+
+            let ret = draft.save();
+
+
+            t.expect(ret.request.getUrl()).toContain("MailFolders/foo/");
+
+            t.waitForMs(500, function() {
+
+                t.expect(draft.get("mailFolderId")).toBe("foo");
+                t.expect(draft.get("id")).toBe(messageItem.id);
+                t.expect(draft.get("mailAccountId")).toBe(messageItem.mailAccountId);
+                t.expect(draft.phantom).toBe(false);
+            });
+        });
+
+
+        t.it("save() - consider modified", function(t) {
+            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
+            var draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                    messageItem.mailAccountId,
+                    messageItem.mailFolderId,
+                    messageItem.id
+                )
+            );
+
+            t.waitForMs(500, function() {
+
+                t.expect(draft.phantom).toBe(false);
+
+                draft.set('mailFolderId', "foo");
+
+                let ret = draft.save();
+
+                t.expect(ret.request.getJsonData().mailFolderId).toBe("foo");
+                t.expect(ret.request.getUrl()).toContain("MailFolders/" + encodeURIComponent(messageItem.mailFolderId) + "/");
+
+                t.waitForMs(500, function() {
+
+                    t.expect(draft.get("mailFolderId")).toBe("foo");
+                    t.expect(draft.get("id")).toBe(messageItem.id);
+                    t.expect(draft.get("mailAccountId")).toBe(messageItem.mailAccountId);
+                    t.expect(draft.phantom).toBe(false);
+                });
+            });
+        });
+
+
 
 
     });});
