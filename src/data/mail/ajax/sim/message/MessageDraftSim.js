@@ -87,7 +87,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             var me            = this,
                 ret           = {},
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                values        = {};
+                values        = {},
+                keys          = me.extractCompoundKey(ctx.url);
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
@@ -105,9 +106,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             }
 
             MessageTable.updateMessageDraft(
-                ctx.xhr.options.jsonData.mailAccountId,
-                ctx.xhr.options.jsonData.mailFolderId,
-                ctx.xhr.options.jsonData.id,
+                keys.mailAccountId,
+                keys.mailFolderId,
+                keys.id,
                 values
             );
 
@@ -198,14 +199,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
                 messageDrafts;
 
-            if (idPart) {
-                var parts = ctx.url.split('/');
-                id = parts.pop().split('?')[0];
+            let keys = me.extractCompoundKey(ctx.url);
 
-                [mailAccountId, mailFolderId, id] = me.extractCompoundKey(ctx.url);
+            mailAccountId = keys.mailAccountId,
+            mailFolderId  = keys.mailFolderId,
+            id            = keys.id;
 
-                return {data : MessageTable.getMessageDraft(mailAccountId, mailFolderId, id)};
-            } else if (filters) {
+            return {data : MessageTable.getMessageDraft(mailAccountId, mailFolderId, id)};
+
+        /*} else if (filters) {
                 messageDrafts = MessageTable.getMessageDrafts();
                 filters = Ext.decode(filters);
                 id      = filters[0].value;
@@ -214,7 +216,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 });
             } else {
                 return MessageTable.getMessageDrafts();
-            }
+            }*/
         },
 
 
@@ -235,11 +237,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
                 mailAccountId = pt.pop(),
                 mailAccountId = pt.pop();
 
-            return [
-                decodeURIComponent(mailAccountId),
-                decodeURIComponent(mailFolderId),
-                decodeURIComponent(id)
-            ];
+            return {
+                mailAccountId : decodeURIComponent(mailAccountId),
+                mailFolderId  : decodeURIComponent(mailFolderId),
+                id            :decodeURIComponent(id)
+            };
         }
     });
 
