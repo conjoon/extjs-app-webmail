@@ -35,7 +35,8 @@
  *          )}
  *      ));
  *
- *      let messageItem = conjoon.cn_mail.model.mail.message.MessageItem.load("1", {
+ *      let messageItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
+ *          'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor('account', 'INBOX', 12), {
  *          success : function(record) {
  *              let op = service.moveToTrashOrDeleteMessage(record, {
  *                  success : function(operation) {
@@ -136,15 +137,23 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @see deleteMessage
      * @see moveMessage
+     * @see filterMessageItemValue
+     *
+     * @throws any exception thrown by #filterMessageItemValue
      */
     moveToTrashOrDeleteMessage : function(messageItem, options) {
 
-        const me               = this,
-              mailFolderHelper = me.getMailFolderHelper(),
-              trashFolderId    = mailFolderHelper.getMailFolderIdForType(
-                conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH);
+        const me = this;
 
         messageItem = me.filterMessageItemValue(messageItem);
+
+        const mailFolderHelper = me.getMailFolderHelper(),
+              trashFolderId    = mailFolderHelper.getMailFolderIdForType(
+                messageItem.get('mailAccountId'),
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH
+              );
+
+
 
         if (trashFolderId === null) {
             let op = me.createOperation({
@@ -237,11 +246,15 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
      * triggered by this action
      *
-     * @throws if mailFolderId is not a string
+     * @throws if mailFolderId is not a string, or if mailFolderId does not represent
+     * a folder belonging to the same account the messageItem belongs to
      */
     moveMessage : function(messageItem, mailFolderId, options) {
 
-        const me = this;
+        const me               = this,
+              mailFolderHelper = me.getMailFolderHelper();
+
+        let op;
 
         messageItem = me.filterMessageItemValue(messageItem);
 
@@ -254,7 +267,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
 
         if (messageItem.get('mailFolderId') === mailFolderId) {
-            let op =  me.createOperation({
+            op =  me.createOperation({
                 type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
                 record : messageItem
             }, {success : true});
@@ -266,12 +279,22 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             return op;
         }
 
-        let op = me.createOperation({
+        op = me.createOperation({
             type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
             record         : messageItem,
             sourceFolderId : messageItem.get('mailFolderId'),
             targetFolderId : mailFolderId
         });
+
+        if (!mailFolderHelper.doesFolderBelongToAccount(mailFolderId, messageItem.get('mailAccountId'))) {
+            op.setResult({
+                success : false,
+                code    : conjoon.cn_mail.data.mail.service.mailbox.Operation.INVALID_TARGET
+            });
+
+            return op;
+        }
+
         me.callBefore(op, options);
         messageItem.set('mailFolderId', mailFolderId);
         messageItem.save(me.configureOperationCallbacks(op, options));
@@ -304,12 +327,22 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @private
      *
-     * @throws if messageItem is not an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem.
+     * @throws if messageItem is not an instance of
+     * conjoon.cn_mail.model.mail.message.AbstractMessageItem, or if the mailAccountId
+     * is missing
      */
     filterMessageItemValue : function(messageItem) {
+
         if (!(messageItem instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem)) {
             Ext.raise({
-                msg         : "'messageItem' must be an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem",
+                msg         : "\"messageItem\" must be an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem",
+                messageItem : messageItem
+            });
+        }
+
+        if (!messageItem.get('mailAccountId')) {
+            Ext.raise({
+                msg          : "\"mailAccountId\" missing in messageItem",
                 messageItem : messageItem
             });
         }
@@ -438,6 +471,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
               sourceFolderId   = request.sourceFolderId,
               targetFolderId   = request.targetFolderId,
               record           = request.record,
+              mailAccountId    = record.get('mailAccountId'),
               mailFolderHelper = me.getMailFolderHelper();
 
         if (op.getResult().success !== true) {
@@ -448,8 +482,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             return;
         }
 
-        let sourceFolder = mailFolderHelper.getMailFolder(sourceFolderId),
-            targetFolder = mailFolderHelper.getMailFolder(targetFolderId);
+        let sourceFolder = mailFolderHelper.getMailFolder(mailAccountId, sourceFolderId),
+            targetFolder = mailFolderHelper.getMailFolder(mailAccountId, targetFolderId);
 
         // most likely not loaded yet if null
         if (sourceFolder) {
@@ -481,6 +515,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             request          = op.getRequest(),
             record           = request.record,
             mailFolderId     = record.get('mailFolderId'),
+            mailAccountId    = record.get('mailAccountId'),
             mailFolderHelper = me.getMailFolderHelper();
 
         if (op.getResult().success !== true) {
@@ -491,7 +526,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             return;
         }
 
-        let mailFolder = mailFolderHelper.getMailFolder(mailFolderId);
+        let mailFolder = mailFolderHelper.getMailFolder(mailAccountId, mailFolderId);
 
         // most likely not loaded if not available
         if (mailFolder) {

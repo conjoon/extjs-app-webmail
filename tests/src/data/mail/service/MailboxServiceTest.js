@@ -22,7 +22,9 @@
 
 describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
 
-    const createService = function(helper) {
+    const
+        ACCOUNTID = "dev_sys_conjoon_org",
+        createService = function(helper) {
 
         return Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
             mailFolderHelper : helper === false ? undefined : Ext.create('conjoon.cn_mail.data.mail.service.MailFolderHelper', {
@@ -35,10 +37,37 @@ describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
     checkArgMessageItem = function(t, service) {
         t.isCalled('filterMessageItemValue', service);
     },
-    createMessageItem = function(mailFolderId, id) {
+    createDummyItem = function() {
         return Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            id           : id || Ext.id(),
-            mailFolderId : mailFolderId
+            localId       : "foo",
+            id            : 'meh',
+            mailAccountId : 'bla',
+            mailFolderId  : "INBOX"
+        })
+    },
+    createMessageItem = function(index, mailFolderId) {
+
+        index = index === undefined ? 1 : index;
+
+        let mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
+
+        if (mailFolderId) {
+            let i = index >= 0 ? index : 0, upper = 10000;
+
+            for (; i <= upper; i++) {
+                mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                if (mi.mailFolderId === mailFolderId) {
+                    break;
+                }
+            }
+
+        }
+
+        return Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+            localId       : [mi.mailAccountId, mi.mailFolderId, mi.id].join('-'),
+            id            : mi.id,
+            mailAccountId : mi.mailAccountId,
+            mailFolderId  : mi.mailFolderId
         })
     },
     expectOp = function(t, op) {
@@ -80,7 +109,17 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
-        let mi = createMessageItem("4");
+
+        let mi = createMessageItem();
+        mi.set('mailAccountId', undefined);
+
+        try{service.filterMessageItemValue(mi);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
+        t.expect(exc.msg.toLowerCase()).toContain("missing");
+
+        mi = createMessageItem();
 
         t.expect(service.filterMessageItemValue(mi)).toBe(mi);
     });
@@ -157,7 +196,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("moveToTrashOrDeleteMessage() - no trashfolder", function(t) {
 
         let service = createService(),
-            messageItem = createMessageItem("2");
+            messageItem = createMessageItem();
 
         checkArgMessageItem(t, service);
 
@@ -189,7 +228,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("deleteMessage()", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("4", "1");
+            messageItem = createMessageItem();
 
         checkArgMessageItem(t, service);
 
@@ -220,7 +259,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             t.expect(result.success).toBe(true);
             t.expect(testObj.CALLED).toBe(1);
 
-            op = service.deleteMessage(createMessageItem("4", "foo"), cbOptions);
+            op = service.deleteMessage(createDummyItem(), cbOptions);
 
             t.waitForMs(250, function() {
                 let result = op.getResult();
@@ -232,10 +271,11 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+
     t.it("moveToTrashOrDeleteMessage() - mailfolder is trashfolder", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("5", "71");
+            messageItem = createMessageItem(1, "INBOX.Trash");
 
         t.isCalledNTimes('deleteMessage', service, 1);
         t.waitForMs(250, function() {
@@ -252,7 +292,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("moveMessage() - exception mailFolderId", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("4", "1");
+            messageItem = createMessageItem();
 
         checkArgMessageItem(t, service);
 
@@ -266,7 +306,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("moveMessage() - same folder NOOP", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("4", "1");
+            messageItem = createMessageItem();
 
         let testObj   = {CALLED : 0},
             cbOptions = {
@@ -275,7 +315,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 scope   : testObj
             };
 
-        let targetFolderId = "4";
+        let targetFolderId = messageItem.get('mailFolderId');
         t.expect(testObj.CALLED).toBe(0);
         t.isCalled('createOperation', service);
         let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
@@ -292,56 +332,85 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("moveMessage() - invalid target", function(t) {
+
+        let service     = createService(),
+            messageItem = createMessageItem();
+
+        let cbOptions = {
+                success : Ext.emptyFn,
+                failure : Ext.emptyFn,
+                scope   : null
+            };
+
+        let targetFolderId = "foobar";
+        let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
+
+        t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+
+        let result = op.getResult();
+        t.expect(result.success).toBe(false);
+        t.expect(result.code).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.INVALID_TARGET);
+    });
+
+
     t.it("moveMessage()", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("4", "1");
+            messageItem = createMessageItem(1, "INBOX");
 
-        let testObj   = {CALLED : 0},
-            cbOptions = {
-                success : function(op) {this.CALLED++;expectOp(t, op);},
-                before  : function(op) {this.BEFORE = -1;expectOp(t, op);},
-                failure : function(op) {this.CALLED--;expectOp(t, op);},
-                scope   : testObj
-            };
-
-        let targetFolderId = "3",
-            sourceFolderId = messageItem.get('mailFolderId');
-
-        t.expect(sourceFolderId).toBeTruthy();
-        t.expect(targetFolderId).not.toBe(sourceFolderId);
-        t.expect(testObj.CALLED).toBe(0);
-        t.isCalled('callBefore', service);
-        t.isCalled('createOperation', service);
-        t.isCalled('configureOperationCallbacks', service);
-        let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
-        t.expect(testObj.BEFORE).toBe(-1);
-        t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
-
-        let request = op.getRequest();
-        t.expect(request.type).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE);
-        t.expect(request.record).toBe(messageItem);
-        t.expect(request.targetFolderId).toBe(targetFolderId);
-        t.expect(request.sourceFolderId).toBe(sourceFolderId);
+        t.waitForMs(500, function() {
 
 
-        t.expect(op.getResult()).toBeUndefined();
+            let testObj   = {CALLED : 0},
+                cbOptions = {
+                    success : function(op) {this.CALLED++;expectOp(t, op);},
+                    before  : function(op) {this.BEFORE = -1;expectOp(t, op);},
+                    failure : function(op) {this.CALLED--;expectOp(t, op);},
+                    scope   : testObj
+                };
 
-        t.waitForMs(250, function() {
-            let result = op.getResult();
-            t.expect(result.success).toBe(true);
-            t.expect(testObj.CALLED).toBe(1);
+            let targetFolderId = "INBOX.Sent Messages",
+                sourceFolderId = messageItem.get('mailFolderId');
 
-            t.expect(messageItem.get("mailFolderId")).toBe(targetFolderId)
+            t.expect(sourceFolderId).toBeTruthy();
+            t.expect(targetFolderId).not.toBe(sourceFolderId);
+            t.expect(testObj.CALLED).toBe(0);
+            t.isCalled('callBefore', service);
+            t.isCalled('createOperation', service);
+            t.isCalled('configureOperationCallbacks', service);
+
+            let op = service.moveMessage(messageItem, targetFolderId, cbOptions);
+            t.expect(testObj.BEFORE).toBe(-1);
+            t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
+
+            let request = op.getRequest();
+            t.expect(request.type).toBe(conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE);
+            t.expect(request.record).toBe(messageItem);
+            t.expect(request.targetFolderId).toBe(targetFolderId);
+            t.expect(request.sourceFolderId).toBe(sourceFolderId);
+
+
+            t.expect(op.getResult()).toBeUndefined();
+
+            t.waitForMs(250, function() {
+                let result = op.getResult();
+                t.expect(result.success).toBe(true);
+                t.expect(testObj.CALLED).toBe(1);
+
+                t.expect(messageItem.get("mailFolderId")).toBe(targetFolderId)
+            });
+
+
         });
 
-    });
 
+    });
 
     t.it("moveToTrashOrDeleteMessage() - message moved to trashfolder", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("2", "271");
+            messageItem = createMessageItem(1, "INBOX");
 
         let testObj   = {CALLED : 0},
             cbOptions = {
@@ -358,7 +427,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             t.waitForMs(250, function() {
                 t.expect(testObj.CALLED).toBe(1);
                 t.expect(op.getResult().success).toBe(true);
-                t.expect(messageItem.get("mailFolderId")).toBe("5");
+                t.expect(messageItem.get("mailFolderId")).toBe("INBOX.Trash");
 
             });
         });
@@ -386,7 +455,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("deleteMessage() - cancel", function(t) {
 
         let service     = createService(),
-            messageItem = createMessageItem("4", "1");
+            messageItem = createMessageItem();
 
         checkArgMessageItem(t, service);
 
@@ -409,15 +478,15 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
     t.it('moveCallback()', function(t) {
         let service     = createService(),
-            sourceFolderId = "1",
-            targetFolderId = "4",
-            messageItem = createMessageItem(sourceFolderId, "8");
+            sourceFolderId = "INBOX",
+            targetFolderId = "INBOX.Trash",
+            messageItem = createMessageItem(1, sourceFolderId);
 
 
         t.waitForMs(250, function() {
 
-            let sourceFolder = service.getMailFolderHelper().getMailFolder(sourceFolderId),
-                targetFolder = service.getMailFolderHelper().getMailFolder(targetFolderId);
+            let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId),
+                targetFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, targetFolderId);
 
             sourceFolder.set("unreadCount", 5);
             targetFolder.set("unreadCount", 0);
@@ -428,7 +497,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
                 type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                 record         : messageItem,
                 sourceFolderId : sourceFolderId,
-                targetFolderId : targetFolderId,
+                targetFolderId : targetFolderId
             }, {
                 success : true
             });
@@ -442,14 +511,14 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             t.expect(targetFolder.dirty).toBe(false);
 
             // no success
-            messageItem = createMessageItem(sourceFolderId, "28");
+            messageItem = createMessageItem(3, sourceFolderId);
             messageItem.set('seen', false);
 
             op = service.createOperation({
                 type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                 record         : messageItem,
                 sourceFolderId : sourceFolderId,
-                targetFolderId : targetFolderId,
+                targetFolderId : targetFolderId
             }, {
                 success : false
             });
@@ -464,13 +533,13 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
     t.it('deleteCallback()', function(t) {
         let service        = createService(),
-            sourceFolderId = "5",
-            messageItem    = createMessageItem(sourceFolderId, "4");
+            sourceFolderId = "INBOX.Trash",
+            messageItem    = createMessageItem(4, sourceFolderId);
 
 
         t.waitForMs(250, function() {
 
-            let sourceFolder = service.getMailFolderHelper().getMailFolder(sourceFolderId);
+            let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId);
 
             sourceFolder.set("unreadCount", 5);
 
@@ -490,7 +559,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             t.expect(sourceFolder.dirty).toBe(false);
 
             // no success
-            messageItem = createMessageItem(sourceFolderId, "28");
+            messageItem = createMessageItem(43, sourceFolderId);
             messageItem.set('seen', false);
 
             op = service.createOperation({
@@ -514,7 +583,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
         let service = createService(),
             op, opts,
-            messageItem = createMessageItem("3", "4"),
+            messageItem = createMessageItem(3, "INBOX.Junk"),
             moveRequest = {
                 type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                 record : messageItem
@@ -558,13 +627,13 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
 
     t.it('deleteCallback() - max 0 unreadCount', function(t) {
         let service        = createService(),
-            sourceFolderId = "5",
-            messageItem    = createMessageItem(sourceFolderId, "4");
+            sourceFolderId = "INBOX.Trash",
+            messageItem    = createMessageItem(4, sourceFolderId);
 
 
         t.waitForMs(250, function() {
 
-            let sourceFolder = service.getMailFolderHelper().getMailFolder(sourceFolderId);
+            let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId);
 
             sourceFolder.set("unreadCount", 0);
 
@@ -588,7 +657,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("filterMessageItemValue() - accepts AbstractMessageItems", function(t) {
 
         let service  = createService(),
-            abstract = Ext.create('conjoon.cn_mail.model.mail.message.AbstractMessageItem');
+            abstract = Ext.create('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
+                mailAccountId : ACCOUNTID
+            });
 
         t.expect(service.filterMessageItemValue(abstract)).toBe(abstract);
     });
@@ -597,7 +668,9 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     t.it("moveToTrashOrDeleteMessage() - message not moved, deleted directly since it was a phantom", function(t) {
 
         let service     = createService(),
-            messageItem =  Ext.create('conjoon.cn_mail.model.mail.message.MessageItem');
+            messageItem =  Ext.create('conjoon.cn_mail.model.mail.message.MessageItem',{
+                mailAccountId : ACCOUNTID
+            });
 
         t.isntCalled('moveMessage', service);
         t.isCalled('deleteMessage', service);
