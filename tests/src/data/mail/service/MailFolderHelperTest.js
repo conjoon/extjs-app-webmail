@@ -105,4 +105,19 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
+    t.it("doesFolderBelongToAccount()", function(t) {
+
+        let helper = createHelper(),
+            exc, e;
+
+        t.waitForMs(250, function() {
+            t.expect(helper.doesFolderBelongToAccount('foo', ACCOUNTID)).toBe(false);
+            t.expect(helper.doesFolderBelongToAccount("INBOX", "ACCOUNTID")).toBe(false);
+            t.expect(helper.doesFolderBelongToAccount("INBOX", ACCOUNTID)).toBe(true);
+        });
+
+
+    });
+
+
 });});

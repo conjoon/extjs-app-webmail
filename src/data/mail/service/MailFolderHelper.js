@@ -159,6 +159,27 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
         return store.getAt(nodeInd);
 
+    },
+
+
+    /**
+     * Returns true if the specified folder id represents a folder belonging
+     * to the specified account id.
+     *
+     * @param {String} mailFolderId
+     * @param {String} mailAccountId
+     *
+     * @return {Boolean}
+     */
+    doesFolderBelongToAccount : function(mailFolderId, mailAccountId) {
+
+        const me = this;
+
+        if (me.getMailFolder(mailAccountId, mailFolderId)) {
+            return true;
+        }
+
+        return false;
     }
 
 });
