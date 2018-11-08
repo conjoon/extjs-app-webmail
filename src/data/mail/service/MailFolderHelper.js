@@ -29,7 +29,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
 
     requires : [
-        'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
+        'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore',
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
     ],
 
 
@@ -65,25 +66,25 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
     /**
      * Queries the store this helper is configured with and returns the
-     * conjoon.cn_mail.model.mail.folder.MailFolder with the specified id.
+     * conjoon.cn_mail.model.mail.folder.MailFolder with the specified id for
+     * the specified account.
      * Returns null if the MailFolder couldn't be found.
      *
+     * @param {String} mailAccountId
      * @param {String} mailFolderId
      *
      * @return {null|conjoon.cn_mail.model.mail.folder.MailFolder}
      */
-    getMailFolder : function(mailFolderId) {
+    getMailFolder : function(mailAccountId, mailFolderId) {
 
-        const me      = this,
-              store   = me.getStore(),
-              nodeInd = store.findExact('id', mailFolderId);
+        const me = this,
+              accountNode = me.getAccountNode(mailAccountId);
 
-        if (nodeInd === -1) {
+        if (!accountNode) {
             return null;
         }
 
-        return store.getAt(nodeInd);
-
+        return accountNode.findChild("id", mailFolderId, true);
     },
 
 
@@ -91,18 +92,23 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      * Returns the id of the mailfolder found in #store with this type.
      * Folders are queried directly under the root node and not deep!
      *
+     * @param {String} mailAccountId THe maila ccount to which the node belongs to
      * @param {String} type The type to look for. Types can be found in
      * conjoon.cn_mail.data.mail.folder.MailFolderTypes
      *
      * @return {String|null} The id of the MailFolder if a folder with the type
      * could be found, otherwise null.
      */
-    getMailFolderIdForType : function(type) {
+    getMailFolderIdForType : function(mailAccountId, type) {
 
         const me = this,
-              store = me.getStore();
+            accountNode = me.getAccountNode(mailAccountId);
 
-        let node = store.getRoot().findChild("type", type, false);
+        if (!accountNode) {
+            return null;
+        }
+
+        let node = accountNode.findChild("type", type, false);
 
         if (!node) {
             return null;
@@ -124,7 +130,35 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
         const me = this;
 
         return me.store;
-    }
+    },
 
+
+    /**
+     * Returns the node which represents the account identified by the specified
+     * mailAccountId.
+     * Returns null if not found.
+     *
+     * @param {String} mailAccountId
+     *
+     * @return {null|conjoon.cn_mail.model.mail.folder.MailFolder}
+     */
+    getAccountNode : function(mailAccountId) {
+
+        const me    = this,
+            store   = me.getStore(),
+            nodeInd = store.findBy(function(node) {
+                if (node.get('id') === mailAccountId && node.get('type') ===
+                    conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT) {
+                    return true;
+                }
+            });
+
+        if (nodeInd === -1) {
+            return null;
+        }
+
+        return store.getAt(nodeInd);
+
+    }
 
 });
