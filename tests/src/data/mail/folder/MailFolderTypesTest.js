@@ -36,7 +36,8 @@ describe('conjoon.cn_mail.data.mail.folder.MailFolderTypesTest', function(t) {
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.FOLDER,
-                conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT,
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
             ];
 
             for (let i = 0, len = coll.length; i < len; i++) {

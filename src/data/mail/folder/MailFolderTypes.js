@@ -56,7 +56,12 @@ Ext.define('conjoon.cn_mail.data.mail.folder.MailFolderTypes', {
         /**
          * @type {String} DRAFT
          */
-        DRAFT : 'DRAFT'
+        DRAFT : 'DRAFT',
+
+        /**
+         * @type {String} ACCOUNT
+         */
+        ACCOUNT : 'ACCOUNT'
     }
 
 });
