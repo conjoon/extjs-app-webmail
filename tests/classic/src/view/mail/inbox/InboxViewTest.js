@@ -98,7 +98,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                 t.expect(grid.isVisible()).toBe(false);
 
                 t.waitForMs(500, function(){
-                    var mailFolder = tree.getStore().getAt(0),
+                    var mailFolder = tree.getStore().getAt(tree.getStore().findExact('id', 'INBOX')),
                         unreadCount =  mailFolder.get('unreadCount');
 
                     t.expect(unreadCount).not.toBe(0);
@@ -293,7 +293,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
             t.waitForMs(500, function(){
 
                 t.waitForMs(500, function(){
-                    var mailFolder = tree.getStore().getAt(0);
+                    var mailFolder = tree.getStore().getAt(tree.getStore().findExact('id', 'INBOX'));
                     t.expect(mailFolder.get('type')).not.toBe('DRAFT');
                     tree.getSelectionModel().select(mailFolder);
 
