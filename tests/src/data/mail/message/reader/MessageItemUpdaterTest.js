@@ -111,6 +111,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
 
                 t.expect(ret).toBe(messageItem);
 
+
                 t.expect(messageItem.get('subject')).toBe(messageDraft.get('subject'));
                 t.expect(messageItem.get('date')).toBe(messageDraft.get('date'));
                 t.expect(messageItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
@@ -152,8 +153,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                     messageDraft = createMessageDraft(),
                     messageItem;
 
-
-
                 try {UPDATER.createItemFromDraft();} catch (e) {exc = e;}
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
@@ -168,6 +167,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
 
                 t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
 
+                t.expect(messageItem.get('mailFolderId')).toBe(messageDraft.get('mailFolderId'));
+                t.expect(messageItem.get('mailAccountId')).toBe(messageDraft.get('mailAccountId'));
+
                 t.expect(messageItem.get('seen')).toBe(messageDraft.get('seen'));
                 t.expect(messageItem.get('recent')).toBe(messageDraft.get('recent'));
                 t.expect(messageItem.get('flagged')).toBe(messageDraft.get('flagged'));
@@ -177,7 +179,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
 
                 t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
 
-                t.expect(messageItem.get('mailFolderId')).toBe(messageDraft.get('mailFolderId'));
 
                 // was committed
                 t.expect(messageItem.dirty).toBe(false);

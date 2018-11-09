@@ -64,6 +64,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
      *  - recent
      *  - flagged
      *  - draft
+     *  - mailAccountId
+     *  - id
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageItem}  messageItem
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
@@ -114,7 +116,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
             flagged        : messageDraft.get('flagged'),
             recent         : messageDraft.get('recent'),
             answered       : messageDraft.get('answered'),
-            draft          : messageDraft.get('draft'),
+            draft          : messageDraft.get('draft')
         });
 
         messageItem.commit();
@@ -147,7 +149,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
         }
 
         let messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            id            : messageDraft.getId(),
+            localId       : messageDraft.getId(),
+            id            : messageDraft.get('id'),
+            mailAccountId : messageDraft.get('mailAccountId'),
             mailFolderId  : messageDraft.get('mailFolderId'),
             messageBodyId : messageDraft.getMessageBody().getId()
         });
