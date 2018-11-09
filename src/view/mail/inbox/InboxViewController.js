@@ -168,34 +168,49 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             mailFolders = {},
             tmpId,
             rec,
+            tmpMailAccountId,
+            tmpMailFolderId,
             seen;
 
         messageItemRecords = [].concat(messageItemRecords);
 
         for (var i = 0, len = messageItemRecords.length; i <len; i++) {
             rec    = messageItemRecords[i];
-            tmpId  = rec.get('mailFolderId');
+            tmpMailAccountId = rec.get('mailAccountId');
+            tmpMailFolderId  = rec.get('mailFolderId');
             seen = rec.get('seen');
 
-            if (!mailFolders[tmpId]) {
-                mailFolders[tmpId] = 0;
+            if (!mailFolders[tmpMailAccountId]) {
+                mailFolders[tmpMailAccountId] = {};
             }
 
-            mailFolders[tmpId] += seen ? -1 : 1;
+            if (!mailFolders[tmpMailAccountId][tmpMailFolderId]) {
+                mailFolders[tmpMailAccountId][tmpMailFolderId] = 0;
+            }
+
+            mailFolders[tmpMailAccountId][tmpMailFolderId] += seen ? -1 : 1;
         }
 
-        for (var mailFolderId in mailFolders) {
-            if (!mailFolders.hasOwnProperty(mailFolderId)) {
-                continue;
-            }
+        let mfObj = null;
+        for (var mailAccountId in mailFolders) {
 
-            if (mailFolders[mailFolderId] == 0) {
-                continue;
-            }
+            mfObj = mailFolders[mailAccountId];
 
-            view.getViewModel().updateUnreadMessageCount(
-                mailFolderId, mailFolders[mailFolderId]
-            )
+            for (var mailFolderId in mfObj) {
+
+                if (!mfObj.hasOwnProperty(mailFolderId)) {
+                    continue;
+                }
+
+                if (mfObj[mailFolderId] == 0) {
+                    continue;
+                }
+
+                view.getViewModel().updateUnreadMessageCount(
+                    mailAccountId, mailFolderId, mfObj[mailFolderId]
+                )
+
+            }
         }
 
 
@@ -589,6 +604,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             newRec       = livegrid.getRecordById(id),
             mailFolderId = me.getMailboxService()
                              .getMailFolderHelper().getMailFolderIdForType(
+                    messageDraft.get('mailAccountId'),
                     conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT
                 );
 

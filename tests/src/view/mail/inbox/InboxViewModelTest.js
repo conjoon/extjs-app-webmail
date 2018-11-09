@@ -81,15 +81,15 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
 
             t.waitForMs(500, function() {
                 var store = viewModel.getStore('cn_mail-mailfoldertreestore'),
-                    rec = store.getAt(store.findExact('id', '1'));
+                    rec = store.getAt(store.findExact('id', 'INBOX'));
 
                 t.expect(rec.get('unreadCount')).toBe(3787);
 
-                viewModel.updateUnreadMessageCount('1', -10);
+                viewModel.updateUnreadMessageCount('dev_sys_conjoon_org', 'INBOX', -10);
 
                 t.expect(rec.get('unreadCount')).toBe(3777);
 
-                viewModel.updateUnreadMessageCount('1', 12);
+                viewModel.updateUnreadMessageCount('dev_sys_conjoon_org', 'INBOX', 12);
 
                 t.expect(rec.get('unreadCount')).toBe(3789);
 

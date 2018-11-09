@@ -59,28 +59,32 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
     },
 
     /**
-     * Updates the unreadCount of the aasociated {@link conjoon.cn_mail.model.mail.folder.MailFolder}
-     * found under the given mailFolderId by the number specified in unreadCount.
+     * Updates the unreadCount of the associated {@link conjoon.cn_mail.model.mail.folder.MailFolder}
+     * found under the given mailFolderId and the given mailAccountId by the number
+     * specified in unreadCount.
      * A positive value will increase the unread count, a negative value
      * decrease it.
      *
      * @param {String} mailFolderId
      * @param {Number} unreadCount
      */
-    updateUnreadMessageCount : function(mailFolderId, unreadCount) {
+    updateUnreadMessageCount : function(mailAccountId, mailFolderId, unreadCount) {
 
         var me    = this,
             store = me.getStore('cn_mail-mailfoldertreestore'),
             folder;
 
-        folder = store.findExact('id', mailFolderId);
+        folder = store.findExact('mailAccountId', mailAccountId);
 
         if (folder === -1) {
             return;
         }
-
         folder = store.getAt(folder);
+        folder = folder.findChild("id", mailFolderId, true);
 
+        if (!folder) {
+            return;
+        }
         folder.set('unreadCount', folder.get('unreadCount') + unreadCount);
     }
 
