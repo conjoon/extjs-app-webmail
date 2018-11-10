@@ -38,6 +38,7 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
 
             t.expect(store.getAutoLoad()).toBeFalsy();
 
+
             t.expect(store.config.model).toBe('conjoon.cn_mail.model.mail.folder.MailFolder');
 
             t.expect(store.alias).toContain('store.cn_mail-mailfoldertreestore');
@@ -52,7 +53,7 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
             store.load();
 
             t.waitForMs(500, function() {
-                t.expect(store.getRange().length).toBe(5);
+                t.expect(store.getRange().length).toBe(6);
             });
 
 
