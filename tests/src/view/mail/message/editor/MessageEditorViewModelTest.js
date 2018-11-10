@@ -174,22 +174,6 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
         });
 
-        t.it("stores", function(t) {
-
-            let vm = createWithSession();
-
-            t.waitForMs(750, function() {
-
-                t.expect(vm.getStore('cn_mail-mailfoldertreestore')).toBeDefined();
-                t.isInstanceOf(vm.getStore('cn_mail-mailfoldertreestore'), 'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore');
-
-                t.expect(vm.getStore('cn_mail-mailfoldertreestore').getAt(0).get('id')).toBe('dev_sys_conjoon_org');
-                t.expect(vm.getStore('cn_mail-mailfoldertreestore').getRange().length).toBeGreaterThan(1);
-
-            });
-
-        });
-
 
         t.it('constructor() - messageDraft is messageDraftConfig', function(t) {
 
