@@ -25,6 +25,27 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
     var panel;
 
     const
+        createPanelWithViewModel = function() {
+
+            return Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
+
+                viewModel : {
+                    type : 'cn_mail-mailinboxviewmodel',
+                    stores : {
+                        'cn_mail-mailfoldertreestore' : {
+                            type : 'cn_mail-mailfoldertreestore',
+                            autoLoad : true
+                        }
+                    }
+                },
+
+                width    : 800,
+                height   : 600,
+                renderTo : document.body
+
+            });
+
+        },
         createMessageDraftByFolderId = function(index, mailFolderId) {
 
             index = index === undefined ? 1 : index;
@@ -281,13 +302,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it('getMailBoxMessageService()', function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -354,11 +369,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onBeforeMessageMoveOrDelete()", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -405,11 +416,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onMessageMovedOrDeletedFailure()", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -466,11 +473,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onMessageMovedOrDeleted() - MOVED - targetFolder not shown in messageGrid", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -509,11 +512,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onMessageMovedOrDeleted() - MOVED - targetFolder shown in messageGrid", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -556,11 +555,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder not selected", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -602,11 +597,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder is selected", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -644,11 +635,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it('moveOrDeleteMessage()', function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -679,11 +666,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it('moveOrDeleteMessage() - failure', function(t){
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -718,11 +701,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it('callbacks registered for delete draft / delete buttons', function(t){
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -770,11 +749,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("onBeforeMessageMoveOrDelete() - cancel delete", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -815,11 +790,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("moveOrDeleteMessage() - confirm dialog not shown", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -847,11 +818,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("moveOrDeleteMessage() - confirm dialog shown", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -890,11 +857,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("moveOrDeleteMessage() - confirm dialog shown while global event returned false again", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -936,11 +899,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("updateViewForSentDraft() - no selection", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -955,11 +914,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("updateViewForSentDraft() - mail folder SENT selected", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -997,11 +952,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("updateViewForSentDraft() - mail folder DRAFT selected", function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 
@@ -1040,11 +991,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it('moveOrDeleteMessage() - event \"cn_mail-messageitemmove\" fired', function(t) {
 
-        panel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body
-        });
+        panel = createPanelWithViewModel();
 
         const viewController = panel.getController();
 

@@ -36,6 +36,15 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
     t.beforeEach(function() {
 
         viewConfig = {
+            viewModel : {
+                type : 'cn_mail-mailinboxviewmodel',
+                stores : {
+                    'cn_mail-mailfoldertreestore' : {
+                        type : 'cn_mail-mailfoldertreestore',
+                        autoLoad : true
+                    }
+                }
+            },
             width    : 800,
             height   : 600,
             renderTo : document.body

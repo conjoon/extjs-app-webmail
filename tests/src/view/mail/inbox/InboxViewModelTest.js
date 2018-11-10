@@ -47,10 +47,6 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
         // so simply query the defaultConfig
         t.expect(viewModel.defaultConfig.stores).toEqual({
 
-            'cn_mail-mailfoldertreestore' : {
-                type     : 'cn_mail-mailfoldertreestore',
-                autoLoad : true
-            },
 
             'cn_mail-mailmessageitemstore' : {
                 type : 'cn_mail-mailmessageitemstore',
@@ -76,7 +72,14 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
                 delay: 1
             });
 
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
+                stores : {
+                    'cn_mail-mailfoldertreestore' : {
+                        type : 'cn_mail-mailfoldertreestore',
+                        autoLoad : true
+                    }
+                }
+            });
 
 
             t.waitForMs(500, function() {
