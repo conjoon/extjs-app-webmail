@@ -22,7 +22,22 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) {
 
-    const selectMailFolder = function(panel, storeAt) {
+    const createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+        },
+        getMessageItemAt = function(messageIndex) {
+            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+        },
+        createKeyForExistingMessage = function(messageIndex){
+            let item = getMessageItemAt(messageIndex);
+
+            let key = createKey(
+                item.mailAccountId, item.mailFolderId, item.id
+            );
+
+            return key;
+        },
+        selectMailFolder = function(panel, storeAt) {
 
             let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
 
@@ -41,33 +56,38 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
             return message;
         },
+        createMessageItem = function(index, mailFolderId) {
+
+            index = index === undefined ? 1 : index;
+
+            let mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
+
+            if (mailFolderId) {
+                let i = index >= 0 ? index : 0, upper = 10000;
+
+                for (; i <= upper; i++) {
+                    mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                    if (mi.mailFolderId === mailFolderId) {
+                        break;
+                    }
+                }
+
+            }
+
+            return Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+                localId       : [mi.mailAccountId, mi.mailFolderId, mi.id].join('-'),
+                id            : mi.id,
+                mailAccountId : mi.mailAccountId,
+                mailFolderId  : mi.mailFolderId
+            })
+        },
         getRecordCollection = function () {
             return [
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id: '1',
-                    mailFolderId: 1,
-                    mailAccountId : 1
-                }),
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id: 2,
-                    mailFolderId: 1,
-                    mailAccountId : 2
-                }),
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id: 3,
-                    mailFolderId: 2,
-                    mailAccountId : 3
-                }),
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id: 4,
-                    mailFolderId: 2,
-                    mailAccountId : 4
-                }),
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                    id: 5,
-                    mailFolderId: 2,
-                    mailAccountId : 5
-                })
+                createMessageItem(1, "INBOX"),
+                createMessageItem(2, "INBOX.Drafts"),
+                createMessageItem(3, "INBOX.Sent Messages"),
+                createMessageItem(4, "INBOX.Drafts"),
+                createMessageItem(5, "INBOX.Drafts")
             ];
         },
         getDummyEditor = function () {
@@ -156,7 +176,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ctrl.destroy();
     });
 
-return;
+
     t.it("getMessageViewItemId()", function(t) {
 
         let ctrl = Ext.create(
@@ -165,8 +185,10 @@ return;
 
         let value = '@=jhoih78/(///)/ß ó';
 
+        let remoteCompoundKey = MessageEntityCompoundKey.createFor('mailAccountId', 'mailFolderId', 'id');
+
         t.expect(Ext.validIdRe.test(value)).toBe(false);
-        t.expect(Ext.validIdRe.test(ctrl.getMessageViewItemId(value))).toBe(true);
+        t.expect(Ext.validIdRe.test(ctrl.getMessageViewItemId(remoteCompoundKey))).toBe(true);
 
         ctrl.destroy();
 
@@ -301,26 +323,26 @@ return;
                 t.expect(rec.get('id')).toBe(rec.get('id') + '');
 
                 // existing records reused from store
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getId()))).toBe(null);
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getCompoundKey()))).toBe(null);
                 view = ctrl.showMailMessageViewFor(
                     MessageEntityCompoundKey.createFor(
                         rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id')
                     )
                 );
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getId()))).not.toBe(null);
-                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec.getId())));
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getCompoundKey()))).not.toBe(null);
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec.getCompoundKey())));
                 t.expect(panel.getActiveTab()).toBe(view);
 
 
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getId()))).toBe(null);
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getCompoundKey()))).toBe(null);
                 view = ctrl.showMailMessageViewFor(MessageEntityCompoundKey.createFor(rec2.get('mailAccountId'), rec2.get('mailFolderId'), rec2.get('id')));
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getId()))).not.toBe(null);
-                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec2.getId())));
+                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getCompoundKey()))).not.toBe(null);
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec2.getCompoundKey())));
                 t.expect(panel.getActiveTab()).toBe(view);
 
-                t.expect(panel.down('#' + ctrl.getMessageViewItemId(rec.getId()))).not.toBe(null);
+                t.expect(panel.down('#' + ctrl.getMessageViewItemId(rec.getCompoundKey()))).not.toBe(null);
                 view = ctrl.showMailMessageViewFor(MessageEntityCompoundKey.createFor(rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id')));
-                t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(rec.getId())));
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(rec.getCompoundKey())));
                 t.expect(panel.getActiveTab()).toBe(view);
 
                 // remote Loading
@@ -329,13 +351,13 @@ return;
                     remoteLocalId = remoteCompoundKey.toLocalId();
 
                 t.expect(store.findExact('localId', remoteLocalId)).toBe(-1);
-                t.expect(panel.down('#' + ctrl.getMessageViewItemId(remoteLocalId))).toBe(null);
+                t.expect(panel.down('#' + ctrl.getMessageViewItemId(remoteCompoundKey))).toBe(null);
                 view = ctrl.showMailMessageViewFor(remoteCompoundKey);
                 t.expect(panel.getActiveTab()).toBe(view);
 
                 t.waitForMs(500, function() {
 
-                    t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(remoteLocalId)));
+                    t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(remoteCompoundKey)));
 
                     t.waitForMs(500, function() {
                         panel.destroy();
@@ -490,6 +512,7 @@ return;
             ctrl  = panel.getController(),
             queryRes, editor, exc, e, editor2;
 
+
         try {ctrl.showMailEditor();}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toContain("valid value");
@@ -505,15 +528,22 @@ return;
         queryRes = Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel);
         t.expect(queryRes.length).toBe(0);
 
-        editor = ctrl.showMailEditor(1, 'edit');
+        let keyOne = createKeyForExistingMessage(1),
+            keyTwo = createKeyForExistingMessage(2),
+            keyEight = createKeyForExistingMessage(3),
+            keyNine = createKeyForExistingMessage(4),
+            keyOneOneOne = createKeyForExistingMessage(5);
+
+
+        editor = ctrl.showMailEditor(keyOne, 'edit');
         t.isInstanceOf(editor, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel)[0]).toBe(editor);
 
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(1);
-        ctrl.showMailEditor(2, 'edit');
+        ctrl.showMailEditor(keyTwo, 'edit');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
 
-        editor2 = ctrl.showMailEditor(1, 'edit');
+        editor2 = ctrl.showMailEditor(keyOne, 'edit');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(2);
         t.expect(editor2).toBe(editor);
 
@@ -528,31 +558,31 @@ return;
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(4);
         t.expect(editor).toBe(editor2);
 
-        var editorReplyTo = ctrl.showMailEditor(8, 'replyTo');
+        var editorReplyTo = ctrl.showMailEditor(keyEight, 'replyTo');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(5);
 
-        var editorReplyAll = ctrl.showMailEditor(8, 'replyAll');
+        var editorReplyAll = ctrl.showMailEditor(keyEight, 'replyAll');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(6);
 
-        var editorForward = ctrl.showMailEditor(9, 'forward');
+        var editorForward = ctrl.showMailEditor(keyNine, 'forward');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(7);
 
         t.expect(editorReplyTo).not.toBe(editorReplyAll);
         t.expect(editorReplyAll).not.toBe(editorForward);
 
-        var editorReplyTo2 = ctrl.showMailEditor(8, 'replyTo');
+        var editorReplyTo2 = ctrl.showMailEditor(keyEight, 'replyTo');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(7);
-        var editorReplyAll2 = ctrl.showMailEditor(8, 'replyAll');
+        var editorReplyAll2 = ctrl.showMailEditor(keyEight, 'replyAll');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(7);
-        var editorForward2 = ctrl.showMailEditor(9, 'forward');
+        var editorForward2 = ctrl.showMailEditor(keyNine, 'forward');
         t.expect(Ext.ComponentQuery.query('cn_mail-mailmessageeditor', panel).length).toBe(7);
 
         t.expect(editorReplyTo).toBe(editorReplyTo2);
         t.expect(editorReplyAll).toBe(editorReplyAll2);
         t.expect(editorForward).toBe(editorForward2);
 
-        editor  = ctrl.showMailEditor(111, 'edit');
-        editor2 = ctrl.showMailEditor(111, 'compose');
+        editor  = ctrl.showMailEditor(keyOneOneOne, 'edit');
+        editor2 = ctrl.showMailEditor('foobar', 'compose');
         t.expect(editor).not.toBe(editor2);
 
         t.waitForMs(1500, function() {
@@ -562,7 +592,103 @@ return;
 
     });
 
-    return;
+
+
+    t.it("updateHistoryForComposedMessage() - exceptions", function(t) {
+
+        let exc, e,
+            viewController = Ext.create(
+                'conjoon.cn_mail.view.mail.MailDesktopViewController'
+            );
+
+        try{viewController.updateHistoryForComposedMessage();}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
+        t.expect(exc.msg.toLowerCase()).toContain('editmode');
+        exc = undefined;
+
+        try{viewController.updateHistoryForComposedMessage({editMode : 'foo'});}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
+        t.expect(exc.msg.toLowerCase()).toContain('editmode');
+
+        viewController.destroy();
+    });
+
+
+    t.it("updateHistoryForComposedMessage()", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay : 1
+        });
+
+        let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            mailFolderId : '1',
+            mailAccountId : '1',
+            id : '1'
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600
+        });
+
+        let inboxView = panel.down('cn_mail-mailinboxview');
+
+        let editor = viewController.showMailEditor(8989, 'compose');
+
+        let oldId, newId, itemId = editor.getItemId();
+        for (let id in viewController.editorIdMap) {
+            if (viewController.editorIdMap[id] === itemId) {
+                oldId = id;
+                break;
+            }
+        }
+
+        t.expect(oldId).not.toBeUndefined();
+
+        t.waitForMs(250, function() {
+            let token   = Ext.History.getToken(),
+                cn_href = editor.cn_href;
+
+            t.expect(token).toBe(cn_href);
+
+            let ret = viewController.updateHistoryForComposedMessage(editor, draft);
+
+            t.waitForMs(750, function() {
+                let newToken  = Ext.History.getToken(),
+                    newCnHref = editor.cn_href;
+
+                t.expect(ret).toBe(newCnHref);
+                t.expect(newToken).toBe(newCnHref);
+                t.expect(newToken).not.toBe(token);
+
+                t.expect(viewController.editorIdMap[oldId]).toBeUndefined()
+
+                for (let id in viewController.editorIdMap) {
+                    if (viewController.editorIdMap[id] === itemId) {
+                        newId = id;
+                        break;
+                    }
+                }
+
+                t.expect(newId).toBeDefined();
+                t.expect(newId).not.toBe(oldId);
+
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+    });
+
+
     t.it("onMailMessageSaveComplete() - no related views opened.", function(t) {
 
         var viewController = Ext.create(
@@ -583,6 +709,8 @@ return;
         t.waitForMs(500, function() {
             messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
                 id      : 1,
+                mailFolderId : 2,
+                mailAccountId : 3,
                 subject : 'FOOBAR'
             });
             messageDraft.setMessageBody({
@@ -607,7 +735,7 @@ return;
             ),
             mailFolderTree, draftNode, firstRowId, messageDraft,
             messageDetailView, inboxView, inboxMessageView, gridStore,
-            grid, oldSubject, oldDate;
+            grid, oldSubject, oldDate, firstRowCK;
 
         panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
             controller : viewController,
@@ -637,24 +765,29 @@ return;
                 t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(draftNode);
 
                 firstRowId = gridStore.getAt(0).getId();
+                firstRowCK = gridStore.getAt(0).getCompoundKey();
                 oldSubject = gridStore.getAt(1).get('subject');
                 oldDate    = gridStore.getAt(1).get('date');
 
                 messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                    id      : gridStore.getAt(1).getId(), // CHOOSE DIFFERENT ID FOR MESSAGE DRAFT
-                    subject : 'FOOBAR',
-                    date    : gridStore.getAt(1).get('date')
+                    localId       : gridStore.getAt(1).getId(), // CHOOSE DIFFERENT ID FOR MESSAGE DRAFT
+                    mailFolderId  : gridStore.getAt(1).get('mailFolderId'),
+                    mailAccountId : gridStore.getAt(1).get('mailAccountId'),
+                    id            : gridStore.getAt(1).get('id'),
+                    subject       : 'FOOBAR',
+                    date          : gridStore.getAt(1).get('date')
                 });
 
-                messageDraft.setMessageBody({
+
+                messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
                     textHtml : '', textPlain : ''
-                });
+                }));
 
                 grid.getSelectionModel().select(gridStore.getAt(0));
-                panel.showMailMessageViewFor(firstRowId);
+                panel.showMailMessageViewFor(firstRowCK);
 
                 t.waitForMs(500, function() {
-                    messageDetailView = panel.down('#cn_mail-mailmessagereadermessageview-' + firstRowId);
+                    messageDetailView = panel.down('#' + viewController.getMessageViewItemId(firstRowCK));
                     t.expect(messageDetailView).toBeTruthy();
 
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
@@ -681,7 +814,7 @@ return;
             ),
             mailFolderTree, draftNode, firstRowId, messageDraft,
             messageDetailView, inboxView, inboxMessageView, gridStore,
-            grid, oldSubject, oldDate;
+            grid, oldSubject, oldDate, firstRowCK;
 
         panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
             controller : viewController,
@@ -712,23 +845,28 @@ return;
                 t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(draftNode);
 
                 firstRowId = gridStore.getAt(0).getId();
+                firstRowCK = gridStore.getAt(0).getCompoundKey();
                 oldSubject = gridStore.getAt(0).get('subject');
                 oldDate    = gridStore.getAt(0).get('date');
 
                 messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                    id      : firstRowId,
-                    subject : 'FOOBAR',
-                    date    : oldDate
+                    localId       : firstRowId,
+                    mailFolderId  : gridStore.getAt(0).get('mailFolderId'),
+                    mailAccountId : gridStore.getAt(0).get('mailAccountId'),
+                    id            : gridStore.getAt(0).get('id'),
+                    subject       : 'FOOBAR',
+                    date          : oldDate
                 });
-                messageDraft.setMessageBody({
+
+                messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
                     textHtml : '', textPlain : ''
-                });
+                }));
 
                 grid.getSelectionModel().select(gridStore.getAt(0));
-                panel.showMailMessageViewFor(firstRowId);
+                panel.showMailMessageViewFor(firstRowCK);
 
                 t.waitForMs(500, function() {
-                    messageDetailView = panel.down('#cn_mail-mailmessagereadermessageview-' + firstRowId);
+                    messageDetailView = panel.down('#' + viewController.getMessageViewItemId(firstRowCK));
                     t.expect(messageDetailView).toBeTruthy();
 
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 2);
@@ -775,7 +913,7 @@ return;
         t.isCalledNTimes('processMailFolderSelectionForRouting', viewController, 2);
 
         t.expect(panel.getActiveTab()).toBe(newPanel);
-        t.expect(viewController.showInboxViewFor('dev_sys@conjoon.org', '2')).toBe(inboxView);
+        t.expect(viewController.showInboxViewFor('dev_sys_conjoon.org', 'INBOX.Sent Messages')).toBe(inboxView);
         t.expect(panel.getActiveTab()).toBe(inboxView);
 
         t.expect(panel.down('cn_mail-mailinboxview').down('cn_mail-mailfoldertree').getStore().getProxy().type).toBe('memory');
@@ -785,7 +923,7 @@ return;
 
             t.expect(panel.down('cn_mail-mailinboxview').down('cn_mail-mailfoldertree').getStore().getProxy().type).not.toBe('memory');
             panel.setActiveTab(newPanel);
-            t.expect(viewController.showInboxViewFor('dev_sys@conjoon.org', '3')).toBe(panel.down('cn_mail-mailinboxview'));
+            t.expect(viewController.showInboxViewFor('dev_sys_conjoon.org', 'INBOX.Drafts')).toBe(panel.down('cn_mail-mailinboxview'));
             t.expect(panel.getActiveTab()).toBe(inboxView);
 
             panel.destroy();
@@ -794,6 +932,7 @@ return;
         });
 
     });
+
 
 
     t.it("processMailFolderSelectionForRouting()", function(t) {
@@ -822,16 +961,16 @@ return;
 
             t.expect(cnhref).toBe(inboxView.cn_href);
 
-            let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById('1');
-            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys@conjoon.org', 1)).toBe(true);
+            let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById('INBOX');
+            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys_conjoon_org', 'INBOX')).toBe(true);
             t.expect(inboxView.cn_href).toBe(node.toUrl());
             t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
             t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
 
-            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys@conjoon.org', 1)).toBe(true);
+            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys_conjoon_org', "INBOX.Sent Messages")).toBe(true);
 
-            node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
-            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys@conjoon.org', 2)).toBe(true);
+            node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById("INBOX.Sent Messages");
+            t.expect(viewController.processMailFolderSelectionForRouting('dev_sys_conjoon_org', "INBOX.Sent Messages")).toBe(true);
             t.expect(inboxView.cn_href).toBe(node.toUrl());
             t.expect(Ext.History.getToken()).toBe(inboxView.cn_href);
             t.expect(inboxView.down('cn_mail-mailfoldertree').getSelection()[0]).toBe(node);
@@ -868,16 +1007,17 @@ return;
 
         t.waitForMs(750, function() {
 
-            let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(1);
+
+            let node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById("INBOX");
             inboxView.down('cn_mail-mailfoldertree').getSelectionModel().select(node);
-            viewController.showInboxViewFor('dev_sys@conjoon.org', 1);
+            viewController.showInboxViewFor('dev_sys_conjoon_org', "INBOX");
             t.expect(inboxView.cn_href).toBe(node.toUrl());
 
             panel.setActiveTab(newPanel);
 
-            node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById(2);
+            node = inboxView.down('cn_mail-mailfoldertree').getStore().getNodeById("INBOX.Sent Messages");
             inboxView.down('cn_mail-mailfoldertree').getSelectionModel().select(node);
-            viewController.showInboxViewFor('dev_sys@conjoon.org', 2);
+            viewController.showInboxViewFor('dev_sys_conjoon_org', "INBOX.Sent Messages");
             t.expect(inboxView.cn_href).toBe(node.toUrl());
 
             panel.setActiveTab(newPanel);
@@ -894,95 +1034,7 @@ return;
     });
 
 
-    t.it("updateHistoryForComposedMessage() - exceptions", function(t) {
-
-        let exc, e,
-            viewController = Ext.create(
-                'conjoon.cn_mail.view.mail.MailDesktopViewController'
-            );
-
-        try{viewController.updateHistoryForComposedMessage();}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
-        t.expect(exc.msg.toLowerCase()).toContain('editmode');
-        exc = undefined;
-
-        try{viewController.updateHistoryForComposedMessage({editMode : 'foo'});}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
-        t.expect(exc.msg.toLowerCase()).toContain('editmode');
-
-        viewController.destroy();
-    });
-
-    t.it("updateHistoryForComposedMessage()", function(t) {
-
-        let viewController = Ext.create(
-            'conjoon.cn_mail.view.mail.MailDesktopViewController'
-        );
-        Ext.ux.ajax.SimManager.init({
-            delay : 1
-        });
-        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
-            controller : viewController,
-            renderTo   : document.body,
-            width      : 800,
-            height     : 600
-        });
-
-        let inboxView = panel.down('cn_mail-mailinboxview');
-
-        let editor = viewController.showMailEditor(8989, 'compose');
-
-        let oldId, newId, itemId = editor.getItemId();
-        for (let id in viewController.editorIdMap) {
-            if (viewController.editorIdMap[id] === itemId) {
-                oldId = id;
-                break;
-            }
-        }
-
-        t.expect(oldId).not.toBeUndefined();
-
-        t.waitForMs(250, function() {
-            let token   = Ext.History.getToken(),
-                cn_href = editor.cn_href;
-
-            t.expect(token).toBe(cn_href);
-
-            let ret = viewController.updateHistoryForComposedMessage(editor, 5);
-
-            t.waitForMs(750, function() {
-                let newToken  = Ext.History.getToken(),
-                    newCnHref = editor.cn_href;
-
-                t.expect(ret).toBe(newCnHref);
-                t.expect(newToken).toBe(newCnHref);
-                t.expect(newToken).not.toBe(token);
-
-                t.expect(viewController.editorIdMap[oldId]).toBeUndefined()
-
-                for (let id in viewController.editorIdMap) {
-                    if (viewController.editorIdMap[id] === itemId) {
-                        newId = id;
-                        break;
-                    }
-                }
-
-                t.expect(newId).toBeDefined();
-                t.expect(newId).not.toBe(oldId);
-
-                panel.destroy();
-                panel = null;
-            });
-
-        });
-    });
-
-
-    t.it("getIdFromInboxMessageView()", function(t) {
+    t.it("getCompoundKeyFromInboxMessageView()", function(t) {
 
         let viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -1001,13 +1053,13 @@ return;
             msgv      = inboxView.down('cn_mail-mailmessagereadermessageview');
 
         msgv.setMessageItem(getRecordCollection()[0]);
-        t.expect(viewController.getIdFromInboxMessageView()).toBe(
-            getRecordCollection()[0].getId()
+        t.expect(viewController.getCompoundKeyFromInboxMessageView().toObject()).toEqual(
+            getRecordCollection()[0].getCompoundKey().toObject()
         );
 
         msgv.setMessageItem(getRecordCollection()[3]);
-        t.expect(viewController.getIdFromInboxMessageView()).toBe(
-            getRecordCollection()[3].getId()
+        t.expect(viewController.getCompoundKeyFromInboxMessageView().toObject()).toEqual(
+            getRecordCollection()[3].getCompoundKey().toObject()
         );
 
 
@@ -1015,7 +1067,6 @@ return;
         panel = null;
 
     });
-
 
     t.it("onInboxViewReplyAllClick() / onInboxViewReplyClick() / onInboxViewForwardClick() / onInboxViewEditDraftClick()", function(t) {
 
@@ -1032,31 +1083,38 @@ return;
             height     : 600
         });
 
-        let inboxView = panel.down('cn_mail-mailinboxview'),
-            msgv      = inboxView.down('cn_mail-mailmessagereadermessageview'),
-            btnra     = inboxView.down('#btn-forward'),
-            btnr      = inboxView.down('#btn-reply'),
-            btnf      = inboxView.down('#btn-replyall'),
-            btne      = inboxView.down('#btn-editdraft');
-
-        msgv.setMessageItem(getRecordCollection()[0]);
-
-        t.isCalled('onInboxViewReplyAllClick', viewController);
-        t.isCalled('onInboxViewReplyClick', viewController);
-        t.isCalled('onInboxViewForwardClick', viewController);
-        t.isCalled('onInboxViewEditDraftClick', viewController);
-        t.isCalledNTimes('showMailEditor', viewController, 4);
-
-        btnra.fireEvent('click');
-        btnr.fireEvent('click');
-        btnf.fireEvent('click');
-        btne.fireEvent('click');
 
         t.waitForMs(750, function() {
-            panel.destroy();
-            panel = null;
-        });
 
+            let inboxView = panel.down('cn_mail-mailinboxview'),
+                msgv      = inboxView.down('cn_mail-mailmessagereadermessageview'),
+                btnra     = inboxView.down('#btn-forward'),
+                btnr      = inboxView.down('#btn-reply'),
+                btnf      = inboxView.down('#btn-replyall'),
+                btne      = inboxView.down('#btn-editdraft');
+
+            msgv.setMessageItem(getRecordCollection()[0]);
+
+            console.log(msgv.getViewModel().get('messageItem'));
+
+            t.isCalled('onInboxViewReplyAllClick', viewController);
+            t.isCalled('onInboxViewReplyClick', viewController);
+            t.isCalled('onInboxViewForwardClick', viewController);
+            t.isCalled('onInboxViewEditDraftClick', viewController);
+            t.isCalledNTimes('showMailEditor', viewController, 4);
+
+            btnra.fireEvent('click');
+            btnr.fireEvent('click');
+            btnf.fireEvent('click');
+            btne.fireEvent('click');
+
+            t.waitForMs(750, function() {
+                return;
+                panel.destroy();
+                panel = null;
+            });
+
+        });
 
     });
 
@@ -1088,7 +1146,7 @@ return;
         });
 
     });
-
+return;
 
 
     t.it("onBeforeMessageItemDelete()", function(t) {
@@ -1175,7 +1233,7 @@ return;
         });
     });
 
-
+    return;
     t.it("onMailMessageSaveComplete() - DRAFT folder active, DRAFT created", function (t) {
 
         let viewController = Ext.create(

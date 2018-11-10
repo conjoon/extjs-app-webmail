@@ -113,16 +113,16 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onBeforeMessageItemDelete : function(inboxView, messageItem, requestingView = null) {
 
-        const me   = this,
-              view = me.getView(),
-              id   = messageItem.getId();
+        const me          = this,
+              view        = me.getView(),
+              compoundKey = messageItem.getCompoundKey();
 
         let openedView, itemIds = [
-            me.getItemIdForMessageEditor(id, 'edit'),
-            me.getItemIdForMessageEditor(id, 'replyTo'),
-            me.getItemIdForMessageEditor(id, 'replyAll'),
-            me.getItemIdForMessageEditor(id, 'forward'),
-            'cn_mail-mailmessagereadermessageview-' + id
+            me.getItemIdForMessageEditor(compoundKey, 'edit'),
+            me.getItemIdForMessageEditor(compoundKey, 'replyTo'),
+            me.getItemIdForMessageEditor(compoundKey, 'replyAll'),
+            me.getItemIdForMessageEditor(compoundKey, 'forward'),
+            me.getMessageViewItemId(compoundKey)
         ];
 
         for (let i = 0, len = itemIds.length; i < len; i++) {
@@ -354,8 +354,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         var me      = this,
             view    = me.getView(),
-            localId = compoundKey.toLocalId(),
-            itemId  = me.getMessageViewItemId(localId),
+            itemId  = me.getMessageViewItemId(compoundKey),
             newView = view.down('#' + itemId),
             msgGrid = view.down('cn_mail-mailmessagegrid'),
             store   = msgGrid ? msgGrid.getStore(): null,
@@ -425,7 +424,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               view             = me.getView(),
               messageGrid      = view.down('cn_mail-mailmessagegrid'),
               itemStore        = messageGrid ? messageGrid.getStore() : null,
-              messageView      = view.down('#cn_mail-mailmessagereadermessageview-' + messageDraft.getId()),
+              messageView      = view.down('#' + me.getMessageViewItemId(messageDraft.getCompoundKey())),
               inboxView        = view.down('cn_mail-mailinboxview'),
               EditingModes     = conjoon.cn_mail.data.mail.message.EditingModes,
               editMode         = editor.editMode,
@@ -436,7 +435,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         let inboxMessageViewId, messageItem, recInd;
 
         if (editMode === EditingModes.CREATE) {
-            me.updateHistoryForComposedMessage(editor, messageDraft.getId());
+            me.updateHistoryForComposedMessage(editor, messageDraft);
         }
 
         if ([EditingModes.CREATE, EditingModes.REPLY_TO,
@@ -456,7 +455,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         // selected folder / opened grid is DRAFT related
         if (inboxMessageView) {
 
-            inboxMessageViewId = inboxMessageView.getViewModel().get('messageItem.id');
+            inboxMessageViewId = inboxMessageView.getViewModel().get('messageItem.localId');
 
             if (inboxMessageViewId == messageDraft.getId()) {
                 // Due to the two way-data binding between the grid and the message
@@ -472,7 +471,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         // over the MessageView above. Thus, we have to look up any item which might
         // be loaded in the grid.
         if (messageGrid && inboxMessageViewId != messageDraft.getId()) {
-            recInd = itemStore.findExact('id', messageDraft.getId());
+            recInd = itemStore.findExact('localId', messageDraft.getId());
             if (recInd > -1) {
                 messageItem = itemStore.getAt(recInd);
                 conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.updateItemWithDraft(
@@ -730,7 +729,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *  frequent interval (ExtJS6.2: 50ms)
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
-     * @oaram {String} messageDraftId the id of the newly created messageDraft
+     * @oaram {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft The
+     * newly created message draft
      *
      * @return {String} the newly computed cn_href attribute of the editor
      *
@@ -739,7 +739,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @private
      */
-    updateHistoryForComposedMessage : function(editor, messageDraftId) {
+    updateHistoryForComposedMessage : function(editor, messageDraft) {
 
         const me           = this,
               EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
@@ -751,15 +751,19 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             });
         }
 
+        let compoundKey = messageDraft.getCompoundKey(),
+            localId     = compoundKey.toLocalId();
+
         for (let id in me.editorIdMap) {
             if (me.editorIdMap[id] === editor.getItemId()) {
                 delete me.editorIdMap[id];
-                me.editorIdMap['edit' + messageDraftId] = editor.getItemId();
+                me.editorIdMap['edit' + localId] =
+                    editor.getItemId();
                 break;
             }
         }
 
-        let newToken = me.getCnHrefForMessageEditor(messageDraftId, 'edit');
+        let newToken = me.getCnHrefForMessageEditor(compoundKey, 'edit');
 
         editor.cn_href = newToken;
 
@@ -783,7 +787,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onInboxViewReplyClick : function() {
         const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageView(), 'replyTo');
+        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'replyTo');
     },
 
 
@@ -797,7 +801,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onInboxViewForwardClick : function() {
         const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageView(), 'forward');
+        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'forward');
     },
 
 
@@ -811,7 +815,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onInboxViewReplyAllClick : function() {
         const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageView(), 'replyAll');
+        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'replyAll');
     },
 
 
@@ -825,22 +829,25 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onInboxViewEditDraftClick : function() {
         const me = this;
-        return me.showMailEditor(me.getIdFromInboxMessageView(), 'edit');
+        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'edit');
     },
 
     /**
-     * Returns the id of the MessageItem currently loaded into the MessageView
+     * Returns the compound key of the MessageItem currently loaded into the MessageView
      * of the InboxView.
      *
-     * @return {String}
+     * @return {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
      *
      * @private
      */
-    getIdFromInboxMessageView : function() {
-        return this.getView()
+    getCompoundKeyFromInboxMessageView : function() {
+
+        let m = this.getView()
             .down('cn_mail-mailinboxview')
             .down('cn_mail-mailmessagereadermessageview')
-            .getViewModel().get('messageItem').getId();
+            .getViewModel().get('messageItem')
+
+        return m.getCompoundKey();
     },
 
 
@@ -937,16 +944,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * @param prefix
-     * @param value
-     *
-     * @return {String}
-     *
      * @private
      */
-    getMessageViewItemId : function(messageId) {
+    getMessageViewItemId : function(compoundKey) {
         return 'cn_mail-mailmessagereadermessageview-' +
-                Ext.util.Base64.encode(messageId).replace(/[^a-zA-Z0-9]/g,'-');
+                Ext.util.Base64.encode(compoundKey.toLocalId()).replace(/[^a-zA-Z0-9]/g,'-');
     },
 
 
