@@ -43,7 +43,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         'conjoon.cn_core.Util',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
         'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
-        'conjoon.cn_core.data.Session'
+        'conjoon.cn_core.data.Session',
+        'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
@@ -157,6 +158,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     },
 
     stores : {
+        'cn_mail-mailfoldertreestore' : {
+            type :  'cn_mail-mailfoldertreestore',
+            autoLoad : true
+        },
+
         addressStore : {
             model : 'conjoon.cn_mail.model.mail.message.EmailAddress',
             data  : '{addressStoreData}'
@@ -200,6 +206,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         Ext.apply(config, {
             formulas : me.createAddressFormulas()
         });
+
 
         me.callParent([config]);
 
@@ -276,6 +283,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
 
     privates : {
+
 
         /**
          * Callback for the cn_mail-mailmessagecopyload of the MessageDraftCopier.
