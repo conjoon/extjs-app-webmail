@@ -44,6 +44,8 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 
     t.it("Should create instance", function(t) {
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
+
+        t.expect(model.foreignKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'parentMessageItemId', 'id']);
     });
 
 
@@ -123,6 +125,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
                 m.get('id')
             ).toLocalId();
 
+
         t.expect(m.getId()).not.toBe(expected);
         t.expect(m.updateLocalId()).toBe(expected);
         t.expect(m.modified).toBeFalsy();
@@ -145,6 +148,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
             'id'      : 'z'
         });
 
+        t.isCalledNTimes('checkForeignKeysModified', model, 1);
         t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey');
     });
 

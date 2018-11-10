@@ -42,6 +42,12 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
     }],
 
     /**
+     * @private
+     */
+    foreignKeyFields : ['mailAccountId', 'mailFolderId', 'parentMessageItemId', 'id'],
+
+
+    /**
      * Overrides parent implementation to make sure originalMessageItemId is set.
      *
      * @param {Object}  options
@@ -98,6 +104,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
             return null;
         }
 
+        me.checkForeignKeysModified();
+
         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.createFor(
             me.get('mailAccountId'),
             me.get('mailFolderId'),
@@ -116,9 +124,11 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
      * @inheritdoc
      */
     getCompoundKey : function() {
-        return conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.fromRecord(this);
+        const me = this;
+
+        me.checkForeignKeysModified();
+
+        return conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.fromRecord(me);
     }
-
-
 
 });

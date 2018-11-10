@@ -83,6 +83,11 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      */
     compoundKeyFields : ['mailAccountId', 'mailFolderId', 'id'],
 
+    /**
+     * @private
+     */
+    foreignKeyFields : ['mailAccountId', 'mailFolderId', 'id'],
+
 
     inheritableStatics : {
 
@@ -413,6 +418,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * @return null if ay compound key information was missing, and thus the
      * localId could not be computed and wasn't changed, otherwise the newly
      * created localId
+     *
+     * @private
      */
     updateLocalId : function() {
         const me = this;
@@ -444,7 +451,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         const me = this;
 
-        // loosely check for truthy values
+       // loosely check for truthy values
         return !!(me.get('mailAccountId') &&
                me.get('mailFolderId') &&
                me.get('id'));
@@ -463,12 +470,36 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
 
     /**
-     * Returns the compound key representing this model
+     * Returns the compound key representing this model.
+     * The compound key is always the data found in the compound key fields
+     * before the record was committed, e.g if the fields where modified,
+     * their original value, not their modified vaues will be used until the next
      *
      * @return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
     getCompoundKey : function() {
-        return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(this);
+        const me = this;
+
+        me.checkForeignKeysModified();
+
+        return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(me);
+    },
+
+    /**
+     * @private
+     */
+    checkForeignKeysModified : function() {
+        const me = this,
+            modified = me.modified;
+
+        if (!modified) {
+            return;
+        }
+        for (let i = 0, len = me.foreignKeyFields.length; i < len ; i++) {
+            if (modified.hasOwnProperty(me.foreignKeyFields[i]) && modified[me.foreignKeyFields[i]] !== undefined) {
+                Ext.raise("Field was modified, can not use current information.");
+            }
+        }
     }
 
 

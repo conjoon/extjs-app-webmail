@@ -48,6 +48,8 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         t.expect(model.suspendSetter).toBe(false);
 
         t.expect(model.compoundKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'id']);
+
+        t.expect(model.foreignKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'id']);
     });
 
     t.it("idProperty", function(t) {
@@ -439,6 +441,7 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         });
+
         t.expect(model.isCompoundKeySet()).toBe(false);
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
@@ -732,6 +735,8 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
             'id'      : 'z'
         });
 
+        t.isCalledNTimes('checkForeignKeysModified', model, 1);
+
         t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey');
     });
 
@@ -866,8 +871,25 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
         t.expect(modelR.get('mailAccountId')).toBe('meh.');
 
+    });
 
-    })
+
+    t.it("checkForeignKeysModified()", function(t) {
+
+        let exc, e,
+            model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+                mailFolderId : 'foo'
+            });
+
+        model.set('mailFolderId', '3');
+        t.expect(model.modified.hasOwnProperty('mailFolderId')).toBe(true);
+
+        try{model.checkForeignKeysModified();}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("can not use current information");
+
+
+    });
 
 
 });
