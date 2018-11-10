@@ -139,7 +139,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 return res.join(', ');
             }
 
-            return from.name;
+            return from ? from.name : "";
         },
 
 
@@ -284,7 +284,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
      * {@link conjoon.cn_mail.model.mail.message.MessageItem}
      */
     setMessageItem : function(messageItem) {
-
         var me = this,
             clonedItem;
 

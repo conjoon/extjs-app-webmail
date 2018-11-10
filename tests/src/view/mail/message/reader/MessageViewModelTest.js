@@ -523,6 +523,27 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
+    t.it("formula.getDisplayAddress - null for from", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        var expected    = "",
+            formulas    = viewModel.getFormulas(),
+            get         = function(value) {
+                if (value === 'messageItem') {
+                    return {get : Ext.emptyFn};
+                }
+                if (value === 'messageItem.from') {
+                    return null;
+                }
+
+                if (value === 'messageItem.to') {
+                    return [];
+                }
+            };
+
+        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
+    });
+
     t.it("formula.getDisplayAddress - draft", function(t) {
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
