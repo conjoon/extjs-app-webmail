@@ -171,4 +171,26 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
         exc = undefined;
     });
 
+
+    t.it("equalTo()", function(t) {
+
+        let keyLeft = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
+                MAILACCOUNTID, MAILFOLDERID, ID
+            ),
+            keyRightOk = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
+                MAILACCOUNTID, MAILFOLDERID, ID
+            ),
+            keyRightFalse = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
+                MAILACCOUNTID, Ext.id(), ID
+            );
+
+        t.isCalled('toLocalId', keyLeft);
+        t.isCalled('toLocalId', keyRightOk);
+        t.isCalled('toLocalId', keyRightFalse);
+
+        t.expect(keyLeft.equalTo(keyRightOk)).toBe(true);
+        t.expect(keyLeft.equalTo(keyRightFalse)).toBe(false);
+        t.expect(keyLeft.equalTo({})).toBe(false);
+        t.expect(keyLeft.equalTo('a')).toBe(false);
+    });
 });

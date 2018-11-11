@@ -251,4 +251,24 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
         return id;
     },
 
+
+    /**
+     * Returns true if this CompoundKey references the same compound keys
+     * as the passed compoind key.
+     *
+     * @param {conjoon.cn_mail.data.mail.message.CompoundKey} cmp
+     *
+     * @return {Boolean}
+     */
+    equalTo : function(cmp) {
+
+        const me = this;
+
+        if (!(cmp instanceof conjoon.cn_mail.data.mail.message.CompoundKey)) {
+            return false;
+        }
+
+        return me.toLocalId() === cmp.toLocalId();
+    }
+
 });
