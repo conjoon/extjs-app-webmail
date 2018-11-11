@@ -531,10 +531,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                     owningStore && messageItem.join(owningStore);
                 }
 
+                let accountId = messageItem.get('mailAccountId');
+
                 view.fireEvent(
                     'cn_mail-messageitemmove', view, messageItem, requestingView,
-                    mailFolderHelper.getMailFolder(request.sourceFolderId),
-                    mailFolderHelper.getMailFolder(request.targetFolderId)
+                    mailFolderHelper.getMailFolder(accountId, request.sourceFolderId),
+                    mailFolderHelper.getMailFolder(accountId, request.targetFolderId)
                 );
 
                 break;
