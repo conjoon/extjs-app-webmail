@@ -892,4 +892,33 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
     });
 
 
+    t.it("getPreviousCompoundKey()", function(t) {
+
+        let exc, e,
+            model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+                mailFolderId  : 'foo',
+                mailAccountId : 'bar',
+                id            : 'snafu'
+            });
+
+        let ck1 = model.getCompoundKey();
+
+        t.expect(ck1.equalTo(model.getPreviousCompoundKey())).toBe(true);
+        t.expect(ck1.equalTo(model.getCompoundKey())).toBe(true);
+
+        model.commit();
+        model.set('mailAccountId', 'meh.');
+
+        model.save();
+        model.commit();
+
+        t.expect(ck1.equalTo(model.getCompoundKey())).toBe(false);
+
+        t.expect(ck1.equalTo(model.getPreviousCompoundKey())).toBe(true);
+
+
+
+    });
+
+
 });

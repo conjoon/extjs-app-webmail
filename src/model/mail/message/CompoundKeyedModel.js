@@ -88,6 +88,13 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      */
     foreignKeyFields : ['mailAccountId', 'mailFolderId', 'id'],
 
+    /**
+     * Saves previously compoundKey before the compound key might get changed by
+     * an update operation.
+     * @private
+     * @see #save
+     */
+    previousCompoundKey : null,
 
     inheritableStatics : {
 
@@ -140,7 +147,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      */
     save : function(options) {
 
-        const me = this;
+        const me = this,
+              MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
         let source;
 
@@ -157,6 +165,15 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         }
 
         me.checkForeignKeysForAction(source, 'save');
+
+        if (!me.phantom) {
+            let prev = Ext.applyIf(Ext.apply({}, me.modified), me.data);
+            me.previousCompoundKey = MessageEntityCompoundKey.createFor(
+                prev.mailAccountId,
+                prev.mailFolderId,
+                prev.id
+            );
+        }
 
         return me.callParent(arguments);
     },
@@ -500,7 +517,25 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
                 Ext.raise("Field was modified, can not use current information.");
             }
         }
-    }
+    },
 
+
+    /**
+     * Returns the previous compound key for this model, or the current if the
+     * previous is not available yet.
+     *
+     * @return {conjoon.cn_mail.data.mail.message.CompoundKey}
+     *
+     * @see #previousCompoundKey
+     */
+    getPreviousCompoundKey : function() {
+
+        const me = this;
+
+        return me.previousCompoundKey
+               ? me.previousCompoundKey
+               : me.getCompoundKey();
+
+    }
 
 });
