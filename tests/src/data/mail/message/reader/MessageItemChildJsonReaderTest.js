@@ -49,7 +49,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTes
                 mailAccountId : 'a',
                 mailFolderId : 'b',
                 parentMessageItemId : 'c',
-                id : 'd'
+                id : 'd',
+                localId : 'f-t-l',
+                messageItemId : 'l-t-f'
             },
             data = {
                 data : [keys]

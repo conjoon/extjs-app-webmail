@@ -52,11 +52,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
                 for (i = 0; i < len; i++) {
                     rec = records[i];
-                    if (!rec.messageBodyId) {
-                        rec.messageBodyId = MessageEntityCompoundKey.createFor(
-                            rec.mailAccountId, rec.mailFolderId, rec.id
-                        ).toLocalId();
-                    }
+
+                    rec.messageBodyId = MessageEntityCompoundKey.createFor(
+                        rec.mailAccountId, rec.mailFolderId, rec.id
+                    ).toLocalId();
 
                 }
 

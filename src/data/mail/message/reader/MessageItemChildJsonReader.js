@@ -63,18 +63,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
                 for (i = 0; i < len; i++) {
                     rec = records[i];
 
-                    if (!rec.localId) {
-                        rec.localId = MessageItemChildCompoundKey.createFor(
-                            rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId, rec.id
-                        ).toLocalId();
-                    }
+                    rec.localId = MessageItemChildCompoundKey.createFor(
+                        rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId, rec.id
+                    ).toLocalId();
 
-                    if (!rec.messageItemId) {
-                        rec.messageItemId = MessageEntityCompoundKey.createFor(
-                            rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId
-                        ).toLocalId();
-                    }
-
+                    rec.messageItemId = MessageEntityCompoundKey.createFor(
+                        rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId
+                    ).toLocalId();
                 }
 
                 return data;

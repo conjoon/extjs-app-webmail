@@ -76,6 +76,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
                 mailAccountId : 'a',
                 mailFolderId : 'b',
                 id : 'c',
+                localId : 'f-t-l'
             },
             data = {
                 data : [keys]
