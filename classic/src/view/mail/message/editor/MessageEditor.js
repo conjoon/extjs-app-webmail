@@ -698,16 +698,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * ViewModels {isMessageBodyLoading} returns false. All references to
      * loadingMask will be cleared
      *
+     * @ param {Boolean} isComposed True if the message draft is being composed
+     * and if the load mask should indicate that the mail account and corresponding
+     * folder and not available yet
+     *
      * @private
      */
-    showMessageDraftLoadingNotice : function() {
+    showMessageDraftLoadingNotice : function(isComposed) {
 
         var me = this;
 
         me.loadingMask = Ext.create('Ext.LoadMask', {
             target : me,
             bind   : {
-                hidden : '{!isMessageBodyLoading}'
+                hidden : isComposed
+                        ? '{isAccountAndFolderSet}'
+                        : '{!isMessageBodyLoading}'
             },
             listeners : {
                 hide : function(mask) {

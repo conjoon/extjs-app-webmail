@@ -78,7 +78,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             renderTo     : document.body,
             width        : 400,
             height       : 400,
-            messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+                mailAccountId : 'foo',
+                mailFolderId  : 'bar'
+            })
         };
     });
 
@@ -716,16 +719,23 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.it("showMessageDraftLoadingNotice()", function(t) {
             view = createWithViewConfig(viewConfig);
 
-            t.expect(view.loadingMask).toBeFalsy();
+            t.expect(view.loadingMask).toBeTruthy();
 
-            view.showMessageDraftLoadingNotice();
+            t.waitForMs(750, function() {
 
-            t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
-            t.expect(view.loadingMask.isHidden()).toBe(false);
+                t.expect(view.loadingMask).toBeFalsy();
 
-            t.isCalledOnce('destroy', view.loadingMask);
-            view.loadingMask.hide();
-            t.expect(view.loadingMask).toBe(null);
+                view.showMessageDraftLoadingNotice();
+
+                t.isInstanceOf(view.loadingMask, 'Ext.LoadMask');
+                t.expect(view.loadingMask.isHidden()).toBe(false);
+
+                t.isCalledOnce('destroy', view.loadingMask);
+                view.loadingMask.hide();
+                t.expect(view.loadingMask).toBe(null);
+
+            });
+
         });
 
 
