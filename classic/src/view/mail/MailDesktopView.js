@@ -35,11 +35,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
     requires : [
         'conjoon.cn_mail.view.mail.inbox.InboxView',
         'conjoon.cn_mail.view.mail.MailDesktopViewController',
+        'conjoon.cn_mail.view.mail.MailDesktopViewModel',
         'conjoon.cn_mail.data.mail.BaseSchema',
         'conjoon.cn_comp.window.Toast'
     ],
 
     controller : 'cn_mail-maildesktopviewcontroller',
+
+    viewModel : 'cn_mail-maildesktopviewmodel',
 
     layout : 'fit',
 

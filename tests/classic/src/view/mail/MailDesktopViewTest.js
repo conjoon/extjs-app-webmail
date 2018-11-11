@@ -49,6 +49,8 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
         t.isInstanceOf(view, 'Ext.tab.Panel');
         t.expect(view.alias).toContain('widget.cn_mail-maildesktopview');
+
+        t.isInstanceOf(view.getViewModel(), 'conjoon.cn_mail.view.mail.MailDesktopViewModel');
     });
 
 
