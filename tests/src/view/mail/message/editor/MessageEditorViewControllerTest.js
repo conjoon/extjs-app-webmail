@@ -622,6 +622,26 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         });
 
 
+        t.it("onMailMessageBeforeSave() - exception", function(t) {
+
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = createEditorForController(controller);
+
+            let exc, e;
+
+            try{controller.onMailMessageBeforeSave(view, Ext.create(
+                'conjoon.cn_mail.model.mail.message.MessageDraft'
+            ))} catch(e) {exc=e};
+
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("compound key for message draft missing");
+
+        });
+
+
         t.it("onMailMessageSaveComplete()", function(t) {
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
@@ -792,9 +812,22 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = createEditorForController(controller);
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                    controller : controller,
+                    messageDraft :Ext.create(
+                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+                });
 
-            t.isntCalled('showMessageDraftLoadingNotice', view);
+            let COMPOSED;
+            view.showMessageDraftLoadingNotice = function(isComposed) {
+                COMPOSED = isComposed;
+            };
+
+            t.expect(COMPOSED).toBeUndefined();
+            view.render(document.body);
+            t.expect(COMPOSED).toBe(true);
+
         });
 
         t.it('onMessageEditorAfterrender() - editMode: EDIT', function(t) {
@@ -808,9 +841,14 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     messageDraft : createKeyForExistingMessage(1)
                 });
 
-            t.isCalledOnce('showMessageDraftLoadingNotice', view);
+            let COMPOSED;
+            view.showMessageDraftLoadingNotice = function(isComposed) {
+                COMPOSED = isComposed;
+            };
 
+            t.expect(COMPOSED).toBeUndefined();
             view.render(document.body);
+            t.expect(COMPOSED).toBe(false);
         });
 
 
@@ -836,14 +874,15 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             });
 
 
-            t.expect(CALLED).toBe(0);
-            view.down('#subjectField').setValue('test');
-            t.click(view.down('#saveButton'));
-
             t.waitForMs(750, function() {
 
-                t.expect(CALLED).toBe(2);
+                t.expect(CALLED).toBe(0);
+                view.down('#subjectField').setValue('test');
+                t.click(view.down('#saveButton'));
 
+                t.waitForMs(750, function() {
+                    t.expect(CALLED).toBe(2);
+                });
             });
         });
 
@@ -959,22 +998,24 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 //debugger;
             });
 
-
-            t.expect(CALLED).toBe(0);
-            view.down('#subjectField').setValue('TESTFAIL');
-            t.click(view.down('#saveButton'));
-
             t.waitForMs(750, function() {
 
-                t.expect(CALLED).toBe(2);
-
-                var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-                t.click(yesButton[0]);
+                t.expect(CALLED).toBe(0);
+                view.down('#subjectField').setValue('TESTFAIL');
+                t.click(view.down('#saveButton'));
 
                 t.waitForMs(750, function() {
-                    t.expect(CALLED).toBe(4);
-                });
 
+                    t.expect(CALLED).toBe(2);
+
+                    var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+                    t.click(yesButton[0]);
+
+                    t.waitForMs(750, function() {
+                        t.expect(CALLED).toBe(4);
+                    });
+
+                });
             });
         });
 

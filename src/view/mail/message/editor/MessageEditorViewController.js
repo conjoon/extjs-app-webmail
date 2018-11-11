@@ -108,9 +108,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view = me.getView(),
             toField, htmlEditor;
 
-        if (view.editMode !== 'CREATE') {
-            view.showMessageDraftLoadingNotice();
-        }
+        view.showMessageDraftLoadingNotice(view.editMode === 'CREATE');
 
         if (view.editMode === conjoon.cn_mail.data.mail.message.EditingModes.FORWARD) {
             toField = view.down('#toField');
@@ -337,11 +335,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {Boolean} true if the event is part of a "send" process, i.e. the
      * message is currently being saved before it gets send.
      * @param {Boolean} isCreated Whether the message draft was newly created
+     *
+     * @throws if the mailFolderId for the messagedraft is missing
      */
     onMailMessageBeforeSave : function(editor, messageDraft, isSending, isCreated) {
         var me   = this,
             view = me.getView(),
             vm   = view.getViewModel();
+
+        if (!messageDraft.get('mailFolderId') || !messageDraft.get('mailAccountId')) {
+            Ext.raise({
+                msg : "compound key for message draft missing",
+                mailAccountId : messageDraft.get('mailAccountId'),
+                mailFolderId  : messageDraft.get('mailFolderId')
+            });
+            return false;
+        }
 
         if (!Ext.String.trim(messageDraft.get('subject')) &&
             vm.get('isSubjectRequired') === true) {
