@@ -279,7 +279,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 var formulas = viewModel.getFormulas(),
                     expected = [
                         'addressStoreData', 'getBcc', 'getCc',
-                        'getSubject', 'getTo', 'isCcOrBccValueSet', 'isMessageBodyLoading'
+                        'getSubject', 'getTo', 'isCcOrBccValueSet', 'isMessageBodyLoading',
+                        'isAccountAndFolderSet'
                     ],
                     expectedCount = expected.length,
                     count = 0;
@@ -473,6 +474,25 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             viewModel.get('messageDraft.messageBody').loading = true;
 
             t.expect(formulas.isMessageBodyLoading.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
+
+        });
+
+
+        t.it("Should make sure that isAccountAndFolderSet works properly", function(t) {
+            viewModel = createWithSession();
+
+            var formulas = viewModel.getFormulas();
+
+            t.expect(formulas.isAccountAndFolderSet).toBeDefined();
+            t.expect(formulas.isAccountAndFolderSet.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
+
+            viewModel.get('messageDraft').set('mailAccountId', 'foo');
+
+            t.expect(formulas.isAccountAndFolderSet.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
+
+            viewModel.get('messageDraft').set('mailFolderId', 'bar');
+
+            t.expect(formulas.isAccountAndFolderSet.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
 
         });
 

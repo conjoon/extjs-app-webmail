@@ -82,6 +82,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     formulas : {
 
         /**
+         * Returns true if both mailAccountId and mailFolderId are set fot the
+         * messageDraft.
+         */
+        isAccountAndFolderSet : function(get) {
+            var ma = get('messageDraft.mailAccountId'),
+                mf = get('messageDraft.mailFolderId');
+
+            return !!(ma && mf);
+
+        },
+
+        /**
          * Returns true if the "loading" property of the messageDraft's MessageBody
          * is true, otherwise false.
          */
