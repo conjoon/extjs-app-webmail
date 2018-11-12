@@ -84,8 +84,16 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
             compoundKey : key,
-            editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+            editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
+            defaultMailAccountId : 'foo',
+            defaultMailFolderId : 'bar'
         });
+
+        t.expect(config.isConfigured()).toBe(true);
+
+        t.expect(config.getDefaultMailAccountId()).toBe('foo');
+        t.expect(config.getDefaultMailFolderId()).toBe('bar');
+
 
         t.expect(config.getCompoundKey()).toBe(key);
         t.expect(config.getEditMode()).toBe(conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO);
@@ -99,7 +107,35 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toContain("\"editMode\" was already set");
         exc = e = undefined;
+
+        try {config.setDefaultMailAccountId('abc');} catch (e) {exc = e}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("\"defaultMailAccountId\" was already set");
+        exc = e = undefined;
+
+        try {config.setDefaultMailFolderId('abc');} catch (e) {exc = e}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("\"defaultMailFolderId\" was already set");
+        exc = e = undefined;
+
+        config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+            compoundKey : key,
+            editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+        });
+
+        t.expect(config.isConfigured()).toBe(false);
+
+        config.setDefaultMailAccountId('abc');
+        t.expect(config.isConfigured()).toBe(false);
+        config.setDefaultMailFolderId('xyz');
+        t.expect(config.isConfigured()).toBe(true);
+
+        t.expect(config.getDefaultMailAccountId()).toBe('abc');
+        t.expect(config.getDefaultMailFolderId()).toBe('xyz');
+
     });
+
+
 
 
 

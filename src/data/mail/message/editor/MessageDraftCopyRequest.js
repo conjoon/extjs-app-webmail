@@ -26,13 +26,26 @@
  *
  * Instances of this class are treated as immutable.
  *
+ * This class also allows for specifying default values for mailAccountId and mailFolderId
+ * which represent mailFolderId and mailAccountId that should be considered by any
+ * implementing classes that process copy requests and who need to be aware on
+ * some sort of mailAccount/mailFolder information to be set in any resulting
+ * MessageDraft/MessageDraftConfig
+ *
+ * API using CopyRequests should consider the return value of isConfigured() which
+ * returns true only if the CopyRequest is fully configured.
+ *
  * @example
  *
  *     var request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
  *
  *          compoundKey : conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(1, 2, 3),
  *
- *          editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+ *          editMode : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
+ *
+ *          defaultMailAccountId : 'somerandomaccount_google',
+ *
+ *          defaultMailFolderId : 'INBOX.Drafts'
  *     ));
  *
  *
@@ -57,7 +70,19 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
          * @type {String}
          * @see applyEditMode
          */
-        editMode : undefined
+        editMode : undefined,
+
+        /**
+         * The mailAccountId the requestor wants any resulting copy to be using
+         * @type {String}
+         */
+        defaultMailAccountId : undefined,
+
+        /**
+         * The mailFolderId the requestor wants any resulting copy to be using
+         * @type {String}
+         */
+        defaultMailFolderId : undefined
 
     },
 
@@ -91,14 +116,66 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
             });
         }
 
-        me.initConfig(config)
 
+        me.initConfig(config)
+    },
+
+
+    /**
+     * Returns true if an instance of this class is completely configured, that is
+     * once defaultMailFolderId and defaultMailAccountId where set.
+     *
+     * @returns {boolean}
+     */
+    isConfigured : function() {
+
+        const me = this;
+
+        return !!(me.getDefaultMailFolderId() && me.getDefaultMailAccountId());
+    },
+
+
+    /**
+     * Hook for setDefaultMailFolderId()
+     * @throws if defaultMailFolderId was already set
+     * @private
+     */
+    applyDefaultMailFolderId : function(defaultMailFolderId) {
+        var me = this;
+
+        if (me.getDefaultMailFolderId() !== undefined) {
+            Ext.raise({
+                compoundKey  : me.getDefaultMailFolderId(),
+                msg : "Property \"defaultMailFolderId\" was already set."
+            });
+        }
+
+        return defaultMailFolderId;
+    },
+
+
+    /**
+     * Hook for setDefaultMailAccountId()
+     * @throws if defaultMailAccountId was already set
+     * @private
+     */
+    applyDefaultMailAccountId : function(defaultMailAccountId) {
+        var me = this;
+
+        if (me.getDefaultMailAccountId() !== undefined) {
+            Ext.raise({
+                compoundKey  : me.getDefaultMailAccountId(),
+                msg : "Property \"defaultMailAccountId\" was already set."
+            });
+        }
+
+        return defaultMailAccountId;
     },
 
 
     /**
      * Hook for setCompoundKey()
-     * @throws if id was already set or if compoundKey is not an instance of
+     * @throws if compoundKey was already set or if compoundKey is not an instance of
      * conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      * @private
      */
