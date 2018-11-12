@@ -306,7 +306,10 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      * Returns an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
      * with the data set to the values as computed by this decorator.
      *
-     * @param {Object} options
+     * @param {Object} options Allows for passing properties which get applied
+     * to the resulting MessageDraftConfig if the target properties re not already
+     * existing.
+     *
      *
      * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig}
      *
