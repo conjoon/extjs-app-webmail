@@ -306,13 +306,16 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      * Returns an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
      * with the data set to the values as computed by this decorator.
      *
+     * @param {Object} options
+     *
      * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig}
+     *
      */
-    toMessageDraftConfig : function() {
+    toMessageDraftConfig : function(options = {}) {
 
-        var me = this;
+        const me = this;
 
-        return Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+        let config = Ext.applyIf({
             to          : me.getTo(),
             cc          : me.getCc(),
             bcc         : me.getBcc(),
@@ -325,7 +328,11 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
             answered    : me.getAnswered(),
             draft       : me.getDraft(),
             recent      : me.getRecent()
-        });
+        }, options);
+
+        return Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+            config
+        );
 
     },
 

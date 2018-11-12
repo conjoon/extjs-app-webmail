@@ -238,4 +238,22 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
     });
 
 
+    t.it("toMessageDraftConfig() - apply", function(t) {
+
+        var messageDraft       = createMessageDraft(true, true, true),
+            decorator          = Ext.create('conjoon.cn_mail.text.mail.message.CopyDecorator', messageDraft),
+            messageDraftConfig = decorator.toMessageDraftConfig({
+                to : 'foobar',
+                mailFolderId : 'foo',
+                mailAccountId : 'bar'
+            });
+
+        t.expect(decorator.getTo()).not.toBe('foobar');
+        t.expect(messageDraftConfig.getTo()).toEqual(decorator.getTo());
+        t.expect(messageDraftConfig.getMailFolderId()).toBe('foo');
+        t.expect(messageDraftConfig.getMailAccountId()).toBe('bar');
+
+    });
+
+
 });
