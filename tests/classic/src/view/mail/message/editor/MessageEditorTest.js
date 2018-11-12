@@ -747,15 +747,21 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             var modes = [
                     Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                         compoundKey : createKeyForExistingMessage(1),
-                        editMode : 'REPLY_TO'
+                        editMode : 'REPLY_TO',
+                        defaultMailAccountId : 'foo',
+                        defaultMailFolderId : 'bar'
                     }),
                     Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                         compoundKey : createKeyForExistingMessage(1),
-                        editMode : 'REPLY_ALL'
+                        editMode : 'REPLY_ALL',
+                        defaultMailAccountId : 'foo',
+                        defaultMailFolderId : 'bar'
                     }),
                     Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                         compoundKey : createKeyForExistingMessage(1),
-                        editMode : 'FORWARD'
+                        editMode : 'FORWARD',
+                        defaultMailAccountId : 'foo',
+                        defaultMailFolderId : 'bar'
                     })
                 ],
                 i    = 0,
