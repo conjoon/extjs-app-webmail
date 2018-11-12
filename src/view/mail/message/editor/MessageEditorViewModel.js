@@ -61,6 +61,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      */
     messageDraftCopier : null,
 
+    /**
+     * Will store the CopyRequest this ViewModel was configured with, if CopyRequest.isConfigured()
+     * return false, so it can be loaded later on.
+     * @type {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest}
+     * @private
+     */
+    pendingCopyRequest : null,
+
     data : {
         /**
          * Set to true to indicate that the view is busy saving a message.
@@ -228,8 +236,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
         switch (true) {
 
-
-
             case (messageDraft instanceof MessageEntityCompoundKey):
 
                 let localId = messageDraft.toLocalId(),
@@ -254,9 +260,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 // MessageDraft is MessageDraftCopyRequest
                 me.messageDraftCopier = Ext.create(
                     'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier');
-                me.messageDraftCopier.loadMessageDraftCopy(
-                    messageDraft, me.onMessageDraftCopyLoad, me
-                );
+
+                if (messageDraft.isConfigured()) {
+                    me.pendingCopyRequest = messageDraft;
+                    me.processPendingCopyRequest();
+                } else {
+                    me.pendingCopyRequest = messageDraft;
+                }
                 return;
 
         }
@@ -268,6 +278,59 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                            "MessageDraftConfig, of MessageDraftCopyRequest or of " +
                            "MessageEntityCompoundKey."
         });
+    },
+
+
+    /**
+     * Processes any pending copy request that was set for this ViewModel by
+     * using it for a call of loadMessageDraftCopy of the copier.
+     * The method can be called without arguments, and will then assume the
+     * pendingCopyRequest of this ViewModel is configured. If mailAccountId and
+     * mailFolderId are specified, those will be applied to this instance's
+     * pendingCopyRequest
+     *
+     * @param {String} mailAccountId
+     * @param {String} mailFolderId
+     *
+     * @return conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest
+     * the copyRequest that is being processed
+     *
+     * @throws if there is no pendingCopyRequest for this class available,
+     * or if the copyRequest is not configured.
+     *
+     * @private
+     *
+     */
+    processPendingCopyRequest : function(mailAccountId, mailFolderId) {
+
+        const me = this;
+
+        let request = me.pendingCopyRequest;
+
+        if (!request) {
+            Ext.raise({
+                msg  : "\"pendingCopyRequest\" is not available."
+            });
+        }
+
+        if (!request.isConfigured()) {
+            if (!mailAccountId || !mailFolderId) {
+                Ext.raise({
+                    msg  : "\"pendingCopyRequest\" is not properly configured, and arguments are missing.",
+                    args : arguments,
+                    pendingCopyRequest : request
+                });
+            }
+
+            request.setDefaultMailAccountId(mailAccountId);
+            request.setDefaultMailFolderId(mailFolderId);
+        }
+
+        me.messageDraftCopier.loadMessageDraftCopy(
+            request, me.onMessageDraftCopyLoad, me
+        );
+
+        me.pendingCopyRequest = null;
     },
 
 

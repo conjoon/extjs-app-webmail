@@ -61,7 +61,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 session      : createSession(),
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                     editMode    : editMode,
-                    compoundKey : createKeyForExistingMessage(1)
+                    compoundKey : createKeyForExistingMessage(1),
+                    defaultMailAccountId : 'foo',
+                    defaultMailFolderId  : 'bar'
                 })
             });
 
@@ -189,21 +191,91 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
         t.it('constructor() - messageDraft is MessageDraftCopyRequest', function(t) {
 
-            t.isCalledOnce('onMessageDraftCopyLoad', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype)
+            t.isCalledOnce('onMessageDraftCopyLoad', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
+            t.isCalled('processPendingCopyRequest', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
+
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session      : createSession(),
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                     compoundKey  : createKeyForExistingMessage(1),
-                    editMode : conjoon.cn_mail.data.mail.message.EditingModes.FORWARD
+                    editMode : conjoon.cn_mail.data.mail.message.EditingModes.FORWARD,
+                    defaultMailAccountId : 'foo',
+                    defaultMailFolderId  : 'bar'
                 })
             });
 
-            t.waitForMs(500, function() {
+            t.expect(viewModel.pendingCopyRequest).toBeFalsy();
+
+            try{viewModel.processPendingCopyRequest();}catch(e){exc=e;}
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg).toContain("is not available");
+
+            t.waitForMs(750, function() {
                 t.isInstanceOf(viewModel.messageDraftCopier, conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier);
             });
 
         });
+
+
+        t.it('constructor() - MessageDraftCopyRequest is not properly configured', function(t) {
+
+            t.isntCalled('onMessageDraftCopyLoad', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype)
+
+            let request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                compoundKey  : createKeyForExistingMessage(1),
+                editMode : conjoon.cn_mail.data.mail.message.EditingModes.FORWARD
+            }), exc, e;
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : createSession(),
+                messageDraft : request
+            });
+
+            t.expect(viewModel.pendingCopyRequest).toBe(request);
+
+            try{viewModel.processPendingCopyRequest();}catch(e){exc=e;}
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg).toContain("is not properly configured");
+
+            try{viewModel.processPendingCopyRequest('foo');}catch(e){exc=e;}
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg).toContain("is not properly configured");
+
+            try{viewModel.processPendingCopyRequest(null, 'foo');}catch(e){exc=e;}
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg).toContain("is not properly configured");
+        });
+
+
+        t.it('constructor() - MessageDraftCopyRequest is not properly configured, processing manually', function(t) {
+
+            t.isCalled('onMessageDraftCopyLoad', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype)
+
+            let request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                compoundKey  : createKeyForExistingMessage(1),
+                editMode : conjoon.cn_mail.data.mail.message.EditingModes.FORWARD
+            }), exc, e;
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : createSession(),
+                messageDraft : request
+            });
+
+            t.expect(viewModel.pendingCopyRequest).toBe(request);
+
+            viewModel.processPendingCopyRequest('foo', 'bar');
+
+            t.expect(viewModel.pendingCopyRequest).toBeFalsy();
+
+            t.waitForMs(750, function() {
+                t.expect(viewModel.get('messageDraft').get('mailAccountId')).toBe('foo');
+                t.expect(viewModel.get('messageDraft').get('mailFolderId')).toBe('bar');
+            });
+
+        });
+
+
 
         t.it('constructor() - messageDraft is compound key', function(t) {
 
