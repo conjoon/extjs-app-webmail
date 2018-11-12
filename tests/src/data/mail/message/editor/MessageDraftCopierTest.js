@@ -70,7 +70,9 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
 
             request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                 compoundKey : createKeyForExistingMessage(1),
-                editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+                editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
+                defaultMailAccountId : 'foo',
+                defaultMailFolderId : 'bar'
             });
 
             try {
@@ -81,6 +83,21 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
 
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toContain("must be a valid callback");
+
+
+            request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                compoundKey : createKeyForExistingMessage(1),
+                editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+            });
+
+            try {
+                copier.loadMessageDraftCopy(request, Ext.emptyFn);
+            } catch (e) {
+                exc = e;
+            }
+
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toContain("is not fully configured");
         });
 
 
@@ -98,7 +115,9 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
                 },
                 request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
                     compoundKey : createKeyForExistingMessage(1),
-                    editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO
+                    editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
+                    defaultMailAccountId : 'foo',
+                    defaultMailFolderId : 'bar'
                 }),
                 copier;
             copier = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier');
@@ -111,6 +130,9 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
                 t.expect(COPIER).toBe(copier);
                 t.expect(SUCCESS).toBe(true);
                 t.isInstanceOf(DRAFTCONFIG, conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig);
+
+                t.expect(DRAFTCONFIG.getMailAccountId()).toBe('foo');
+                t.expect(DRAFTCONFIG.getMailFolderId()).toBe('bar');
 
             });
 

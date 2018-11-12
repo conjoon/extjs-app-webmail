@@ -31,7 +31,13 @@
  *      var copier = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier');
  *
  *      copier.loadMessageDraftCopy(
- *          '1', conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
+ *          Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+                compoundKey : conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(1, 2, 3),
+                editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
+                defaultMailAccountId : 'foo',
+                defaultMailFolderId  : 'bar'
+            }),
+            conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
  *          function(copier, messageDraftConfig, success) {
  *              if (success) {
  *                  console.log(messageDraftConfig.toObject());
@@ -72,16 +78,26 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
      *
      * @private
      *
-     * @throws if messageDraftCopyRequest is not an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest
+     * @throws if messageDraftCopyRequest is not an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest,
+     * or if MessageDraftCopyRequest#isConfigured returns false
      */
     loadMessageDraftCopy : function(messageDraftCopyRequest, callback, scope) {
         var me = this,
             key, editMode;
 
+
         if (!(messageDraftCopyRequest instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest)) {
             Ext.raise({
                 messageDraftCopyRequest : messageDraftCopyRequest,
                 msg                     : "\"messageDraftCopyRequest\" must be an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest"
+            });
+        }
+
+        if (!messageDraftCopyRequest.isConfigured()) {
+            Ext.raise({
+                msg                     : "\"messageDraftCopyRequest\" is not fully configured",
+                messageDraftCopyRequest : messageDraftCopyRequest
+
             });
         }
 
@@ -92,13 +108,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
             });
         }
 
-        key       = messageDraftCopyRequest.getCompoundKey();
+        key      = messageDraftCopyRequest.getCompoundKey();
         editMode = messageDraftCopyRequest.getEditMode();
 
         conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
             key, {
             success : Ext.Function.bind(
-                me.onMessageDraftLoad, me, [editMode, callback, scope], true
+                me.onMessageDraftLoad, me, [editMode, callback, scope, messageDraftCopyRequest], true
             ),
             scope : me
         });
@@ -121,13 +137,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @see onMessageBodyLoad
          * @private
          */
-        onMessageDraftLoad : function(record, operation, editMode, callback, scope) {
+        onMessageDraftLoad : function(record, operation, editMode, callback, scope, messageDraftCopyRequest) {
 
             var me = this;
 
             record.loadMessageBody({
                 success : Ext.Function.bind(
-                    me.onMessageBodyLoad, me, [record, editMode, callback, scope], true
+                    me.onMessageBodyLoad, me, [record, editMode, callback, scope, messageDraftCopyRequest], true
                 ),
                 scope : me
             });
@@ -152,13 +168,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @see onAttachmentsLoad
          * @private
          */
-        onMessageBodyLoad : function(record, operation, messageDraft, editMode, callback, scope) {
+        onMessageBodyLoad : function(record, operation, messageDraft, editMode, callback, scope, messageDraftCopyRequest) {
 
             var me = this;
 
             messageDraft.loadAttachments({
                 callback : Ext.Function.bind(
-                    me.onAttachmentsLoad, me, [messageDraft, editMode, callback, scope], true
+                    me.onAttachmentsLoad, me, [messageDraft, editMode, callback, scope, messageDraftCopyRequest], true
                 ),
                 scope : me
             });
@@ -175,7 +191,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
          * @param {String} editMode
          */
-        onAttachmentsLoad : function(records, operation, success, messageDraft, editMode, callback, scope) {
+        onAttachmentsLoad : function(records, operation, success, messageDraft, editMode, callback, scope, messageDraftCopyRequest) {
 
             var me = this,
                 attachments = [];
@@ -186,12 +202,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
                 }
             }
 
+
             callback.apply(scope || null, [
                 me,
-                success ? me.createMessageDraftConfig(messageDraft, editMode) : null,
+                success ? me.createMessageDraftConfig(messageDraft, editMode, messageDraftCopyRequest) : null,
                 success
             ]);
         },
+
+
 
 
         /**
@@ -211,7 +230,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          *
          * @private
          */
-        createMessageDraftConfig : function(messageDraft, editMode) {
+        createMessageDraftConfig : function(messageDraft, editMode, messageDraftCopyRequest) {
 
             var me        = this,
                 decorator = null;
@@ -234,7 +253,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
 
             }
 
-            return decorator.toMessageDraftConfig();
+            return decorator.toMessageDraftConfig({
+                mailAccountId : messageDraftCopyRequest.getDefaultMailAccountId(),
+                mailFolderId  : messageDraftCopyRequest.getDefaultMailFolderId()
+            });
         }
     }
 
