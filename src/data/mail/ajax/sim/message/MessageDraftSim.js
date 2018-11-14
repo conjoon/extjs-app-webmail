@@ -44,15 +44,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
         doDelete : function(ctx) {
 
             const me     = this,
-                idPart = ctx.url.match(this.url)[1],
-                id     = idPart ? idPart.substring(1) : null;
+                  key    = me.extractCompoundKey(ctx.url);
 
-            if (!id) {
+            if (!key.id || !key.mailFolderId || !key.mailAccountId) {
                 console.log("DELETE MessageDraft - no numeric id specified.");
                 return {success : false};
             }
 
-            console.log("DELETE MessageDraft - ", id);
+            console.log("DELETE MessageDraft - ", key);
 
             let ret = {}, found = false;
 
@@ -60,7 +59,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             messageItems = MessageTable.getMessageItems();
 
             for (var i = messageItems.length - 1; i >= 0; i --) {
-                if (messageItems[i].id === id) {
+                if (messageItems[i].mailAccountId === key.mailAccountId &&
+                    messageItems[i].mailFolderId === key.mailFolderId &&
+                    messageItems[i].id === key.id) {
                     messageItems.splice(i, 1);
                     found = true;
                     break;
@@ -70,6 +71,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             if (!found) {
                 return {success : false};
             }
+
+            ret.responseText = Ext.JSON.encode({success : true, data:[]});
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
