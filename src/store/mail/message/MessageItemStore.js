@@ -74,10 +74,14 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
     /**
      * Tries to return the index of the record represented by the compoundKey.
      * Returns -1 if not found.
+     * NOTE:
+     * This does NOT consider the PageMap' feeder if this store is used with the Livegrid feature.
+     * To search the PageMap along with it Feeds, use this grid's livegrid-feature's
+     * getRecordBy() method.
      *
      * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
      *
-     * @return -1 if not found, otherwise teh index of the record in the store.
+     * @return -1 if not found, otherwise the index of the record in the store.
      *
      * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
