@@ -71,7 +71,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
     updateUnreadMessageCount : function(mailAccountId, mailFolderId, unreadCount) {
 
         var me    = this,
-            store = me.getStore('cn_mail-mailfoldertreestore'),
+            store = me.get('cn_mail-mailfoldertreestore'),
             folder;
 
         folder = store.findExact('mailAccountId', mailAccountId);
