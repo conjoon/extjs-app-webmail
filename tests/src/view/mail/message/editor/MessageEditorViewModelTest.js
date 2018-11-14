@@ -205,7 +205,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 })
             });
 
-            t.expect(viewModel.pendingCopyRequest).toBeFalsy();
+            t.expect(viewModel.hasPendingCopyRequest()).toBe(false);
 
             try{viewModel.processPendingCopyRequest();}catch(e){exc=e;}
             t.expect(exc.msg).toBeDefined();
@@ -232,6 +232,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 messageDraft : request
             });
 
+            t.expect(viewModel.hasPendingCopyRequest()).toBe(true);
             t.expect(viewModel.pendingCopyRequest).toBe(request);
 
             try{viewModel.processPendingCopyRequest();}catch(e){exc=e;}
@@ -262,11 +263,12 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 messageDraft : request
             });
 
+            t.expect(viewModel.hasPendingCopyRequest()).toBe(true);
             t.expect(viewModel.pendingCopyRequest).toBe(request);
 
             viewModel.processPendingCopyRequest('foo', 'bar');
 
-            t.expect(viewModel.pendingCopyRequest).toBeFalsy();
+            t.expect(viewModel.hasPendingCopyRequest()).toBe(false);
 
             t.waitForMs(750, function() {
                 t.expect(viewModel.get('messageDraft').get('mailAccountId')).toBe('foo');

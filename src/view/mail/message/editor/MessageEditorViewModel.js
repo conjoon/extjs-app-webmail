@@ -282,6 +282,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
 
     /**
+     * Returns true if there is a pending CopyRequest for this ViewModel existing.
+     *
+     * @returns {Boolean}
+     */
+    hasPendingCopyRequest : function() {
+        const me = this;
+
+        return !!me.pendingCopyRequest;
+    },
+
+
+    /**
      * Processes any pending copy request that was set for this ViewModel by
      * using it for a call of loadMessageDraftCopy of the copier.
      * The method can be called without arguments, and will then assume the
