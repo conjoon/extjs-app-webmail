@@ -225,7 +225,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
         let session = me.getSession();
         if (!(session instanceof conjoon.cn_core.data.Session) ||
-            !(session.getBatchVisitor() instanceof conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor)) {
+            // we will peek at the type of the created visitor, although we know
+            // this is not the *instance* used later on
+            !(session.createVisitor() instanceof conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor)) {
             Ext.raise({
                 msg     : "This ViewModel requires a data session configured with a MessageCompoundBatchVisitor",
                 session : session
