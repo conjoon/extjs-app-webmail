@@ -250,6 +250,12 @@ harness.start({
                             'classic/src/view/mail/message/editor/HtmlEditorTest.js',
                             'classic/src/view/mail/message/editor/MessageEditorTest.js'
                         ]}, {
+                        group : 'grid',
+                        items : [{
+                            group : 'feature',
+                            items : [
+                                'classic/src/view/mail/message/grid/feature/LivegridTest.js'
+                            ]}]}, {
                         group : 'reader',
                         items : [
                             'classic/src/view/mail/message/reader/AttachmentListTest.js',
