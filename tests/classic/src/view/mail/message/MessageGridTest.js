@@ -71,7 +71,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             feature.getAdditionalData(null, null, {get : function() {}}, null);
 
             feature = grid.view.getFeature('cn_mail-mailMessageFeature-livegrid');
-            t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.Livegrid');
+            t.isInstanceOf(feature, 'conjoon.cn_mail.view.mail.message.grid.feature.Livegrid');
 
             feature = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
             t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.RowFlyMenu');

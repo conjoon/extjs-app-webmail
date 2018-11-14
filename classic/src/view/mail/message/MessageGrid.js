@@ -34,7 +34,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
     requires : [
         'conjoon.cn_comp.grid.feature.RowBodySwitch',
-        'conjoon.cn_comp.grid.feature.Livegrid',
+        'conjoon.cn_mail.view.mail.message.grid.feature.Livegrid',
         'conjoon.cn_mail.store.mail.message.MessageItemStore',
         'conjoon.cn_comp.grid.feature.RowFlyMenu',
         'conjoon.cn_core.util.Date'
@@ -77,7 +77,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     },
 
     features : [{
-        ftype : 'cn_comp-gridfeature-livegrid',
+        ftype : 'cn_mail-mailmessagegridfeature-livegrid',
         id    : 'cn_mail-mailMessageFeature-livegrid'
     }, {
         ftype              : 'cn_comp-gridfeature-rowbodyswitch',
