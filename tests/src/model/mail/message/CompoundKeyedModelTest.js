@@ -297,6 +297,8 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
             CALLED++;
         };
 
+        modelRight.entityName = 'RIGHT';
+
         modelLeft.getAssociatedCompoundKeyedData = function() {
             return [modelRight];
         };
@@ -918,6 +920,28 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
 
 
 
+    });
+
+
+    t.it("localId updated when compound key value changes", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+                localId : 'abc'
+            });
+
+        t.expect(model.getId()).toBe('abc');
+
+        model.set('mailAccountId', 'foo');
+
+        t.expect(model.getId()).toBe('abc');
+
+        model.set('mailFolderId', 'bar');
+
+        t.expect(model.getId()).toBe('abc');
+
+        model.set('id', 'snafu');
+
+        t.expect(model.getId()).toBe('foo-bar-snafu');
     });
 
 

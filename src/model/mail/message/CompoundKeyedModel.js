@@ -166,6 +166,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
         me.checkForeignKeysForAction(source, 'save');
 
+        return me.callParent(arguments);
+    },
+
+    /**
+     * Makes sure previousCompoundKey is saved before record is committed.
+     * 
+     * @inheritdoc
+     */
+    commit : function() {
+
+        const me = this,
+              MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;;
+
         if (!me.phantom) {
             let prev = Ext.applyIf(Ext.apply({}, me.modified), me.data);
             me.previousCompoundKey = MessageEntityCompoundKey.createFor(
@@ -264,7 +277,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * (Hint: a MessageBody is in fact a MessageDraft/Item and just decoupled
      * to ease the process of loading data into the memory.)
      * Once foreignKey fields where updated, associated models are forced to
-     * update their primary key by calling updateLocalId().
+     * update their primary key by calling updateLocalId(). The same goes for
+     * *this* model, where the localId will be updated if, and only if any
+     * field or foreignKeyFields were part of the set() process.
 
      * @param {String|Object} key
      * @param {Mixed} value
@@ -284,11 +299,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         let cK     = Ext.isString(key) ? key : Ext.clone(key),
             ret    = me.callParent(arguments),
             valids = [],
-            keys   = {}, curr, val, range, assoc;
-
-        if (me.suspendSetter === true) {
-            return ret;
-        }
+            keys   = {}, curr, val, range, assoc, target;
 
         if (Ext.isString(cK)) {
             keys[cK] = value;
@@ -296,33 +307,49 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
             keys = cK;
         }
 
-        range = me.getAssociatedCompoundKeyedData();
+        if (me.suspendSetter !== true) {
 
-        for (let a = 0, lena = range.length; a < lena; a++) {
-            let target;
-            assoc = range[a];
-            valids = Ext.isArray(me.compoundKeyFields)
-                     ? me.compoundKeyFields
-                     : me.compoundKeyFields[assoc.entityName];
-            assoc.suspendSetter = true;
+            range = me.getAssociatedCompoundKeyedData();
 
-            for (curr in keys) {
-                target = curr;
-                if ((Ext.isArray(valids) && valids.indexOf(curr) === -1) ||
-                    (!Ext.isArray(valids) & !valids[curr])) {
-                    continue;
+            for (let a = 0, lena = range.length; a < lena; a++) {
+
+                target = null;
+                assoc  = range[a];
+                valids = Ext.isArray(me.compoundKeyFields)
+                         ? me.compoundKeyFields
+                         : me.compoundKeyFields[assoc.entityName];
+
+                assoc.suspendSetter = true;
+
+                for (curr in keys) {
+                    target = curr;
+                    if ((Ext.isArray(valids) && valids.indexOf(curr) === -1) ||
+                        (!Ext.isArray(valids) && !valids[curr])) {
+                        continue;
+                    }
+                    if (!Ext.isArray(valids)) {
+                         target = valids[curr];
+                    }
+
+                    val = keys[curr];
+
+                    assoc.set(target, val, {dirty : false});
                 }
-                if (!Ext.isArray(valids)) {
-                     target = valids[curr];
-                }
 
-                val = keys[curr];
-
-                assoc.set(target, val, {dirty : false});
+                assoc.suspendSetter = false;
             }
+        }
 
-            assoc.updateLocalId();
-            assoc.suspendSetter = false;
+        let updateLocal = false;
+        for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
+            if (keys.hasOwnProperty(me.foreignKeyFields[i])) {
+                updateLocal = true;
+                break;
+            }
+        }
+
+        if (updateLocal) {
+            me.updateLocalId();
         }
 
         return ret;
@@ -441,7 +468,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
     updateLocalId : function() {
         const me = this;
 
-        if (!(me.get('mailAccountId') && me.get('mailFolderId') && me.get('id'))) {
+        if (!me.isCompoundKeyConfigured()) {
             return null;
         }
 
@@ -536,6 +563,29 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
                ? me.previousCompoundKey
                : me.getCompoundKey();
 
+    },
+
+
+    /**
+     * Returns true if this current instance is fully configured with values
+     * for all fields representing the foreign fields for a compound
+     * key.
+     *
+     * @return {Boolean}
+     */
+    isCompoundKeyConfigured : function() {
+
+        const me   = this,
+              data = me.data;
+
+
+        for (let i = 0, len = me.foreignKeyFields.length; i < len ; i++) {
+            if (Ext.isEmpty(data[me.foreignKeyFields[i]])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 });
