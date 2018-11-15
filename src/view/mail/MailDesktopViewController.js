@@ -96,6 +96,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     parser : null,
 
+    /**
+     * @private
+     */
+    starvingEditors : null,
+
+    /**
+     * @private
+     */
+    defaultAccountInformations : null,
 
     /**
      * Callback for the embedded InboxView's cn_mail-beforemessageitemdelete event.
@@ -163,7 +172,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         me.updateMessageItemsFromOpenedViews(
-            messageItem.getId(), 'mailFolderId', targetFolder.getId());
+            messageItem.getPreviousCompoundKey(), 'mailFolderId', targetFolder.getId());
     },
 
 
@@ -193,18 +202,24 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * #getItemIdForMessageEditor and #getCnHrefForMessageEditor)
      */
     showMailEditor : function(key, type) {
-        var me      = this,
-            view    = me.getView(),
-            newView, cn_href, itemId,
+        const me = this,
+              view = me.getView(),
+              EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
+              CopyRequest  = 'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
+              defInfo = me.defaultAccountInformations;
+
+        let newView,
             initialConfig = {
                 messageDraft : null
             },
-            EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
-            CopyRequest  = 'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest';
+            itemId  = me.getItemIdForMessageEditor(key, type),
+            cn_href = me.getCnHrefForMessageEditor(key, type);
+            defaults = {};
 
-        itemId  = me.getItemIdForMessageEditor(key, type);
-        cn_href = me.getCnHrefForMessageEditor(key, type);
-
+        if (me.defaultAccountInformations) {
+            defaults.defaultMailAccountId = defInfo.mailAccountId;
+            defaults.defaultMailFolderId  = defInfo.mailFolderId;
+        }
 
         // MessageDraft === MessageDraftCopyRequest
         // MessageDraft === key
@@ -214,22 +229,24 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 initialConfig.messageDraft = key;
                 break;
             case 'replyTo':
-                initialConfig.messageDraft = Ext.create(CopyRequest, {
+                initialConfig.messageDraft = Ext.create(CopyRequest, Ext.apply({
                     compoundKey : key, editMode : EditingModes.REPLY_TO
-                });
+                },  defaults));
                 break;
             case 'replyAll':
-                initialConfig.messageDraft = Ext.create(CopyRequest, {
+                initialConfig.messageDraft = Ext.create(CopyRequest, Ext.apply({
                     compoundKey : key, editMode : EditingModes.REPLY_ALL
-                });
+                },  defaults));
                 break;
             case 'forward':
-                initialConfig.messageDraft = Ext.create(CopyRequest, {
+                initialConfig.messageDraft = Ext.create(CopyRequest, Ext.apply({
                     compoundKey : key, editMode : EditingModes.FORWARD
-                });
+                }, defaults));
                 break;
             default:
-                initialConfig.messageDraft = me.createMessageDraftConfig(key);
+                initialConfig.messageDraft = me.createMessageDraftConfig(
+                    key, defInfo ? defInfo : {}
+                );
                 break;
         }
 
@@ -242,6 +259,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 itemId  : itemId,
                 cn_href : cn_href
             }));
+
+            if (!defInfo && type !== 'edit') {
+                if (!me.starvingEditors) {
+                    me.starvingEditors = [];
+                }
+
+                me.starvingEditors.push(itemId);
+            }
         }
 
         view.setActiveTab(newView);
@@ -628,6 +653,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * under textHtml in the resulting MessageDraftConfig object.
      *
      * @param {String} id
+     * @param {Object} defaultConfig
      *
      * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig/Mixed}
      *
@@ -635,7 +661,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @throws if id is not set or if it is not a string or not a number
      */
-    createMessageDraftConfig : function(id) {
+    createMessageDraftConfig : function(id, defaultConfig = {}) {
 
         const me = this;
 
@@ -657,7 +683,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             encodedId = encodedId.substring(7);
         } else {
             return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+                defaultConfig
+            );
         }
 
         addresses = '';
@@ -673,12 +701,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         if (encodedId == "") {
             if (addresses && addresses.length) {
                 return Ext.create(
-                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
-                        to     : addresses
-                    });
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', Ext.apply({
+                        to : addresses
+                    }, defaultConfig));
             }
             return Ext.create(
-                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig');
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+                 defaultConfig
+            );
         }
 
         if (!me.parser) {
@@ -706,9 +736,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         return Ext.create(
             'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
-            Ext.apply({
+            Ext.apply(Ext.apply({
                 to     : addresses
-            }, res)
+            }, res), defaultConfig)
         );
     },
 
@@ -857,14 +887,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * Will also consider the MessageView embedded in this MailDesktopView's
      * InboxView.
      *
-     * @param {String} messageItemId optional, will return only those items with
-     * the specified id, otherwise all items currently opened will be returned
+     * @param {conjoon.cn_mail.data.mail.message.CompoundKey} compoundKey optional,
+     * will return only those items with the specified compoundKey, otherwise all
+     * items currently opened will be returned
      *
      * @return {Array}
      *
      * @private
      */
-    getMessageItemsFromOpenedViews : function(messageItemId = null) {
+    getMessageItemsFromOpenedViews : function(compoundKey = null) {
 
         const me           = this,
               view         = me.getView(),
@@ -877,13 +908,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                     view        : view,
                     messageItem : messageItem
                 });
-            };
+            },
+            msgItem = inboxMsgView.getMessageItem();
 
-        if (inboxMsgView && inboxMsgView.getMessageItem()) {
-            if (messageItemId === null) {
-                add(inboxMsgView, inboxMsgView.getMessageItem());
-            } else if (inboxMsgView.getMessageItem().getId() === messageItemId) {
-                add(inboxMsgView, inboxMsgView.getMessageItem());
+        if (inboxMsgView && msgItem) {
+            if (compoundKey === null) {
+                add(inboxMsgView, msgItem);
+            } else if (msgItem.getCompoundKey().equalTo(compoundKey)) {
+                add(inboxMsgView, msgItem);
             }
         }
 
@@ -899,7 +931,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             }
 
             if (!messageItem ||
-                (messageItemId !== null && messageItem.getId() !== messageItemId)) {
+                (compoundKey !== null &&
+                    (!messageItem.isCompoundKeyConfigured() ||
+                    !messageItem.getCompoundKey().equalTo(compoundKey)))) {
                 return;
             }
 
@@ -912,19 +946,30 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Updates all items with the specified Model-id in the currently opened
+     * Updates all items with the specified compound key in the currently opened
      * views in the MailDesktopView.
      *
-     * @param {String} messageItemId
+     * Note: Compound Keys and id may change depending on the field tat was updated.
+     *
+     * @param {conjoon.cn_mail.data.mail.message.CompoundKey} compoundKey
      * @param {String} field
      * @param {Mixed} value
      *
      * @throws if field is not a defined field in the model.
+     *
+     * @private
      */
-    updateMessageItemsFromOpenedViews : function(messageItemId, field, value) {
+    updateMessageItemsFromOpenedViews : function(compoundKey, field, value) {
 
         const me         = this,
-              collection = me.getMessageItemsFromOpenedViews(messageItemId);
+              collection = me.getMessageItemsFromOpenedViews(compoundKey);
+
+        if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
+            Ext.raise({
+                msg : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey : compoundKey
+            });
+        }
 
         let i, messageItem;
         for (i = 0, len = collection.length; i < len; i++) {
@@ -991,6 +1036,61 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         return isInstance;
+    },
+
+
+    /**
+     * Registered by this view's ViewModel to make sure the controller is notified
+     * of the initial load of the MailFolderTreeStore to seed mailAccountId and
+     * mailFolderId amongst the editors when composing a message.
+     *
+     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {Array} records
+     */
+    onMailFolderTreeStoreLoad : function(store, records) {
+
+        const me           = this,
+              view         = me.getView(),
+              EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+
+        me.defaultAccountInformations = {
+            mailAccountId : records[0].get('id'),
+            mailFolderId  : records[0].findChild("type", 'DRAFT', false).get('id')
+        };
+
+        if (me.starvingEditors) {
+            let md, vm, editor,
+                defInfo = me.defaultAccountInformations;
+
+            for (let i = me.starvingEditors.length - 1; i > -1; i --) {
+                editor = view.down('#' + me.starvingEditors.pop());
+                vm     = editor.getViewModel();
+
+                // trigger copyrequest
+                if (vm.hasPendingCopyRequest()) {
+                    // a pending copy request should be created in this case
+                    // for anything that is being replied to, or forwarded
+                    // editors for edited messages should not even be available
+                    // in starvin editors. We will check this down below.
+                    // problem would be otehrwise changing of compoundKey during
+                    // load process which would return false or null entities
+                    vm.processPendingCopyRequest(
+                        defInfo.mailAccountId, defInfo.mailFolderId
+                    );
+                } else {
+                    // messages are composed
+                    md = vm.get('messageDraft');
+                    if (editor.editMode !== 'CREATE') {
+                        Ext.raise({
+                            msg : "Unexpected editMode for starving editor: " + editor.editMode
+                        });
+                    }
+
+                    md.set('mailAccountId', defInfo.mailAccountId);
+                    md.set('mailFolderId',  defInfo.mailFolderId);
+                }
+            }
+        }
     }
 
 
