@@ -45,10 +45,16 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
             const MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
 
-            let item = getMessageItemAt(1),
-                messageItem;
+            let index, messageItem;
 
-            item.messageBodyId = createKeyForExistingMessage(1).toLocalId();
+            for (index = 0, len = 1000; index < len; index++) {
+                item = getMessageItemAt(index);
+                if (!item.seen) {
+                    break;
+                }
+            }
+
+            item.messageBodyId = createKeyForExistingMessage(index).toLocalId();
 
             messageItem = Ext.create(
                 'conjoon.cn_mail.model.mail.message.MessageItem',
@@ -128,6 +134,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                 t.expect(wasCalled).toBe(true);
+                t.expect(viewModel.get('messageBody').getCompoundKey().equalTo(msgItem.getCompoundKey())).toBe(true);
                 t.expect(viewModel.get('messageBody').getId()).toBe(msgItem.get('messageBodyId'));
                 t.expect(viewModel.get('messageBody').get('textHtml')).toBeTruthy();
                 // we are working with cloned messageItem for the assoziations
@@ -169,6 +176,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
                 t.waitForMs(1000, function() {
                     t.expect(viewModel.get('messageItem')).not.toBe(null);
+                    t.expect(viewModel.get('messageItem').getCompoundKey().equalTo(msgItem.getCompoundKey())).toBe(true);
                     t.expect(viewModel.get('messageItem').getId()).toBe(msgItem.getId());
                     t.expect(viewModel.get('messageBody')).toBe(null);
 
@@ -176,7 +184,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                     // dummy model
                     t.expect(viewModel.get('messageItem').loadMessageBody().get('textHtml')).toBe('');
                     t.expect(viewModel.get('messageItem').loadMessageBody()).not.toBe(null);
-                    t.expect(viewModel.get('messageItem').loadMessageBody().getId()).toBe(msgItem.get('messageBodyId'));
+                    let mbLoad = viewModel.get('messageItem').loadMessageBody();
+                    t.expect(mbLoad.getId()).toBe(msgItem.get('messageBodyId'));
 
                     Ext.ux.ajax.SimManager.init({
                         delay: 100
@@ -213,7 +222,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.waitForMs(1500, function() {
                 t.expect(viewModel.bodyLoadOperation).toBe(null);
 
-                t.expect(viewModel.get('messageItem').getId()).toBe(item.getId());
+                t.expect(viewModel.get('messageItem').getCompoundKey().equalTo(item.getCompoundKey())).toBe(true);
                 t.expect(viewModel.get('messageItem').loadMessageBody()).toBe(null);
                 t.expect(viewModel.get('messageBody')).toEqual(null);
             });
@@ -293,7 +302,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
                 t.waitForMs(1000, function() {
                     t.expect(viewModel.get('messageItem')).not.toBe(null);
-                    t.expect(viewModel.get('messageItem').getId()).toBe(msgItem.getId());
+                    t.expect(viewModel.get('messageItem').getCompoundKey().equalTo(msgItem.getCompoundKey())).toBe(true);
                     t.expect(viewModel.get('attachments')).toEqual([]);
 
                     Ext.ux.ajax.SimManager.init({
@@ -427,9 +436,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.expect(exc).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
 
-            try {viewModel.updateMessageItem(messageDraft.copy(1000000));} catch (e) {exc = e;}
+            let mdCopy = messageDraft.copy(1000000);
+            mdCopy.set({mailAccountId : 1, mailFolderId : 2, id : 3}, {dirty : false});
+            try {viewModel.updateMessageItem(mdCopy);} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is not the id of');
+            t.expect(exc.msg.toLowerCase()).toContain('does not equal to the compoundkey');
 
             viewModelItem = viewModel.get('messageItem');
 

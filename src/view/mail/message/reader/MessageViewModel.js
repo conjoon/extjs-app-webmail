@@ -214,8 +214,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @throws if messageDraft is not an instance of {conjoon.cn_mail.model.mail.message.MessageDraft},
-     * or if there is currently not a messageItem available, or if the id of the
-     * MessageDraft does not equal to the id of the messageItem.
+     * or if there is currently not a messageItem available, or if the compoundKey of the
+     * MessageDraft does not equal to the compoundKey of the messageItem.
      */
     updateMessageItem : function(messageDraft) {
 
@@ -239,9 +239,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 messageDraft : messageDraft
             });
         }
-        if (messageDraft.getId() !== messageItem.getId()) {
+        if (!messageDraft.getCompoundKey().equalTo(messageItem.getCompoundKey())) {
             Ext.raise({
-                msg          : 'The id of the messageDraft is not the id of the messageItem',
+                msg          : 'The compoundKey of the messageDraft does not equal to the compoundKey of the messageItem',
                 cls          : Ext.getClassName(me),
                 messageDraft : messageDraft,
                 messageItem  : messageItem
