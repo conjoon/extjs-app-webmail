@@ -364,8 +364,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
             if (gridItem) {
                 // set the field property
-                gridItem.set(field, true);
-                gridItem.commit();
+                gridItem.set(field, true, {dirty : false});
             }
 
         }
@@ -440,8 +439,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         // set the field property
         if (!isDraftClass && owningStore === me.getMessageGrid().getStore()) {
-            messageItem.set(field, false);
-            messageItem.commit();
+            messageItem.set(field, false, {dirty : false});
         }
 
         return operation;
@@ -492,8 +490,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         }
 
         if (!isDraftClass && owningStore === me.getMessageGrid().getStore()) {
-            messageItem.set(field, false);
-            messageItem.commit();
+            messageItem.set(field, false, {dirty : false});
         }
 
         let selectedFolder      = me.getSelectedMailFolder(),
