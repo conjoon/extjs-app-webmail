@@ -171,25 +171,41 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
     /**
      * Makes sure previousCompoundKey is saved before record is committed.
-     * 
+     * Only recomputes the previousCompoundKeyField if changes to any of the
+     * foreignKeyFields are committed.
      * @inheritdoc
      */
     commit : function() {
 
         const me = this,
-              MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;;
+              MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        if (!me.phantom) {
-            let prev = Ext.applyIf(Ext.apply({}, me.modified), me.data);
-            me.previousCompoundKey = MessageEntityCompoundKey.createFor(
-                prev.mailAccountId,
-                prev.mailFolderId,
-                prev.id
-            );
+        let recompute = false;
+
+        if (!me.phantom && me.modified) {
+
+            for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
+                if (me.modified.hasOwnProperty(me.foreignKeyFields[i])) {
+                    recompute = true;
+                    break;
+                }
+            }
+
+            if (recompute) {
+                let prev = Ext.applyIf(Ext.apply({}, me.modified), me.data);
+                me.previousCompoundKey = MessageEntityCompoundKey.createFor(
+                    prev.mailAccountId,
+                    prev.mailFolderId,
+                    prev.id
+                );
+            }
+
         }
 
         return me.callParent(arguments);
     },
+
+
 
 
     /**

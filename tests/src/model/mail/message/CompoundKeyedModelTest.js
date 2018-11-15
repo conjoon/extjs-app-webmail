@@ -945,4 +945,57 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
     });
 
 
+    t.it("previousCompoundKey available upon reject()", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+
+        });
+
+        model.set('mailAccountId', 'foo');
+        model.set('mailFolderId', 'bar');
+        model.set('id', 'snafu');
+
+        model.commit();
+
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('foo-bar-snafu');
+
+        model.set('type', 'meh.');
+        model.commit();
+        model.set('type2', 'meh.');
+        model.commit();
+
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('foo-bar-snafu');
+
+        model.set('mailAccountId', 'bla');
+        model.commit();
+        model.set('type2', 'meh.');
+        model.commit();
+        model.commit();
+
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('foo-bar-snafu');
+
+        model.set('mailAccountId', 'test23');
+        model.commit();
+
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('bla-bar-snafu');
+
+        model.set('mailAccountId', 'sdfdgddggdsdg');
+
+
+        model.reject();
+
+        t.expect(model.getCompoundKey().toLocalId()).toBe('test23-bar-snafu');
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('bla-bar-snafu');
+
+
+        model.set('mailAccountId', 'bla1');
+        model.commit();
+
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('test23-bar-snafu');
+        t.expect(model.getCompoundKey().toLocalId()).toBe('bla1-bar-snafu');
+
+
+    });
+
+
 });
