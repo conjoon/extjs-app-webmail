@@ -22,6 +22,22 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
+    const createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+        },
+        getMessageItemAt = function(messageIndex) {
+            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+        },
+        createKeyForExistingMessage = function(messageIndex){
+            let item = getMessageItemAt(messageIndex);
+
+            let key = createKey(
+                item.mailAccountId, item.mailFolderId, item.id
+            );
+
+            return key;
+        };
+
     var view,
         viewConfig = {
             renderTo : document.body,
@@ -42,6 +58,8 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
     });
 
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(){
+
 
     t.it("Should create and show the view along with default config checks", function(t) {
         view = Ext.create(
@@ -54,7 +72,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
     });
 
 
-    t.it("showMailEditor()", function(t) {
+    t.it("showMailEditor() (1)", function(t) {
         var exc, e;
 
         view = Ext.create(
@@ -67,7 +85,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
     });
 
 
-    t.it("showMailEditor()", function(t) {
+    t.it("showMailEditor() (2)", function(t) {
         var editor1, editor2;
 
         view = Ext.create(
@@ -75,13 +93,13 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
         t.isCalledNTimes('showMailEditor', view.getController(), 4);
 
-        editor1 = view.showMailEditor(1, 'edit');
+        editor1 = view.showMailEditor(createKeyForExistingMessage(1), 'edit');
         t.isInstanceOf(editor1, 'conjoon.cn_mail.view.mail.message.editor.MessageEditor')
 
-        editor2 = view.showMailEditor(2, 'edit');
+        editor2 = view.showMailEditor(createKeyForExistingMessage(2), 'edit');
         t.expect(editor1).not.toBe(editor2);
 
-        editor2 = view.showMailEditor(1, 'edit');
+        editor2 = view.showMailEditor(createKeyForExistingMessage(1), 'edit');
         t.expect(editor1).toBe(editor2);
 
         t.expect(view.showMailEditor(1, 'compose')).not.toBe(editor1);
@@ -135,5 +153,8 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
         t.expect(toast.context).toBe("info");
 
     });
+
+
+});
 
 });

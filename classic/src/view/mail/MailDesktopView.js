@@ -66,7 +66,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      * Tries to find an existing MessageView opened in the view and focus it,
      * or create a new one by adding it to the view.
      *
-     * @param {conjoon.cn_mail.data.mail.message.MessageItemCompoundKey} compoundKey
+     * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
 ^    *
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailMessageViewFor}
@@ -80,8 +80,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
     /**
      * Creates and shows a new mail editor instance for writing an email message.
      *
-     * @param {String} id an id to be able to track this MessageEditor later on
-     * when routing is triggered
+     * @param {Mixed} id an id to be able to track this MessageEditor later on
+     * when routing is triggered, or a compoundKey, depending on the type passed to
+     * this method
      * @param {String} type the context in which the MessageEditor is opened in
      * (edit, compose...)
      *
