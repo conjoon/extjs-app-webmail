@@ -417,19 +417,29 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             t.waitForMs(1250, function() {
 
-                let messageItem = grid.getStore().getAt(0);
+                let messageItem, index;
+                for (index = 0, len = 20; index < len; index++) {
+                    messageItem = grid.getStore().getAt(index);
+                    if (messageItem.get('draft')) {
+                        break;
+                    }
+                }
+
                 messageItem.set('draft', false);
                 messageItem.commit();
 
-                let subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[0];
-                t.expect(subjectCont.firstChild.tagName).toBeUndefined()
+                let subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[index];
+                t.expect(subjectCont.firstChild.tagName).toBeUndefined();
+
 
                 messageItem.set('draft', true);
                 messageItem.commit();
 
-                subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[0];
+                subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[index];
                 t.expect(subjectCont.firstChild.tagName.toLowerCase()).toBe('span');
                 t.expect(subjectCont.firstChild.className.toLowerCase()).toBe('draft');
+
+
             });
 
         });
