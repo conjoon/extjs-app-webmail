@@ -487,14 +487,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // most likely not loaded yet if null
         if (sourceFolder) {
-            sourceFolder.set('unreadCount', Math.max(0, sourceFolder.get('unreadCount') - 1));
-            sourceFolder.commit();
+            sourceFolder.set('unreadCount', Math.max(0, sourceFolder.get('unreadCount') - 1), {dirty : false});
         }
 
         // most likely not loaded yet if null
         if (targetFolder) {
-            targetFolder.set('unreadCount', targetFolder.get('unreadCount') + 1);
-            targetFolder.commit();
+            targetFolder.set('unreadCount', targetFolder.get('unreadCount') + 1, {dirty : false});
         }
 
 
@@ -530,8 +528,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // most likely not loaded if not available
         if (mailFolder) {
-            mailFolder.set('unreadCount', Math.max(0, mailFolder.get('unreadCount') - 1));
-            mailFolder.commit();
+            mailFolder.set('unreadCount', Math.max(0, mailFolder.get('unreadCount') - 1), {dirty : false});
         }
 
 
