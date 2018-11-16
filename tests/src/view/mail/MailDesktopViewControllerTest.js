@@ -622,7 +622,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-    t.it("updateHistoryForComposedMessage()", function(t) {
+    t.it("updateHistoryForComposedMessage() - editor IS NOT active tab", function(t) {
 
         let viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -663,6 +663,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             t.expect(token).toBe(cn_href);
 
+            panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+
             let ret = viewController.updateHistoryForComposedMessage(editor, draft);
 
             t.waitForMs(750, function() {
@@ -670,8 +672,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     newCnHref = editor.cn_href;
 
                 t.expect(ret).toBe(newCnHref);
-                t.expect(newToken).toBe(newCnHref);
-                t.expect(newToken).not.toBe(token);
+                t.expect(newToken).not.toBe(newCnHref);
 
                 t.expect(viewController.editorIdMap[oldId]).toBeUndefined()
 
@@ -688,7 +689,65 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 panel.destroy();
                 panel = null;
             });
+        });
+    });
 
+
+    t.it("updateHistoryForComposedMessage() - editor IS active tab", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay : 1
+        });
+
+        let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            mailFolderId : '1',
+            mailAccountId : '1',
+            id : '1'
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller : viewController,
+            renderTo   : document.body,
+            width      : 800,
+            height     : 600
+        });
+
+        let editor = viewController.showMailEditor(8989, 'compose');
+
+        let oldId, newId, itemId = editor.getItemId();
+        for (let id in viewController.editorIdMap) {
+            if (viewController.editorIdMap[id] === itemId) {
+                oldId = id;
+                break;
+            }
+        }
+
+        t.expect(oldId).not.toBeUndefined();
+
+        t.waitForMs(250, function() {
+            let token   = Ext.History.getToken(),
+                cn_href = editor.cn_href;
+
+            t.expect(token).toBe(cn_href);
+
+            t.expect(panel.getActiveTab()).toBe(editor);
+
+            let ret = viewController.updateHistoryForComposedMessage(editor, draft);
+
+            t.waitForMs(750, function() {
+                let newToken  = Ext.History.getToken(),
+                    newCnHref = editor.cn_href;
+
+                t.expect(ret).toBe(newCnHref);
+                t.expect(newToken).toBe(newCnHref);
+
+                // newId and such is tested in other testcase
+
+                 panel.destroy();
+                 panel = null;
+            });
         });
     });
 

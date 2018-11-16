@@ -173,6 +173,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         me.updateMessageItemsFromOpenedViews(
             messageItem.getPreviousCompoundKey(), 'mailFolderId', targetFolder.getId());
+
+
     },
 
 
@@ -753,7 +755,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *  new context is successfull once deeplinking occures
      *  - compute and assign a new token for the editor's cn_href-attribute (which
      *  is also returned by this method)
-     *  - call window.location.replace with the newl generated cn_href.
+     *  - call window.location.replace with the newl generated cn_href. This
+     *  will only happend if the current active tab of the MailDesktopView
+     *  is the editor passed to this method.
      *  Ext.History-events are suspended and resumed after a timeout of 500 ms,
      *  since the Ext.History queries the changes to the window hash in a
      *  frequent interval (ExtJS6.2: 50ms)
@@ -772,6 +776,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     updateHistoryForComposedMessage : function(editor, messageDraft) {
 
         const me           = this,
+              view         = me.getView(),
               EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
 
         if (!editor || (editor.editMode !== EditingModes.CREATE)) {
@@ -797,11 +802,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         editor.cn_href = newToken;
 
-        Ext.History.suspendEvents();
-        window.location.replace('#' + newToken);
-        Ext.Function.defer(function() {
-            Ext.History.resumeEvents();
-        }, 500);
+        if (view.getActiveTab() === editor) {
+            Ext.History.suspendEvents();
+            window.location.replace('#' + newToken);
+            Ext.Function.defer(function() {
+                Ext.History.resumeEvents();
+            }, 500);
+
+        }
 
         return newToken;
     },
