@@ -1175,6 +1175,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 let DRAFTMESSAGE = selectMessage(panel, 1),
                     DRAFTCK      = DRAFTMESSAGE.getCompoundKey(),
                     compoundKey = getRecordCollection()[0].getCompoundKey(),
+                    compoundKey2 = getRecordCollection()[1].getCompoundKey(),
                     rec       = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
                         compoundKey
                     ),
@@ -1187,7 +1188,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                         replyAll  = viewController.showMailEditor(compoundKey, 'replyAll'),
                         replyTo   = viewController.showMailEditor(compoundKey, 'replyTo'),
                         forward   = viewController.showMailEditor(compoundKey, 'forward'),
-                        DRAFTVIEW =  viewController.showMailMessageViewFor(DRAFTCK, 'edit');
+                        DRAFTVIEW =  viewController.showMailMessageViewFor(DRAFTCK, 'edit'),
+                        cmpEdit  =  viewController.showMailEditor(compoundKey2, 'replyTo');
 
                     let isActive = function(views) {
                         for (let i in views) {
@@ -1221,6 +1223,13 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             t.expect(isActive([view, edit, replyAll, replyTo])).toBe(true);
 
                             t.waitForMs(755, function() {
+
+                                t.expect(
+                                    viewController.onBeforeMessageItemDelete(
+                                        inboxView, cmpEdit.getViewModel().get('messageDraft'), cmpEdit
+                                    )).toBe(true);
+                                cmpEdit.close();
+
 
                                 replyTo.close();
 
@@ -1832,6 +1841,56 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 });
             });
         });
+    });
+
+
+    t.it("deleting a message draft  - composed message moved immediately to TRASH", function(t) {
+
+        let viewController = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopViewController'
+        );
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+        panel = Ext.create('conjoon.cn_mail.view.mail.MailDesktopView', {
+            controller: viewController,
+            renderTo: document.body,
+            width: 800,
+            height: 600
+        });
+
+
+        let editor, draft;
+
+
+        editor = viewController.showMailEditor('1', 'compose');
+
+        t.waitForMs(1755, function() {
+
+            t.expect(panel.down('cn_mail-mailmessageeditor')).toBe(editor);
+
+            panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
+                editor.getViewModel().get('messageDraft'),
+                false,
+                editor
+            );
+
+            t.waitForMs(1756, function() {
+
+
+                editor.close();
+
+                t.waitForMs(1757, function() {
+
+                    t.expect(panel.down('cn_mail-mailmessageeditor')).toBe(null);
+
+                    panel.destroy();
+                    panel = null;
+                });
+            });
+
+        });
+
     });
 
 

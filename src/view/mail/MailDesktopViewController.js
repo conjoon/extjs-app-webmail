@@ -124,7 +124,13 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         const me          = this,
               view        = me.getView(),
-              compoundKey = messageItem.getCompoundKey();
+              compoundKey = messageItem.isCompoundKeyConfigured()
+                            ? messageItem.getCompoundKey()
+                            : null;
+
+        if (!compoundKey) {
+            return true;
+        }
 
         let coll = me.getMessageItemsFromOpenedViews(compoundKey, true);
 
