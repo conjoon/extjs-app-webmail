@@ -37,12 +37,16 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
             return key;
         },
-        selectMailFolder = function(panel, storeAt) {
+        selectMailFolder = function(panel, storeAt, shouldBeId, t) {
 
             let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
 
             panel.down('cn_mail-mailfoldertree').getSelectionModel()
                 .select(folder);
+
+            if (shouldBeId && t) {
+                t.expect(folder.get('id')).toBe(shouldBeId);
+            }
 
             return folder;
 
@@ -1160,89 +1164,109 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             height     : 600
         });
 
-        // store not available since MVVM bindings (store filter) where noczt activated
-        // yet
-        panel.down('cn_mail-mailmessagegrid').getStore().findByCompoundKey = function() {
-            return -1;
-        };
 
-        t.waitForMs(750, function(){
+        t.waitForMs(750, function() {
 
-            let compoundKey = getRecordCollection()[0].getCompoundKey(),
-                rec       = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
-                    compoundKey
-                ),
-                inboxView = panel.down('cn_mail-mailinboxview');
+            selectMailFolder(panel, 1, 'INBOX', t);
 
-            t.waitForMs(750, function() {
 
-                let view  = viewController.showMailMessageViewFor(compoundKey),
-                    edit     = viewController.showMailEditor(compoundKey, 'edit'),
-                    replyAll = viewController.showMailEditor(compoundKey, 'replyAll'),
-                    replyTo  = viewController.showMailEditor(compoundKey, 'replyTo'),
-                    forward  = viewController.showMailEditor(compoundKey, 'forward');
+            t.waitForMs(751, function(){
 
-                let isActive = function(views) {
-                    for (let i in views) {
-                        if (panel.getActiveTab() === views[i]) {
-                            return true;
+                let DRAFTMESSAGE = selectMessage(panel, 1),
+                    DRAFTCK      = DRAFTMESSAGE.getCompoundKey(),
+                    compoundKey = getRecordCollection()[0].getCompoundKey(),
+                    rec       = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
+                        compoundKey
+                    ),
+                    inboxView = panel.down('cn_mail-mailinboxview');
+
+                t.waitForMs(752, function() {
+
+                    let view      = viewController.showMailMessageViewFor(compoundKey),
+                        edit      = viewController.showMailEditor(compoundKey, 'edit'),
+                        replyAll  = viewController.showMailEditor(compoundKey, 'replyAll'),
+                        replyTo   = viewController.showMailEditor(compoundKey, 'replyTo'),
+                        forward   = viewController.showMailEditor(compoundKey, 'forward'),
+                        DRAFTVIEW =  viewController.showMailMessageViewFor(DRAFTCK, 'edit');
+
+                    let isActive = function(views) {
+                        for (let i in views) {
+                            if (panel.getActiveTab() === views[i]) {
+                                return true;
+                            }
                         }
-                    }
-                };
+                    };
 
-                t.isCalled('showMessageCannotBeDeletedWarning', panel);
 
-                panel.setActiveTab(inboxView);
+                    let ibc = panel.down('cn_mail-mailinboxview').getController();
+                    ibc.moveOrDeleteMessage(DRAFTMESSAGE);
 
-                t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
-                t.expect(isActive([view, edit, replyAll, replyTo, forward])).toBe(true);
 
-                t.waitForMs(750, function() {
-                    forward.close();
+                    t.isCalled('showMessageCannotBeDeletedWarning', panel);
 
-                    t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
-                    t.expect(isActive([view, edit, replyAll, replyTo])).toBe(true);
+                    panel.setActiveTab(inboxView);
 
-                    t.waitForMs(750, function() {
+                    t.waitForMs(1753, function() {
 
-                        replyTo.close();
+
+                        t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
 
                         t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
-                        t.expect(isActive([view, edit, replyAll])).toBe(true);
+                        t.expect(isActive([view, edit, replyAll, replyTo, forward])).toBe(true);
 
-                        t.waitForMs(750, function() {
-                            replyAll.close();
+                        t.waitForMs(754, function() {
+                            forward.close();
 
                             t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
-                            t.expect(isActive([view, edit])).toBe(true);
+                            t.expect(isActive([view, edit, replyAll, replyTo])).toBe(true);
 
-                            t.waitForMs(750, function() {
-                                edit.close();
+                            t.waitForMs(755, function() {
+
+                                replyTo.close();
 
                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
-                                t.expect(isActive([view])).toBe(true);
+                                t.expect(isActive([view, edit, replyAll])).toBe(true);
 
-                                t.waitForMs(750, function() {
-                                    view.close();
+                                t.waitForMs(756, function() {
+                                    replyAll.close();
 
-                                    t.waitForMs(750, function() {
-                                        t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(true);
+                                    t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
+                                    t.expect(isActive([view, edit])).toBe(true);
 
-                                        t.waitForMs(750, function () {
-                                            panel.destroy();
-                                            panel = null;
+                                    t.waitForMs(757, function() {
+                                        edit.close();
+
+                                        t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
+                                        t.expect(isActive([view])).toBe(true);
+
+                                        t.waitForMs(758, function() {
+                                            view.close();
+
+                                            t.waitForMs(759, function() {
+                                                t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(true);
+
+                                                t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
+
+                                                DRAFTVIEW.close();
+
+                                                t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(true);
+
+
+                                                t.waitForMs(760, function () {
+                                                    panel.destroy();
+                                                    panel = null;
+                                                });
+                                            });
                                         });
                                     });
                                 });
                             });
                         });
                     });
+
                 });
             });
-
         });
-
-
     });
 
 

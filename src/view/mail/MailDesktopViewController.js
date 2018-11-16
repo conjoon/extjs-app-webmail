@@ -126,16 +126,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               view        = me.getView(),
               compoundKey = messageItem.getCompoundKey();
 
-        let openedView, itemIds = [
-            me.getItemIdForMessageEditor(compoundKey, 'edit'),
-            me.getItemIdForMessageEditor(compoundKey, 'replyTo'),
-            me.getItemIdForMessageEditor(compoundKey, 'replyAll'),
-            me.getItemIdForMessageEditor(compoundKey, 'forward'),
-            me.getMessageViewItemId(compoundKey)
-        ];
+        let coll = me.getMessageItemsFromOpenedViews(compoundKey, true);
 
-        for (let i = 0, len = itemIds.length; i < len; i++) {
-            openedView = view.down('#' + itemIds[i]);
+        for (let i = 0, len = coll.length; i < len; i++) {
+            openedView = coll[i].view;
 
             if (openedView && openedView !== requestingView) {
                 view.showMessageCannotBeDeletedWarning(messageItem);
@@ -895,12 +889,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @private
      */
-    getMessageItemsFromOpenedViews : function(compoundKey = null) {
+    getMessageItemsFromOpenedViews : function(compoundKey = null, skipInbox = false) {
 
         const me           = this,
               view         = me.getView(),
-              inboxMsgView = view.down('cn_mail-mailinboxview')
-                                 .down('cn_mail-mailmessagereadermessageview');
+              inboxMsgView = skipInbox !== true
+                             ? view.down('cn_mail-mailinboxview')
+                                   .down('cn_mail-mailmessagereadermessageview')
+                             : null;
 
         let collection = [],
             add        = function(view, messageItem) {
@@ -909,7 +905,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                     messageItem : messageItem
                 });
             },
-            msgItem = inboxMsgView.getMessageItem();
+            msgItem = inboxMsgView
+                      ? inboxMsgView.getMessageItem()
+                      : null;
 
         if (inboxMsgView && msgItem) {
             if (compoundKey === null) {
