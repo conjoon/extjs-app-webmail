@@ -464,16 +464,16 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             expected : 'cn_mail/message/compose/8797'
         }, {
             args     : [key, 'edit'],
-            expected : 'cn_mail/message/edit/' + key.toLocalId()
+            expected : 'cn_mail/message/edit/' + key.toArray().join('/')
         }, {
             args     : [key, 'replyTo'],
-            expected : 'cn_mail/message/replyTo/' + key.toLocalId()
+            expected : 'cn_mail/message/replyTo/' + key.toArray().join('/')
         }, {
             args     : [key, 'replyAll'],
-            expected : 'cn_mail/message/replyAll/' + key.toLocalId()
+            expected : 'cn_mail/message/replyAll/' + key.toArray().join('/')
         }, {
             args     : [key, 'forward'],
-            expected : 'cn_mail/message/forward/' + key.toLocalId()
+            expected : 'cn_mail/message/forward/' + key.toArray().join('/')
         }, {
             args     : ["8797dssdggddsg", 'compose'],
             expected : 'cn_mail/message/compose/8797dssdggddsg'

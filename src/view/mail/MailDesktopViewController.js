@@ -620,7 +620,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         let isInstance = me.checkArgumentsForEditor(id, type);
 
-        id = isInstance ? id.toLocalId() : id;
+        id = isInstance ? id.toArray().join('/') : id;
 
         switch (type) {
             case 'edit':
