@@ -181,24 +181,6 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-    t.it("getMessageViewItemId()", function(t) {
-
-        let ctrl = Ext.create(
-            'conjoon.cn_mail.view.mail.MailDesktopViewController'
-        );
-
-        let value = '@=jhoih78/(///)/ß ó';
-
-        let remoteCompoundKey = MessageEntityCompoundKey.createFor('mailAccountId', 'mailFolderId', 'id');
-
-        t.expect(Ext.validIdRe.test(value)).toBe(false);
-        t.expect(Ext.validIdRe.test(ctrl.getMessageViewItemId(remoteCompoundKey))).toBe(true);
-
-        ctrl.destroy();
-
-    });
-
-
     t.it("Should create the ViewController and run basic checks", function(t) {
         var viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -327,26 +309,26 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 t.expect(rec.get('id')).toBe(rec.get('id') + '');
 
                 // existing records reused from store
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getCompoundKey()))).toBe(null);
+                t.expect(panel.down('#' +ctrl.getItemIdForMessageRelatedView(rec.getCompoundKey(), 'read'))).toBe(null);
                 view = ctrl.showMailMessageViewFor(
                     MessageEntityCompoundKey.createFor(
                         rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id')
                     )
                 );
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec.getCompoundKey()))).not.toBe(null);
-                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec.getCompoundKey())));
+                t.expect(panel.down('#' +ctrl.getItemIdForMessageRelatedView(rec.getCompoundKey(), 'read'))).not.toBe(null);
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getItemIdForMessageRelatedView(rec.getCompoundKey(), 'read')));
                 t.expect(panel.getActiveTab()).toBe(view);
 
 
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getCompoundKey()))).toBe(null);
+                t.expect(panel.down('#' +ctrl.getItemIdForMessageRelatedView(rec2.getCompoundKey(), 'read'))).toBe(null);
                 view = ctrl.showMailMessageViewFor(MessageEntityCompoundKey.createFor(rec2.get('mailAccountId'), rec2.get('mailFolderId'), rec2.get('id')));
-                t.expect(panel.down('#' +ctrl.getMessageViewItemId(rec2.getCompoundKey()))).not.toBe(null);
-                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getMessageViewItemId(rec2.getCompoundKey())));
+                t.expect(panel.down('#' +ctrl.getItemIdForMessageRelatedView(rec2.getCompoundKey(), 'read'))).not.toBe(null);
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' +ctrl.getItemIdForMessageRelatedView(rec2.getCompoundKey(), 'read')));
                 t.expect(panel.getActiveTab()).toBe(view);
 
-                t.expect(panel.down('#' + ctrl.getMessageViewItemId(rec.getCompoundKey()))).not.toBe(null);
+                t.expect(panel.down('#' + ctrl.getItemIdForMessageRelatedView(rec.getCompoundKey(), 'read'))).not.toBe(null);
                 view = ctrl.showMailMessageViewFor(MessageEntityCompoundKey.createFor(rec.get('mailAccountId'), rec.get('mailFolderId'), rec.get('id')));
-                t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(rec.getCompoundKey())));
+                t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getItemIdForMessageRelatedView(rec.getCompoundKey(), 'read')));
                 t.expect(panel.getActiveTab()).toBe(view);
 
                 // remote Loading
@@ -355,13 +337,13 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     remoteLocalId = remoteCompoundKey.toLocalId();
 
                 t.expect(store.findExact('localId', remoteLocalId)).toBe(-1);
-                t.expect(panel.down('#' + ctrl.getMessageViewItemId(remoteCompoundKey))).toBe(null);
+                t.expect(panel.down('#' + ctrl.getItemIdForMessageRelatedView(remoteCompoundKey, 'read'))).toBe(null);
                 view = ctrl.showMailMessageViewFor(remoteCompoundKey);
                 t.expect(panel.getActiveTab()).toBe(view);
 
                 t.waitForMs(500, function() {
 
-                    t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getMessageViewItemId(remoteCompoundKey)));
+                    t.expect(panel.getActiveTab()).toBe(panel.down('#' + ctrl.getItemIdForMessageRelatedView(remoteCompoundKey, 'read')));
 
                     t.waitForMs(500, function() {
                         panel.destroy();
@@ -375,7 +357,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-    t.it("getItemIdForMessageEditor()", function(t) {
+    t.it("getItemIdForMessageRelatedView()", function(t) {
         var ctrl = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
         ), exc, e, tests, res, results = [];
@@ -388,20 +370,23 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             expected : 'Exception',
             contains : 'valid value'
         }, {
+            args     : [key, 'read'],
+            expected : 'cn_mail-read-' + key.toLocalId()
+        }, {
             args     : [key, 'edit'],
-            expected : 'cn_mail-mailmessageeditor-edit-' + key.toLocalId()
+            expected : 'cn_mail-edit-' + key.toLocalId()
         }, {
             args     : [key, 'replyTo'],
-            expected : 'cn_mail-mailmessageeditor-replyTo-' + key.toLocalId()
+            expected : 'cn_mail-replyTo-' + key.toLocalId()
         }, {
             args     : [key, 'replyAll'],
-            expected : 'cn_mail-mailmessageeditor-replyAll-' + key.toLocalId()
+            expected : 'cn_mail-replyAll-' + key.toLocalId()
         }, {
             args     : [key, 'forward'],
-            expected : 'cn_mail-mailmessageeditor-forward-' + key.toLocalId()
+            expected : 'cn_mail-forward-' + key.toLocalId()
         }, {
             args     : ['8797dssdggddsg', 'compose'],
-            expected : 'cn_mail-mailmessageeditor-compose-8797dssdggddsg'
+            expected : 'cn_mail-compose-8797dssdggddsg'
         }, {
             args     : [false],
             expected : 'Exception',
@@ -419,14 +404,14 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         for (var i = 0, len = tests.length; i < len; i++) {
             exc = e = undefined;
             if (tests[i].expected == 'Exception') {
-                try{ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args);}catch(e){
+                try{ctrl.getItemIdForMessageRelatedView.apply(ctrl, tests[i].args);}catch(e){
                     exc = e;
                 }
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg).toContain(tests[i].contains);
             } else {
-                res = ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args);
-                t.expect(res).toContain('cn_mail-mailmessageeditor-' + tests[i].args[1]);
+                res = ctrl.getItemIdForMessageRelatedView.apply(ctrl, tests[i].args);
+                t.expect(res).toContain('cn_mail-' + tests[i].args[1]);
                 results[i] = res;
             }
         }
@@ -435,7 +420,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             if (tests[i].expected == 'Exception') {
                 continue;
             } else {
-                t.expect(ctrl.getItemIdForMessageEditor.apply(ctrl, tests[i].args)
+                t.expect(ctrl.getItemIdForMessageRelatedView.apply(ctrl, tests[i].args)
                 ).toBe(results[i]);
             }
         }
@@ -444,7 +429,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-    t.it("getCnHrefForMessageEditor()", function(t) {
+    t.it("buildCnHref()", function(t) {
         var ctrl = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
         ), exc, e, tests;
@@ -465,6 +450,9 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         }, {
             args     : [key, 'edit'],
             expected : 'cn_mail/message/edit/' + key.toArray().join('/')
+        }, {
+            args     : [key, 'read'],
+            expected : 'cn_mail/message/read/' + key.toArray().join('/')
         }, {
             args     : [key, 'replyTo'],
             expected : 'cn_mail/message/replyTo/' + key.toArray().join('/')
@@ -490,13 +478,13 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         for (var i = 0, len = tests.length; i < len; i++) {
             exc = e = undefined;
             if (tests[i].expected == 'Exception') {
-                try{ctrl.getCnHrefForMessageEditor.apply(ctrl, tests[i].args);}catch(e){
+                try{ctrl.buildCnHref.apply(ctrl, tests[i].args);}catch(e){
                     exc = e;
                 }
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg).toContain(tests[i].contains);
             } else {
-                t.expect(ctrl.getCnHrefForMessageEditor.apply(ctrl, tests[i].args)).toBe(
+                t.expect(ctrl.buildCnHref.apply(ctrl, tests[i].args)).toBe(
                     tests[i].expected);
             }
         }
@@ -598,31 +586,42 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
 
 
-    t.it("updateHistoryForComposedMessage() - exceptions", function(t) {
+    t.it("updateHistoryForMessageRelatedView() - exceptions", function(t) {
 
         let exc, e,
             viewController = Ext.create(
                 'conjoon.cn_mail.view.mail.MailDesktopViewController'
-            );
+            ),
+            draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                mailFolderId : '1',
+                mailAccountId : '1',
+                id : '1'
+            });
 
-        try{viewController.updateHistoryForComposedMessage();}catch(e){exc=e;}
+        try{viewController.updateHistoryForMessageRelatedView({isCnMessageEditor : true}, {});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
-        t.expect(exc.msg.toLowerCase()).toContain('editmode');
+        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
         exc = undefined;
 
-        try{viewController.updateHistoryForComposedMessage({editMode : 'foo'});}catch(e){exc=e;}
+        try{viewController.updateHistoryForMessageRelatedView(undefined, draft);}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('of editor must be');
+        t.expect(exc.msg.toLowerCase()).toContain('is not a valid value');
+        t.expect(exc.msg.toLowerCase()).toContain('type');
+        exc = undefined;
+
+        try{viewController.updateHistoryForMessageRelatedView({isCnMessageEditor : true, editMode : 'foo'}, draft);}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('of editor must be ');
         t.expect(exc.msg.toLowerCase()).toContain('editmode');
 
         viewController.destroy();
     });
 
 
-    t.it("updateHistoryForComposedMessage() - editor IS NOT active tab", function(t) {
+    t.it("updateHistoryForMessageRelatedView() - editor IS NOT active tab", function(t) {
 
         let viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -648,8 +647,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         let editor = viewController.showMailEditor(8989, 'compose');
 
         let oldId, newId, itemId = editor.getItemId();
-        for (let id in viewController.editorIdMap) {
-            if (viewController.editorIdMap[id] === itemId) {
+        for (let id in viewController.messageViewIdMap) {
+            if (viewController.messageViewIdMap[id] === itemId) {
                 oldId = id;
                 break;
             }
@@ -665,7 +664,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
-            let ret = viewController.updateHistoryForComposedMessage(editor, draft);
+            let ret = viewController.updateHistoryForMessageRelatedView(editor, draft);
 
             t.waitForMs(750, function() {
                 let newToken  = Ext.History.getToken(),
@@ -674,10 +673,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 t.expect(ret).toBe(newCnHref);
                 t.expect(newToken).not.toBe(newCnHref);
 
-                t.expect(viewController.editorIdMap[oldId]).toBeUndefined()
+                t.expect(viewController.messageViewIdMap[oldId]).toBeUndefined()
 
-                for (let id in viewController.editorIdMap) {
-                    if (viewController.editorIdMap[id] === itemId) {
+                for (let id in viewController.messageViewIdMap) {
+                    if (viewController.messageViewIdMap[id] === itemId) {
                         newId = id;
                         break;
                     }
@@ -693,7 +692,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-    t.it("updateHistoryForComposedMessage() - editor IS active tab", function(t) {
+    t.it("updateHistoryForMessageRelatedView() - editor IS active tab", function(t) {
 
         let viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -717,8 +716,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         let editor = viewController.showMailEditor(8989, 'compose');
 
         let oldId, newId, itemId = editor.getItemId();
-        for (let id in viewController.editorIdMap) {
-            if (viewController.editorIdMap[id] === itemId) {
+        for (let id in viewController.messageViewIdMap) {
+            if (viewController.messageViewIdMap[id] === itemId) {
                 oldId = id;
                 break;
             }
@@ -734,7 +733,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             t.expect(panel.getActiveTab()).toBe(editor);
 
-            let ret = viewController.updateHistoryForComposedMessage(editor, draft);
+            let ret = viewController.updateHistoryForMessageRelatedView(editor, draft);
 
             t.waitForMs(750, function() {
                 let newToken  = Ext.History.getToken(),
@@ -850,7 +849,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 panel.showMailMessageViewFor(firstRowCK);
 
                 t.waitForMs(500, function() {
-                    messageDetailView = panel.down('#' + viewController.getMessageViewItemId(firstRowCK));
+                    messageDetailView = panel.down('#' + viewController.getItemIdForMessageRelatedView(firstRowCK, 'read'));
                     t.expect(messageDetailView).toBeTruthy();
 
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
@@ -929,7 +928,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 panel.showMailMessageViewFor(firstRowCK);
 
                 t.waitForMs(500, function() {
-                    messageDetailView = panel.down('#' + viewController.getMessageViewItemId(firstRowCK));
+                    messageDetailView = panel.down('#' + viewController.getItemIdForMessageRelatedView(firstRowCK, 'read'));
                     t.expect(messageDetailView).toBeTruthy();
 
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 2);
@@ -2120,10 +2119,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             };
 
         viewController.onMessageItemMove(inboxView,
-            {getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
+            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
             inboxView,
-            {getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
-            {getPreviousCompoundKey : prevCk, get : Ext.emptyFn, getId : Ext.emptyFn});
+            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
+            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, get : Ext.emptyFn, getId : Ext.emptyFn});
 
         t.waitForMs(750, function () {
             panel.destroy();
@@ -2154,9 +2153,9 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         viewController.onMessageItemMove(
             inboxView,
-            {getPreviousCompoundKey : prevCk, getId : Ext.emptyFn}, null,
-            {getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
-            {getPreviousCompoundKey : prevCk, get : Ext.emptyFn, getId : Ext.emptyFn});
+            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn}, null,
+            {getCompoundKey : prevCk, getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
+            {getCompoundKey : prevCk, getPreviousCompoundKey : prevCk, get : Ext.emptyFn, getId : Ext.emptyFn});
 
         t.waitForMs(750, function () {
             panel.destroy();
@@ -2502,7 +2501,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
 
 
-    t.it("onMessageItemMove() - updateMessageItemsFromOpenedViews() called", function(t) {
+    t.it("onMessageItemMove() - updateMessageItemsFromOpenedViews() / updateHistoryForMessageRelatedView() called", function(t) {
 
         let ctrl = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -2522,6 +2521,15 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             FIELD,
             VALUE,
             PREVMOCKCK = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor('a', 'b', 'c');;
+            COLLS = [{view : {}, messageItem : {}}];
+
+        ctrl.getMessageItemsFromOpenedViews = function() {
+            return COLLS;
+        };
+
+        ctrl.updateHistoryForMessageRelatedView = function(panel, messageItem) {
+            panel.CALLED = true;
+        };
 
         ctrl.updateMessageItemsFromOpenedViews = function(ck, field, value) {
             CK    = ck;
@@ -2536,6 +2544,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ctrl.onMessageItemMove(
             inboxView,
             {
+                getCompoundKey         : function(){return PREVMOCKCK;},
                 getPreviousCompoundKey : function(){return PREVMOCKCK;}
 
             },
@@ -2551,6 +2560,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(FIELD).toBe('mailFolderId');
         t.expect(VALUE).toBe('INBOX');
 
+        t.expect(COLLS.length).toBe(1);
+        t.expect(COLLS[0].view.CALLED).toBe(true);
 
         t.waitForMs(750, function () {
             panel.destroy();

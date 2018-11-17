@@ -84,11 +84,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
     mailInboxView : null,
 
     /**
-     * Used to compute valid itemIds for MessageEditor tabs, which can be valid
-     * in case routing ids with special characters (e.g. mailto-links) appear.
+     * Used to map itemIds to localIds of MessageItems/Drafts represented in editors/
+     * views; localIds may change during the lifespan of a view, itemIds must alsways stay
+     * the same.
      * @private
      */
-    editorIdMap : null,
+    messageViewIdMap : null,
 
     /**
      * @type {conjoon.cn_mail.text.QueryStringParser}
@@ -162,6 +163,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @see MailDesktopView#showMessageMovedInfo
      * @see updateMessageItemsFromOpenedViews
+     * @see updateHistoryForMessageRelatedView
      */
     onMessageItemMove : function(view, messageItem, requestingView, sourceFolder, targetFolder) {
 
@@ -174,7 +176,16 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         me.updateMessageItemsFromOpenedViews(
             messageItem.getPreviousCompoundKey(), 'mailFolderId', targetFolder.getId());
 
+        // we have an updated compound key now
+        let collection = me.getMessageItemsFromOpenedViews(messageItem.getCompoundKey(), true),
+            i, len, panel;
 
+
+        for (i = 0, len = collection.length; i < len; i++) {
+            panel = collection[i].view;
+
+            me.updateHistoryForMessageRelatedView(panel, messageItem);
+        }
     },
 
 
@@ -201,7 +212,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      *
      * @throws if no valid id was specified (bubbles exceptions from
-     * #getItemIdForMessageEditor and #getCnHrefForMessageEditor)
+     * #getItemIdForMessageRelatedView and #buildCnHref)
      */
     showMailEditor : function(key, type) {
         const me = this,
@@ -214,8 +225,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             initialConfig = {
                 messageDraft : null
             },
-            itemId  = me.getItemIdForMessageEditor(key, type),
-            cn_href = me.getCnHrefForMessageEditor(key, type);
+            itemId  = me.getItemIdForMessageRelatedView(key, type),
+            cn_href = me.buildCnHref(key, type);
             defaults = {};
 
         if (me.defaultAccountInformations) {
@@ -381,7 +392,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         var me      = this,
             view    = me.getView(),
-            itemId  = me.getMessageViewItemId(compoundKey),
+            itemId  = me.getItemIdForMessageRelatedView(compoundKey, 'read'),
             newView = view.down('#' + itemId),
             msgGrid = view.down('cn_mail-mailmessagegrid'),
             store   = msgGrid ? msgGrid.getStore(): null,
@@ -392,10 +403,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             newView = view.add({
                 xtype   : 'cn_mail-mailmessagereadermessageview',
                 itemId  : itemId,
-                cn_href : [
-                    'cn_mail/message/read',
-                    compoundKey.toArray().join('/')
-                ].join('/'),
+                cn_href : me.buildCnHref(compoundKey, 'read'),
                 margin  : '12 5 5 0'
             });
 
@@ -451,7 +459,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               view             = me.getView(),
               messageGrid      = view.down('cn_mail-mailmessagegrid'),
               itemStore        = messageGrid ? messageGrid.getStore() : null,
-              messageView      = view.down('#' + me.getMessageViewItemId(messageDraft.getCompoundKey())),
               inboxView        = view.down('cn_mail-mailinboxview'),
               EditingModes     = conjoon.cn_mail.data.mail.message.EditingModes,
               editMode         = editor.editMode,
@@ -459,10 +466,16 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                   ? inboxView.down('cn_mail-mailmessagereadermessageview')
                   : null;
 
-        let inboxMessageViewId, messageItem, recInd;
+        let inboxMessageViewId, messageItem, recInd, messageView, prevItemId;
+
+        // use the PREVIOUS itemId that was available before saving completed;
+        // this is the same behavior as in the onMessageItemMove
+        prevItemId = me.getItemIdForMessageRelatedView(
+            messageDraft.getPreviousCompoundKey(), 'read');
+        messageView = view.down('#' + prevItemId);
 
         if (editMode === EditingModes.CREATE) {
-            me.updateHistoryForComposedMessage(editor, messageDraft);
+            me.updateHistoryForMessageRelatedView(editor, messageDraft);
         }
 
         if ([EditingModes.CREATE, EditingModes.REPLY_TO,
@@ -569,12 +582,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Computes a valid itemId to use with an MessageEdit instance. This is needed
-     * since id might be string containing special chars.
-     * This method is guaranteed one and the same id for one and the same specified
-     * id during the lifetime of this instance. ids so not persist over sessions.
+     * Computes a valid itemId to use with an MessageEditor or MessageView instance,
+     * depending on the type. This is needed since ids might be string containing
+     * special chars, and to map itemIds to localIds which change during the lifespan
+     * of a message, and to refer to always one and the same editor/view instance.
+     * This method is guaranteed to return one and the same id for one and the same specified
+     * string/compoundKey during the lifetime of "this" instance.
      *
-     * @param {String} id
+     * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} id
      * @param {String} type the context in which the mail editor was opened in
      *
      * @return {String}
@@ -584,65 +599,72 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @throws if id or type is not valid, or if the context is not compose and
      * id is not a compound key
      */
-    getItemIdForMessageEditor : function(id, type) {
+    getItemIdForMessageRelatedView : function(id, type) {
 
         const me = this;
 
         let newId,
-            isInstance = me.checkArgumentsForEditor(id, type);
+            isInstance = me.checkArgumentsForEditorOrView(id, type);
 
-        newId = 'cn_mail-mailmessageeditor-' + type + '-' + Ext.id();
+        newId = 'cn_mail-' + type + '-' + Ext.id();
 
-        if (!me.editorIdMap) {
-            me.editorIdMap = {};
+        if (!me.messageViewIdMap) {
+            me.messageViewIdMap = {};
         }
 
-        id = type + (isInstance ? id.toLocalId() : id);
+        id = (isInstance ? id.toLocalId() : id);
+        id = me.computeIdForMessageViewMap(id, type);
 
-
-        if (!me.editorIdMap[id]) {
-            me.editorIdMap[id] = newId;
+        if (!me.messageViewIdMap[id]) {
+            me.messageViewIdMap[id] = newId;
         }
 
-        return  me.editorIdMap[id];
+        return  me.messageViewIdMap[id];
     },
 
 
     /**
-     * Returns a cn_href value to use with a MessageEditor for proper routing.
+     * Builds a cn_href value to use with a MessageEditor or a MessageView that
+     * represents the route used to activate the specific view.
      *
-     * @param {Mixed} id
+     * @param {{String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} id
      * @param {String} type the context in which the mail editor was opened in
      *
      * @return {String}
      *
      * @private
      *
-     * @throws from #checkArgumentsForEditor
+     * @throws from #checkArgumentsForEditorOrView
      *
      * @see checkArgumentsForEditor
      */
-    getCnHrefForMessageEditor : function(id, type) {
+    buildCnHref : function(id, type) {
 
         const me = this;
 
-        let isInstance = me.checkArgumentsForEditor(id, type);
+        let isInstance = me.checkArgumentsForEditorOrView(id, type);
 
         id = isInstance ? id.toArray().join('/') : id;
 
         switch (type) {
+            case 'read':
+                return 'cn_mail/message/read/' + id;
+
             case 'edit':
                 return 'cn_mail/message/edit/' + id;
+
             case 'replyTo':
                 return 'cn_mail/message/replyTo/' + id;
+
             case 'replyAll':
                 return 'cn_mail/message/replyAll/' + id;
+
             case 'forward':
                 return 'cn_mail/message/forward/' + id;
-            default :
+
+            default:
                 return 'cn_mail/message/compose/' + id
         }
-
     },
 
 
@@ -746,72 +768,114 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * This method will effectively replace the current hashbang of an editor in
-     * editMode == CREATE to the hashbang of an editor which is currently in
-     * editMode === edit.
      * Method gets called as soon as the saving of a newly composed message
-     * finishes, taking care of the following:
-     *  - remapping editorIdMap so that a new mapping between the editor in its
-     *  new context is successfull once deeplinking occures
-     *  - compute and assign a new token for the editor's cn_href-attribute (which
+     * finishes, or if a message was moved to a new folder. It takes care of the
+     * following:
+     *  - remapping messageViewIdMap so that a new mapping between the editor/view
+     *  in its new context is successfull and deeplinking targets the correct view.
+     *  - compute and assign a new token for the view's cn_href-attribute (which
      *  is also returned by this method)
-     *  - call window.location.replace with the newl generated cn_href. This
-     *  will only happend if the current active tab of the MailDesktopView
+     *  - call window.location.replace with the newly generated cn_href. This
+     *  will only happen if the current active tab of the MailDesktopView
      *  is the editor passed to this method.
-     *  Ext.History-events are suspended and resumed after a timeout of 500 ms,
+     *  (Ext.History-events are suspended and resumed after a timeout of 500 ms,
      *  since the Ext.History queries the changes to the window hash in a
-     *  frequent interval (ExtJS6.2: 50ms)
+     *  frequent interval (ExtJS6.2: 50ms))
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
-     * @oaram {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft The
+     * @oaram {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem The
      * newly created message draft
      *
-     * @return {String} the newly computed cn_href attribute of the editor
+     * @return {String} the newly computed cn_href attribute of the editor, or NULL
+     * if no new cn_href value was assigned
      *
      * @throws if the editMode of the specified editor is not
      * conjoon.cn_mail.data.mail.message.EditingModes#CREATE
      *
      * @private
      */
-    updateHistoryForComposedMessage : function(editor, messageDraft) {
+    updateHistoryForMessageRelatedView : function(panel, messageItem) {
 
-        const me           = this,
-              view         = me.getView(),
-              EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+        const me   = this,
+              view = me.getView();
 
-        if (!editor || (editor.editMode !== EditingModes.CREATE)) {
+        let type = null;
+
+        if (panel) {
+            type = panel.isCnMessageEditor ? 'edit' : 'read';
+        }
+
+        if (!(messageItem instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem)) {
             Ext.raise({
-                msg    : Ext.String.format("'editMode' of Editor must be '{0}'", EditingModes.CREATE),
-                editor : editor
+                msg         : "\"messageItem\" must be an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem",
+                messageItem : messageItem
             });
         }
 
-        let compoundKey = messageDraft.getCompoundKey(),
-            localId     = compoundKey.toLocalId();
+        let compoundKey = messageItem.getCompoundKey(),
+            newToken    = me.buildCnHref(compoundKey, type);
 
-        for (let id in me.editorIdMap) {
-            if (me.editorIdMap[id] === editor.getItemId()) {
-                delete me.editorIdMap[id];
-                me.editorIdMap['edit' + localId] =
-                    editor.getItemId();
-                break;
-            }
+        if (newToken === panel.cn_href) {
+            return null;
         }
 
-        let newToken = me.getCnHrefForMessageEditor(compoundKey, 'edit');
+        me.updateMessageViewIdMapForMessage(panel, messageItem, type);
 
-        editor.cn_href = newToken;
+        panel.cn_href = newToken;
 
-        if (view.getActiveTab() === editor) {
+        if (view.getActiveTab() === panel) {
             Ext.History.suspendEvents();
             window.location.replace('#' + newToken);
             Ext.Function.defer(function() {
                 Ext.History.resumeEvents();
             }, 500);
-
         }
 
         return newToken;
+    },
+
+
+    /**
+     * Remaps itemIds to localIds. This method is needed to make sure views with
+     * specific itemIds always return to one and the same localId, and vice versa.
+     *
+     * @param {conjoon.cn_mail.view.mail.message.reader.MessageView|conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
+     * @param {conjoon.cn_mail.modelw.mail.message.AbstractMessageItem} messageItem
+     * @param {String} type The context the view is shown for (read, edit, compose)
+     *
+     * @private
+     */
+    updateMessageViewIdMapForMessage : function(panel, messageItem, type) {
+
+        const me           = this,
+              EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+
+        if (!panel || (!panel.isCnMessageEditor && !panel.isCnMessageView)) {
+            Ext.raise({
+                msg   : Ext.String.format("\"panel\" does not seem to be a MessageEditor or MessageView"),
+                panel : panel
+            });
+        }
+
+        if (panel.isCnMessageEditor && [EditingModes.CREATE, EditingModes.EDIT].indexOf(panel.editMode) === -1) {
+            Ext.raise({
+                msg    : Ext.String.format("'editMode' of Editor must be '{0}' or '{1}'", EditingModes.CREATE, EditingModes.EDIT),
+                editor : panel
+            });
+        }
+
+        let compoundKey = messageItem.getCompoundKey(),
+            panelItemId = panel.getItemId(),
+            mapId       = me.computeIdForMessageViewMap(compoundKey.toLocalId(), type);
+
+        for (let id in me.messageViewIdMap) {
+            if (me.messageViewIdMap[id] === panelItemId) {
+                delete me.messageViewIdMap[id];
+                me.messageViewIdMap[mapId] = panelItemId;
+                break;
+            }
+        }
+
     },
 
 
@@ -1001,18 +1065,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * @private
-     */
-    getMessageViewItemId : function(compoundKey) {
-        return 'cn_mail-mailmessagereadermessageview-' +
-                Ext.util.Base64.encode(compoundKey.toLocalId()).replace(/[^a-zA-Z0-9]/g,'-');
-    },
-
-
-    /**
-     * Helper function for checking arguments when creating an editor instance.
+     * Helper function for checking arguments related to cn_href
+     * building/ itemId retrieving.
      *
-     * @param {Mixed} id
+     * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey|String} id
      * @param {String} type
      *
      * @returns {boolean} true if is an an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
@@ -1020,7 +1076,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * @throws if id or type is not valid, or if the context is not compose and
      * id is not a compound key
      */
-    checkArgumentsForEditor : function(id, type) {
+    checkArgumentsForEditorOrView : function(id, type) {
+
         if (!id || (!Ext.isString(id) && !Ext.isNumber(id) && !(
             id instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
             ))) {
@@ -1030,7 +1087,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             })
         }
 
-        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward'].indexOf(type) === -1) {
+        if (['edit', 'compose', 'replyTo', 'replyAll', 'forward', 'read'].indexOf(type) === -1) {
             Ext.raise({
                 type  : type,
                 msg : "\"type\" is not a valid value"
@@ -1103,6 +1160,13 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 }
             }
         }
+    },
+
+    /**
+     * @private
+     */
+    computeIdForMessageViewMap : function(id, type) {
+        return id = type + '-' + id;
     }
 
 
