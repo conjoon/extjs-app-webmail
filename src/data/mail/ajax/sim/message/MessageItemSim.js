@@ -150,12 +150,21 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
             if (keys.id) {
                 id = keys.id;
-                return {data : Ext.Array.findBy(
+                let fitem = Ext.Array.findBy(
                     messageItems,
                     function(messageItem) {
-                        return messageItem.id === '' + id;
+                        return messageItem.mailAccountId === '' +keys.mailAccountId &&
+                            messageItem.mailFolderId === '' + keys.mailFolderId &&
+                            messageItem.id === '' + id;
                     }
-                )};
+                );
+
+                if (!fitem) {
+                    return {status : 404, success : false};
+                }
+
+                return {data : fitem};
+
             } else if (!id) {
 
                 var items = Ext.Array.filter(
