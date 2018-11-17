@@ -193,6 +193,7 @@ harness.start({
                 group : 'mail',
                 items : [
                     'src/view/mail/MailDesktopViewControllerTest.js',
+                    'src/view/mail/MailDesktopViewControllerTest_2.js',
                     'src/view/mail/MailDesktopViewModelTest.js',
                     {
                     group : 'inbox',

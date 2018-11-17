@@ -396,7 +396,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             newView = view.down('#' + itemId),
             msgGrid = view.down('cn_mail-mailmessagegrid'),
             store   = msgGrid ? msgGrid.getStore(): null,
-            recInd  = store ? store.findByCompoundKey(compoundKey) : null;
+            recInd  = store && !store.isEmptyStore ? store.findByCompoundKey(compoundKey) : -1;
 
         if (!newView) {
 
