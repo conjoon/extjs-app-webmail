@@ -193,9 +193,10 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             return ret;
         },
 
-        data: function(ctx) {
+        doGet: function(ctx) {
 
             var me = this,
+                ret = {},
                 idPart  = ctx.url.match(this.url)[1],
                 filters = ctx.params.filter,
                 mailAccountId, mailFolderId, id,
@@ -208,8 +209,31 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', {
             mailFolderId  = keys.mailFolderId,
             id            = keys.id;
 
-            return {data : MessageTable.getMessageDraft(mailAccountId, mailFolderId, id)};
+            let fitem = MessageTable.getMessageDraft(mailAccountId, mailFolderId, id);
 
+            Ext.Array.forEach(me.responseProps, function (prop) {
+                if (prop in me) {
+                    ret[prop] = me[prop];
+                }
+            });
+
+            if (!fitem) {
+
+                ret.responseText = Ext.JSON.encode({
+                    success : false
+                });
+
+                ret.status = "404";
+                ret.statusText = "Not Found";
+                return ret;
+            }
+
+            ret.responseText = Ext.JSON.encode({
+                success : true,
+                data    : fitem
+            });
+
+            return ret;
         /*} else if (filters) {
                 messageDrafts = MessageTable.getMessageDrafts();
                 filters = Ext.decode(filters);
