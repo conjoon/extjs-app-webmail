@@ -98,6 +98,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
             }
         }
 
+        if (Ext.isObject(data) && data.success === false) {
+            return data;
+        }
+
         Ext.raise({
             msg  : "The \"data\" property was malformed and could not be processed by this Reader",
             data : data

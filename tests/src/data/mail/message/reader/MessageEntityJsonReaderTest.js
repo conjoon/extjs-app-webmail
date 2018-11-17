@@ -102,6 +102,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
     });
 
 
+    t.it("applyCompoundKey() - success false", function(t) {
+
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+        ret = reader.applyCompoundKey({success : false});
+        t.expect(ret).toEqual({success : false})
+    });
+
+
     t.it("readRecords()", function(t){
 
         let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');

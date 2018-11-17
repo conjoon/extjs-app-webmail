@@ -70,6 +70,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
                 return data;
             }
         }
+
+        // allow for processing records first,
+        // then make sure we return the data object if everything else failed
+        if (Ext.isObject(data) && data.success === false) {
+            return data;
+        }
     }
 
 

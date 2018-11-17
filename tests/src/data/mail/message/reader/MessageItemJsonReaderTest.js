@@ -74,6 +74,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
         t.expect(ret.data.localId).toBe(result.data.messageBodyId);
     });
 
+    t.it("applyCompoundKey() - success false", function(t) {
+
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
+        ret = reader.applyCompoundKey({success : false});
+        t.expect(ret).toEqual({success : false})
+    });
+
 
 });
 
