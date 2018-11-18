@@ -240,16 +240,33 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
             case (messageDraft instanceof MessageEntityCompoundKey):
 
-                let localId = messageDraft.toLocalId(),
-                    options = {
-                        params  : messageDraft.toObject(),
-                        scope   : me
-                    };
+                let localId   = messageDraft.toLocalId(),
+                    sessDraft = session.peekRecord('MessageDraft', localId);
 
                 // instead of setting links property, this should have the
                 // same effect. We can, however, submit additional options
                 // which are considered in the request
-                me.set('messageDraft', session.getRecord('MessageDraft', localId, options));
+                // note the callbacks for this record; we we only set the messageDraft
+                // of the ViewModel if the record was successfully initially loaded,
+                // otherwise Ext 6.2.0 tries to load associations automatically
+                // which shouldnt happen since the initial Entity was not successfully
+                // loaded @see conjoon/app-cn_mail#64
+                if (!sessDraft) {
+                    let options = {
+                        params  : messageDraft.toObject(),
+                        scope   : me,
+                        success : function(record) {
+                            const me = this;
+
+                            me.getSession().adopt(record);
+                            me.set('messageDraft', record);
+                        },
+                        scope : me
+                    };
+                    conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
+                } else {
+                    me.set('messageDraft', sessDraft);
+                }
 
                 return;
 

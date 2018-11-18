@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -585,6 +585,65 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             testEditorMode(t, conjoon.cn_mail.data.mail.message.EditingModes.FORWARD);
         });
 
-    })});
 
-    });});});});
+        t.it('constructor() - messageDraft is compound key, but message cannot be found conjoon/app-cn_mail#64', function(t) {
+
+            let CK       = createKey(1, 2, 3),
+                session  = createSession(),
+                existing = createKeyForExistingMessage(1),
+                draft;
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : session,
+                messageDraft : CK
+            });
+
+
+            t.waitForMs(750, function() {
+                t.expect(viewModel.get('messageDraft')).toBeFalsy();
+                t.expect(session.peekRecord('MessageDraft', CK.toLocalId())).toBeFalsy();
+
+
+                let newVm = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                    session      : session,
+                    messageDraft : existing
+                });
+
+                t.waitForMs(750, function() {
+
+                    // test loading of compoundKey and makse sure session is
+                    // set properly
+                    t.expect(newVm.get('messageDraft')).toBeTruthy();
+                    t.expect(session.peekRecord('MessageDraft', existing.toLocalId())).toBe(newVm.get('messageDraft'));
+                    newVm.destroy();
+                    newVm = null;
+
+                    session  = createSession(),
+                    draft    = Ext.create(
+                        'conjoon.cn_mail.model.mail.message.MessageDraft',
+                        Ext.applyIf({localId : existing.toLocalId()}, Ext.apply({}, getMessageItemAt(1))));
+                    existing = createKeyForExistingMessage(1);
+
+                    t.expect(draft.getCompoundKey().equalTo(existing)).toBe(true);
+                    t.expect(draft.getId()).toBe(existing.toLocalId());
+                    session.adopt(draft);
+
+                    newVm = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                        session      : session,
+                        messageDraft : existing
+                    });
+
+                    // make sure record will be re-used if found in session
+                    t.expect(newVm.get('messageDraft')).toBeTruthy();
+                    t.expect(session.peekRecord('MessageDraft', existing.toLocalId())).toBe(newVm.get('messageDraft'));
+
+                });
+
+            });
+
+        });
+
+
+
+
+})});});});});});

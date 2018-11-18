@@ -828,6 +828,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             view.render(document.body);
             t.expect(COMPOSED).toBe(true);
 
+            t.waitForMs(750, function(){
+                // intentionally left blank
+            });
         });
 
         t.it('onMessageEditorAfterrender() - editMode: EDIT', function(t) {
@@ -849,6 +852,10 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             t.expect(COMPOSED).toBeUndefined();
             view.render(document.body);
             t.expect(COMPOSED).toBe(false);
+
+            t.waitForMs(750, function(){
+                // intentionally left blank
+            });
         });
 
 
