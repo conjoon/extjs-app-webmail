@@ -91,7 +91,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
             }
         }
 
-        if (Ext.isObject(data) && data.success === false) {
+        if (Ext.isObject(data) && (data.success === false || data.success === true)) {
             return data;
         }
 

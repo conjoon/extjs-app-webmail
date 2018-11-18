@@ -45,11 +45,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
 
             console.log("DELETE Attachment", ctx.xhr.options);
 
-            var me  = this,
-                id  = ctx.url.match(this.url)[1].substring(1);
-                ret = {};
+            let me  = this,
+                keys = me.extractCompoundKey(ctx.url),
+                ret = {}, found;
 
-            AttachmentTable.deleteAttachment(id);
+
+            found = AttachmentTable.deleteAttachment(
+                keys.mailAccountId, keys.mailFolderId, keys.parentMessageItemId, keys.id);
 
             ret.responseText = Ext.JSON.encode({
                 success :true

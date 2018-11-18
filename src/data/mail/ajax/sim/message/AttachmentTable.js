@@ -60,48 +60,42 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         return attachmentData;
     },
 
-    deleteAttachment : function(attachmentId) {
+    deleteAttachment : function(mailAccountId, mailFolderId, parentMessageItemId, id) {
 
-        var me = this,
-            messageItemId,
-            attachmentIndex;
+        if (arguments.length < 4) {
+            Ext.raise("Unexpected missing arguments.");
+        }
+
+
+        let me  = this,
+            key = mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId,
+            found = 0;
 
         if (!me.attachments) {
             me.attachments = {};
         }
 
-        for (var i in me.attachments) {
-            if (!me.attachments.hasOwnProperty(i)) {
-                continue;
-            }
-
-            if (!me.attachments[i]) {
-                continue;
-            }
-
-            for (var a = 0, len = me.attachments[i].length; a < len; a++) {
-
-                if (me.attachments[i][a].id == attachmentId) {
-                    messageItemId   = i;
-                    attachmentIndex = a;
-                    break;
+        if (me.attachments[key]) {
+            let attach = me.attachments[key];
+            for (let i = attach.length - 1; i >= 0; i--) {
+                if (attach[i].id == id) {
+                    found++;
+                    attach.splice(i, 1);
                 }
             }
+        }
 
-            if (messageItemId) {
-                break;
+        if (found > 0) {
+            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.updateAllItemData(
+                mailAccountId, mailFolderId, parentMessageItemId, {});
+            if (me.attachments[key].length == 0) {
+                me.attachments[key] = null;
             }
         }
 
-        if (messageItemId) {
-            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.updateAllItemData(messageItemId, {});
-            me.attachments[messageItemId].splice(a, 1);
-            if (me.attachments[messageItemId].length == 0) {
-                me.attachments[messageItemId] = null;
-            }
-        }
-
+        return found;
     },
+
 
     getAttachments : function(mailAccountId, mailFolderId, parentMessageItemId) {
         var me         = this,

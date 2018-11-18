@@ -878,4 +878,49 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             });
         });
 
+
+
+        t.it("app-cn_mail#67", function(t) {
+
+            let item  = createMessageItem(1, "INBOX.Drafts"),
+                editor;
+
+
+            item.loadAttachments();
+
+            t.waitForMs(750, function() {
+
+                t.expect(item.attachments().getRange().length).toBeGreaterThan(0);
+
+
+                editor = createWithMessageConfig(item.getCompoundKey())
+
+
+                t.waitForMs(750, function() {
+
+                    let prev = editor.getViewModel().get('messageDraft.attachments').getRange().length;
+                    t.expect(prev).toBeGreaterThan(0);
+
+                    editor.getViewModel().get('messageDraft.attachments').removeAt(0);
+
+                    let newCount = editor.getViewModel().get('messageDraft.attachments').getRange().length;
+                    t.expect(newCount).toBe(prev - 1);
+
+                    editor.getController().configureAndStartSaveBatch();
+
+
+                    t.waitForMs(750, function() {
+
+                        editor.destroy();
+                        editor = null;
+
+                    });
+
+
+                });
+
+
+            });
+        });
+
 });});});
