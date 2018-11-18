@@ -221,7 +221,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         store.addFilter({
             property : 'foo',
             value    : 'bar'
-        });
+        }, true);
 
         store.addFilter({
             property : 'mailFolderId',
@@ -253,5 +253,110 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
         store = null;
     });
 
+
+    t.it("checkAndBuildCompoundKeyFilters() - associatedEntity available", function(t) {
+
+        let exc, e,
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
+
+        let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            mailFolderId  : 'foo',
+            mailAccountId : 'bar',
+            id            : 'meh.'
+        });
+
+        store.getAssociatedEntity = function() {
+            return draft;
+        };
+
+        store.addFilter({
+            property : 'foo',
+            value    : 'bar'
+        }, true);
+
+        store.addFilter({
+            property : 'mailFolderId',
+            value    : 'snafu'
+        }, true);
+
+        t.expect(store.checkAndBuildCompoundKeyFilters()).toBe(true);
+
+        let filters = store.getFilters();
+
+        let found = 0,
+            exp = {
+                mailFolderId        : 'foo',
+                mailAccountId       : 'bar',
+                parentMessageItemId : 'meh.'
+            };
+
+        for (let i = 0, len = filters.length; i < len; i++) {
+            let filter = filters.getAt(i);
+            if (['mailFolderId', 'mailAccountId', 'parentMessageItemId'].indexOf(filter.getProperty()) !== -1) {
+                if (exp[filter.getProperty()] === filter.getValue()) {
+                    found++;
+                }
+            }
+        }
+
+        t.expect(found).toBe(3);
+        store.destroy();
+        store = null;
+    });
+
+
+    t.it("conjoon/app-cn_mail#65", function(t) {
+
+        let exc, e,
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
+
+        let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            mailFolderId  : 'foo',
+            mailAccountId : 'bar',
+            id            : 'meh.'
+        });
+
+        store.getAssociatedEntity = function() {
+            return draft;
+        };
+
+        store.addFilter({
+            property : 'parentMessageItemId',
+            value    : 'YO!'
+        }, true);
+
+        store.addFilter({
+            property : 'messageItemId',
+            value    : 'snafu'
+        }, true);
+
+
+        t.expect(store.checkAndBuildCompoundKeyFilters()).toBe(true);
+
+        let filters = store.getFilters();
+
+        let found = false,
+            exp = {
+                mailFolderId        : 'foo',
+                mailAccountId       : 'bar',
+                parentMessageItemId : 'meh.'
+            };
+
+        t.expect(filters.length).toBe(3);
+
+        for (let i = 0, len = filters.length; i < len; i++) {
+            let filter = filters.getAt(i);
+            if (['mailFolderId', 'mailAccountId', 'parentMessageItemId'].indexOf(filter.getProperty()) !== -1) {
+                if (exp[filter.getProperty()] === filter.getValue()) {
+                    found++;
+                }
+            }
+        }
+
+        t.expect(found).toBe(3);
+        store.destroy();
+        store = null;
+
+    });
 
 });

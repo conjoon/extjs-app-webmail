@@ -62,6 +62,31 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         expectCcsHidden = function(expect, t, view) {
             t.expect(view.down('#ccField').isHidden()).toBe(expect);
             t.expect(view.down('#bccField').isHidden()).toBe(expect);
+        },
+        createMessageItem = function(index, mailFolderId) {
+
+            index = index === undefined ? 1 : index;
+
+            let mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
+
+            if (mailFolderId) {
+                let i = index >= 0 ? index : 0, upper = 10000;
+
+                for (; i <= upper; i++) {
+                    mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                    if (mi.mailFolderId === mailFolderId) {
+                        break;
+                    }
+                }
+
+            }
+
+            return Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
+                localId       : [mi.mailAccountId, mi.mailFolderId, mi.id].join('-'),
+                id            : mi.id,
+                mailAccountId : mi.mailAccountId,
+                mailFolderId  : mi.mailFolderId
+            })
         };
 
     t.afterEach(function() {
@@ -821,9 +846,36 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
             t.expect(view.canCloseAfterDelete).toBe(true);
-        })
-
-    });
+        });
 
 
-});});
+        t.it("app-cn_mail#65", function(t) {
+
+            let item  = createMessageItem(1, "INBOX.Drafts"),
+                editor;
+
+
+            item.loadAttachments();
+
+            t.waitForMs(750, function() {
+
+                t.expect(item.attachments().getRange().length).toBeGreaterThan(0);
+
+
+                editor = createWithMessageConfig(item.getCompoundKey())
+
+
+                t.waitForMs(750, function() {
+
+                    t.expect(editor.getViewModel().get('messageDraft.attachments').getRange().length).toBeGreaterThan(0);
+
+                    editor.destroy();
+                    editor = null;
+
+                });
+
+
+            });
+        });
+
+});});});

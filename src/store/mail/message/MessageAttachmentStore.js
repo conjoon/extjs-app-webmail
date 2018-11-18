@@ -87,6 +87,8 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
      * Helper function to be called before any load-operation to make sure
      * compound key filters are set. Will be build out of information available
      * in #associatedEntity if available and needed.
+     * This method will also remove any "messageItemId" filter from the list of
+     * filters, if found.
      *
      * @private
      *
@@ -94,33 +96,47 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
      */
     checkAndBuildCompoundKeyFilters : function() {
 
-        const me          = this,
-            filters     = me.getFilters(),
-            propertySet = {
+        const me            = this,
+            filters         = me.getFilters(),
+            obsoleteFilters = [],
+            propertySet     = {
                 mailFolderId        : false,
                 mailAccountId       : false,
                 parentMessageItemId : false
             },
             assocEntity = me.getAssociatedEntity() && me.getAssociatedEntity().entityName === 'MessageDraft'
-                ? me.getAssociatedEntity()
-                : null;
+                          ? me.getAssociatedEntity()
+                          : null;
 
-        let filter, property;
+        let filter, property, currProp, newValue;
 
         for (property in propertySet) {
 
-            for (let i = 0, len = filters.length; i < len; i++) {
+            for (let i = filters.length - 1; i >= 0; i--) {
 
-                filter = filters.getAt(i);
+                filter   = filters.getAt(i);
+                currProp = filter.getProperty();
 
-                if (filter.getProperty() === property) {
-                    propertySet[property] = i;
-                    if (!filter.getValue()) {
+                if (currProp === property) {
+                    delete propertySet[property];
+
+                    if (!assocEntity && !filter.getValue()) {
                         Ext.raise({
                             msg          : "no valid value set for filter \"" + property + "\"",
                             mailFolderId : filter.getValue()
                         });
                     }
+
+                    if (assocEntity) {
+                        newValue = property === 'parentMessageItemId'
+                                   ? assocEntity.get('id')
+                                   : assocEntity.get(property);
+
+                        filter.setValue(newValue);
+                    }
+
+                } else if (currProp === 'messageItemId') {
+                    me.removeFilter(filters.getAt(i), true);
                 }
             }
         }
@@ -136,18 +152,16 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
         if (properties.length) {
 
             if (assocEntity) {
-                for (let i in propertySet) {
-                    me.removeFilter(filters[propertySet[i]], true);
-                }
 
                 for (let i in propertySet) {
-                    me.addFilter({
-                        property : i,
-                        value    : i === 'parentMessageItemId'
-                            ? assocEntity.get('id')
-                            : assocEntity.get(i)
-                    }, true);
+
+                    newValue = i === 'parentMessageItemId'
+                               ? assocEntity.get('id')
+                               : assocEntity.get(i);
+
+                    me.addFilter({property : i, value : newValue}, true);
                 }
+
             } else {
                 Ext.raise({
                     msg : "filters for properties \"[" + properties.join(', ') + "]\" not set"
