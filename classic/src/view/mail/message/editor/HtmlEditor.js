@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,29 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.HtmlEditor', {
         });
 
         return tbar;
+    },
+
+
+    /**
+     * @see conjoon/app-cn_mail#68
+     * @inheritdoc
+     */
+    getToolbarCfg: function(){
+        const me  = this,
+              cfg = me.callParent(arguments);
+
+        cfg.listeners.click = function(evt, source) {
+            if (source.className.indexOf('x-form-file-input') !== -1) {
+                // if we prevent default when file button is clicked (see below),
+                // no file dialog is shown. We have to exit here.
+                return;
+            }
+
+            // default behavior as defined by ExtJS6.2.0
+            evt.preventDefault();
+        };
+
+        return cfg;
     }
 
 });
