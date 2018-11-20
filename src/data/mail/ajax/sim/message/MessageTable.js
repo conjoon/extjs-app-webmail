@@ -536,7 +536,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
         for (var i = 0; i < 10000; i++) {
 
-            mailFolderId = mailFolders[me.buildRandomNumber(0, 4)];
+            mailFolderId = mailFolders[i % 5];
 
             let cfg = {
                 id            :  (i + 1) + '',

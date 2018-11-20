@@ -200,7 +200,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-    t.it("app-cn_mail#71", function(t) {
+    t.it("app-cn_mail#71 - 1", function(t) {
 
         let panel  = createMailDesktopView(),
             ctrl   = panel.getController(),
@@ -215,7 +215,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             t.waitForMs(750, function() {
 
                 editor = ctrl.showMailEditor('sffss', 'compose'),
-                editorVm = editor.getViewModel();
+                    editorVm = editor.getViewModel();
 
                 t.waitForMs(750, function() {
 
@@ -247,9 +247,208 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             t.expect(message.getCompoundKey().toObject()).not.toEqual(CK.toObject());
 
                             panel.destroy();
-
                             panel = null;
                         });
+
+                    });
+
+
+                });
+
+            });
+
+
+        });
+    });
+
+
+    t.it("app-cn_mail#71 - 2", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor, editorVm, inboxView,
+            CK;
+
+
+        t.waitForMs(750, function() {
+
+            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+            t.waitForMs(750, function() {
+
+                inboxView = panel.down('cn_mail-mailinboxview');
+
+
+                panel.setActiveTab(inboxView);
+
+                let message = selectMessage(panel, 0);
+
+                panel.setActiveTab(editor);
+
+                inboxView.getController().moveOrDeleteMessage(message);
+
+                t.waitForMs(750, function() {
+
+                    let message_new =  selectMessage(panel, 0);
+
+                    t.expect(message.getCompoundKey().toObject()).not.toEqual(message_new.getCompoundKey().toObject());
+
+                    panel.destroy();
+                    panel = null;
+                });
+
+            });
+        });
+    });
+
+
+
+
+    t.it("app-cn_mail#71 - 3", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor, editorVm, inboxView,
+            CK, cnhref;
+
+
+        t.waitForMs(750, function() {
+
+            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+
+
+            t.waitForMs(750, function() {
+
+
+                let message = selectMessage(panel, 0);
+
+                editor = ctrl.showMailEditor(message.getCompoundKey(), 'edit');
+                editorVm = editor.getViewModel();
+
+                t.waitForMs(750, function() {
+
+
+                    cnhref = editor.cn_href;
+
+                    editorVm.get('messageDraft').set('subject', 'abc');
+
+                    editor.getController().configureAndStartSaveBatch();
+
+                    t.waitForMs(750, function() {
+
+                        inboxView = panel.down('cn_mail-mailinboxview');
+                        CK        = editorVm.get('messageDraft').getCompoundKey();
+
+                        panel.setActiveTab(inboxView);
+
+
+                        message = selectMessage(panel, 0, CK, t);
+
+
+                        inboxView.getController().moveOrDeleteMessage(message);
+
+                        t.waitForMs(750, function() {
+
+                            let message = selectMessage(panel, 0);
+
+                            t.expect(message.getCompoundKey().toObject()).not.toEqual(CK.toObject());
+
+                            t.expect(editor.cn_href).not.toBe(cnhref);
+
+                            panel.destroy();
+                            panel = null;
+                        });
+
+                    });
+
+
+                });
+
+            });
+
+
+        });
+    });
+
+
+
+    t.it("app-cn_mail#71 - 4", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor, editorVm,
+            inboxView = panel.down('cn_mail-mailinboxview'),
+            CK;
+
+
+        t.waitForMs(750, function() {
+
+            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+
+
+            t.waitForMs(750, function() {
+
+
+                let message = selectMessage(panel, 0);
+
+                editor = ctrl.showMailEditor(message.getCompoundKey(), 'edit');
+                editorVm = editor.getViewModel();
+
+                t.waitForMs(750, function() {
+
+
+                    editorVm.get('messageDraft').set('subject', 'abc');
+
+                    editor.getController().configureAndStartSaveBatch();
+
+                    t.waitForMs(750, function() {
+
+                        inboxView.getController().moveOrDeleteMessage(editorVm.get('messageDraft'));
+
+                        t.waitForMs(750, function() {
+
+                            // set active tab so Livegrid rendering
+                            //  can be reinitialized and no further error is thrown
+                            // when trying to access it's nodeCache.
+                            panel.setActiveTab(inboxView);
+                            selectMailFolder(panel, 5, 'INBOX.Trash', t);
+
+
+                            t.waitForMs(750, function() {
+
+                                let newmessage = selectMessage(panel, 0, editorVm.get('messageDraft').getCompoundKey(), t);
+
+                                CK = newmessage.getCompoundKey();
+
+                                selectMessage(panel, 1);
+
+                                t.expect(newmessage.getCompoundKey().toObject()).toEqual(
+                                    editorVm.get('messageDraft').getCompoundKey().toObject()
+                                );
+
+                                let ictrl = inboxView.getController(),
+                                    md = editorVm.get('messageDraft');
+
+
+                                ictrl.moveOrDeleteMessage(md, true, editor);
+
+                                t.waitForMs(750, function() {
+
+                                    newmessage = selectMessage(panel, 0);
+
+                                    t.expect(newmessage.getCompoundKey().toObject()).not.toEqual(CK.toObject());
+
+                                    panel.destroy();
+                                    panel = null;
+
+                                });
+
+                            });
+
+                        });
+
 
                     });
 

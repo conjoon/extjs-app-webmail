@@ -285,7 +285,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
 
 
     /**
-     * Overridden to make sure changes to any of the compund key fields is
+     * Overridden to make sure changes to any of the compound key fields is
      * reflected in the associated data. Setting those keys on _this_ side of the
      * association will also change the data on _that_ side. Updated fields will
      * not be marked as dirty since it is assumed that the associated data on the
@@ -295,7 +295,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * Once foreignKey fields where updated, associated models are forced to
      * update their primary key by calling updateLocalId(). The same goes for
      * *this* model, where the localId will be updated if, and only if any
-     * field or foreignKeyFields were part of the set() process.
+     * field or foreignKeyFields were part of the set() process. The order in
+     * which the localIds are updated: First _this_, then _that_.
 
      * @param {String|Object} key
      * @param {Mixed} value
@@ -356,18 +357,28 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
             }
         }
 
-        let updateLocal = false;
-        for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
-            if (keys.hasOwnProperty(me.foreignKeyFields[i])) {
-                updateLocal = true;
-                break;
+
+        if (me.suspendSetter !== true) {
+
+            let updateLocal = false;
+            for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
+                if (keys.hasOwnProperty(me.foreignKeyFields[i])) {
+                    updateLocal = true;
+                    break;
+                }
             }
-        }
 
-        if (updateLocal) {
-            me.updateLocalId();
-        }
+            if (updateLocal) {
+                me.updateLocalId();
 
+                range = me.getAssociatedCompoundKeyedData();
+
+                for (let i = 0, len = range.length; i < len; i++) {
+                    range[i].updateLocalId();
+                }
+            }
+
+        }
         return ret;
     },
 
@@ -494,6 +505,11 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
                 me.get('id')
             ).toLocalId();
 
+
+        if (me.getId() === key) {
+            // prevent diving into setId process
+            return key;
+        }
 
         me.setId(key, {dirty : false});
 

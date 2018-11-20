@@ -504,9 +504,24 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         // remove the item if possible out of the grid
         if (gridReady && (isNotTargetSelected || type === Operation.DELETE)) {
-            // we have to use the previousCompoundKey, since this callback will
-            // be working with already processed entities with changed compound keys
-            let gridItem = me.getLivegrid().getRecordByCompoundKey(messageItem.getPreviousCompoundKey());
+
+            // when we are working on a draft, we are assuming that the messageItem
+            // represents another entity which has not yet been updated, thus,
+            // we have to use the previous CompoundKey of the draft to look up
+            // the according item.
+            // When the Operation is of type DELETE, we assume that all CKs are set
+            // properly
+            let CK = null, gridItem;
+
+            if (type === Operation.DELETE) {
+                CK = messageItem.getCompoundKey();
+            } else {
+                CK = isDraftClass
+                     ? messageItem.getPreviousCompoundKey()
+                     : messageItem.getCompoundKey();
+            }
+
+            gridItem = me.getLivegrid().getRecordByCompoundKey(CK);
             if (gridItem) {
                 me.getLivegrid().remove(gridItem);
             }

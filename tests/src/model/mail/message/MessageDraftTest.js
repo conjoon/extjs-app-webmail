@@ -538,9 +538,106 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
 
 
+        t.it("app-cn_mail#73 - 1", function(t) {
 
-    });});
+            let messageItem,
+                session = Ext.create('conjoon.cn_core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+            });
+
+            for (let i = 0, len = 1000; i < len; i++) {
+                messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+
+                if (messageItem.hasAttachments) {
+                    break;
+                }
+
+            }
 
 
-});
-});
+            let draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                    messageItem.mailAccountId,
+                    messageItem.mailFolderId,
+                    messageItem.id
+                )
+            );
+
+
+            t.waitForMs(750, function() {
+
+                session.adopt(draft);
+                draft.loadMessageBody();
+                draft.loadAttachments();
+
+                t.waitForMs(1250, function() {
+
+                   draft.set('mailFolderId', "15");
+
+                    for (let i = 0, len = draft.attachments().getRange().length; i < len; i++) {
+                        t.expect("ATTACHMENT").toBe("ATTACHMENT");
+                        t.expect(draft.getId() + '-' + (i + 1)).toBe(draft.attachments().getRange()[i].getId());
+                    }
+
+                    t.expect("MESSAGEBODY").toBe("MESSAGEBODY");
+                    t.expect(draft.getMessageBody().getId()).toBe(draft.getId());
+
+
+                })
+            });
+
+        });
+
+
+        t.it("app-cn_mail#73 - 2", function(t) {
+
+            let messageItem,
+                session = Ext.create('conjoon.cn_core.data.Session', {
+                    schema : 'cn_mail-mailbaseschema',
+                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+                });
+
+            for (let i = 0, len = 1000; i < len; i++) {
+                messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+
+                if (messageItem.hasAttachments) {
+                    break;
+                }
+
+            }
+
+
+            let draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                    messageItem.mailAccountId,
+                    messageItem.mailFolderId,
+                    messageItem.id
+                )
+            );
+
+
+            t.waitForMs(750, function() {
+
+                session.adopt(draft);
+                draft.loadAttachments();
+
+                t.waitForMs(750, function() {
+
+                    draft.set('mailFolderId', "15");
+
+                    for (let i = 0, len = draft.attachments().getRange().length; i < len; i++) {
+                        t.expect("ATTACHMENT").toBe("ATTACHMENT");
+                        t.expect(draft.getId() + '-' + (i + 1)).toBe(draft.attachments().getRange()[i].getId());
+                    }
+
+
+
+
+                })
+            });
+
+        });
+
+
+});});});});
