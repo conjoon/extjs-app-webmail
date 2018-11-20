@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
     createAttachment : function(mailAccountId, mailFolderId, parentMessageItemId, attachmentData) {
 
         var me            = this,
-            key           =  mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId;
+            key           =  mailAccountId + '-' + mailFolderId + '-' + parentMessageItemId;
 
         if (!me.attachments) {
             me.attachments = {};
@@ -68,7 +68,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
 
         let me  = this,
-            key = mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId,
+            key = mailAccountId + '-' + mailFolderId + '-' + parentMessageItemId,
             found = 0;
 
         if (!me.attachments) {
@@ -101,7 +101,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         var me         = this,
             attachments = null,
             rec,
-            key = mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId;
+            key = mailAccountId + '-' + mailFolderId + '-' + parentMessageItemId;
 
         let wasEmpty = false;
 
@@ -114,26 +114,67 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             return me.attachments[key];
         }
 
-        if (!wasEmpty) {
-           // if (!me.getRandom(0, 1) && (parentMessageItemId + "" !== "1")) {
-             //   me.attachments[key] = null;
-            //    return me.attachments[key];
-           // }
+        return null;
+    },
+
+
+    createRandomAttachments : function(mailAccountId, mailFolderId, parentMessageItemId) {
+
+        const me = this,
+              key = [mailAccountId, mailFolderId, parentMessageItemId].join('-');
+
+        let attachmentNames = [
+                "IMG3701",
+                "documents",
+                "REPOSITORYPARTSTUFF_packed.type.full7897",
+                "images",
+                "architecture_draft"
+            ],
+            attachmentTypes = [
+                {type : 'application/pdf', extension : 'pdf'},
+                {type : 'image/jpg',       extension : 'jpg'},
+                {type : 'application/x-rar-compressed', extension : 'rar'},
+                {type : 'application/zip', extension : 'zip'},
+                {type : 'text/plain', extension : 'txt'}
+            ],
+            attachmentSizes = [
+                '24233',
+                '23532553253',
+                '6588668',
+                '23434',
+                '46337773'
+            ], rec;
+
+        if (!me.attachments) {
+            me.attachments = {};
         }
 
-        for (var i = 0, len = me.getRandom(1, 5); i < len; i++) {
-            if (!attachments) {
-                attachments = [];
+
+        for (var i = 0, len = me.getRandom(0, 5); i < len; i++) {
+
+            if (!me.attachments[key]) {
+                me.attachments[key] = [];
             }
-            rec = me.getAttachment(mailAccountId, mailFolderId, parentMessageItemId, ++me.largestAttachmentId);
 
-            attachments.push(rec);
+            rec = {
+                id                  : ++me.largestAttachmentId,
+                parentMessageItemId : parentMessageItemId,
+                mailFolderId        : mailFolderId,
+                mailAccountId       : mailAccountId,
+                text                : attachmentNames[me.getRandom(0, 4)] + '.' +
+                attachmentTypes[me.getRandom(0, 4)].extension,
+                type                : attachmentTypes[me.getRandom(0, 4)].type,
+                size                : attachmentSizes[me.getRandom(0, 4)]
+            };
+
+            me.attachments[key].push(rec);
         }
 
-        me.attachments[key] = attachments;
 
         return me.attachments[key];
+
     },
+
 
     getAttachmentAt : function(pos) {
 
@@ -158,7 +199,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
 
         var me            = this,
             messageItemId = parentMessageItemId,
-            key           = mailAccountId + ' - ' + mailFolderId + '-' + parentMessageItemId;
+            key           = mailAccountId + '-' + mailFolderId + '-' + parentMessageItemId;
 
         if (!me.attachments) {
             me.attachments = {};
@@ -173,46 +214,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
             };
         }
 
-        var attachmentNames = [
-                "IMG3701",
-                "documents",
-                "REPOSITORYPARTSTUFF_packed.type.full7897",
-                "images",
-                "architecture_draft"
-            ],
-            attachmentTypes = [
-                {type : 'application/pdf', extension : 'pdf'},
-                {type : 'image/jpg',       extension : 'jpg'},
-                {type : 'application/x-rar-compressed', extension : 'rar'},
-                {type : 'application/zip', extension : 'zip'},
-                {type : 'text/plain', extension : 'txt'}
-            ],
-            attachmentSizes = [
-                '24233',
-                '23532553253',
-                '6588668',
-                '23434',
-                '46337773'
-            ];
-
-        if (!me.attachments[key]) {
-            me.attachments[key] = [];
-
-        }
-
-        me.attachments[key].push({
-            id                  : attachmentId,
-            parentMessageItemId : parentMessageItemId,
-            mailFolderId        : mailFolderId,
-            mailAccountId       : mailAccountId,
-            text                : attachmentNames[me.getRandom(0, 4)] + '.' +
-                                  attachmentTypes[me.getRandom(0, 4)].extension,
-            type                : attachmentTypes[me.getRandom(0, 4)].type,
-            size                : attachmentSizes[me.getRandom(0, 4)]
-        });
-
-        return me.attachments[key][me.attachments[key].length - 1];
-
+        return null;
     }
 
 

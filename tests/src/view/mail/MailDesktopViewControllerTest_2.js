@@ -143,4 +143,55 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
+    t.it("app-cn_mail#70", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor = ctrl.showMailEditor('sffss', 'compose'),
+            editorVm = editor.getViewModel(),
+            CK, view, attachmentCount, attachmentStore;
+
+        t.expect(editor).toBeTruthy();
+
+        t.waitForMs(750, function() {
+
+            editorVm        = editor.getViewModel();
+            attachmentStore = editorVm.get('messageDraft').attachments();
+            attachmentCount = attachmentStore.getRange().length;
+
+
+            editorVm.get('messageDraft').set('subject', 'foo');
+            editorVm.get('messageDraft').attachments().add(
+                Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {})
+            );
+
+            t.expect(attachmentStore.getRange().length).toBe(++attachmentCount);
+
+            editor.getController().configureAndStartSaveBatch();
+
+
+            t.waitForMs(750, function() {
+
+                CK = editorVm.get('messageDraft').getCompoundKey();
+
+                editor.close();
+
+                view = ctrl.showMailMessageViewFor(CK);
+
+
+                t.waitForMs(750, function() {
+
+                    t.expect(view.getViewModel().get('attachmentStore').getRange().length).toBe(attachmentCount);
+
+                    panel.destroy();
+                    panel = null;
+                });
+
+
+            });
+
+        });
+    });
+
+
 });})});});});});

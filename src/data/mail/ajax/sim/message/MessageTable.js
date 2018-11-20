@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -448,9 +448,11 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             AttachmentTable  = conjoon.cn_mail.data.mail.ajax.sim.message
                                .AttachmentTable,
             baseMessageItems = me.buildBaseMessageItems(),
-            messageItems     = subjects = sender = [];
+            messageItems     = subjects = sender = [], attach;
+
 
         if (me.messageItems) {
+
             for (var i = 0, len = me.messageItems.length; i < len; i++) {
                 me.messageItems[i].previewText    = me.buildPreviewText(
                     baseMessageItems[i].mailAccountId,
@@ -458,12 +460,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                     baseMessageItems[i].id
                 );
 
-                me.messageItems[i].hasAttachments = AttachmentTable.getAttachments(
+                attach = AttachmentTable.getAttachments(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
                     baseMessageItems[i].id
-                ) ? 1 : 0;
+                );
+                me.messageItems[i].hasAttachments = attach && attach.length ? 1 : 0;
             }
+
             return me.messageItems;
         }
 
@@ -471,7 +475,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
 
             messageItems.push(Ext.apply({
                 // leave first one as unread for tests
-                hasAttachments : AttachmentTable.getAttachments(
+                hasAttachments : AttachmentTable.createRandomAttachments(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
                     baseMessageItems[i].id
