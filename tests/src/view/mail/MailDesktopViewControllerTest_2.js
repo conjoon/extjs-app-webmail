@@ -51,12 +51,18 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_2', function(t
             return folder;
 
         },
-        selectMessage = function(panel, storeAt) {
+        selectMessage = function(panel, storeAt, shouldEqualToCK, t) {
 
             let message = panel.down('cn_mail-mailmessagegrid').getStore().getAt(storeAt);
 
+            if (shouldEqualToCK) {
+                t.expect(message.getCompoundKey().equalTo(shouldEqualToCK)).toBe(true);
+            }
+
             panel.down('cn_mail-mailmessagegrid').getSelectionModel()
                 .select(message);
+
+
 
             return message;
         },
@@ -189,6 +195,69 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
 
             });
+
+        });
+    });
+
+
+    t.it("app-cn_mail#71", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor, editorVm, inboxView,
+            CK;
+
+
+        t.waitForMs(750, function() {
+
+            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+            t.waitForMs(750, function() {
+
+                editor = ctrl.showMailEditor('sffss', 'compose'),
+                editorVm = editor.getViewModel();
+
+                t.waitForMs(750, function() {
+
+                    editorVm.get('messageDraft').set('subject', 'foo');
+                    editorVm.notify();
+
+                    editor.getController().configureAndStartSaveBatch();
+
+                    t.waitForMs(750, function() {
+
+                        inboxView = panel.down('cn_mail-mailinboxview');
+                        CK        = editorVm.get('messageDraft').getCompoundKey();
+
+                        panel.setActiveTab(inboxView);
+
+                        CK = editorVm.get('messageDraft').getCompoundKey();
+                        selectMessage(panel, 0, CK, t);
+
+                        panel.setActiveTab(editor);
+
+                        inboxView.getController().moveOrDeleteMessage(editorVm.get('messageDraft'), null, editor);
+
+                        t.waitForMs(750, function() {
+
+                            editor.close();
+
+                            let message =  selectMessage(panel, 0);
+
+                            t.expect(message.getCompoundKey().toObject()).not.toEqual(CK.toObject());
+
+                            panel.destroy();
+
+                            panel = null;
+                        });
+
+                    });
+
+
+                });
+
+            });
+
 
         });
     });

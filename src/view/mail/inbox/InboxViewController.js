@@ -504,7 +504,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         // remove the item if possible out of the grid
         if (gridReady && (isNotTargetSelected || type === Operation.DELETE)) {
-            let gridItem = me.getLivegrid().getRecordById(messageItem.getId());
+            // we have to use the previousCompoundKey, since this callback will
+            // be working with already processed entities with changed compound keys
+            let gridItem = me.getLivegrid().getRecordByCompoundKey(messageItem.getPreviousCompoundKey());
             if (gridItem) {
                 me.getLivegrid().remove(gridItem);
             }
