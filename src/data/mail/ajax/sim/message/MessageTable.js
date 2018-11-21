@@ -141,9 +141,9 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     },
 
 
-    updateMessageBody : function(mailAccountId, mailFolderId, id, data) {
+    updateMessageBody : function(mailAccountId, mailFolderId, id, data, skipUpdate = false) {
 
-        if (arguments.length !== 4) {
+        if (arguments.length < 4) {
             Ext.raise("Unexpected missing arguments");
         }
 
@@ -153,14 +153,22 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         // just in case
         delete data.id;
 
-        if (!data.textPlain) {
+        if (!data.textPlain && data.textHtml) {
             data.textPlain = Ext.util.Format.stripTags(data.textHtml);
         }
 
         Ext.apply(message, data);
 
+        // swap
+        if (data.mailFolderId && mailFolderId !== data.mailFolderId) {
+            delete me.messageBodies[[mailAccountId, mailFolderId, id].join('-')];
+            me.messageBodies[[mailAccountId, data.mailFolderId, id].join('-')] = message;
+        }
+
         // force to refresh the date
-        me.updateAllItemData(mailAccountId, mailFolderId, id, {});
+        if (skipUpdate !== true) {
+            me.updateAllItemData(mailAccountId, mailFolderId, id, {});
+        }
 
         return message;
     },
@@ -178,7 +186,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         var me = this,
-            key = mailAccountId + ' - ' + mailFolderId + '-' + id,
+            key = mailAccountId + '-' + mailFolderId + '-' + id,
             message;
 
 
@@ -368,6 +376,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             }
         }
 
+        if (values.mailFolderId && values.mailFolderId != mailFolderId) {
+            console.log("updating MessageBody with new folder, Attachments tbd");
+            me.updateMessageBody(mailAccountId, mailFolderId, id, {
+                mailFolderId : values.mailFolderId
+            }, true); // skip update to prevent possible recursion
+        }
 
         for (var i = 0, len = dataItems.length; i < len; i++) {
 
@@ -542,7 +556,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 id            :  (i + 1) + '',
                 date           : me.buildRandomDate(i < 100),
                 // leave first one as unread for tests
-                subject        : /*mailFolderId + ' - ' + (i) + ' - ' +*/ subjects[me.buildRandomNumber(0, 5)],
+                subject        : /*mailFolderId + '-' + (i) + '-' +*/ subjects[me.buildRandomNumber(0, 5)],
                 from           : i === 0
                                  ? 'from@domain.tld'
                                  : sender[me.buildRandomNumber(0, 5)],
