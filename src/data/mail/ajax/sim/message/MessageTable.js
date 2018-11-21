@@ -377,7 +377,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         if (values.mailFolderId && values.mailFolderId != mailFolderId) {
-            console.log("updating MessageBody with new folder, Attachments tbd");
+
+            let hasAtt = conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.moveAttachments(
+                mailAccountId, mailFolderId, id, {
+                    mailFolderId : values.mailFolderId
+                }
+            );
+
+            values.hasAttachments = hasAtt && hasAtt.length ? 1 : 0;
+
             me.updateMessageBody(mailAccountId, mailFolderId, id, {
                 mailFolderId : values.mailFolderId
             }, true); // skip update to prevent possible recursion
@@ -424,7 +432,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             }
 
         }
-
         return item;
     },
 
@@ -468,18 +475,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         if (me.messageItems) {
 
             for (var i = 0, len = me.messageItems.length; i < len; i++) {
-                me.messageItems[i].previewText    = me.buildPreviewText(
-                    baseMessageItems[i].mailAccountId,
-                    baseMessageItems[i].mailFolderId,
-                    baseMessageItems[i].id
-                );
 
-                attach = AttachmentTable.getAttachments(
+                me.messageItems[i].previewText = me.buildPreviewText(
                     baseMessageItems[i].mailAccountId,
                     baseMessageItems[i].mailFolderId,
                     baseMessageItems[i].id
                 );
-                me.messageItems[i].hasAttachments = attach && attach.length ? 1 : 0;
             }
 
             return me.messageItems;

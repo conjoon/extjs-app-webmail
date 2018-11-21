@@ -35,6 +35,49 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
+    moveAttachments : function(mailAccountId, mailFolderId, parentMessageItemId, moveInfo) {
+
+        const me     = this,
+              key    = [mailAccountId, mailFolderId, parentMessageItemId].join('-'),
+              newKey = [
+                  mailAccountId,
+                  moveInfo.mailFolderId ? moveInfo.mailFolderId : mailFolderId,
+                  parentMessageItemId
+              ].join('-');
+
+        if (key === newKey) {
+            return;
+        }
+
+        let attachments;
+
+        if (!me.attachments) {
+            me.attachments = {};
+        }
+
+        if (!me.attachments[key]) {
+            return;
+        }
+
+
+        if (me.attachments[newKey]) {
+            Ext.raise("Unexpected error: attachments existing for " + newKey);
+        }
+
+        attachments = me.attachments[key];
+
+        delete me.attachments[key];
+
+
+        me.attachments[newKey] = attachments;
+
+        for (let i = 0, len = me.attachments[newKey].length; i < len; i++) {
+            me.attachments[newKey][i]['mailFolderId'] = moveInfo.mailFolderId;
+        }
+
+        return me.attachments[newKey];
+
+    },
 
     createAttachment : function(mailAccountId, mailFolderId, parentMessageItemId, attachmentData) {
 
