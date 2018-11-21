@@ -392,9 +392,9 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 '#cn_mail-nodeNavDeleteMessage' : 0
             },
             ISDRAFT,
-            /**
-             * Needed since disabling is usually done by the deselect listener
-             */
+            //
+            // Needed since disabling is usually done by the deselect listener
+            //
                 reset = function() {
                 ENABLED = {
                     '#cn_mail-nodeNavEditMessage'   : 0,
@@ -1256,6 +1256,35 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ACTIVETAB = 4;
         t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(null);
     });
+
+
+    t.it("app-cn_mail#69", function(t) {
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        let REPLYALLROUTE = 0;
+
+        packageCtrl.onBeforePackageRoute = function() {
+            let action = arguments[arguments.length - 1];
+            action.resume();
+        };
+
+        packageCtrl.onReplyAllRoute = function() {
+            REPLYALLROUTE++;
+        }
+
+
+        t.expect(REPLYALLROUTE).toBe(0);
+        Ext.util.History.add('cn_mail/message/replyAll/foo/test/bar');
+
+        t.waitForMs(750, function() {
+
+            t.expect(REPLYALLROUTE).toBe(1);
+
+        });
+
+    })
+
 
 
 });

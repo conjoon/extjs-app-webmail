@@ -98,7 +98,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 ':id'            : '(.+)'
 
             } ,
-            action     : 'onApplyAllRoute',
+            action     : 'onReplyAllRoute',
             before     : 'onBeforePackageRoute'
         },
         'cn_mail/message/forward/:mailAccountId/:mailFolderId/:id'  : {
