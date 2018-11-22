@@ -373,6 +373,23 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             ));
             return false;
         }
+
+        // silently commits attachments where the messageItemId foreign key was
+        // changed previously
+        let attachments = vm.get('messageDraft.attachments').getRange(),
+            attachment, keys;
+
+        for (let a = attachments.length - 1; a >= 0; a--) {
+            attachment = attachments[a];
+            keys = attachment.modified ? Object.keys(attachment.modified) : null;
+            if (attachment.crudState === 'U' && keys && keys.length === 1 && keys[0] === 'messageItemId') {
+                // commit silently
+                attachment.commit(true);
+
+            }
+        }
+
+
         vm.set('isSaving', true);
 
         /**
@@ -524,8 +541,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             // will trigger a save in the case the date value changes.
             messageDraft.set('date', new Date());
 
-            saveBatch = session.getSaveBatch();
+            if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true, isCreated === true) === false) {
+                return false;
+            }
 
+            saveBatch = session.getSaveBatch();
             saveBatch.setPauseOnException(true);
 
             saveBatch.on({
@@ -558,9 +578,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 }
             });
 
-            if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true, isCreated === true) === false) {
-                return false;
-            }
             saveBatch.start();
         },
 

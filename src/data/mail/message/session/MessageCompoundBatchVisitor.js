@@ -43,6 +43,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
 
     /**
      * @inheritdoc
+     *
+     * This method will also apply appropriate listeners to make sure operations
+     * are changed based on the previous operations, e.g. if a MessageBody was posted,
+     * the BE should have created the according MessageDraft also, so the following
+     * MessageDraft operation for this Batch would be changed from a "create"
+     * to an "update" operation.
+     *
+     * @see onBatchOperationComplete
      */
     getBatch: function (sort) {
 

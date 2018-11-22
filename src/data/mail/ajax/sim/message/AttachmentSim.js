@@ -29,7 +29,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
 
     requires : [
         'conjoon.cn_mail.data.mail.ajax.sim.Init',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable'
+        'conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable',
+        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable'
     ]
 
 }, function() {
@@ -92,6 +93,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', {
                 attachment
             );
 
+            conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.updateAllItemData(
+                keys.mailAccountId,
+                keys.mailFolderId,
+                keys.parentMessageItemId,
+                {hasAttachments : 1}
+            );
 
             ret.responseText = Ext.JSON.encode({
                 data : {

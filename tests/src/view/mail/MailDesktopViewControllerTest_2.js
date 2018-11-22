@@ -22,7 +22,8 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_2', function(t) {
 
-    const createKey = function(id1, id2, id3) {
+    const TIMEOUT = 1250,
+        createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
@@ -382,13 +383,13 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             CK;
 
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             selectMailFolder(panel, 4, 'INBOX.Drafts', t);
 
 
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
 
                 let message = selectMessage(panel, 0);
@@ -396,18 +397,18 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 editor = ctrl.showMailEditor(message.getCompoundKey(), 'edit');
                 editorVm = editor.getViewModel();
 
-                t.waitForMs(750, function() {
+                t.waitForMs(TIMEOUT, function() {
 
 
                     editorVm.get('messageDraft').set('subject', 'abc');
 
                     editor.getController().configureAndStartSaveBatch();
 
-                    t.waitForMs(750, function() {
+                    t.waitForMs(TIMEOUT, function() {
 
                         inboxView.getController().moveOrDeleteMessage(editorVm.get('messageDraft'));
 
-                        t.waitForMs(750, function() {
+                        t.waitForMs(TIMEOUT, function() {
 
                             // set active tab so Livegrid rendering
                             //  can be reinitialized and no further error is thrown
@@ -416,7 +417,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             selectMailFolder(panel, 5, 'INBOX.Trash', t);
 
 
-                            t.waitForMs(750, function() {
+                            t.waitForMs(TIMEOUT, function() {
 
                                 let newmessage = selectMessage(panel, 0, editorVm.get('messageDraft').getCompoundKey(), t);
 
@@ -434,7 +435,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                                 ictrl.moveOrDeleteMessage(md, true, editor);
 
-                                t.waitForMs(750, function() {
+                                t.waitForMs(TIMEOUT, function() {
 
                                     newmessage = selectMessage(panel, 0);
 
@@ -460,6 +461,80 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         });
     });
+
+
+    t.it("app-cn_mail#75", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor, editorVm,
+            inboxView = panel.down('cn_mail-mailinboxview'),
+            CK;
+
+
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+
+
+            t.waitForMs(TIMEOUT, function() {
+
+                let message;
+                for (let i = 0; i < 100; i++) {
+                    message = selectMessage(panel, i);
+                    if (message.get('hasAttachments')) {
+                        break;
+                    }
+                }
+
+
+                CK = message.getCompoundKey();
+
+                editor   = ctrl.showMailEditor(CK, 'edit');
+                editorVm = editor.getViewModel();
+
+                t.waitForMs(TIMEOUT, function() {
+
+
+                    editor.getController().configureAndStartSaveBatch();
+
+                    t.waitForMs(TIMEOUT, function() {
+
+                        panel.setActiveTab(inboxView);
+
+                        inboxView.getController().moveOrDeleteMessage(message);
+
+                        t.waitForMs(TIMEOUT, function() {
+
+                            panel.setActiveTab(editor);
+
+                            t.waitForMs(TIMEOUT, function() {
+                              //  t.isntCalled('onMailMessageSaveOperationException', editor.getController());
+                              //  t.isCalled('onMailMessageSaveComplete', editor.getController());
+
+                                editor.getController().configureAndStartSaveBatch();
+
+
+                                t.waitForMs(TIMEOUT, function() {
+                                    panel.destroy();
+                                    panel = null;
+                                });
+                            });
+                        });
+
+
+                    });
+
+
+                });
+
+            });
+
+
+        });
+    });
+
 
 
 });})});});});});

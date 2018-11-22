@@ -1055,5 +1055,35 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         });
 
 
-    });
-});});
+        t.it("onMailMessageBeforeSave() - attachments committed before save app-cn_mail#75", function(t) {
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = createEditorForController(controller);
+
+           // t.isCalledNTimes('setBusy', view, 1);
+            view.getViewModel().get('messageDraft').set('subject', 'foo');
+
+            let attachment = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+                COMMITTED  = false;
+
+
+            view.getViewModel().get('messageDraft').attachments().add(attachment);
+            // fake CRUD state
+            attachment.crudState = "U";
+            attachment.commit = function(silent) {
+                COMMITTED = silent;
+                Ext.data.Model.prototype.commit.apply(attachment, arguments);
+            };
+            t.expect(attachment.modified.hasOwnProperty('messageItemId')).toBe(true);
+
+            controller.onMailMessageBeforeSave(
+                view, view.getViewModel().get('messageDraft'), false, false);
+
+            t.expect(COMMITTED).toBe(true);
+
+            t.expect(attachment.modified).toBeFalsy();
+        });
+
+
+});});});
