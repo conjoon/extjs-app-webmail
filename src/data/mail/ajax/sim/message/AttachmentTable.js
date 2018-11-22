@@ -258,6 +258,15 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable', {
         }
 
         return null;
+    },
+
+    resetAll : function() {
+        const me = this;
+
+        me.attachments = null;
+
+        me.largestAttachmentId = 0;
+
     }
 
 

@@ -50,6 +50,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
      *
      * @param {File}
      *
+     *
      * @return {conjoon.cn_mail.model.mail.message.DraftAttachment} the
      *          attachment that was generated
      *
@@ -67,7 +68,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
             Model          = store.getModel().getName(),
             isDraft        = Model === 'conjoon.cn_mail.model.mail.message.DraftAttachment',
             file,
-            reader,
+            reader, readerRef,
             rec;
 
         if (!(file instanceof File)) {
@@ -103,9 +104,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
                 {once : true}
             );
 
-            reader.cn_id = rec.get('id');
+            reader.cn_id = rec.getId();
 
             reader.readAsDataURL(file);
+
         }
 
         return rec;
@@ -116,6 +118,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
      * in the attachmentlist.
      *
      * @param {Event} evt
+     *
+     * @return null or the record for which the data was loaded
      */
     onFileReaderLoad : function(evt) {
 
@@ -125,7 +129,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
             id             = evt.target.cn_id,
             rec;
 
-        rec = store.findExact('id', id);
+        rec = store.findExact('localId', id);
 
         if (rec === -1) {
             return;
@@ -136,6 +140,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
         rec.set('previewImgSrc', evt.target.result);
 
         delete evt;
+
+        return rec;
     },
 
 

@@ -116,6 +116,14 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_2', function(t
             });
         };
 
+    t.afterEach(function() {
+    });
+
+    t.beforeEach(function() {
+
+        conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.resetAll();
+    });
+
     let panel;
 
 

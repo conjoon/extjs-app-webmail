@@ -141,7 +141,7 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
             rec  = ctrl.addAttachment(file),
             evt = {
                 target : {
-                    cn_id  : rec.get('id'),
+                    cn_id  : rec.getId(),
                     result : 'someurl'
                 }
             };
@@ -203,8 +203,76 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
         view.destroy();
         t.expect(destr).toBe(1);
         view = null;
-
-
     });
+
+
+    t.it("app-cn_mail#76", function(t) {
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
+                editMode : 'CREATE',
+                renderTo : document.body,
+                store : {
+                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
+                    proxy : {type : 'memory'}
+                }
+            });
+
+        let tmpReader = window.FileReader;
+
+        let currReader;
+        window.FileReader = function() {
+            currReader = this;
+        };
+
+        window.FileReader.prototype = {
+            addEventListener : function() {
+
+            },
+            readAsDataURL : function() {
+
+            }
+        };
+
+
+        let file1 = createFile('image/png'),
+            file2 = createFile('image/png'),
+            rec1, rec2,
+            ctrl = view.getController();
+
+        let tmpFn = conjoon.cn_core.util.Mime.isImage;
+        conjoon.cn_core.util.Mime.isImage = function(){return true;};
+
+
+        rec1 = ctrl.addAttachment(file1);
+        let evt1 = {
+            target : {
+                cn_id : currReader.cn_id
+            }
+        };
+
+        let foundRec = ctrl.onFileReaderLoad(evt1);
+
+        t.expect(foundRec).toBe(rec1);
+
+        rec2 = ctrl.addAttachment(file2);
+        let evt2 = {
+            target : {
+                cn_id : currReader.cn_id
+            }
+        };
+
+        foundRec = ctrl.onFileReaderLoad(evt2);
+
+        conjoon.cn_core.util.Mime.isImage = tmpFn;
+
+        t.expect(foundRec).toBe(rec2);
+
+
+        t.waitForMs(750, function() {
+            window.FileReader = tmpReader;
+        });
+    });
+
 
 });
