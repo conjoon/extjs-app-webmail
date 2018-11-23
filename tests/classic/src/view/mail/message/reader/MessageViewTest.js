@@ -74,9 +74,9 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             t.expect(view.down('component[cls=cn_mail-body]').el.dom.innerHTML).not.toBe("");
         },
         checkHtmlDataNotPresent = function(t, view) {
-            t.expect(view.getTitle()).toBeFalsy();
+            t.expect(view.getTitle()).toBe(view.getViewModel().emptySubjectText);
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('FROM');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('SUBJECT');
+            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(view.getViewModel().emptySubjectText);
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain(formatDate);
             t.expect(view.down('component[cls=cn_mail-body]').el.dom.innerHTML).toBe("");
         };
@@ -476,10 +476,38 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
             t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
             t.expect(view.canCloseAfterDelete).toBe(true);
-        })
+        });
 
 
-    });
+        t.it("app-cn_mail#61", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let rec = getMessageItemAt(1),
+                vm  = view.getViewModel();
+
+            view.loadMessageItem(createKeyForExistingMessage(1));
 
 
-});});
+            t.waitForMs(750, function() {
+                t.expect(view.getTitle()).toBe(vm.get('messageItem.subject'));
+
+                vm.set('messageItem.subject', "");
+                vm.notify();
+                t.expect(view.getTitle()).toBe(vm.emptySubjectText);
+
+                vm.set('messageItem.subject', "foo");
+                vm.notify();
+                t.expect(view.getTitle()).toBe("foo");
+
+                view.setTitle("bar");
+                vm.notify();
+                t.expect(vm.get('messageItem.subject')).toBe("foo");
+
+
+            });
+        });
+
+
+});});});

@@ -84,7 +84,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     iconCls : 'fa fa-spin fa-spinner',
 
     bind : {
-        title   : '{isLoading ? "Loading..." : messageItem.subject}',
+        title   : '{isLoading ? "Loading..." : getSubject}',
         iconCls : '{isLoading ? "fa fa-spin fa-spinner" : "fa fa-envelope-o"}'
     },
 
