@@ -585,7 +585,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
     resetAll : function() {
         const me = this;
 
-        me.baseMessageItems = me.messageItems = me.messageBodies = null;
+        me.messageDrafts = me.baseMessageItems = me.messageItems = me.messageBodies = null;
 
         conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentTable.resetAll();
 

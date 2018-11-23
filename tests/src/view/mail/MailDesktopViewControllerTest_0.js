@@ -105,6 +105,10 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
     let panel;
 
 
+    t.beforeEach(function() {
+        conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.resetAll();
+    });
+
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function () {
 // place AttachmentSim before MessageItemSim due to similiar regex
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function () {

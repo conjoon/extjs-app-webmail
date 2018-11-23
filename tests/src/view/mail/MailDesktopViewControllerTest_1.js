@@ -104,6 +104,9 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
     let panel;
 
+    t.beforeEach(function() {
+        conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.resetAll();
+    });
 
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function () {
 // place AttachmentSim before MessageItemSim due to similiar regex
@@ -957,7 +960,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                                     t.expect(draft.get('cn_moved')).toBeUndefined();
 
 
-                                    t.expect(panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordByCompoundKey(draft.getCompoundKey())).not.toBe(null);
+                                    t.expect(panel.down('cn_mail-mailinboxview').getController().getLivegrid().getRecordByCompoundKey(
+                                        draft.getCompoundKey())).not.toBe(null);
 
                                     panel.destroy();
                                     panel = null;

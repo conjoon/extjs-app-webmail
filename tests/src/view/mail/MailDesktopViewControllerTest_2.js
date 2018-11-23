@@ -518,8 +518,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             panel.setActiveTab(editor);
 
                             t.waitForMs(TIMEOUT, function() {
-                              //  t.isntCalled('onMailMessageSaveOperationException', editor.getController());
-                              //  t.isCalled('onMailMessageSaveComplete', editor.getController());
+                                t.isntCalled('onMailMessageSaveOperationException', editor.getController());
+                                t.isCalled('onMailMessageSaveComplete', editor.getController());
 
                                 editor.getController().configureAndStartSaveBatch();
 
@@ -544,5 +544,87 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
+    let testAppCnMail63 = function(t, editMode) {
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor, editorVm,
+            inboxView = panel.down('cn_mail-mailinboxview'),
+            CK;
+
+
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, 3, 'INBOX.Junk', t);
+
+
+
+            t.waitForMs(TIMEOUT, function() {
+
+                let message = selectMessage(panel, 0);
+
+                editor   = ctrl.showMailEditor(message.getCompoundKey(), editMode);
+                editorVm = editor.getViewModel();
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    t.expect(Ext.util.History.getToken()).toContain(editMode + "/" + message.getCompoundKey().toArray().join('/'));
+                    editor.getController().configureAndStartSaveBatch();
+
+                    t.waitForMs(TIMEOUT, function() {
+
+                        t.expect(Ext.util.History.getToken()).toContain("edit/" + editorVm.get('messageDraft').getCompoundKey().toArray().join('/'));
+
+                        panel.setActiveTab(inboxView);
+
+                        inboxView.getController().moveOrDeleteMessage(message);
+
+                        t.waitForMs(TIMEOUT, function() {
+
+                            CK = message.getCompoundKey();
+
+                            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+
+                            t.waitForMs(TIMEOUT, function() {
+
+
+                                message = selectMessage(panel, 0);
+
+                                inboxView.getController().moveOrDeleteMessage(message);
+
+
+                                t.waitForMs(TIMEOUT, function() {
+                                    t.expect(message.get('mailFolderId')).toBe("INBOX.Trash");
+                                    panel.destroy();
+                                    panel = null;
+                                });
+                            });
+                        });
+
+
+                    });
+
+
+                });
+
+            });
+
+
+        });
+    };
+
+
+    t.it("app-cn_mail#63 - replyAll", function(t) {
+        testAppCnMail63(t, 'replyAll');
+    });
+
+
+    t.it("app-cn_mail#63 - replyTo", function(t) {
+        testAppCnMail63(t, 'replyTo');
+    });
+
+    t.it("app-cn_mail#63 - forward", function(t) {
+        testAppCnMail63(t, 'forward');
+    });
 
 });})});});});});

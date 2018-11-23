@@ -440,7 +440,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
-     * Callback for the global cn_mail-mailmessagesavecomplete event that gets
+     * Callback for the MessageEditor's  cn_mail-mailmessagesavecomplete event that gets
      * triggered from editor instances.
      * Looks up any referencing view of the currently saved draft and will update
      * its data with the newly committed data.
@@ -474,15 +474,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             messageDraft.getPreviousCompoundKey(), 'read');
         messageView = view.down('#' + prevItemId);
 
-        if (editMode === EditingModes.CREATE) {
-            me.updateHistoryForMessageRelatedView(editor, messageDraft);
-        }
-
         if ([EditingModes.CREATE, EditingModes.REPLY_TO,
-            EditingModes.REPLY_ALL, EditingModes.FORWARD].indexOf(editMode) !== -1 &&
-            isCreated){
-            inboxView.updateViewForCreatedDraft(messageDraft);
-            return;
+            EditingModes.REPLY_ALL, EditingModes.FORWARD].indexOf(editMode) !== -1) {
+            me.updateHistoryForMessageRelatedView(editor, messageDraft);
+
+            if (isCreated) {
+                inboxView.updateViewForCreatedDraft(messageDraft);
+                return;
+            }
         }
 
 
@@ -857,9 +856,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             });
         }
 
-        if (panel.isCnMessageEditor && [EditingModes.CREATE, EditingModes.EDIT].indexOf(panel.editMode) === -1) {
+        let validModes = [EditingModes.CREATE, EditingModes.EDIT, EditingModes.REPLY_TO,
+                          EditingModes.REPLY_ALL, EditingModes.FORWARD];
+
+        if (panel.isCnMessageEditor && validModes.indexOf(panel.editMode) === -1) {
             Ext.raise({
-                msg    : Ext.String.format("'editMode' of Editor must be '{0}' or '{1}'", EditingModes.CREATE, EditingModes.EDIT),
+                msg    : Ext.String.format("'editMode' of Editor must be any of {0}", validModes.join(', ')),
                 editor : panel
             });
         }
