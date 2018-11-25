@@ -1283,10 +1283,27 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         });
 
-    })
+    });
 
 
+    t.it("app-cn_mail#79", function(t) {
 
-});
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
-});
+        let ck = packageCtrl.createCompoundKeyFromUrlFragments('a%20b', 'foo', 'ba%20r');
+
+        t.expect(ck.toLocalId()).toBe('a b-foo-ba r')
+
+        packageCtrl.showMailEditor = Ext.emptyFn;
+
+        t.isCalledNTimes('createCompoundKeyFromUrlFragments', packageCtrl, 4);
+
+        packageCtrl.onEditMessageRoute('a', 'b', 'c');
+        packageCtrl.onReplyToRoute('a', 'b', 'c');
+        packageCtrl.onReplyAllRoute('a', 'b', 'c');
+        packageCtrl.onForwardRoute('a', 'b', 'c');
+
+    });
+
+
+});});

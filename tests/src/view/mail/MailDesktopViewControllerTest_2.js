@@ -748,10 +748,33 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 });
 
             });
-
-
-
         });
+    });
+
+
+    t.it("app-cn_mail#79", function(t) {
+
+        let panel = createMailDesktopView(),
+            ctrl = panel.getController(),
+            REDIRECTED = 0;
+
+
+        ctrl.getCompoundKeyFromInboxMessageView = function() {
+            return {
+                toArray : function(){return ['foo'];}
+            };
+        }
+
+        ctrl.redirectTo = function() {
+            REDIRECTED++;
+        }
+
+        t.expect(ctrl.redirectToEditorFromInboxMessageView('edit')).toBe('cn_mail/message/edit/foo');
+        t.expect(ctrl.redirectToEditorFromInboxMessageView('replyTo')).toBe('cn_mail/message/replyTo/foo');
+        t.expect(ctrl.redirectToEditorFromInboxMessageView('replyAll')).toBe('cn_mail/message/replyAll/foo');
+        t.expect(ctrl.redirectToEditorFromInboxMessageView('forward')).toBe('cn_mail/message/forward/foo');
+
+        t.expect(REDIRECTED).toBe(4);
 
     });
 

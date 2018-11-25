@@ -215,6 +215,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * #getItemIdForMessageRelatedView and #buildCnHref)
      */
     showMailEditor : function(key, type) {
+
         const me = this,
               view = me.getView(),
               EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
@@ -887,11 +888,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
      *
-     * @see #showMaiLEditor
+     * @see #redirectToEditorFromInboxMessageView
      */
     onInboxViewReplyClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'replyTo');
+        this.redirectToEditorFromInboxMessageView('replyTo');
     },
 
 
@@ -901,11 +901,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
      *
-     * @see #showMaiLEditor
+     * @see #redirectToEditorFromInboxMessageView
      */
     onInboxViewForwardClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'forward');
+        this.redirectToEditorFromInboxMessageView('forward');
     },
 
 
@@ -915,11 +914,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
      *
-     * @see #showMaiLEditor
+     * @see #redirectToEditorFromInboxMessageView
      */
     onInboxViewReplyAllClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'replyAll');
+        this.redirectToEditorFromInboxMessageView('replyAll');
     },
 
 
@@ -929,12 +927,32 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @return {conjoon.cn_mail.view.mail.message.editor.MessageEditor}
      *
-     * @see #showMaiLEditor
+     * @see #redirectToEditorFromInboxMessageView
      */
     onInboxViewEditDraftClick : function() {
-        const me = this;
-        return me.showMailEditor(me.getCompoundKeyFromInboxMessageView(), 'edit');
+        this.redirectToEditorFromInboxMessageView('edit');
     },
+
+
+    /**
+     * Helper method for bulding the url for redirecting to the editor using the
+     * specified type.
+     *
+     * @param {String} type
+     *
+     * @private
+     */
+    redirectToEditorFromInboxMessageView : function(type) {
+
+        const me  = this,
+              ck  = me.getCompoundKeyFromInboxMessageView(),
+              uri = ['cn_mail/message/' + type, ck.toArray().join('/')].join('/');
+
+        me.redirectTo(uri);
+
+        return uri;
+    },
+
 
     /**
      * Returns the compound key of the MessageItem currently loaded into the MessageView

@@ -22,7 +22,8 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) {
 
-    const createKey = function(id1, id2, id3) {
+    const TIMEOUT = 1250,
+        createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
@@ -660,7 +661,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.expect(oldId).not.toBeUndefined();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
             let token   = Ext.History.getToken(),
                 cn_href = editor.cn_href;
 
@@ -670,7 +671,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             let ret = viewController.updateHistoryForMessageRelatedView(editor, draft);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
                 let newToken  = Ext.History.getToken(),
                     newCnHref = editor.cn_href;
 
@@ -1161,13 +1162,15 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             msgv.setMessageItem(getRecordCollection()[0]);
 
-            console.log(msgv.getViewModel().get('messageItem'));
+            viewController.showMailEditor = function() {
+
+            };
 
             t.isCalled('onInboxViewReplyAllClick', viewController);
             t.isCalled('onInboxViewReplyClick', viewController);
             t.isCalled('onInboxViewForwardClick', viewController);
             t.isCalled('onInboxViewEditDraftClick', viewController);
-            t.isCalledNTimes('showMailEditor', viewController, 4);
+            t.isCalledNTimes('redirectToEditorFromInboxMessageView', viewController, 4);
 
             btnra.fireEvent('click');
             btnr.fireEvent('click');

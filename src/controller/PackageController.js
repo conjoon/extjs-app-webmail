@@ -579,11 +579,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
         const me              = this,
               mailDesktopView = me.getMainPackageView();
-              compoundKey     = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                  decodeURI(mailAccountId),
-                  decodeURI(mailFolderId),
-                  decodeURI(id)
-              );
+              compoundKey     = me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id);
 
         mailDesktopView.showMailMessageViewFor(compoundKey);
     },
@@ -644,10 +640,12 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id of the message to edit
      */
     onEditMessageRoute : function(mailAccountId, mailFolderId, id) {
-        this.showMailEditor(
-            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                mailAccountId, mailFolderId, id
-            ), 'edit');
+        const me = this;
+
+        me.showMailEditor(
+            me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
+            'edit'
+        );
     },
 
 
@@ -657,10 +655,12 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id of the message to edit
      */
     onReplyToRoute : function(mailAccountId, mailFolderId, id) {
-        this.showMailEditor(
-            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                mailAccountId, mailFolderId, id
-            ), 'replyTo');
+        const me = this;
+
+        me.showMailEditor(
+            me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
+            'replyTo'
+        );
     },
 
 
@@ -670,10 +670,12 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id of the message to edit
      */
     onReplyAllRoute : function(mailAccountId, mailFolderId, id) {
-        this.showMailEditor(
-            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                mailAccountId, mailFolderId, id
-            ), 'replyAll');
+        const me = this;
+
+        me.showMailEditor(
+            me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
+            'replyAll'
+        );
     },
 
 
@@ -683,10 +685,12 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {String} id the id of the message to edit
      */
     onForwardRoute : function(mailAccountId, mailFolderId, id) {
-        this.showMailEditor(
-            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                mailAccountId, mailFolderId, id
-            ), 'forward');
+        const me = this;
+
+        me.showMailEditor(
+            me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
+            'forward'
+        );
     },
 
 
@@ -1020,6 +1024,29 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
             mailDesktopView.showMailEditor(key, type);
         }
+
+    },
+
+
+    /**
+     * Returns a compound key for whch all keys have been sanitized and stripped
+     * from url-encoded chars.
+     *
+     * @param {String} mailAccountId
+     * @param {String} mailFolderId
+     * @param {String} id
+     *
+     * @return {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
+     *
+     * @private
+     */
+    createCompoundKeyFromUrlFragments : function(mailAccountId, mailFolderId, id) {
+
+        return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+            decodeURIComponent(mailAccountId),
+            decodeURIComponent(mailFolderId),
+            decodeURIComponent(id)
+        );
 
     }
 
