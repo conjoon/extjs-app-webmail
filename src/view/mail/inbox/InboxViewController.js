@@ -482,6 +482,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                 field = "cn_deleted";
                 break;
             default:
+                // there is an edge case where drafts are part of the send-folder.
+                // sending them will create a NOOP since they are NOT moved to
+                // the send-folder, they already belong to it. This will throw
+                // an exception. This will be accepted for now
                 Ext.raise({
                     msg  : "Unexpected operation type for failure-callback",
                     type : type
