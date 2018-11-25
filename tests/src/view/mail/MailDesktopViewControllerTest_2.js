@@ -132,6 +132,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function 
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', function () {
+t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function () {
 
     const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
@@ -627,4 +628,131 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         testAppCnMail63(t, 'forward');
     });
 
-});})});});});});
+
+    t.it("app-cn_mail#78 - composed draft ", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor = ctrl.showMailEditor('sffss', 'compose'),
+            editorVm = editor.getViewModel(),
+            CK, md, inboxView = panel.down('cn_mail-mailinboxview');
+
+        t.expect(editor).toBeTruthy();
+
+        t.waitForMs(TIMEOUT, function() {
+
+            editorVm = editor.getViewModel();
+
+            md = editorVm.get('messageDraft');
+            md.set('subject', 'foo');
+            md.set('to', 'demo@conjoon.org');
+            t.expect(md.get('draft')).toBe(true);
+
+            editor.getController().configureAndStartSaveBatch(true);
+
+            t.waitForMs(TIMEOUT + 1000, function() {
+
+                CK = md.getCompoundKey();
+
+                t.expect(md.get('mailFolderId')).toBe("INBOX.Sent Messages");
+                t.expect(md.getCompoundKey().toLocalId()).toContain("INBOX.Sent Messages");
+
+                panel.setActiveTab(inboxView);
+                selectMailFolder(panel, 2, 'INBOX.Sent Messages', t);
+
+                t.waitForMs(TIMEOUT, function() {
+                    // it is possible we will not find the newly created item at the first position
+                    // due to date sorting (created might be newer)
+                    // loop through 10 first items to find
+                    let msg;
+                    for (let i = 0, len = 10; i < len; i++) {
+                        msg = selectMessage(panel, i);
+                        if (msg.getCompoundKey().equalTo(CK)) {
+                            break;
+                        }
+                    }
+
+                    t.expect(msg.getCompoundKey().toObject()).toEqual(CK.toObject());
+                    t.expect(msg.get('draft')).toBe(false);
+
+                    panel.destroy();
+                    panel = null;
+
+                });
+            });
+
+        });
+    });
+
+
+    t.it("app-cn_mail#78 - loaded draft ", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor,
+            CK, md, inboxView = panel.down('cn_mail-mailinboxview');
+
+
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, 4, 'INBOX.Drafts', t);
+
+            t.waitForMs(TIMEOUT, function() {
+
+                let msg = selectMessage(panel, 0),
+                    OLDCK = msg.getCompoundKey();
+
+                editor = ctrl.showMailEditor(OLDCK, 'edit'),
+                editorVm = editor.getViewModel()
+
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    md = editorVm.get('messageDraft');
+                    md.set('subject', 'foo');
+                    t.expect(md.get('draft')).toBe(true);
+
+                    editor.getController().configureAndStartSaveBatch(true);
+
+                    t.waitForMs(TIMEOUT + 1000, function() {
+
+                        CK = md.getCompoundKey();
+
+                        let livegrid = inboxView.getController().getLivegrid();
+
+                        t.expect(livegrid.getRecordByCompoundKey(OLDCK)).toBeFalsy();
+                        t.expect(livegrid.getRecordByCompoundKey(CK)).toBeFalsy();
+
+                        selectMailFolder(panel, 2, 'INBOX.Sent Messages', t);
+
+                        t.waitForMs(TIMEOUT, function() {
+                            // it is possible we will not find the newly created item at the first position
+                            // due to date sorting (created might be newer)
+                            // loop through 10 first items to find
+                            let msg;
+                            for (let i = 0, len = 10; i < len; i++) {
+                                msg = selectMessage(panel, i);
+                                if (msg.getCompoundKey().equalTo(CK)) {
+                                    break;
+                                }
+                            }
+
+                            t.expect(msg.getCompoundKey().toObject()).toEqual(CK.toObject());
+                            t.expect(msg.get('draft')).toBe(false);
+
+                            panel.destroy();
+                            panel = null;
+                        });
+                    });
+
+                });
+
+            });
+
+
+
+        });
+
+    });
+
+});})});});});});});

@@ -1027,7 +1027,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
         });
 
 
-        t.it("\"draft\"-flag removed from MessageDraft when sending succeeded", function(t) {
+        t.it("\"draft\"-flag *NOT* removed from MessageDraft when sending succeeded", function(t) {
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
@@ -1045,7 +1045,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 controller.onSendButtonClick();
 
                 t.waitForMs(3000, function() {
-                    t.expect(messageDraft.get('draft')).toBe(false);
+                    t.expect(messageDraft.get('draft')).toBe(true);
                 });
 
             });

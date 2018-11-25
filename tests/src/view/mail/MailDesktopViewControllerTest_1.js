@@ -22,7 +22,8 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) {
 
-    const createKey = function(id1, id2, id3) {
+    const TIMEOUT = 1250,
+        createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
@@ -120,7 +121,6 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     Ext.ux.ajax.SimManager.init({
         delay: 1
     });
-
 
 
     t.it("onBeforeMessageItemDelete() - event registered", function(t) {
@@ -537,22 +537,35 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             }]
         });
 
-        t.waitForMs(500, function() {
+        t.waitForMs(TIMEOUT, function() {
 
 
             let editor = panel.showMailEditor('233242', 'compose');
             t.isCalledOnce('updateViewForSentDraft', panel.down('cn_mail-mailinboxview'));
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
+
+                let md = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                    mailAccountId : 'foo',
+                    mailFolderId : 'bar',
+                    id : 'foobar',
+                    subject : 'FOOBAR'
+                });
+                md.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+
+                let oldM = conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage;
+
+                conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = Ext.emptyFn;
 
                 editor.fireEvent('cn_mail-mailmessagesendcomplete',
                     editor,
-                    Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                        subject : 'FOOBAR'
-                    })
+                    md
                 );
+
+                conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = oldM;
                 panel.destroy();
                 panel = null;
+
             });
 
         });
@@ -652,7 +665,6 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created compose", function (t) {
         testForContext('compose', t);
     });
-
 
 
     t.it("conjoon/app-cn_mail#55", function(t) {

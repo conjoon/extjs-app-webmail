@@ -58,13 +58,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
                 return ret;
             }
 
-            MessageTable.updateMessageDraft(
-                mailAccountId, mailFolderId, id, {
-                    mailFolderId : MailFolderTable.getFolderIdForType('SENT'),
-                    draft        : false
-                }
-            );
-
             ret.responseText = Ext.JSON.encode({
                 success       : true
             });

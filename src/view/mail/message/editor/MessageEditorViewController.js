@@ -508,7 +508,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 params : messageDraft.getCompoundKey().toObject()
             }).then(
                 function(response, opts) {
-                    messageDraft.set('draft', false);
                     view.fireEvent('cn_mail-mailmessagesendcomplete', view, messageDraft);
                 },
                 function(response, opts) {

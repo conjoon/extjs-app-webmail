@@ -905,9 +905,25 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         t.waitForMs(250, function() {
 
-            t.expect(viewController.updateViewForSentDraft(
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft')
-            )).toBe(null);
+            let oldM = conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage,
+                CALLED = 0;
+
+            conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = function() {
+                CALLED++;
+            }
+
+            let md = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                mailAccountId : 'foo',
+                mailFolderId : 'bar',
+                id : 'foobar',
+                subject : 'FOOBAR'
+            });
+            md.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+
+            viewController.updateViewForSentDraft(md);
+            t.expect(CALLED).toBe(1);
+
+            conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = oldM;
         });
     });
 

@@ -609,42 +609,42 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         const me        = this,
               selected  = me.getSelectedMailFolder(),
-              id        = messageDraft.getId(),
+              ck        = messageDraft.getCompoundKey(),
               livegrid  = me.getLivegrid();
 
-        if (!selected) {
-            return null;
+        let mailFolderId = me.getMailboxService()
+            .getMailFolderHelper().getMailFolderIdForType(
+                messageDraft.get('mailAccountId'),
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT
+            ),
+            newRec;
+
+        if (selected) {
+            let selectedId = selected.get('id');
+
+            // check if the selected folder shows the grid where the original
+            // messageDraft is represented as a MessageItem
+            if (selectedId === messageDraft.get('mailFolderId')) {
+                // remove the record, return. Nothing more to do here
+                newRec = livegrid.getRecordByCompoundKey(ck);
+            }
         }
 
-        let selectedId   = selected.getId(),
-            newRec       = livegrid.getRecordById(id),
-            mailFolderId = me.getMailboxService()
-                             .getMailFolderHelper().getMailFolderIdForType(
-                    messageDraft.get('mailAccountId'),
-                    conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT
-                );
-
-        // check if the selected folder shows the grid where the original
-        // messageDraft is represented as a MessageItem
-        if (selectedId === messageDraft.get('mailFolderId')) {
-            // remove the record, return. Nothing more to do here
-            newRec = livegrid.getRecordById(id);
-        } else {
+        if (!newRec) {
             newRec = conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.createItemFromDraft(
                 messageDraft
             );
         }
 
-        if (newRec) {
-            return me.getMailboxService().moveMessage(newRec, mailFolderId, {
-                before  : me.onBeforeMessageMoveOrDelete,
-                success : me.onMessageMovedOrDeleted,
-                failure : me.onMessageMovedOrDeletedFailure,
-                scope   : me
-            });
-        }
+        // make sure we set "draft" to false. Will be rejected if moving fails
+        newRec.set('draft', false);
+        return me.getMailboxService().moveMessage(newRec, mailFolderId, {
+            before  : me.onBeforeMessageMoveOrDelete,
+            success : me.onMessageMovedOrDeleted,
+            failure : me.onMessageMovedOrDeletedFailure,
+            scope   : me
+        });
 
-        return null;
     },
 
 
