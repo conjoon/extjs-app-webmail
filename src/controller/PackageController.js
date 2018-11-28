@@ -235,6 +235,10 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     observedMessageView : null,
 
+    /**
+     * @private
+     */
+    observedMessageEditor : null,
 
     /**
      * Callback for the MailDesktopView's tabchange event. Makes sure the
@@ -256,6 +260,14 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             );
         }
 
+        if (me.observedMessageEditor) {
+            me.observedMessageEditor.un(
+                'cn_mail-messagedraftload',
+                me.messageEditorIsActivatedTab,
+                me
+            );
+        }
+
         if (activatedPanel === me.getMailInboxView()) {
             let selection = me.getMailMessageGrid().getSelection();
 
@@ -266,12 +278,29 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 me.disableEmailEditButtons(true);
             }
 
-        } else if (activatedPanel instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditor) {
+        }
 
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(true, false);
+        // we have not an inbox view. By default, disable all buttons.
+        // they will either be re-activated instantly or once any of the
+        // view's or editor's item/draft was loaded
+        me.disableEmailActionButtons(true);
+        me.disableEmailEditButtons(true);
 
-        } else if  (activatedPanel instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+
+        if (activatedPanel.isCnMessageEditor) {
+
+            if (activatedPanel.isDraftLoading()) {
+                me.observedMessageEditor = activatedPanel.on('cn_mail-messagedraftload',
+                    me.messageEditorIsActivatedTab,
+                    me, {single : true});
+            } else {
+                if (activatedPanel.hasLoadingFailed() !== true) {
+                    me.messageEditorIsActivatedTab();
+                }
+            }
+
+
+        } else if  (activatedPanel.isCnMessageView) {
 
             if (activatedPanel.loadingItem) {
                 me.observedMessageView = activatedPanel.on('cn_mail-messageitemload',
@@ -281,10 +310,6 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 me.onMailMessageItemLoadForActivatedView(activatedPanel);
             }
 
-        } else {
-
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(true);
         }
     },
 
@@ -1048,6 +1073,20 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             decodeURIComponent(id)
         );
 
-    }
+    },
+
+
+    /**
+     * Helper function activating/disabling buttons once a fully configured and
+     * loaded MessageEditor is activated
+     *
+     * @private
+     */
+    messageEditorIsActivatedTab : function() {
+        const me = this;
+
+        me.disableEmailActionButtons(true);
+        me.disableEmailEditButtons(true, false);
+    },
 
 });

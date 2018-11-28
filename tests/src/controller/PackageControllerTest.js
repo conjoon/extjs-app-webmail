@@ -988,9 +988,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         let ENABLED = configureButtonMockCaller(),
             panel,
             activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                messageDraft : {
-                    id : '1'
-                }
+                messageDraft : Ext.create(
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
             });
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
@@ -1304,6 +1303,147 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         packageCtrl.onForwardRoute('a', 'b', 'c');
 
     });
+
+
+    t.it("app-cn_mail#66 - messageEditorIsActivatedTab()", function(t) {
+
+        let ENABLED = configureButtonMockCaller();
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+        packageCtrl.messageEditorIsActivatedTab();
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+    });
+
+
+    const testForEditorLoading = function(t, type)  {
+
+        let ENABLED = configureButtonMockCaller(),
+            panel,
+            activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+                messageDraft : Ext.create(
+                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            });
+
+        switch (type) {
+
+            case 'LOADINGDRAFT':
+                activatedPanel.getViewModel().loadingDraft = true;
+                break;
+
+            case 'LOADINGFAILED':
+                activatedPanel.getViewModel().loadingFailed = true;
+                break;
+
+            case 'MESSAGEBODYLOADING':
+                activatedPanel.getViewModel().set('isMessageBodyLoading', true);
+                break;
+
+            case 'HASPENDINGCOPYREQUEST':
+                activatedPanel.getViewModel().hasPendingCopyRequest = function() {
+                    return true;
+                };
+                break;
+        }
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+
+    };
+
+
+    t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel has loadingDraft", function(t) {
+
+        testForEditorLoading(t, 'LOADINGDRAFT');
+    });
+
+
+    t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel has isMessageBodyLoading ", function(t) {
+
+        testForEditorLoading(t, 'MESSAGEBODYLOADING');
+    });
+
+
+    t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel hasPendingCopyRequest ", function(t) {
+
+        testForEditorLoading(t, 'HASPENDINGCOPYREQUEST');
+    });
+
+    t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel loadingFailed ", function(t) {
+
+        testForEditorLoading(t, 'LOADINGFAILED');
+    });
+
+
+    t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", function(t) {
+
+        let ISDRAFT,
+            ENABLED = configureButtonMockCaller(),
+            panel, rec,
+            activatedPanel, otherPanel;
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+
+        activatedPanel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+            messageDraft : Ext.create(
+                'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+        });
+
+        activatedPanel.getViewModel().hasPendingCopyRequest = function() {
+            return true;
+        };
+
+        otherPanel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageView');
+
+        // we add a loading item here so we can check that
+        // onMailMessageItemLoadForActivatedView is never called
+        otherPanel.loadingItem = {};
+
+
+        t.isCalled('messageEditorIsActivatedTab', packageCtrl);
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+        packageCtrl.onMailDesktopViewTabChange(null, otherPanel);
+
+        activatedPanel.fireEvent('cn_mail-messagedraftload', activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
+
+
+        activatedPanel.getViewModel().hasPendingCopyRequest = function() {
+            return false;
+        };
+
+        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+
+
+    });
+
 
 
 });});
