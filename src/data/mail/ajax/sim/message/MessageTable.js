@@ -179,6 +179,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         "<blockquote>Following news! Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa <strong>strong</strong>. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In <em>em</em> enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam <a class=\"external ext\" href=\"#\">link</a> dictum felis eu pede mollis pretium. </blockquote>"
     ],
 
+    peekMessageBody : function(mailAccountId, mailFolderId, id) {
+
+        if (arguments.length !== 3) {
+            Ext.raise("Unexpected missing arguments");
+        }
+
+        var me = this,
+            key = mailAccountId + '-' + mailFolderId + '-' + id,
+            message;
+
+
+        if (!me.messageBodies) {
+            me.messageBodies = {};
+        }
+
+        if (me.messageBodies[key]) {
+            return true;
+        }
+
+        return false;
+    },
+
     getMessageBody : function(mailAccountId, mailFolderId, id) {
 
         if (arguments.length !== 3) {

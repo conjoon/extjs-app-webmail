@@ -183,13 +183,20 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
 
         getMessageBody : function(mailAccountId, mailFolderId, id) {
 
-            return {success : true, data : conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
-                .getMessageBody(
+            if (conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.peekMessageBody(
                     mailAccountId,
                     mailFolderId,
                     id
-                )};
+                )) {
+                return {success : true, data : conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable
+                        .getMessageBody(
+                            mailAccountId,
+                            mailFolderId,
+                            id
+                        )};
+            }
 
+            return {success : false};
 
         },
 
