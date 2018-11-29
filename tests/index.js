@@ -267,7 +267,8 @@ harness.start({
             }, {
                 group : 'mixin',
                 items : [
-                    'classic/src/view/mail/mixin/DeleteConfirmDialogTest.js'
+                    'classic/src/view/mail/mixin/DeleteConfirmDialogTest.js',
+                    'classic/src/view/mail/mixin/LoadingFailedDialogTest.js'
                 ]
             },
             'classic/src/view/mail/MailDesktopViewTest.js'
