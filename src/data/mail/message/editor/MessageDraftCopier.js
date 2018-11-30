@@ -116,6 +116,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
             success : Ext.Function.bind(
                 me.onMessageDraftLoad, me, [editMode, callback, scope, messageDraftCopyRequest], true
             ),
+            failure : Ext.Function.bind(
+                me.onLoadMessageDraftCopyFailure, me, [callback, scope], true
+            ),
             scope : me
         });
     },
@@ -144,6 +147,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
             record.loadMessageBody({
                 success : Ext.Function.bind(
                     me.onMessageBodyLoad, me, [record, editMode, callback, scope, messageDraftCopyRequest], true
+                ),
+                failure :  Ext.Function.bind(
+                    me.onLoadMessageDraftCopyFailure, me, [callback, scope], true
                 ),
                 scope : me
             });
@@ -206,11 +212,26 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
             callback.apply(scope || null, [
                 me,
                 success ? me.createMessageDraftConfig(messageDraft, editMode, messageDraftCopyRequest) : null,
-                success
+                success,
+                operation
             ]);
         },
 
 
+        /**
+         * Callback for a failed attempt to copy a MessageDraft, e.g. when
+         * the various operations experienced an exception.
+         *
+         * @param {Ext.data.Model} record or an array of records
+         * @param {Ext.data.operation.Operation} operation
+         * @param {Function} callback
+         * @param {Object} scope
+         */
+        onLoadMessageDraftCopyFailure : function(record, operation, callback, scope) {
+            const me = this;
+
+            callback.apply(scope || null, [me, null, false, operation]);
+        },
 
 
         /**

@@ -101,20 +101,23 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
         });
 
 
-        t.it("loadMessageDraftCopy()", function(t) {
+        const testLoad = function(t, key, expected) {
+
             var SUCCESS     = false,
                 DRAFTCONFIG = null,
                 COPIER      = null,
+                OPERATION   = null,
                 SCOPE       = null,
                 scope       = {foo : 'bar'},
-                func        = function(copier, draftConfig, success) {
+                func        = function(copier, draftConfig, success, operation) {
                     SCOPE       = this;
                     COPIER      = copier;
                     SUCCESS     = success;
                     DRAFTCONFIG = draftConfig;
+                    OPERATION   = operation;
                 },
                 request = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
-                    compoundKey : createKeyForExistingMessage(1),
+                    compoundKey : key,
                     editMode    : conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO,
                     defaultMailAccountId : 'foo',
                     defaultMailFolderId : 'bar'
@@ -128,15 +131,29 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', func
 
                 t.expect(SCOPE).toBe(scope);
                 t.expect(COPIER).toBe(copier);
-                t.expect(SUCCESS).toBe(true);
-                t.isInstanceOf(DRAFTCONFIG, conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig);
+                t.expect(SUCCESS).toBe(expected);
 
-                t.expect(DRAFTCONFIG.getMailAccountId()).toBe('foo');
-                t.expect(DRAFTCONFIG.getMailFolderId()).toBe('bar');
+                t.isInstanceOf(OPERATION, 'Ext.data.operation.Read');
+
+                if (expected) {
+                    t.isInstanceOf(DRAFTCONFIG, conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig);
+                    t.expect(DRAFTCONFIG.getMailAccountId()).toBe('foo');
+                    t.expect(DRAFTCONFIG.getMailFolderId()).toBe('bar');
+                } else {
+                    t.expect(DRAFTCONFIG).toBe(null);
+                }
 
             });
+        };
 
 
+        t.it("loadMessageDraftCopy() - success", function(t) {
+            testLoad(t, createKeyForExistingMessage(1), true);
+        });
+
+
+        t.it("loadMessageDraftCopy() - failure", function(t) {
+            testLoad(t, createKey(1, 2, 3), false);
         });
 
 
