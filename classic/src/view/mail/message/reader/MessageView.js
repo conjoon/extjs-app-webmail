@@ -31,7 +31,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     extend: 'Ext.Panel',
 
     mixins : [
-        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog',
+        'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
     ],
 
     requires : [
@@ -92,7 +93,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
     /**
      * @type {conjoon.cn_mail.model.mail.message.MessageItem} loadingItem
-     * If any item was requested via #loadMessageItem, this olds the reference
+     * If any item was requested via #loadMessageItem, this holds the reference
      * to the current record being loaded to be able to abort load operations
      * when needed.
      */
@@ -229,6 +230,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                 me.loadingMask = null;
             }
 
+            if (me.loadingFailedMask) {
+                me.loadingFailedMask.destroy();
+                me.loadingFailedMask = null;
+            }
+
             if (me.loadingItem) {
                 me.loadingItem.abort();
                 me.loadingItem = null;
@@ -269,6 +275,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
         var me = this;
 
+        if (me.loadingFailedMask) {
+            me.loadingFailedMask.close();
+            me.loadingFailedMask = null;
+        }
+
         me.getViewModel().setMessageItem(
             messageItem ? messageItem : null
         );
@@ -304,6 +315,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
         me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
             success : me.onMessageItemLoaded,
+            failure : me.onMessageItemLoadFailure,
             scope   : me
         });
     },
@@ -332,13 +344,42 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     privates : {
 
         /**
+         * Callback for the failed attempt to load a MessageItem, registered
+         * by #loadMessageItem.
+         *
+         * @param {"conjoon.cn_mail.model.mail.message.MessageItem"} messageItem
+         * @param {Ext.data.operation.Read} operation
+         *
+         * @return {conjoon.cn_comp.component.MessageMask}
+         */
+        onMessageItemLoadFailure : function(messageItem, operation) {
+
+            const me               = this,
+                  vm               = me.getViewModel();
+
+            vm.set('isLoading', false);
+            vm.notify();
+
+            // do not show dialog if status of error is -1, which
+            // hints to a cancelled request
+            if (operation.error && operation.error.status === -1) {
+                return;
+            }
+
+            let isParentTabPanel = (me.ownerCt instanceof Ext.tab.Panel);
+
+            return me.showLoadingFailedDialog(isParentTabPanel);
+        },
+
+
+        /**
          * Callback for the load-event of a MessageItem, registered by #loadMessageItem
          * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
          */
         onMessageItemLoaded : function(messageItem) {
 
-            var me = this,
-                vm = me.getViewModel();
+            const me = this,
+                  vm = me.getViewModel();
 
             me.setMessageItem(messageItem);
             vm.set('isLoading', false);

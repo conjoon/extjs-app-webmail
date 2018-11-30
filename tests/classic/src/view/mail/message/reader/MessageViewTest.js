@@ -475,6 +475,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
             t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
+            t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog"]).toBeTruthy();
             t.expect(view.canCloseAfterDelete).toBe(true);
         });
 
@@ -510,4 +511,113 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
         });
 
 
-});});});
+        t.it("app-cn_mail#66 - setMessageItem closes loadingFailedMask if it exist", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let CALLED = 0;
+
+            view.loadingFailedMask = {
+                close : function() {
+                    CALLED++;
+                }
+            };
+
+
+            t.expect(CALLED).toBe(0);
+
+            view.setMessageItem(null);
+
+            t.expect(CALLED).toBe(1);
+
+        });
+
+
+        t.it("app-cn_mail#66 - loadMessageItem failure registered", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let CALLED = 0;
+
+            view.onMessageItemLoadFailure = function(){
+                CALLED++;
+            };
+
+
+            t.expect(CALLED).toBe(0);
+
+            view.loadMessageItem(createKey(1, 2, 3));
+
+            t.waitForMs(750, function() {
+                t.expect(CALLED).toBe(1);
+            });
+
+
+        });
+
+
+        t.it("app-cn_mail#66 - onMessageItemLoadFailure()", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let vm = view.getViewModel();
+
+            vm.set('isLoading', true);
+            t.expect(vm.get('isLoading')).toBe(true);
+
+            t.isInstanceOf(view.onMessageItemLoadFailure({}, {}), 'conjoon.cn_comp.component.MessageMask');
+
+            t.expect(vm.get('isLoading')).toBe(false);
+
+        });
+
+
+        t.it("app-cn_mail#66 - onMessageItemLoadFailure() no loadMask if cancelled", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let vm = view.getViewModel();
+
+            vm.set('isLoading', true);
+            t.expect(vm.get('isLoading')).toBe(true);
+
+            t.expect(
+                view.onMessageItemLoadFailure({}, {error: {status : -1}}),
+                'conjoon.cn_comp.component.MessageMask'
+            ).toBeFalsy();
+
+            t.expect(vm.get('isLoading')).toBe(false);
+
+        });
+
+
+        t.it("app-cn_mail#66 - loadingFailedMask removed before view is destroyed", function(t) {
+
+            let view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let CALLED = 0;
+
+            view.loadingFailedMask = {
+                destroy : function() {
+                    CALLED++;
+                }
+            };
+
+
+            t.expect(CALLED).toBe(0);
+            t.expect(view.loadingFailedMask).not.toBe(null);
+            view.destroy();
+
+            t.expect(CALLED).toBe(1);
+
+            t.expect(view.loadingFailedMask).toBe(null);
+            view = null;
+        });
+
+
+    });});});
