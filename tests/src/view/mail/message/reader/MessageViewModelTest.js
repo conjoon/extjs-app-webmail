@@ -153,6 +153,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                     }
                 }});
 
+
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 view : view
             });
@@ -597,6 +598,66 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         t.expect(formulas.getSubject.get.apply(viewModel, [{subject : ''}])).toBe(defaultSubject);
         t.expect(formulas.getSubject.get.apply(viewModel, [{subject : 'foo'}])).toBe('foo');
     });
+
+
+    t.it("app-cn_mail#66 - onMessageBodyLoadFailure", function(t) {
+
+        let view = Ext.create('Ext.Component', {});
+
+        let CALLED = 0;
+
+        view.onMessageItemLoadFailure = function() {
+            CALLED = 1;
+        }
+
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
+            view : view
+        });
+
+        t.expect(CALLED).toBe(0);
+
+        t.isCalled('onMessageBodyLoadFailure', viewModel);
+
+        viewModel.loadMessageBodyFor(Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            localId       : 'foo',
+            mailAccountId : 'bar',
+            mailFolderId  : 'm',
+            id            : 'xyz',
+            messageBodyId : 'foobar'
+        }));
+
+        t.waitForMs(750, function() {
+            t.expect(CALLED).toBe(1);
+        });
+
+
+    });
+
+
+    t.it("app-cn_mail#66 - onMessageBodyLoadFailure with error exiting", function(t) {
+
+        let view = Ext.create('Ext.Component', {});
+
+        let CALLED = 0;
+
+        view.onMessageItemLoadFailure = function() {
+            CALLED = 1;
+        }
+
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
+            view : view
+        });
+
+        t.expect(CALLED).toBe(0);
+
+        viewModel.onMessageBodyLoadFailure({}, {error : {status : -1}});
+
+
+        t.waitForMs(750, function() {
+            t.expect(CALLED).toBe(0);
+        });
+    });
+
 
 
 })})});

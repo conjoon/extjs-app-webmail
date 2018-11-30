@@ -346,9 +346,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
          */
         ret = messageItem.loadMessageBody({
             reload  : me.abortedRequestMap[messageItem.get('messageBodyId')] === true,
-            success : function(record, operation){
-                me.messageBodyLoaded(record, operation);
-            }
+            success : me.messageBodyLoaded,
+            failure : me.onMessageBodyLoadFailure,
+            scope   : me
         });
 
         if (!ret) {
@@ -460,6 +460,27 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
             me.attachmentsLoadOperation = operation;
 
+        },
+
+
+        /**
+         * Delegates to this view's onMessageItemLoadFailure
+         *
+         * @param {conjoon.cn_mail.model.mail.message.MessageBody} record
+         * @param {Ext.data.operation.Read} operation
+         * @private
+         */
+        onMessageBodyLoadFailure : function(record, operation) {
+            const me   = this,
+                  view = me.getView();
+
+            if (operation.error && operation.error.status === -1) {
+                // -1 should be the status coce for aborted
+                // requests - most likely the user switched to another
+                // message during the loading of this record
+                return;
+            }
+            view.onMessageItemLoadFailure.call(view, arguments);
         },
 
 
