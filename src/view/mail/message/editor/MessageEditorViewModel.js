@@ -49,6 +49,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
 
     /**
+     * @private
+     */
+    loadingDraft : null,
+
+    /**
+     * Set to true once a draft/body could not be loaded.
+     * @protected
+     */
+    loadingFailed : false,
+
+    /**
      * Default empty subject text for messages.
      * @i18n
      * @private
@@ -256,14 +267,19 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                         params  : messageDraft.toObject(),
                         scope   : me,
                         success : function(record) {
-                            const me = this;
+                            const me = this,
+                                  view = me.getView();
 
                             me.getSession().adopt(record);
                             me.set('messageDraft', record);
+                            me.notify();
+                            me.loadingDraft = null;
+                            view.fireEvent('cn_mail-messagedraftload', view, record);
                         },
+                        failure : me.processMessageDraftLoadFailure,
                         scope : me
                     };
-                    conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
+                    me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
                 } else {
                     me.set('messageDraft', sessDraft);
                 }
@@ -297,6 +313,35 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                            "MessageDraftConfig, of MessageDraftCopyRequest or of " +
                            "MessageEntityCompoundKey."
         });
+    },
+
+
+    /**
+     * Processes a failed attempt load a MessageDraft, or to copy one.
+     *
+     * @param {conjoon.cn_mail.moder.mail.message.MessageDraft} draftRecord might
+     * be null if this callback was called from a failed attempt to copy a message
+     * @param {Ext.data.operation.Read} operation
+     *
+     * @return {conjoon.cn_comp.component.MessageMask} the message mask or null
+     * if the view was not advised to build the mask due to cancelled requests
+     *
+     * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showMessageDraftLoadingFailedNotice}
+     */
+    processMessageDraftLoadFailure : function(draftRecord, operation) {
+
+        const me = this;
+
+        me.loadingFailed = true;
+        me.loadingDraft = null;
+
+        // ignore cancelled requests and do not advise the view to continue
+        if (operation.error && operation.error.status === -1) {
+            return null;
+        }
+
+        return me.getView().showMessageDraftLoadingFailedNotice(draftRecord, operation);
+
     },
 
 
@@ -389,13 +434,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          *
          * @param {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier} draftCopier
          * @param {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig} messageDraftConfig
+         * @param {Boolean} success whether the process was successfull
+         * @param {Ext.data.operation.Read} the operation that lead to this callback
          *
          * @see createDraftFromData
          */
-        onMessageDraftCopyLoad : function(draftCopier, messageDraftConfig) {
-            var me = this;
+        onMessageDraftCopyLoad : function(draftCopier, messageDraftConfig, success, operation) {
+            var me = this,
+                view = me.getView();
+
+            if (success === false) {
+                return me.processMessageDraftLoadFailure(null, operation);
+            }
 
             me.createDraftFromData(messageDraftConfig);
+            me.notify();
+            view.fireEvent('cn_mail-messagedraftload', view, me.get('messageDraft'));
         },
 
 

@@ -26,6 +26,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
     var viewModel;
 
+    const SMALLEST_DELAY = 1;
+
     var view, viewConfig,
         createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
@@ -143,7 +145,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
 
         Ext.ux.ajax.SimManager.init({
-            delay: 1
+            delay: SMALLEST_DELAY
         });
 
 
@@ -191,9 +193,15 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
         t.it('constructor() - messageDraft is MessageDraftCopyRequest', function(t) {
 
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
             t.isCalledOnce('onMessageDraftCopyLoad', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
             t.isCalled('processPendingCopyRequest', conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
 
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){return{fireEvent:Ext.emptyFn}};
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session      : createSession(),
@@ -204,7 +212,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                     defaultMailFolderId  : 'bar'
                 })
             });
-
+            viewModel.createDraftFromData = Ext.emptyFn;
             t.expect(viewModel.hasPendingCopyRequest()).toBe(false);
 
             try{viewModel.processPendingCopyRequest();}catch(e){exc=e;}
@@ -213,6 +221,11 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             t.waitForMs(750, function() {
                 t.isInstanceOf(viewModel.messageDraftCopier, conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier);
+                conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
+
+                Ext.ux.ajax.SimManager.init({
+                    delay: SMALLEST_DELAY
+                });
             });
 
         });
@@ -258,6 +271,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 editMode : conjoon.cn_mail.data.mail.message.EditingModes.FORWARD
             }), exc, e;
 
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){return{fireEvent:Ext.emptyFn}};
+
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session      : createSession(),
                 messageDraft : request
@@ -273,6 +289,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             t.waitForMs(750, function() {
                 t.expect(viewModel.get('messageDraft').get('mailAccountId')).toBe('foo');
                 t.expect(viewModel.get('messageDraft').get('mailFolderId')).toBe('bar');
+                conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
+
             });
 
         });
@@ -282,6 +300,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
         t.it('constructor() - messageDraft is compound key', function(t) {
 
             let index = 1;
+
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){return{fireEvent:Ext.emptyFn}};
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session      : createSession(),
@@ -294,6 +315,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 t.expect(viewModel.get('messageDraft').get('id')).toBe(messageItem.id);
                 t.expect(viewModel.get('messageDraft').get('mailAccountId')).toBe(messageItem.mailAccountId);
                 t.expect(viewModel.get('messageDraft').get('mailFolderId')).toBe(messageItem.mailFolderId);
+
+                conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
+
             });
 
         });
@@ -330,11 +354,17 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
         t.it('onMessageDraftCopyLoad()', function(t) {
 
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){return{fireEvent:Ext.emptyFn}};
+
             viewModel = createWithSession();
 
             t.isCalledOnce('createDraftFromData', viewModel);
 
             viewModel.onMessageDraftCopyLoad(null, Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'));
+
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
+
         });
 
 
@@ -375,6 +405,11 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
 
         t.it("Should create the ViewModel with data from the backend", function(t) {
+
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){return{fireEvent:Ext.emptyFn}};
+
+
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session : createSession(),
                 messageDraft : createKeyForExistingMessage(1)
@@ -386,6 +421,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 t.expect(viewModel.get('messageDraft')).toBeDefined();
                 t.expect(viewModel.get('messageDraft').phantom).toBe(false);
                 t.expect(viewModel.get('messageDraft').get('id')).toBe(item.id);
+
+                conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
+
             });
         });
 
@@ -593,6 +631,10 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 existing = createKeyForExistingMessage(1),
                 draft;
 
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){
+                return{fireEvent:Ext.emptyFn, showMessageDraftLoadingFailedNotice : Ext.emptyFn}};
+
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session      : session,
                 messageDraft : CK
@@ -637,9 +679,178 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                     t.expect(newVm.get('messageDraft')).toBeTruthy();
                     t.expect(session.peekRecord('MessageDraft', existing.toLocalId())).toBe(newVm.get('messageDraft'));
 
+                    conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
                 });
 
             });
+
+        });
+
+
+        t.it('conjoon/app-cn_mail#66 - cn_mail-messagedraftload event fired from draft load', function(t) {
+
+            let session  = createSession(),
+                CK = createKeyForExistingMessage(1),
+                CALLED = 0, EVTSOURCE, EVTDRAFT;
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1000
+            });
+
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : session,
+                messageDraft : CK
+            });
+
+            let VIEWMOCK = {
+                fireEvent : function(evtName, view, draft) {
+                    if (evtName !== 'cn_mail-messagedraftload') {
+                        return;
+                    }
+                    CALLED++;
+                    EVTSOURCE = view;
+                    EVTDRAFT = draft;
+                }
+            };
+
+            t.expect(viewModel.loadingDraft).toBeTruthy();
+
+            viewModel.getView = function(){return VIEWMOCK;};
+
+
+            t.waitForMs(1250, function() {
+                t.expect(viewModel.loadingDraft).toBeFalsy();
+                t.expect(CALLED).toBe(1);
+                t.expect(EVTSOURCE).toBe(VIEWMOCK);
+                t.expect(EVTDRAFT.getCompoundKey().toObject()).toEqual(CK.toObject());
+
+
+                Ext.ux.ajax.SimManager.init({
+                    delay: SMALLEST_DELAY
+                });
+
+            });
+
+        });
+
+
+        t.it('conjoon/app-cn_mail#66 - failure registered', function(t) {
+
+            let session  = createSession(),
+                CK = createKey(1, 2, 3),
+                CALLED = 0;
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1000
+            });
+
+            let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.processMessageDraftLoadFailure;
+
+            conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.processMessageDraftLoadFailure = function() {
+                CALLED++;
+            };
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : session,
+                messageDraft : CK
+            });
+
+            t.expect(CALLED).toBe(0);
+
+
+            t.waitForMs(1250, function() {
+                t.expect(CALLED).toBe(1);
+
+                conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.processMessageDraftLoadFailure = tmp;
+
+                Ext.ux.ajax.SimManager.init({
+                    delay: SMALLEST_DELAY
+                });
+
+            });
+        });
+
+
+        t.it('conjoon/app-cn_mail#66 - processMessageDraftLoadFailure', function(t) {
+
+            let session  = createSession(),
+                CALLED = 0;
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : session,
+                messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            });
+
+
+            viewModel.loadingFailed = false;
+            viewModel.loadingDraft  = {};
+
+            viewModel.getView = function() {
+                return {
+                    showMessageDraftLoadingFailedNotice : function() {
+                        CALLED++;
+                        return {};
+                    }
+                }
+            };
+
+            t.expect(CALLED).toBe(0);
+
+
+            t.expect(viewModel.processMessageDraftLoadFailure({}, {})).toBeTruthy();
+
+            t.expect(viewModel.loadingFailed).toBe(true);
+            t.expect(viewModel.loadingDraft).toBe(null);
+            t.expect(CALLED).toBe(1);
+
+
+            viewModel.loadingFailed = false;
+            viewModel.loadingDraft  = {};
+
+
+            t.expect(viewModel.processMessageDraftLoadFailure({}, {error : {status : -1}})).toBe(null);
+
+            t.expect(viewModel.loadingFailed).toBe(true);
+            t.expect(viewModel.loadingDraft).toBe(null);
+            t.expect(CALLED).toBe(1);
+
+        });
+
+
+        t.it('conjoon/app-cn_mail#66 - onMessageDraftCopyLoad, success false/true', function(t) {
+
+            let session  = createSession(),
+                CALLED = 0, FIRED = 0;
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : session,
+                messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            });
+            let VIEWMOCK = {
+                fireEvent : function(evtName, view, draft) {
+                    if (evtName !== 'cn_mail-messagedraftload') {
+                        return;
+                    }
+                    FIRED++;
+                }
+            };
+            viewModel.getView = function(){return VIEWMOCK;};
+            viewModel.createDraftFromData = function(){};
+            viewModel.processMessageDraftLoadFailure = function(){
+                CALLED++;
+            };
+
+            t.expect(CALLED).toBe(0);
+
+            viewModel.onMessageDraftCopyLoad({}, {}, false, {});
+
+            t.expect(CALLED).toBe(1);
+            t.expect(FIRED).toBe(0);
+
+            viewModel.onMessageDraftCopyLoad({}, {}, true, {});
+
+            t.expect(CALLED).toBe(1);
+            t.expect(FIRED).toBe(1);
 
         });
 
