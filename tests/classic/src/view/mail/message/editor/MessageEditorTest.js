@@ -923,4 +923,62 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             });
         });
 
-});});});
+
+        t.it("app-cn_mail#66 - loadingFailedDialog mixin", function(t){
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
+            view = createWithViewConfig(viewConfig);
+
+            t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog"]).toBeTruthy();
+        });
+
+
+        t.it("app-cn_mail#66 - isDraftLoading()", function(t){
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
+            view = createWithViewConfig(viewConfig);
+
+            let vm = view.getViewModel();
+
+            t.expect(view.isDraftLoading()).toBe(false);
+
+            vm.set('isMessageBodyLoading', true);
+
+            t.expect(view.isDraftLoading()).toBe(true);
+
+            vm.set('isMessageBodyLoading', false);
+
+            t.expect(view.isDraftLoading()).toBe(false);
+
+
+            vm.pendingCopyRequest = {};
+            t.expect(view.isDraftLoading()).toBe(true);
+            vm.pendingCopyRequest = null;
+
+            t.expect(view.isDraftLoading()).toBe(false);
+
+            vm.loadingDraft = {};
+
+            t.expect(view.isDraftLoading()).toBe(true);
+
+        });
+
+
+        t.it("app-cn_mail#66 - hasLoadingFailed()", function(t) {
+            view = createWithViewConfig(viewConfig);
+
+            let vm = view.getViewModel();
+
+            t.expect(view.hasLoadingFailed()).toBe(false);
+
+            vm.loadingFailed = true;
+
+            t.expect(view.hasLoadingFailed()).toBe(true);
+
+        });
+
+    });});});

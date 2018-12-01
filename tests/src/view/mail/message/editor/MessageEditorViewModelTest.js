@@ -633,7 +633,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
             conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function(){
-                return{fireEvent:Ext.emptyFn, showMessageDraftLoadingFailedNotice : Ext.emptyFn}};
+                return{fireEvent:Ext.emptyFn, showLoadingFailedDialog : Ext.emptyFn}};
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 session      : session,
@@ -787,7 +787,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             viewModel.getView = function() {
                 return {
-                    showMessageDraftLoadingFailedNotice : function() {
+                    showLoadingFailedDialog : function() {
                         CALLED++;
                         return {};
                     }

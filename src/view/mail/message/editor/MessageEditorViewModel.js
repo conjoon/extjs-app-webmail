@@ -119,6 +119,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         isMessageBodyLoading : function(get) {
             var mb = get('messageDraft.messageBody');
 
+            /**
+             * @todo this should probably better be changed to Ext.data.Model#isLoading
+             */
             return mb && mb.loading !== undefined
                    ? mb.loading
                    : false;
@@ -326,7 +329,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * @return {conjoon.cn_comp.component.MessageMask} the message mask or null
      * if the view was not advised to build the mask due to cancelled requests
      *
-     * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showMessageDraftLoadingFailedNotice}
+     * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showLoadingFailedDialog}
      */
     processMessageDraftLoadFailure : function(draftRecord, operation) {
 
@@ -340,7 +343,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             return null;
         }
 
-        return me.getView().showMessageDraftLoadingFailedNotice(draftRecord, operation);
+        return me.getView().showLoadingFailedDialog();
 
     },
 

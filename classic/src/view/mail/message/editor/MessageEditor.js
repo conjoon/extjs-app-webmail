@@ -81,7 +81,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     extend : 'Ext.form.Panel',
 
     mixins : [
-        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog',
+        'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
     ],
 
     requires : [
@@ -189,6 +190,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @event cn_mail-mailmessagesendexception
      * @param this
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+
+    /**
+     * Gets fired when this editor has finished loading a draft. This can either
+     * be an existing draft for editing or a copy loaded by the MessageDraftCopyRequest.
+     * @event cn_mail-messagedraftload
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft}
      */
 
     layout : {
@@ -736,6 +745,36 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     getMessageDraft : function() {
         return this.getViewModel().get('messageDraft');
+    },
+
+
+    /**
+     * Delegates to this view's ViewModel and checks if any loading process
+     * related to a draft is currently ongoing.
+     *
+     * @return  {Boolean}
+     */
+    isDraftLoading : function() {
+        const me = this,
+              vm = me.getViewModel();
+
+        return !!(vm.get('isMessageBodyLoading') ||
+               vm.hasPendingCopyRequest() ||
+               vm.loadingDraft);
+    },
+
+
+    /**
+     * Returns the loadingFailed-value of this view's ViewModel.
+     *
+     * @return {Boolean} if the requested draft for this editor could not be
+     * loaded, otherwise false
+     */
+    hasLoadingFailed : function() {
+        const me = this,
+            vm = me.getViewModel();
+
+        return vm.loadingFailed;
     }
 
 
