@@ -80,10 +80,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     extend : 'Ext.form.Panel',
 
-    mixins : [
-        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog',
-        'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
-    ],
+    mixins : {
+        deleteConfirmDialog : 'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog',
+        loadingFailedDialog : 'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
+    },
 
     requires : [
         'conjoon.cn_comp.component.LoadMask',
@@ -775,6 +775,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             vm = me.getViewModel();
 
         return vm.loadingFailed;
+    },
+
+
+    /**
+     * Overrridden to make sure editor is closable again once loading failed.
+     *
+     * @inheritdoc
+     */
+    showLoadingFailedDialog : function() {
+
+        const me = this;
+
+        me.setClosable(true);
+
+        me.mixins.loadingFailedDialog.showLoadingFailedDialog.call(me);
     }
 
 

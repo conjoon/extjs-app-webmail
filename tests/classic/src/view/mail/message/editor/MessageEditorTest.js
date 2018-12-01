@@ -834,7 +834,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 t.expect(view.getMessageDraft()).toBe(view.getViewModel().get('messageDraft'));
 
             });
-        })
+        });
 
 
         t.it("confirmDialogMask mixin", function(t){
@@ -844,7 +844,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             view = createWithViewConfig(viewConfig);
 
-            t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"]).toBeTruthy();
+            t.expect(view.mixins.deleteConfirmDialog.$className).toBe("conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog");
             t.expect(view.canCloseAfterDelete).toBe(true);
         });
 
@@ -931,7 +931,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             view = createWithViewConfig(viewConfig);
 
-            t.expect(view.mixins["conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog"]).toBeTruthy();
+            t.expect(view.mixins.loadingFailedDialog.$className).toBe("conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog");
+
         });
 
 
@@ -980,5 +981,19 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             t.expect(view.hasLoadingFailed()).toBe(true);
 
         });
+
+
+        t.it("app-cn_mail#66 - showLoadingFailedDialog()", function(t) {
+            view = createWithViewConfig(viewConfig);
+
+
+            t.expect(view.getClosable()).toBe(false);
+
+            view.showLoadingFailedDialog();
+
+            t.expect(view.getClosable()).toBe(true);
+
+        });
+
 
     });});});
