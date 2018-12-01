@@ -480,7 +480,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 // message during the loading of this record
                 return;
             }
-            view.onMessageItemLoadFailure.call(view, arguments);
+            view.onMessageItemLoadFailure(record, operation);
         },
 
 
