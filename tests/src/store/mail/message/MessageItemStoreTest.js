@@ -133,6 +133,58 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
         });
 
 
+        t.it("app-cn_mail#81 - afterEdit() not called", function(t) {
+
+            let store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore');
+
+            t.isntCalled('fireEvent', store);
+
+            store.afterEdit({}, null);
+
+            store.afterEdit({}, ['foo']);
+
+            store.destroy;
+            store = null;
+
+        });
+
+
+        t.it("app-cn_mail#81 - afterEdit() called", function(t) {
+
+            let testFor = function(t, types) {
+                let store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore');
+                let STORE, RECORD, TYPE, MODIFIED;
+                let plannedRec      = {},
+                    plannedModified = types;
+
+                store.on('update', function(store, record, type, modified) {
+                    STORE    = store;
+                    RECORD   = record;
+                    TYPE     = type;
+                    MODIFIED = modified;
+                });
+
+                store.contains = function() {return true;}
+                store.afterEdit(plannedRec, plannedModified);
+
+                t.expect(STORE).toBe(store);
+                t.expect(RECORD).toBe(plannedRec);
+                t.expect(TYPE).toBe("edit");
+                t.expect(MODIFIED).toBe(plannedModified);
+
+                store.destroy;
+                store = null;
+
+            };
+
+            testFor(t, ['cn_deleted']);
+            testFor(t, ['cn_moved']);
+
+            testFor(t, ['cn_moved', 'cn_deleted']);
+
+
+        });
+
 
     });
 

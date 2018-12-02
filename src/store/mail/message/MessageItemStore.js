@@ -97,8 +97,31 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
         const me = this;
 
         return me.findExact('localId', compoundKey.toLocalId());
-    }
+    },
 
 
+    /**
+     * Exclusive afterEdit for fields cn_celeted/cn_moved of a message item.
+     * Makes sure owning grid is notified of those field changes without having
+     * to commit the whole record.
+     *
+     * @param {Ext.data.Model} record The model instance that was edited.
+     * @param {String[]} [modifiedFieldNames] (private)
+     *
+     * @see app-cn_mail#81
+     */
+    afterEdit : function (record, modifiedFieldNames) {
+
+        if (!modifiedFieldNames || 
+            !(modifiedFieldNames.indexOf('cn_moved') !== -1 || modifiedFieldNames.indexOf('cn_deleted') !== -1)) {
+            return;
+        }
+
+        const me = this;
+
+        if (me.contains(record)) {
+            me.fireEvent('update', me, record, "edit", modifiedFieldNames);
+        }
+    },
 
 });
