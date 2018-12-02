@@ -57,7 +57,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_2', function(t
             let message = panel.down('cn_mail-mailmessagegrid').getStore().getAt(storeAt);
 
             if (shouldEqualToCK) {
-                t.expect(message.getCompoundKey().equalTo(shouldEqualToCK)).toBe(true);
+                t.expect(message.getCompoundKey().toObject()).toEqual(shouldEqualToCK.toObject());
             }
 
             panel.down('cn_mail-mailmessagegrid').getSelectionModel()
@@ -777,5 +777,60 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(REDIRECTED).toBe(4);
 
     });
+
+
+    t.it("app-cn_mail#80", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor = ctrl.showMailEditor('sffss', 'compose'),
+            editorVm = editor.getViewModel(),
+            CK;
+
+        t.expect(editor).toBeTruthy();
+
+        t.waitForMs(750, function() {
+
+            panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+            selectMailFolder(panel, 2, 'INBOX.Sent Messages', t);
+
+            t.waitForMs(750, function() {
+                panel.setActiveTab(editor);
+
+                editorVm.get('messageDraft').set('subject', 'foo');
+                editorVm.get('messageDraft').set('to', 'foo');
+
+                editor.getController().configureAndStartSaveBatch(true);
+
+                t.waitForMs(1750, function () {
+
+                    CK = editorVm.get('messageDraft').getCompoundKey();
+
+                    panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+
+                    selectMessage(panel, 0, CK, t);
+
+                    editor = ctrl.showMailEditor(CK, 'replyTo');
+
+                    t.waitForMs(750, function () {
+
+                        editor.getController().configureAndStartSaveBatch();
+
+                        t.waitForMs(750, function () {
+                            let mdck = editor.getViewModel().get('messageDraft').getCompoundKey();
+
+                            t.expect(mdck.toObject()).toBeTruthy();
+
+                            panel.destroy();
+                            panel = null;
+                        });
+                    });
+                });
+
+            });
+        });
+    });
+
+
 
 });})});});});});});

@@ -202,14 +202,16 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
     /**
      * Decorates the MessageDraft's from-address.
      *
-     * @return {Object}
+     * @return {Object|null} returns null if the from address is not available
      */
     getFrom : function() {
 
         var me = this,
             from = me.messageDraft.get('from');
 
-        return Ext.copy({}, from, 'name,address');
+        return from
+               ? Ext.copy({}, from, 'name,address')
+               : null;
     },
 
 

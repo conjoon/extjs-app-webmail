@@ -256,4 +256,35 @@ describe('conjoon.cn_mail.text.mail.message.CopyDecoratorTest', function(t) {
     });
 
 
+    t.it("app-cn_mail#80", function(t) {
+
+        let createDraft = function(wFrom) {
+            let cfg = {},
+                messageDraft;
+
+            if (wFrom) {
+                cfg.from = 'test';
+            }
+
+            messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', cfg);
+
+            messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {}));
+            messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {}));
+
+            return messageDraft;
+        };
+
+        let messageDraft = createDraft(true);
+        let decorator = Ext.create('conjoon.cn_mail.text.mail.message.CopyDecorator', messageDraft);
+
+        t.expect(decorator.getFrom()).toEqual({name : 'test', address : 'test'});
+
+        messageDraft = createDraft(false);
+        decorator = Ext.create('conjoon.cn_mail.text.mail.message.CopyDecorator', messageDraft);
+
+        t.expect(decorator.getFrom()).toBe(null);
+
+
+    });
+
 });
