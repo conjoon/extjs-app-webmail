@@ -340,5 +340,15 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
     });
 
 
+    t.it("app-cn_mail#84", function(t) {
+
+        t.it("applyTo()", function(t) {
+            var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+            });
+
+            t.expect(config.applyTo([""])).toEqual([]);
+        });
+
+    });
 
 });

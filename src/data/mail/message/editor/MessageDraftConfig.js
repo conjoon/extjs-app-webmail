@@ -537,7 +537,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
             });
         }
 
-        if (Ext.isString(value)) {
+        if (Ext.isString(value) && value !== "") {
             address = [{
                 name    : value,
                 address : value
@@ -557,10 +557,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
                         });
                     }
                 } else {
-                    address.push({
-                        name    : value[i],
-                        address : value[i]
-                    });
+                    if (value[i] !== "") {
+                        address.push({
+                            name    : value[i],
+                            address : value[i]
+                        });
+                    }
                 }
 
             }
