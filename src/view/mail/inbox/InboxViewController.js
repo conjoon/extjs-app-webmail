@@ -507,7 +507,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                                   selectedFolder.getId() === targetFolderId;
 
         // remove the item if possible out of the grid
-        if (gridReady && (isNotTargetSelected || type === Operation.DELETE)) {
+        if (messageItem.isCompoundKeyConfigured() && gridReady &&
+            (isNotTargetSelected || type === Operation.DELETE)) {
 
             // when we are working on a draft, we are assuming that the messageItem
             // represents another entity which has not yet been updated, thus,

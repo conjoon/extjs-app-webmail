@@ -833,4 +833,45 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
 
 
+
+    t.it("app-cn_mail#82", function(t) {
+
+        let panel  = createMailDesktopView(),
+            ctrl   = panel.getController(),
+            editor,
+            editorVm,
+            CK,
+            inboxView;
+
+        t.waitForMs(750, function() {
+
+            inboxView = panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+            selectMailFolder(panel, 1, 'INBOX', t);
+
+            t.waitForMs(750, function() {
+
+                let msg = selectMessage(panel, 0);
+
+                CK = msg.getCompoundKey();
+
+                editor = ctrl.showMailEditor(CK, 'replyTo');
+
+
+                t.waitForMs(750, function() {
+                    t.expect(editor.destroyed).toBeFalsy();
+                    inboxView.getController().moveOrDeleteMessage(editor.getViewModel().get('messageDraft'), true, editor);
+
+                    t.waitForMs(750, function() {
+
+                        t.expect(editor.destroyed).toBe(true);
+
+                    });
+
+                });
+
+
+            });
+        });
+    });
+
 });})});});});});});

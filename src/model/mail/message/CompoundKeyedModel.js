@@ -522,6 +522,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      * corresponding field has a value.
      *
      * @return {Boolean}
+     *
+     * @deprecated use isCompoundKeyConfigured
      */
     isCompoundKeySet : function() {
 

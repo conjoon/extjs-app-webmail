@@ -1036,4 +1036,40 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         });
     });
 
+
+    t.it("app-cn_mail#82 - onMessageMovedOrDeleted() - DELETED - messageItem has no compound key (composed)", function(t) {
+
+        panel = createPanelWithViewModel();
+
+        const viewController = panel.getController();
+
+        t.waitForMs(500, function() {
+
+            t.waitForMs(500, function() {
+
+                let messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+                selectMailFolder(panel, 4);
+
+                t.waitForMs(500, function() {
+
+                    let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                        request : {
+                            type        : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+                            record      : messageItem
+                        }
+                    });
+
+                    t.isntCalled('remove', viewController.getLivegrid());
+                    t.isntCalled('add', viewController.getLivegrid());
+
+                    t.expect(viewController.onMessageMovedOrDeleted(op)).toBe(op);
+
+                });
+            });
+        });
+    });
+
+
+
 });});});
