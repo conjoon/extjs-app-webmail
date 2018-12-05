@@ -40,7 +40,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         'conjoon.cn_mail.view.mail.message.reader.MessageViewModel',
         'conjoon.cn_mail.view.mail.message.reader.AttachmentList',
         'conjoon.cn_mail.model.mail.message.MessageItem',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
+        'conjoon.cn_mail.view.mail.message.reader.MessageViewIframe'
     ],
 
     alias : 'widget.cn_mail-mailmessagereadermessageview',
@@ -90,6 +91,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     },
 
     closable : true,
+
 
     /**
      * @type {conjoon.cn_mail.model.mail.message.MessageItem} loadingItem
@@ -173,15 +175,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         itemId     : 'msgBodyContainer',
         scrollable : 'y',
         layout : {
-            type  : 'hbox',
-            align : 'stretchmax'
+            type  : 'column'
         },
         items :[{
-            xtype      : 'box',
-            flex       : 1,
-            cls        : 'cn_mail-body',
+            xtype : 'cn_mail-mailmessagereadermessageviewiframe',
+            columnWidth  : 1,
+            cls   : 'cn_mail-body',
+            scrolling : "no",
+            sandbox : "",
+            src : "",
             bind : {
-                html : '{messageBody.textHtml}'
+                srcDoc : '{messageBody.textHtml}',
             }
         }, {
             xtype  : 'cn_mail-mailmessagereaderattachmentlist',
