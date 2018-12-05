@@ -261,7 +261,9 @@ harness.start({
                         group : 'reader',
                         items : [
                             'classic/src/view/mail/message/reader/AttachmentListTest.js',
+                            'classic/src/view/mail/message/reader/MessageViewIframeTest.js',
                             'classic/src/view/mail/message/reader/MessageViewTest.js'
+
                         ]}
                 ]
             }, {

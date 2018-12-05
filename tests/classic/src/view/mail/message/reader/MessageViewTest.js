@@ -71,14 +71,14 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('FROM');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('SUBJECT');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(formatDate);
-            t.expect(view.down('component[cls=cn_mail-body]').el.dom.innerHTML).not.toBe("");
+            t.expect(view.down('component[cls=cn_mail-body]').getSrcDoc()).not.toBe("");
         },
         checkHtmlDataNotPresent = function(t, view) {
             t.expect(view.getTitle()).toBe(view.getViewModel().emptySubjectText);
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('FROM');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(view.getViewModel().emptySubjectText);
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain(formatDate);
-            t.expect(view.down('component[cls=cn_mail-body]').el.dom.innerHTML).toBe("");
+            t.expect(view.down('component[cls=cn_mail-body]').getSrcDoc()).toBe("");
         };
 
     t.afterEach(function() {
