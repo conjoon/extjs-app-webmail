@@ -131,7 +131,6 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function 
 // place AttachmentSim before MessageItemSim due to similiar regex
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function () {
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageDraftSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function () {
 
@@ -874,4 +873,4 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         });
     });
 
-});})});});});});});
+});})});});});});
