@@ -43,16 +43,18 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
         doDelete : function(ctx) {
 
             const me  = this,
-                 keys = me.extractCompoundKey(ctx.url);
+                  keys = me.extractCompoundKey(ctx.url),
+                  target =  ctx.params.target;
 
-            if (ctx.params.target === 'MessageBody') {
+            if (target === 'MessageBody') {
                 Ext.raise("Not implemented");
             }
 
+            console.log("DELETE MessageItem - ", target, keys);
 
-            console.log("DELETE MessageItem - ", keys);
-
-            let ret = {}, found = false, id = keys.id, mailAccountId = keys.mailAccountId,
+            let ret = {}, found = false,
+                id = keys.id,
+                mailAccountId = keys.mailAccountId,
                 mailFolderId = keys.mailFolderId;
 
             if (!id) {
@@ -90,37 +92,57 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             return ret;
         },
 
+
+
         doPost : function(ctx) {
+
+            let target = ctx.params.target;
+
+            if (target === "MessageItem") {
+                Ext.raise("Unsupported Action");
+            }
 
             if (ctx.params.target === 'MessageBody') {
                 return this.postMessageBody(ctx);
             }
 
-        },
+            // MessageDraft
+            console.log("POST MessageDraft", ctx, ctx.xhr.options.jsonData);
 
-        doPut : function(ctx) {
-
-            var me           = this,
-                keys         = me.extractCompoundKey(ctx.url),
-                ret          = {},
-                MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                values       = {};
-
-            if (ctx.params.target === 'MessageBody') {
-                Ext.raise("Not implemented");
-            }
+            var me            = this,
+                draft         = {},
+                ret           = {},
+                MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
 
             for (var i in ctx.xhr.options.jsonData) {
                 if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
                     continue;
                 }
-                values[i] = ctx.xhr.options.jsonData[i];
+
+                if (i == 'to' || i == 'cc' || i == 'bcc') {
+                    draft[i] = Ext.JSON.decode(ctx.xhr.options.jsonData[i]);
+                } else {
+                    draft[i] = ctx.xhr.options.jsonData[i];
+                }
             }
 
-            let result = MessageTable.updateMessageItem(keys.mailAccountId, keys.mailFolderId, keys.id, values);
+            if (draft['subject'] === 'TESTFAIL') {
+                ret.responseText = Ext.JSON.encode({
+                    success : false
+                });
+                return ret;
+            }
 
+            draft = MessageTable.createMessageDraft(draft.mailAccountId, draft.mailFolderId, draft);
 
-            ret.responseText = Ext.JSON.encode({success : true, data: result});
+            ret.responseText = Ext.JSON.encode({
+                success: true,
+                data : {
+                    id: draft.id,
+                    mailFolderId: draft.mailFolderId,
+                    mailAccountId: draft.mailAccountId
+                }});
+
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
@@ -129,10 +151,116 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             });
 
             return ret;
+
         },
 
 
-        data: function(ctx) {
+
+
+        doPut : function(ctx) {
+
+            var me           = this,
+                keys         = me.extractCompoundKey(ctx.url),
+                ret          = {},
+                MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
+                values       = {},
+                result,
+                target = ctx.params.target;
+
+            if (["MessageBody", "MessageItem"].indexOf(target) !== -1) {
+                for (var i in ctx.xhr.options.jsonData) {
+                    if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
+                        continue;
+                    }
+                    values[i] = ctx.xhr.options.jsonData[i];
+                }
+
+                if (target === 'MessageBody') {
+                    console.log("PUT MESSAGE BODY");
+                    result = MessageTable.updateMessageBody(keys.mailAccountId, keys.mailFolderId, keys.id, values);
+                } else {
+                    result = MessageTable.updateMessageItem(keys.mailAccountId, keys.mailFolderId, keys.id, values);
+                }
+
+                ret.responseText = Ext.JSON.encode({
+                    success: true,
+                    data: result
+                });
+
+                Ext.Array.forEach(me.responseProps, function (prop) {
+                    if (prop in me) {
+                        ret[prop] = me[prop];
+                    }
+                });
+
+                return ret;
+            }
+
+
+            console.log("PUT MessageDraft", ctx.xhr.options.jsonData);
+
+            // MESSAGE DRAFT
+
+            ret           = {};
+            MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
+            values        = {};
+            keys          = me.extractCompoundKey(ctx.url);
+
+            for (var i in ctx.xhr.options.jsonData) {
+                if (!ctx.xhr.options.jsonData.hasOwnProperty(i)) {
+                    continue;
+                }
+                values[i] = ctx.xhr.options.jsonData[i];
+            }
+
+            if (values['subject'] === 'TESTFAIL') {
+                ret.responseText = Ext.JSON.encode({
+                    success : false
+                });
+                return ret;
+
+            }
+
+            MessageTable.updateMessageDraft(
+                keys.mailAccountId,
+                keys.mailFolderId,
+                keys.id,
+                values
+            );
+
+            let draft = MessageTable.getMessageDraft(
+                ctx.xhr.options.jsonData.mailAccountId,
+                ctx.xhr.options.jsonData.mailFolderId,
+                ctx.xhr.options.jsonData.id
+            );
+
+            delete values.localId;
+
+            for (var i in values) {
+                if (draft[i]) {
+                    values[i] = draft[i];
+                }
+            }
+
+            ret.responseText = Ext.JSON.encode({
+                success: true,
+                data : values
+            });
+
+            Ext.Array.forEach(me.responseProps, function (prop) {
+                if (prop in me) {
+                    ret[prop] = me[prop];
+                }
+            });
+
+            return ret;
+
+
+        },
+
+
+
+        data : function(ctx) {
 
             var me = this,
                 keys = me.extractCompoundKey(ctx.url),
@@ -147,6 +275,50 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
                 console.log("GET MessageBody ", ctx.url, keys);
                 return this.getMessageBody(keys.mailAccountId, keys.mailFolderId, keys.id);
             }
+
+            if (ctx.params.target === 'MessageDraft') {
+
+                var me = this,
+                    ret = {},
+                    idPart  = ctx.url.match(this.url)[1],
+                    filters = ctx.params.filter,
+                    mailAccountId, mailFolderId, id,
+                    MessageTable  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
+                    messageDrafts;
+
+                let keys = me.extractCompoundKey(ctx.url);
+
+                mailAccountId = keys.mailAccountId,
+                    mailFolderId  = keys.mailFolderId,
+                    id            = keys.id;
+
+                let fitem = MessageTable.getMessageDraft(mailAccountId, mailFolderId, id);
+
+                Ext.Array.forEach(me.responseProps, function (prop) {
+                    if (prop in me) {
+                        ret[prop] = me[prop];
+                    }
+                });
+
+                if (!fitem) {
+
+                    return {
+                        success : false
+                    };
+
+                    //ret.status = "404";
+                    //ret.statusText = "Not Found";
+                    //return ret;
+                }
+
+                return {
+                    success : true,
+                    data    : fitem
+                };
+
+            }
+
+
 
             if (keys.id) {
                 id = keys.id;

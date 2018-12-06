@@ -122,20 +122,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             });
         }
 
-        if (me.entityName === 'MessageBody') {
-            url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
-                'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
-                'MessageItems';
+        url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
+            'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
+            'MessageItems';
 
-            request.setParams(Ext.apply(request.getParams() || {}, {
-                target : 'MessageBody'
-            }));
-        } else {
-            url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
-                'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
-                me.entityName + 's';
-
-        }
+        request.setParams(Ext.apply(request.getParams() || {}, {
+            target: me.entityName
+        }));
 
         if (action !== 'create') {
             if (source.hasOwnProperty('id')) {
