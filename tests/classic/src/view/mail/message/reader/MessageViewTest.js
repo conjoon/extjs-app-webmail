@@ -649,5 +649,29 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
         });
 
 
+        t.it("app-cn_mail#88 - sandbox", function(t) {
+
+            let view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let sandbox = view.down('cn_mail-mailmessagereadermessageviewiframe').cn_iframeEl.dom.sandbox,
+                res     = [];
+
+            for (let i in sandbox) {
+                if (!sandbox.hasOwnProperty(i)) {
+                    continue;
+                }
+                res.push(sandbox[i]);
+            }
+
+            t.expect(res.length).toBe(4);
+
+            t.expect(res).toEqual(
+                "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation".split(" ")
+            );
+            view.destroy();
+            view = null;
+        });
+
 
     });});});

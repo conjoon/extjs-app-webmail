@@ -41,4 +41,56 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', f
     });
 
 
+    t.it("app-cn_mail#88 - sanitizeLinks()", function(t) {
+
+        let tests = [{
+            has : {id : 'cn_' + 1, target : '_blank'},
+            expected : {id : 'cn_' + 1, href : null, target : null}
+        }, {
+            has: {id : 'cn_' + 2, href: '#foobar', target: '_top'},
+            expected: {id : 'cn_' + 2, href : '#foobar', target: null}
+        }, {
+            has: {id : 'cn_' + 3, href: 'mailto:foobar@check'},
+            expected: {id : 'cn_' + 3, href : '#cn_mail/message/compose/' + encodeURIComponent('mailto:foobar@check'), target: '_top'}
+        }, {
+            has: {id : 'cn_' + 4, href: 'safssfafs'},
+            expected: {id : 'cn_' + 4, href : 'safssfafs', target: '_blank'}
+        }];
+
+        let elements = [], test;
+
+        for (let i = 0, len = tests.length; i < len; i++) {
+            test = tests[i];
+            let el = document.createElement("a");
+            if (test.has.href) {
+                el.setAttribute('href', test.has.href);
+            }
+            if (test.has.target) {
+                el.setAttribute('target', test.has.target);
+            }
+
+            el.setAttribute('id', test.has.id);
+            elements.push(el);
+        }
+
+        let controller = Ext.create(
+            'conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
+            });
+
+        controller.sanitizeLinks(elements);
+
+        let i, len;
+        for (i = 0, len = tests.length; i < len; i++) {
+            test = tests[i];
+
+            t.expect(test.expected.id).toBe(elements[i].getAttribute('id'));
+            t.expect(test.expected.href).toBe(elements[i].getAttribute('href'));
+            t.expect(test.expected.target).toBe(elements[i].getAttribute('target'));
+        }
+
+        t.expect(i).toBeGreaterThan(1);
+
+    });
+
+
 });

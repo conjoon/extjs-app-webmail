@@ -195,7 +195,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             cls   : 'cn_mail-mailmessagereadermessageviewiframe',
             xtype : 'cn_mail-mailmessagereadermessageviewiframe',
             scrolling : "no",
-            sandbox : "allow-same-origin",
+            sandbox : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
             src : "",
             bind : {
                 srcDoc : '{messageBody.textHtml}',
