@@ -99,7 +99,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', {
             let target = ctx.params.target;
 
             if (target === "MessageItem") {
-                Ext.raise("Unsupported Action");
+                console.error("POSTing MessageItem - this should only happen in tests");
+                return;
             }
 
             if (ctx.params.target === 'MessageBody') {

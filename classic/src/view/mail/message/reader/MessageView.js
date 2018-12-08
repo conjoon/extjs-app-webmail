@@ -41,7 +41,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         'conjoon.cn_mail.view.mail.message.reader.AttachmentList',
         'conjoon.cn_mail.model.mail.message.MessageItem',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
-        'conjoon.cn_mail.view.mail.message.reader.MessageViewIframe'
+        'conjoon.cn_mail.view.mail.message.reader.MessageViewIframe',
+        'conjoon.cn_mail.view.mail.message.reader.MessageViewController'
     ],
 
     alias : 'widget.cn_mail-mailmessagereadermessageview',
@@ -70,9 +71,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         align : 'stretch'
     },
 
+    controller : 'cn_mail-mailmessagereadermessageviewcontroller',
+
     viewModel : {
         type : 'cn_mail-mailmessagereadermessageviewmodel'
     },
+
+    // needed to make sure embedded iframe can calculate its sizing
+    // when messageview is hidden and message gets loaded
+    hideMode : 'offsets',
 
     split  : true,
     cls    : 'cn_mail-mailmessagereadermessageview shadow-panel',
@@ -168,32 +175,30 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     }, {
         xtype  : 'container',
         flex   : 1,
+        cls   : 'cn_mail-body',
         hidden : true,
         bind   : {
             hidden : '{!messageBody}'
         },
         itemId     : 'msgBodyContainer',
-        scrollable : 'y',
-        layout : {
-            type  : 'column'
-        },
+        scrollable : true,
+        layout : 'auto',
+
         items :[{
-            xtype : 'cn_mail-mailmessagereadermessageviewiframe',
-            columnWidth  : 1,
-            cls   : 'cn_mail-body',
-            scrolling : "no",
-            sandbox : "",
-            src : "",
-            bind : {
-                srcDoc : '{messageBody.textHtml}',
-            }
-        }, {
             xtype  : 'cn_mail-mailmessagereaderattachmentlist',
-            width  : 248,
             hidden : true,
             bind : {
                 store  : '{attachmentStore}',
                 hidden : '{!messageItem.hasAttachments}'
+            }
+        }, {
+            cls   : 'cn_mail-mailmessagereadermessageviewiframe',
+            xtype : 'cn_mail-mailmessagereadermessageviewiframe',
+            scrolling : "no",
+            sandbox : "allow-same-origin",
+            src : "",
+            bind : {
+                srcDoc : '{messageBody.textHtml}',
             }
         }]
     }],

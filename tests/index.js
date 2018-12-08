@@ -17,6 +17,7 @@ harness.configure({
         'conjoon.cn_mail.view.mail.inbox.InboxViewModel' : '../src/view/mail/inbox/InboxViewModel.js',
         'conjoon.cn_mail.view.mail.inbox.InboxViewController' : '../src/view/mail/inbox/InboxViewController.js',
         'conjoon.cn_mail.view.mail.message.reader.MessageViewModel' : '../src/view/mail/message/reader/MessageViewModel.js',
+        'conjoon.cn_mail.view.mail.message.reader.MessageViewController' : '../src/view/mail/message/reader/MessageViewController.js',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel' : '../src/view/mail/message/editor/MessageEditorViewModel.js',
         'conjoon.cn_mail.view.mail.message.AbstractAttachmentListController' : '../src/view/mail/message/AbstractAttachmentListController.js',
         'conjoon.cn_mail.view.mail.message.reader.AttachmentListController' : '../src/view/mail/message/reader/AttachmentListController.js',
@@ -217,6 +218,7 @@ harness.start({
                         group : 'reader',
                         items : [
                             'src/view/mail/message/reader/AttachmentListControllerTest.js',
+                            'src/view/mail/message/reader/MessageViewControllerTest.js',
                             'src/view/mail/message/reader/MessageViewModelTest.js'
                         ]
                     }

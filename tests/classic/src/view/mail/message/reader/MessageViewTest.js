@@ -54,7 +54,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
                 subject        : 'SUBJECT',
                 from           : 'FROM',
                 date           : testDate,
-                seen         : false,
+                seen           : false,
                 hasAttachments : true
             };
 
@@ -71,14 +71,14 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('FROM');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('SUBJECT');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(formatDate);
-            t.expect(view.down('component[cls=cn_mail-body]').getSrcDoc()).not.toBe("");
+            t.expect(view.down('component[cls=cn_mail-mailmessagereadermessageviewiframe]').getSrcDoc()).not.toBe("");
         },
         checkHtmlDataNotPresent = function(t, view) {
             t.expect(view.getTitle()).toBe(view.getViewModel().emptySubjectText);
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('FROM');
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(view.getViewModel().emptySubjectText);
             t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain(formatDate);
-            t.expect(view.down('component[cls=cn_mail-body]').getSrcDoc()).toBe("");
+            t.expect(view.down('component[cls=cn_mail-mailmessagereadermessageviewiframe]').getSrcDoc()).toBe("");
         };
 
     t.afterEach(function() {
@@ -154,6 +154,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
         });
 
+
         t.it("Should set data properly when setMessageItem was called with valid model", function(t) {
 
             view = Ext.create(
@@ -161,7 +162,9 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
             t.expect(view.callbackWasCalled).toBe(false);
 
-            view.setMessageItem(createMessageItem());
+            let msgItem = createMessageItem();
+
+            view.setMessageItem(msgItem);
 
             view.getViewModel().notify();
 
@@ -170,7 +173,6 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
                 t.expect(view.callbackWasCalled[0].get('id')).toBe('1');
             });
         });
-
 
 
         t.it("Should set everything to empty when setMessageItem was called with null", function(t) {
@@ -618,6 +620,34 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             t.expect(view.loadingFailedMask).toBe(null);
             view = null;
         });
+
+
+        t.it("app-cn_mail#87", function(t) {
+
+            let view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            ctrl = view.getController();
+
+            t.expect(view.hideMode).toBe('offsets');
+            t.isInstanceOf(ctrl, 'conjoon.cn_mail.view.mail.message.reader.MessageViewController');
+
+            let CALLED = 0;
+
+            ctrl.onIframeLoad = function() {
+                CALLED++;
+            };
+
+            t.expect(CALLED).toBe(0);
+            view.down('cn_mail-mailmessagereadermessageviewiframe').fireEvent('load');
+            t.expect(CALLED).toBe(1);
+
+            t.expect(view.down('cn_mail-mailmessagereadermessageviewiframe').cn_iframeEl.dom.sandbox[0]).toBe("allow-same-origin");
+
+            view.destroy();
+            view = null;
+        });
+
 
 
     });});});
