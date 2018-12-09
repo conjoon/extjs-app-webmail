@@ -393,7 +393,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             vals.indexOf('id') !== -1 &&
             vals.indexOf('mailFolderId') !== -1) {
             if (vals.length === 4  ||
-                (vals.length === 5 && vals.indexOf('seen') !== -1)) {
+                (vals.length === 5 && (vals.indexOf('seen') !== -1 || vals.indexOf('flagged') !== -1))) {
                 skipDate = true;
             }
         }
