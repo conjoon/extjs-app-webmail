@@ -340,20 +340,27 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             let rowFlyMenu = grid.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
                 rec        = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                     mailFolderId : 2,
-                    seen       : true
+                    seen       : true,
+                    flagged    : true
                 }),
                 getReadItem = function() {
                     return rowFlyMenu.menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true)[0];
-                };
+                },
+                getFlagItem = function() {
+                    return rowFlyMenu.menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-flag]', true)[0];
+                };;
 
             grid.updateRowFlyMenu(rec);
 
             t.expect(getReadItem().getAttribute('data-qtip').toLowerCase()).toBe("mark as unread");
+            t.expect(getFlagItem().getAttribute('data-qtip').toLowerCase()).toBe("remove flag");
 
             rec.set('seen', false);
+            rec.set('flagged', false);
             grid.updateRowFlyMenu(rec);
 
             t.expect(getReadItem().getAttribute('data-qtip').toLowerCase()).toBe("mark as read");
+            t.expect(getFlagItem().getAttribute('data-qtip').toLowerCase()).toBe("add flag");
 
 
         });

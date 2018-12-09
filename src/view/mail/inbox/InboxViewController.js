@@ -125,6 +125,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                     scope    : me
                 });
                 break;
+            case 'flag':
+                record.set('flagged', !record.get('flagged'));
+                record.save();
+                break;
             case 'delete':
                 me.moveOrDeleteMessage(record);
                 break;

@@ -256,7 +256,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         let rec = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 mailFolderId : 'INBOX',
                 mailAccountId : 'dev_sys_conjoon_org',
-                seen       : true
+                seen    : true,
+                flagged : false
             }),
             CALLED = 0;
 
@@ -265,7 +266,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         }
 
         t.expect(rec.get('seen')).toBe(true);
+        t.expect(rec.get('flagged')).toBe(false);
         t.expect(CALLED).toBe(0);
+
+        viewController.onRowFlyMenuItemClick(null, null, 'flag', rec);
+        t.expect(rec.get('flagged')).toBe(true);
 
         viewController.onRowFlyMenuItemClick(null, null, 'markunread', rec);
 

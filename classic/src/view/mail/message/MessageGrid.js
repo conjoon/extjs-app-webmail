@@ -104,7 +104,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
                 rowBody :
                           '<div class="head' + (!record.get('seen') ? ' unread' : '')+'">' +
                           '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' +
-                              (record.get('draft') ? '<span class="draft">[Draft]</span>' : '')+
+                             (record.get('flagged') ? '<span class="fa fa-flag"></span>' : '')+
+                              (record.get('draft') ? '<span class="draft">[Draft]</span>' : '') +
+
                           (record.get("subject") === "" ? me.emptySubjectText : record.get("subject")) +
                           '</div>' +
                           '<div class="date">' + CnDate.getHumanReadableDate(record.get('date')) + '</div>' +
@@ -126,7 +128,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     }, {
         ftype : 'cn_comp-gridfeature-rowflymenu',
         id    : 'cn_mail-mailMessageFeature-rowFlyMenu',
-        items  : [ {
+        items  : [{
             cls         : 'fa fa-trash',
             "data-qtip" : 'Delete Message',
             action      : 'delete',
@@ -136,7 +138,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             "data-qtip" : 'Mark as Unread',
             action      : 'markunread',
             id          : 'cn_mail-mailMessageFeature-rowFlyMenu-markUnread'
-        }],
+        }, {
+            cls         : 'fa fa-flag',
+            "data-qtip" : 'Add Flag',
+            action      : 'flag',
+            id          : 'cn_mail-mailMessageFeature-rowFlyMenu-flag'
+        },],
         alignTo : ['tr-tr', [-12, 4]]
     }],
 
@@ -347,10 +354,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      */
     updateRowFlyMenu : function(record) {
 
-        const me      = this,
-              feature = me.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
-              menu    = feature.menu,
-              readItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true);
+        const me       = this,
+              feature  = me.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
+              menu     = feature.menu,
+              readItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true),
+              flagItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-flag]', true);
 
         switch (record.get('seen')) {
             case (true):
@@ -359,6 +367,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
             default:
                 readItem[0].setAttribute("data-qtip",  "Mark as Read");
+        }
+
+        switch (record.get('flagged')) {
+            case (true):
+                flagItem[0].setAttribute("data-qtip",  "Remove Flag");
+                break;
+
+            default:
+                flagItem[0].setAttribute("data-qtip",  "Add Flag");
         }
     },
 
