@@ -38,31 +38,31 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         configurePackageCtrlWithButtonMocks = function(packageCtrl, ENABLED) {
             packageCtrl.getReplyToButton = function() {
                 return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
+                    ENABLED['#cn_mail-nodeNavReplyTo'] = doIt !== true ? 1 : 0;
                 }
                 }
             };
             packageCtrl.getReplyAllButton = function() {
                 return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyAll']++;}
+                    ENABLED['#cn_mail-nodeNavReplyAll'] = doIt !== true ? 1 : 0;
                 }
                 }
             };
             packageCtrl.getForwardButton = function() {
                 return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavForward']++;}
+                    ENABLED['#cn_mail-nodeNavForward'] = doIt !== true ? 1 : 0;
                 }
                 }
             };
             packageCtrl.getEditButton = function() {
                 return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavEditMessage']++;}
+                    ENABLED['#cn_mail-nodeNavEditMessage'] = doIt !== true ? 1 : 0;
                 }
                 }
             };
             packageCtrl.getDeleteButton = function() {
                 return {setDisabled: function (doIt) {
-                    if (doIt !== true) {ENABLED['#cn_mail-nodeNavDeleteMessage']++;}
+                    ENABLED['#cn_mail-nodeNavDeleteMessage'] = doIt !== true ? 1 : 0;
                 }
                 }
             };
@@ -732,22 +732,22 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
-        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(2);
-        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(2);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
 
         packageCtrl.disableEmailEditButtons(true, false);
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
-        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(2);
-        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(3);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
 
         packageCtrl.disableEmailEditButtons(false, true);
         t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
-        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(3);
-        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(3);
+        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(0);
     });
 
 
@@ -777,11 +777,11 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         ISDRAFT = true;
         packageCtrl.activateButtonsForMessageItem(rec);
-        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
-        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
-        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(0);
+        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(0);
         t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(1);
-        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(2);
+        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
 
     });
 
@@ -1444,6 +1444,42 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     });
 
+
+    t.it("app-cn_mail#89", function(t) {
+
+            let ENABLED = configureButtonMockCaller(),
+                rec = {
+                    get : function() {
+                        false;
+                    }
+                },
+                activatedPanel = {
+
+                };
+
+            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+            packageCtrl.getMailInboxView = function() {
+                return activatedPanel;
+            };
+
+            packageCtrl.getMailMessageGrid = function() {
+                return {
+                    getSelection : function() {
+                        return [rec];
+                    }
+                }
+            };
+
+            configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
+            packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+            t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
+            t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
+            t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
+            t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
+            t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+    });
 
 
 });});

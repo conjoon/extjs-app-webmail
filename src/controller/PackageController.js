@@ -269,6 +269,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         }
 
         if (activatedPanel === me.getMailInboxView()) {
+
             let selection = me.getMailMessageGrid().getSelection();
 
             if (selection.length) {
@@ -278,6 +279,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
                 me.disableEmailEditButtons(true);
             }
 
+            return;
         }
 
         // we have not an inbox view. By default, disable all buttons.
