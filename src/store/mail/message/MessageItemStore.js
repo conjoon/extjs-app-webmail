@@ -101,7 +101,9 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
 
 
     /**
-     * Exclusive afterEdit for fields cn_celeted/cn_moved of a message item.
+     * Exclusive afterEdit for fields cn_celeted/cn_moved/answered of a message item,
+     * since those are usually not followed by a call to commit()/save() since they
+     * are only applied on the client (in this case also for "answered").
      * Makes sure owning grid is notified of those field changes without having
      * to commit the whole record.
      *
@@ -112,8 +114,11 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
      */
     afterEdit : function (record, modifiedFieldNames) {
 
-        if (!modifiedFieldNames || 
-            !(modifiedFieldNames.indexOf('cn_moved') !== -1 || modifiedFieldNames.indexOf('cn_deleted') !== -1)) {
+        if (!modifiedFieldNames ||
+             (modifiedFieldNames.indexOf('cn_moved') === -1 &&
+              modifiedFieldNames.indexOf('cn_deleted') === -1 &&
+              modifiedFieldNames.indexOf('answered') === -1
+            )) {
             return;
         }
 

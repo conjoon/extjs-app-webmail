@@ -149,7 +149,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
         });
 
 
-        t.it("app-cn_mail#81 - afterEdit() called", function(t) {
+        t.it("app-cn_mail#81 / app-cn_mail#47 - afterEdit() called", function(t) {
 
             let testFor = function(t, types) {
                 let store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore');
@@ -182,7 +182,9 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
 
             testFor(t, ['cn_moved', 'cn_deleted']);
 
+            testFor(t, ['answered']);
 
+            testFor(t, ['cn_moved', 'cn_deleted', 'amswered']);
         });
 
 
