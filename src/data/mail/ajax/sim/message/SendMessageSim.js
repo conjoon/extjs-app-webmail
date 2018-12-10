@@ -52,8 +52,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
                 draft           = MessageTable.getMessageDraft(mailAccountId, mailFolderId, id);
 
 
-            if (draft.hd_XCnDraftInfo) {
-                let [accountId, folderId, id] = Ext.decode(atob(draft.hd_XCnDraftInfo));
+            if (draft.xCnDraftInfo) {
+                let [accountId, folderId, id] = Ext.decode(atob(draft.xCnDraftInfo));
                 let items = MessageTable.getMessageItems();
                 for (let i = 0, len = items.length; i < len; i++) {
                     if (items[i].mailAccountId === accountId && items[i].id === id &&

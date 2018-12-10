@@ -324,7 +324,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         var me            = this,
-            hdMessageId   = Ext.id(),
+            messageId     = Ext.id(),
             id            = me.getNextMessageDraftKey(),
             messageDrafts = me.getMessageDrafts(),
             messageItems  = me.getMessageItems(),
@@ -338,7 +338,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         mb.textHtml = "";
 
         messageDrafts.push(Ext.apply(draftData, {
-            "hd_messageId" : hdMessageId,
+            messageId       : messageId,
             id              : id,
             mailFolderId    : mailFolderId,
             mailAccountId   : mailAccountId,
@@ -346,7 +346,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }));
 
         messageItems.push(Ext.apply(draftData, {
-            "hd_messageId" : hdMessageId,
+            messageId       : messageId,
             id              : id,
             mailFolderId    : mailFolderId,
             mailAccountId   : mailAccountId,
@@ -354,7 +354,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }));
 
         me.baseMessageItems.push(Ext.apply(draftData, {
-            "hd_messageId" : hdMessageId,
+            messageId       : messageId,
             id              : id,
             mailFolderId    : mailFolderId,
             mailAccountId   : mailAccountId,
@@ -597,7 +597,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                 mailFolderId    : mailFolderId,
                 mailAccountId   : mailAccountId,
                 testProp        : i,
-                hd_messageId    : Ext.id(),
+                messageId       : Ext.id(),
                 seen            : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
                 draft           : mailFolderId == "INBOX.Drafts"
                                   ? true
