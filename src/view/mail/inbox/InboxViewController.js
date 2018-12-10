@@ -628,7 +628,26 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             ),
             newRec;
 
+        // mailfolder selected, livegrid should be available
         if (selected) {
+
+            // check if we get the references message and update its answered flag
+            let draftInfo = messageDraft.get('xCnDraftInfo');
+            if (draftInfo) {
+                let [sendAccountId, sendFolderId, sendId] = Ext.decode(atob(draftInfo)),
+                    referencedRec = livegrid.getRecordByCompoundKey(
+                        conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                            sendAccountId, sendFolderId, sendId
+                        )
+                    );
+
+                if (referencedRec) {
+                    referencedRec.set('answered', true, {dirty : false})
+                }
+            }
+
+
+
             let selectedId = selected.get('id');
 
             // check if the selected folder shows the grid where the original

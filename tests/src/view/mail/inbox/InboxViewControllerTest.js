@@ -1076,5 +1076,42 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     });
 
 
+    t.it("app-cn_mail#47 - updateViewForSentDraft() - mail folder INBOX is selected and message to which was replied is available", function(t) {
+
+        panel = createPanelWithViewModel();
+
+        const viewController = panel.getController();
+
+        t.waitForMs(750, function() {
+
+            let mailFolder = selectMailFolder(panel, 1);
+
+            t.waitForMs(750, function() {
+
+                let messageItem = selectMessage(panel, 0);
+
+                let messageDraft = createMessageDraftByFolderId(1, "INBOX.Drafts");
+                messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+                messageDraft.set('xCnDraftInfo', btoa(
+                    Ext.encode(
+                        [messageItem.get('mailAccountId'),
+                         messageItem.get('mailFolderId'),
+                         messageItem.get('id')]
+                    )
+                ));
+
+                t.expect(messageItem.get('answered')).toBe(false);
+                viewController.updateViewForSentDraft(messageDraft);
+
+                t.waitForMs(750, function() {
+
+                    t.expect(messageItem.get('answered')).toBe(true);
+
+                });
+
+            });
+        });
+    });
+
 
 });});});
