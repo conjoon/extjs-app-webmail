@@ -640,4 +640,44 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         });
 
 
+        t.it("app-cn_mail#47 - references", function(t) {
+
+            let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField('references');
+
+            t.expect(w).toBeTruthy();
+            t.expect(w.type).toBe("string");
+
+        });
+
+
+        t.it("app-cn_mail#47 - inReplyTo", function(t) {
+
+            let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField('inReplyTo');
+
+            t.expect(w).toBeTruthy();
+            t.expect(w.type).toBe("string");
+
+        });
+
+
+        t.it("app-cn_mail#47 - messageId", function(t) {
+
+            let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField('messageId');
+
+            t.expect(w).toBeTruthy();
+            t.expect(w.type).toBe("string");
+
+        });
+
+
+        t.it("app-cn_mail#47 - xCnDraftInfo", function(t) {
+
+            let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField('xCnDraftInfo');
+
+            t.expect(w).toBeTruthy();
+            t.expect(w.type).toBe("string");
+
+        });
+
+
 });});});});

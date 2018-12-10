@@ -111,6 +111,25 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         name         : 'recent',
         type         : 'bool',
         defaultValue :  false
+    }, {
+        // only required by drafts for now
+        // persist=false since value is set by BE
+        // and not changed across FE
+        name    : 'messageId',
+        type    : 'string',
+        persist : false
+    }, {
+        // only required by drafts for now
+        name : 'references',
+        type : 'string'
+    }, {
+        // only required by drafts for now
+        name : 'inReplyTo',
+        type : 'string'
+    }, {
+        // only required by drafts for now x-cn-draft-info
+        name : 'xCnDraftInfo',
+        type : 'string'
     }],
 
 
