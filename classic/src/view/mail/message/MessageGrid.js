@@ -104,8 +104,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
                 rowBody :
                           '<div class="head' + (!record.get('seen') ? ' unread' : '')+'">' +
                           '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' +
+                             (record.get('answered') ? '<span class="fa fa-mail-reply"></span>' : '')+
                              (record.get('flagged') ? '<span class="fa fa-flag"></span>' : '')+
-                              (record.get('draft') ? '<span class="draft">[Draft]</span>' : '') +
+                             (record.get('draft') ? '<span class="draft">[Draft]</span>' : '') +
 
                           (record.get("subject") === "" ? me.emptySubjectText : record.get("subject")) +
                           '</div>' +
