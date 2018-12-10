@@ -94,20 +94,23 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
 
     config : {
-        to            : undefined,
-        cc            : undefined,
-        bcc           : undefined,
-        subject       : undefined,
-        seen          : true,
-        textPlain     : undefined,
-        textHtml      : undefined,
-        attachments   : undefined,
-        answered      : false,
-        recent        : false,
-        draft         : true,
-        flagged       : false,
-        mailAccountId : undefined,
-        mailFolderId  : undefined
+        to              : undefined,
+        cc              : undefined,
+        bcc             : undefined,
+        subject         : undefined,
+        seen            : true,
+        textPlain       : undefined,
+        textHtml        : undefined,
+        attachments     : undefined,
+        answered        : false,
+        recent          : false,
+        draft           : true,
+        flagged         : false,
+        mailAccountId   : undefined,
+        mailFolderId    : undefined,
+        references   : undefined,
+        inReplyTo    : undefined,
+        xCnDraftInfo : undefined
     },
 
 
@@ -171,6 +174,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
         if (me.getMailAccountId() !== undefined) {
             obj.mailAccountId = me.getMailAccountId();
         }
+
+        if (me.getReferences() !== undefined) {
+            obj.references = me.getReferences();
+        }
+        if (me.getInReplyTo() !== undefined) {
+            obj.inReplyTo  = me.getInReplyTo();
+        }
+        if (me.getXCnDraftInfo() !== undefined) {
+            obj.xCnDraftInfo = me.getXCnDraftInfo();
+        }
+
+
         return obj;
     },
 
@@ -570,5 +585,81 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         return address;
 
+    },
+
+
+    /**
+     * Sets referencesc
+     *
+     * @param {String} referencesc
+     *
+     * @return {String}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyReferences : function(referencesc) {
+        var me = this;
+
+        if (me.getReferences() !== undefined) {
+            Ext.raise({
+                subject : me.getReferences(),
+                msg     : "\"referencesc\" is immutable"
+            });
+        }
+
+        return referencesc;
+    },
+
+
+    /**
+     * Sets inReplyTo
+     *
+     * @param {String} inReplyTo
+     *
+     * @return {String}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyInReplyTo : function(inReplyTo) {
+        var me = this;
+
+        if (me.getInReplyTo() !== undefined) {
+            Ext.raise({
+                subject : me.getInReplyTo(),
+                msg     : "\"inReplyTo\" is immutable"
+            });
+        }
+
+        return inReplyTo;
+    },
+
+
+    /**
+     * Sets xCnDraftInfo
+     *
+     * @param {String} xCnDraftInfo
+     *
+     * @return {String}
+     *
+     * @private
+     *
+     * @throws if the value was already set
+     */
+    applyXCnDraftInfo : function(xCnDraftInfo) {
+        var me = this;
+
+        if (me.getXCnDraftInfo() !== undefined) {
+            Ext.raise({
+                subject : me.getXCnDraftInfo(),
+                msg     : "\"xCnDraftInfo\" is immutable"
+            });
+        }
+
+        return xCnDraftInfo;
     }
+
 });

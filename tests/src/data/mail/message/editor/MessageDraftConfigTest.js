@@ -351,4 +351,35 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
 
     });
 
+
+    t.it("app-cn_mail#47 - references, inReplyTo, xCnDraftInfo", function(t) {
+
+
+
+            var config,
+                tests = [{
+                    args : {
+                        references  : 'foo',
+                        inReplyTo : 'bar',
+                        xCnDraftInfo : 'meh.'
+                    },
+                    expected : {
+                        references  : 'foo',
+                        inReplyTo : 'bar',
+                        xCnDraftInfo : 'meh.',
+                        seen : true, recent : false, flagged : false, draft : true, answered : false
+                    }
+                }], test;
+
+            for (var i = 0, len = tests.length; i < len; i++) {
+                test = tests[i];
+                config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+                    test.args
+                );
+                t.expect(config.toObject()).toEqual(test.expected);
+            }
+
+
+    });
+
 });
