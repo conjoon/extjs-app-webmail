@@ -103,10 +103,91 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
     },
 
     /**
-     * @inehritdoc
+     * @inheritdoc
      */
     getAttachments : function() {
         return [];
-    }
+    },
+
+
+    /**
+     * Decorates the MessageDraft's reference-value.
+     * Appends this messageDraft's messageId to the already existing references
+     * value.
+     *
+     * @return {String}
+     *
+     * @private
+     */
+    getReferences : function() {
+
+        const me           = this,
+              messageDraft = me.messageDraft,
+              messageId    = messageDraft.get('messageId');
+
+        let references = me.messageDraft.get('references');
+
+        return references
+               ? references + " " + messageId
+               : messageId;
+    },
+
+
+    /**
+     * Decorates the MessageDraft's inReplyTo-value.
+     * Returns the messageId of this messageDraft.
+     *
+     * @return {String}
+     *
+     * @private
+     */
+    getInReplyTo : function() {
+
+        const me           = this,
+              messageDraft = me.messageDraft,
+              messageId    = messageDraft.get('messageId');
+
+        return messageId;
+    },
+
+
+    /**
+     * Returns the x-cn-draft-info header-field value as a base64 encoded, json-
+     * encoded array consisting of the mailAccountId, the mailFolderId and the id
+     * of the message (compound key) for which this decorator was called.
+     *
+     * @returns {string}
+     */
+    getXCnDraftInfo : function() {
+
+        const me           = this,
+              messageDraft = me.messageDraft;
+
+        return btoa(
+            Ext.encode([
+                messageDraft.get('mailAccountId'),
+                messageDraft.get('mailFolderId'),
+                messageDraft.get('id')
+            ])
+        );
+
+    },
+
+    /**
+     * Makes sure references, inReplyTo and xCnDraftInfo are computed and assigned
+     * to the MessageDraftConfig.
+     *
+     * @inheritdoc
+     */
+    toMessageDraftConfig : function(options = {}) {
+
+        const me = this;
+
+        options['references']  = me.getReferences();
+        options['inReplyTo'] = me.getInReplyTo();
+        options['xCnDraftInfo'] = me.getXCnDraftInfo();
+
+        return me.callParent([options]);
+    },
 
 });

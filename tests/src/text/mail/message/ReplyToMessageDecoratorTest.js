@@ -24,11 +24,13 @@ describe('conjoon.cn_mail.text.ReplyToMessageDecoratorTest', function(t) {
 
     var createMessageDraft = function(andBodyToo, skipReplyTo, andAttachmentsTo) {
         var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-            subject : 'SUBJECT',
-            from    : 'from@domain.tld',
-            to      : 'to@domain.tld',
-            cc      : 'cc@domain.tld',
-            bcc     : 'bcc@domain.tld'
+            subject    : 'SUBJECT',
+            messageId  : 'foobarmeh',
+            from       : 'from@domain.tld',
+            to         : 'to@domain.tld',
+            cc         : 'cc@domain.tld',
+            references : 'someid',
+            bcc        : 'bcc@domain.tld'
         });
 
         if (skipReplyTo !== true) {
@@ -106,6 +108,52 @@ describe('conjoon.cn_mail.text.ReplyToMessageDecoratorTest', function(t) {
             decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', messageDraft);
 
         t.expect(decorator.getAttachments()).toEqual([]);
+    });
+
+
+    t.it("app-cn_mail#47 - getInReplyTo()", function(t) {
+        var messageDraft = createMessageDraft(true, false, true),
+            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', messageDraft);
+
+        t.expect(decorator.getInReplyTo()).toBe(messageDraft.get('messageId'));
+    });
+
+
+    t.it("app-cn_mail#47 - getReferences()", function(t) {
+        var messageDraft = createMessageDraft(true, false, true),
+            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', messageDraft);
+
+        t.expect(decorator.getReferences()).toBe(
+            messageDraft.get('references') + " " +
+            messageDraft.get('messageId')
+        );
+    });
+
+
+    t.it("app-cn_mail#47 - getXCnDraftInfo()", function(t) {
+        var messageDraft = createMessageDraft(true, false, true),
+            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', messageDraft);
+
+        t.expect(decorator.getXCnDraftInfo()).toBe(
+            btoa(Ext.encode([
+                messageDraft.get('mailAccountId'),
+                messageDraft.get('mailFolderId'),
+                messageDraft.get('id')
+            ]))
+        );
+    });
+
+
+    t.it("app-cn_mail#47 - toMessageDraftConfig()", function(t) {
+        var messageDraft = createMessageDraft(true, false, true),
+            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', messageDraft);
+
+        let c = decorator.toMessageDraftConfig();
+
+        t.expect(c.getXCnDraftInfo()).toBe(decorator.getXCnDraftInfo());
+        t.expect(c.getInReplyTo()).toBe(decorator.getInReplyTo());
+        t.expect(c.getReferences()).toBe(decorator.getReferences());
+        
     });
 
 });
