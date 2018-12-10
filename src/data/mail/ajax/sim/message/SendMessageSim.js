@@ -51,6 +51,21 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
                 mailFolderId    = ctx.xhr.options.params.mailFolderId,
                 draft           = MessageTable.getMessageDraft(mailAccountId, mailFolderId, id);
 
+
+            if (draft.hd_XCnDraftInfo) {
+                let [accountId, folderId, id] = Ext.decode(atob(draft.hd_XCnDraftInfo));
+                let items = MessageTable.getMessageItems();
+                for (let i = 0, len = items.length; i < len; i++) {
+                    if (items[i].mailAccountId === accountId && items[i].id === id &&
+                        items[i].mailFolderId === folderId) {
+                        MessageTable.updateAllItemData(
+                            items[i].mailAccountId, items[i].mailFolderId, items[i].id,
+                            {answered : true});
+                        break;
+                    }
+                }
+            }
+
             if (draft['subject'] === 'SENDFAIL') {
                 ret.responseText = Ext.JSON.encode({
                     success : false

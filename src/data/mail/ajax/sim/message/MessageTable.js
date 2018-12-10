@@ -324,6 +324,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         }
 
         var me            = this,
+            hdMessageId   = Ext.id(),
             id            = me.getNextMessageDraftKey(),
             messageDrafts = me.getMessageDrafts(),
             messageItems  = me.getMessageItems(),
@@ -337,24 +338,27 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
         mb.textHtml = "";
 
         messageDrafts.push(Ext.apply(draftData, {
-            id            : id,
-            mailFolderId  : mailFolderId,
-            mailAccountId : mailAccountId,
-            date          : date
+            "hd_messageId" : hdMessageId,
+            id              : id,
+            mailFolderId    : mailFolderId,
+            mailAccountId   : mailAccountId,
+            date            : date
         }));
 
         messageItems.push(Ext.apply(draftData, {
-            id            : id,
-            mailFolderId  : mailFolderId,
-            mailAccountId : mailAccountId,
-            date          : date
+            "hd_messageId" : hdMessageId,
+            id              : id,
+            mailFolderId    : mailFolderId,
+            mailAccountId   : mailAccountId,
+            date            : date
         }));
 
         me.baseMessageItems.push(Ext.apply(draftData, {
-            id            : id,
-            mailFolderId  : mailFolderId,
-            mailAccountId : mailAccountId,
-            date          : date
+            "hd_messageId" : hdMessageId,
+            id              : id,
+            mailFolderId    : mailFolderId,
+            mailAccountId   : mailAccountId,
+            date            : date
         }));
 
 
@@ -393,9 +397,14 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             vals.indexOf('id') !== -1 &&
             vals.indexOf('mailFolderId') !== -1) {
             if (vals.length === 4  ||
-                (vals.length === 5 && (vals.indexOf('seen') !== -1 || vals.indexOf('flagged') !== -1))) {
+                (vals.length === 5 && (vals.indexOf('seen') !== -1 || vals.indexOf('flagged') !== -1 || vals.indexOf('answered') !== -1))) {
                 skipDate = true;
             }
+        }
+
+        // flag might be set by item sim without compound key info in vals
+        if (vals.length === 1 && vals.indexOf('answered') !== -1) {
+            skipDate = true;
         }
 
         if (values.mailFolderId && values.mailFolderId != mailFolderId) {
@@ -576,22 +585,23 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
             mailFolderId = mailFolders[i % 5];
 
             let cfg = {
-                id            :  (i + 1) + '',
-                date           : me.buildRandomDate(i < 100),
+                id              :  (i + 1) + '',
+                date            : me.buildRandomDate(i < 100),
                 // leave first one as unread for tests
-                subject        : /*mailFolderId + '-' + (i) + '-' +*/ subjects[me.buildRandomNumber(0, 5)],
-                from           : i === 0
-                                 ? 'from@domain.tld'
-                                 : sender[me.buildRandomNumber(0, 5)],
-                to             : me.buildAddresses('to', i),
-                cc             : me.buildAddresses('cc', i),
-                mailFolderId   : mailFolderId,
-                mailAccountId  : mailAccountId,
-                testProp       : i,
-                seen           : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
-                draft          : mailFolderId == "INBOX.Drafts"
-                                 ? true
-                                 : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
+                subject         : /*mailFolderId + '-' + (i) + '-' +*/ subjects[me.buildRandomNumber(0, 5)],
+                from            : i === 0
+                                  ? 'from@domain.tld'
+                                  : sender[me.buildRandomNumber(0, 5)],
+                to              : me.buildAddresses('to', i),
+                cc              : me.buildAddresses('cc', i),
+                mailFolderId    : mailFolderId,
+                mailAccountId   : mailAccountId,
+                testProp        : i,
+                hd_messageId    : Ext.id(),
+                seen            : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false),
+                draft           : mailFolderId == "INBOX.Drafts"
+                                  ? true
+                                  : i == 0 ? false : (me.buildRandomNumber(0, 1) ? true : false)
             };
 
 
