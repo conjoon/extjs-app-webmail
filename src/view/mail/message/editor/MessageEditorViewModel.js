@@ -101,6 +101,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     formulas : {
 
         /**
+         * Returns true if the MessageDraft is still marked as phantom and the
+         * savedAt-value has never been set (due to the way the MVVM accesses
+         * the data we have to use this condition).
+         */
+        isPhantom : function(get) {
+            return get('messageDraft').phantom && !get('messageDraft.savedAt');
+        },
+
+        /**
          * Returns true if both mailAccountId and mailFolderId are set fot the
          * messageDraft.
          */
@@ -168,6 +177,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             }
         },
 
+
         /**
          * This formula computes the subject to display and returns #emptySubjectText
          * if the MessageDraft's subject is empty. If the value set via this formula
@@ -191,6 +201,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     },
 
     stores : {
+
+        mailAccountStore : {
+            source: '{cn_mail-mailfoldertreestore}',
+
+            filters : [{
+                property : 'type',
+                value    : 'ACCOUNT'
+            }]
+        },
+
         addressStore : {
             model : 'conjoon.cn_mail.model.mail.message.EmailAddress',
             data  : '{addressStoreData}'

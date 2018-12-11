@@ -384,7 +384,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                     expected = [
                         'addressStoreData', 'getBcc', 'getCc',
                         'getSubject', 'getTo', 'isCcOrBccValueSet', 'isMessageBodyLoading',
-                        'isAccountAndFolderSet'
+                        'isAccountAndFolderSet', 'isPhantom'
                     ],
                     expectedCount = expected.length,
                     count = 0;
@@ -606,6 +606,23 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             t.expect(formulas.isAccountAndFolderSet.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
 
+        });
+
+
+        t.it("Should make sure that isPhantom works properly", function(t) {
+            viewModel = createWithSession();
+
+            var formulas = viewModel.getFormulas();
+
+            viewModel.get('messageDraft').pantom = true;
+            viewModel.set('messageDraft.savedAt', '');
+
+            t.expect(formulas.isPhantom).toBeDefined();
+            t.expect(formulas.isPhantom.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(true);
+
+            viewModel.set('messageDraft.savedAt', new Date());
+
+            t.expect(formulas.isPhantom.apply(viewModel, [Ext.Function.bindCallback(viewModel.get, viewModel)])).toBe(false);
         });
 
 
@@ -855,6 +872,30 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
         });
 
 
+        t.it('conjoon/app-cn_mail#39 - mailAccountStore', function(t) {
+
+            let session = createSession();
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+                session      : session,
+                messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            });
+
+            viewModel.set('cn_mail-mailfoldertreestore', Ext.create('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'));
+
+            t.waitForMs(750, function() {
+                t.expect(viewModel.get('mailAccountStore')).toBeTruthy();
+
+                t.isInstanceOf(viewModel.get('mailAccountStore'), 'Ext.data.ChainedStore');
+
+                t.expect(viewModel.get('mailAccountStore').getSource()).toBe(viewModel.get('cn_mail-mailfoldertreestore'));
+                viewModel.get('mailAccountStore').getFilters();
+
+                t.expect(viewModel.get('mailAccountStore').getFilters().items[0].getProperty()).toBe('type');
+                t.expect(viewModel.get('mailAccountStore').getFilters().items[0].getValue()).toBe('ACCOUNT');
+
+            });
+        });
 
 
 })});});});});});
