@@ -448,6 +448,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', {
                     case 'to':
                     case 'cc':
                     case 'bcc':
+                    case 'from':
                         if (Ext.isString(values[prop]))
                         item[prop] = Ext.JSON.decode(values[prop]);
                         break;

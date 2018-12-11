@@ -34,10 +34,13 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
 
     var mailFolders =   [{
         id            : "dev_sys_conjoon_org",
-        expanded      : true,
+        text          : "dev@conjoon.org",
         mailAccountId :  "dev_sys_conjoon_org",
         type          : 'ACCOUNT',
-        text          : "dev@conjoon.org",
+        expanded      : true,
+        from          : 'dev@conjoon.org',
+        replyTo       : 'dev@conjoon.org',
+        name          : "conjoon developer",
         children : [{
             id            : "INBOX",
             text          : 'Inbox',
