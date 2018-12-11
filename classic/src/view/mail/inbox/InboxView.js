@@ -157,9 +157,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 xtype     : 'cn_mail-mailmessagegrid',
                 reference : 'cn_mail_ref_mailmessagegrid',
                 bind      : {
-                    title  : '{cn_mail_ref_mailfoldertree.selection.text}',
-                    hidden : '{!cn_mail_ref_mailfoldertree.selection}',
-                    store  : '{cn_mail-mailmessageitemstore}'
+                    representedFolderType : '{cn_mail_ref_mailfoldertree.selection.type}',
+                    title                 : '{cn_mail_ref_mailfoldertree.selection.text}',
+                    hidden                : '{!cn_mail_ref_mailfoldertree.selection}',
+                    store                 : '{cn_mail-mailmessageitemstore}'
                 }
         }]}, {
             dockedItems : [{

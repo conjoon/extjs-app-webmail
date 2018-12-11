@@ -113,7 +113,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
                     t.expect(unreadCount).not.toBe(0);
                     tree.getSelectionModel().select(mailFolder);
 
+                    t.expect(grid.representedFolderType).toBeFalsy();
+
                     t.waitForMs(750, function(){
+
+                        t.expect(grid.representedFolderType).toBe('INBOX');
 
                         t.expect(messageView.isVisible()).toBe(true);
                         t.expect(gridMessageBox.isVisible()).toBe(false);
