@@ -130,6 +130,10 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         // only required by drafts for now x-cn-draft-info
         name : 'xCnDraftInfo',
         type : 'string'
+    }, {
+        name    : 'savedAt',
+        type    : 'date',
+        persist : false
     }],
 
 

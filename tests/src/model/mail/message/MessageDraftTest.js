@@ -680,4 +680,14 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         });
 
 
+        t.it("app-cn_mail#39 - savedAt", function(t) {
+
+            let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField('savedAt');
+
+            t.expect(w).toBeTruthy();
+            t.expect(w.type).toBe("date");
+
+        });
+
+
 });});});});
