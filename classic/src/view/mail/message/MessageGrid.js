@@ -38,10 +38,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         'conjoon.cn_mail.store.mail.message.MessageItemStore',
         'conjoon.cn_comp.grid.feature.RowFlyMenu',
         'conjoon.cn_core.util.Date'
+
     ],
 
     alias : 'widget.cn_mail-mailmessagegrid',
-
 
     /**
      * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
@@ -75,6 +75,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     selModel : {
         pruneRemoved : false
     },
+
+    /**
+     * @type {String}
+     * @private
+     */
+    representedFolderType : null,
 
     features : [{
         ftype : 'cn_mail-mailmessagegridfeature-livegrid',
@@ -220,20 +226,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         visible      : false,
         hideable     : false,
         text         : 'Draft Display Address',
-        menuDisabled : true,
-        renderer     : function(value, meta, record, rowIndex, colIndex, store, view) {
-
-            var feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
-
-            if (!feature.disabled) {
-                meta.tdCls += 'previewLarge';
-                if (record.get('draft')) {
-                    return view.grid.stringifyTo(record.get('to'));
-                }
-            }
-
-            return record.get('from') ?  record.get('from').name : "";
-        }
+        menuDisabled : true
     }, {
         dataIndex : 'date',
         xtype     : 'datecolumn',
@@ -251,11 +244,36 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
 
 
     /**
+     * Sets the represented folder type for this message grid.
+     * The representedFolderType is an advise for the draftDisplayAddress-column
+     * on how to render the address, e.g. whether from- or to-addresses should be
+     * rendered.
+     *
+     * @param {String} representedFolderType
+     *
+     * @protected
+     */
+    setRepresentedFolderType : function(representedFolderType) {
+
+        const me = this;
+
+        me.representedFolderType = representedFolderType;
+    },
+
+
+    /**
      * @inheritdoc
      */
     initComponent : function() {
 
         const me = this;
+
+        // apply Renderer to draftDisplayAddress columns
+        for (let i = 0, len = me.columns.length; i < len; i++) {
+            if (me.columns[i].dataIndex === "draftDisplayAddress") {
+                me.columns[i].renderer = me.renderDraftDisplayAddress;
+            }
+        }
 
         me.callParent(arguments);
 
@@ -265,6 +283,36 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             'cn_comp-rowflymenu-'
         );
     },
+
+
+    /**
+     * Renderer for the draftDisplayAddress-column.
+     *
+     * @param value
+     * @param meta
+     * @param record
+     * @param rowIndex
+     * @param colIndex
+     * @param store
+     * @param view
+     * @returns {*}
+     *
+     * @private
+     */
+    renderDraftDisplayAddress : function(value, meta, record, rowIndex, colIndex, store, view) {
+        const me      = this,
+              feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+
+        if (!feature.disabled) {
+            meta.tdCls += 'previewLarge';
+            if (record.get('draft') || me.representedFolderType === 'SENT') {
+                return view.grid.stringifyTo(record.get('to'));
+            }
+        }
+
+        return record.get('from') ?  record.get('from').name : "";
+    },
+
 
     /**
      * Allows to switch between preview- and detail view, whereas the detail

@@ -485,4 +485,73 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         });
 
 
+        t.it("app-cn_mail#39 - setRepresentedFolderType()", function(t) {
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            t.expect(grid.representedFolderType).toBeFalsy();
+
+            grid.setRepresentedFolderType("foo");
+
+            t.expect(grid.representedFolderType).toBe("foo");
+        });
+
+
+        t.it("app-cn_mail#39 - renderDraftDisplayAddress()", function(t) {
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                renderTo : document.body
+            });
+
+            let isDraft = false,
+                from = "",
+                view = grid.getView(),
+                feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview'),
+                rec = {
+                    get : function(key) {
+
+                        switch (key) {
+                            case 'draft':
+                                return isDraft;
+                            case 'from':
+                                return from;
+                            case 'to':
+                                return [{name : 'a'}, {name : 'b'}];
+                        }
+                    }
+                };
+
+            feature.disable();
+            grid.representedFolderType = '';
+
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("");
+            from = {name : 'foo'};
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+
+            feature.enable();
+
+            from = "";
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("");
+            from = {name : 'foo'};
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+
+            isDraft = true;
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("a, b");
+
+            isDraft = false;
+            grid.representedFolderType = 'SENT';
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("a, b");
+
+            isDraft = false;
+            grid.representedFolderType = '';
+            t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+        });
+
+
     });})});});
