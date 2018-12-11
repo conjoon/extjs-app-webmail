@@ -483,107 +483,68 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         t.expect(formulas.getFormattedDate(get)).toBe(expected);
     });
 
-
-    t.it("formula.getDisplayAddress", function(t) {
+    
+    t.it("formula.getDisplayToAddress", function(t) {
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
-        var expected    = 'FROM',
-            formulas    = viewModel.getFormulas(),
-            get         = function(value) {
-                if (value === 'messageItem') {
-                    return {
-                        get : function(value) {
-                            if (value === 'draft') {
-                                return false;
-                            }
-                        }
-                    };
+        var formulas    = viewModel.getFormulas(),
+            messageItem = {
+                get : function(value) {
+                    if (value === 'draft') {
+                        return false;
+                    }
                 }
-
-                if (value === 'messageItem.from') {
-                    return {name : expected};
+            },
+            get  = function(value) {
+                if (value === 'messageItem') {
+                    return messageItem;
                 }
 
                 if (value === 'messageItem.to') {
-                    return []
+                    return [{name : 'a', address : 'b'}, {name : 'c', address : 'd'}];
                 }
             };
 
-        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
+        t.expect(formulas.getDisplayToAddress(get)).toBe("a, c");
+
+        messageItem = null;
+
+        t.expect(formulas.getDisplayToAddress(get)).toBe("");
     });
 
 
-    t.it("formula.getDisplayAddress - empty", function(t) {
+    t.it("formula.getDisplayFromAddress", function(t) {
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
-        var expected    = "",
-            formulas    = viewModel.getFormulas(),
-            get         = function(value) {
-                if (value === 'messageItem') {
-                    return null;
+        var formulas    = viewModel.getFormulas(),
+            from        = {name : 'a', address : 'b'},
+            messageItem = {
+                get : function(value) {
+                    if (value === 'draft') {
+                        return false;
+                    }
                 }
+            },
+            get  = function(value) {
+                if (value === 'messageItem') {
+                    return messageItem;
+                }
+
                 if (value === 'messageItem.from') {
-                    return {};
-                }
-
-                if (value === 'messageItem.to') {
-                    return []
+                    return from;
                 }
             };
 
-        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
-    });
+        t.expect(formulas.getDisplayFromAddress(get)).toBe("a");
 
+        from = null;
 
-    t.it("formula.getDisplayAddress - null for from", function(t) {
-        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+        t.expect(formulas.getDisplayFromAddress(get)).toBe("");
 
-        var expected    = "",
-            formulas    = viewModel.getFormulas(),
-            get         = function(value) {
-                if (value === 'messageItem') {
-                    return {get : Ext.emptyFn};
-                }
-                if (value === 'messageItem.from') {
-                    return null;
-                }
+        messageItem = null;
 
-                if (value === 'messageItem.to') {
-                    return [];
-                }
-            };
+        t.expect(formulas.getDisplayToAddress(get)).toBe("");
 
-        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
-    });
-
-    t.it("formula.getDisplayAddress - draft", function(t) {
-        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
-
-        var expected    = 'FROM, FROM1',
-            formulas    = viewModel.getFormulas(),
-            get         = function(value) {
-                if (value === 'messageItem') {
-                    return {
-                        get : function(value) {
-                            if (value === 'draft') {
-                                return true;
-                            }
-                        }
-                    };
-                }
-
-
-                if (value === 'messageItem.to') {
-                    return [{
-                        name : 'FROM'
-                    }, {
-                        name : 'FROM1'
-                    }]
-                }
-
-            };
-
-        t.expect(formulas.getDisplayAddress(get)).toBe(expected);
     });
 
 

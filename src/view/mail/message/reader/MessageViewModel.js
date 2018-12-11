@@ -112,31 +112,47 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             }
         },
 
+
         /**
-         * Returns the  address of the current MessageItem the view should
+         * Returns the to-address of the current MessageItem the view should
+         * display.
+         *
+         * @param {Function} get
+         *
+         * @return {String}
+         */
+        getDisplayToAddress : function(get) {
+            const messageItem = get('messageItem'),
+                  to          = get('messageItem.to');
+
+            if (!messageItem) {
+                return "";
+            }
+
+            let res = [];
+            for (let i = 0, len = to.length; i < len; i++) {
+                res.push(to[i].name);
+            }
+
+            return res.join(', ');
+        },
+
+
+        /**
+         * Returns the from-address of the current MessageItem the view should
          * display.
          *
          * @param {Function}  get
          *
          * @return {String}
          */
-        getDisplayAddress : function(get) {
+        getDisplayFromAddress : function(get) {
 
             const messageItem = get('messageItem'),
-                  to          = get('messageItem.to');
                   from        = get('messageItem.from');
 
             if (!messageItem) {
                 return "";
-            }
-            if (messageItem.get('draft')) {
-
-                let res = [];
-                for (let i = 0, len = to.length; i < len; i++) {
-                    res.push(to[i].name);
-                }
-
-                return res.join(', ');
             }
 
             return from ? from.name : "";
