@@ -32,9 +32,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 id             : 1,
                 size           : 400,
                 subject        : 'SUBJECT',
-                from           : 'FROM',
+                from           : {name : 'foo', address : 'bar'},
                 date           : 'DATE',
-                to             : 'TO',
+                to             : [{name : 'foo', address : 'bar'}],
                 hasAttachments : true,
                 seen           : Math.random() >= 0.5 === true,
                 recent         : Math.random() >= 0.5 === true,
@@ -49,9 +49,10 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
             var messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
                 id      : 1,
                 subject : 'subject',
+                from    : {name : 'foo', address : 'bar'},
                 date    : '2017-07-30 23:45:00',
-                to      : 'test@testdomain.tld',
-                seen  : Math.random() >= 0.5 === true
+                to      : [{name : 'foo', address : 'bar'}],
+                seen    : Math.random() >= 0.5 === true
             });
 
             messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
@@ -134,6 +135,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 t.expect(messageItem.get('size')).toBeGreaterThan(0);
                 t.expect(messageItem.get('size')).not.toBe(oldSize);
                 t.expect(messageItem.get('size')).toBe(expectedSize);
+
+                t.expect(messageItem.get('from')).not.toBe(messageDraft.get('from'));
+                t.expect(messageItem.get('from')).toEqual(messageDraft.get('from'));
 
                 t.expect(messageItem.get('to')).not.toBe(messageDraft.get('to'));
                 t.expect(messageItem.get('to')).toEqual(messageDraft.get('to'));

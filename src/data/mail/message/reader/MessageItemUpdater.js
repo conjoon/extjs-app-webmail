@@ -105,6 +105,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
             size += attachments[i].get('size');
         }
 
+        // from/to fields are COPYING the values so we do not
+        // need to take care of cloning them
         messageItem.set({
             date           : messageDraft.get('date'),
             to             : messageDraft.get('to'),
@@ -112,6 +114,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
             hasAttachments : attachments.length > 0,
             previewText    : messageBody.get('textPlain'),
             size           : size,
+            from           : messageDraft.get('from'),
             seen           : messageDraft.get('seen'),
             flagged        : messageDraft.get('flagged'),
             recent         : messageDraft.get('recent'),
