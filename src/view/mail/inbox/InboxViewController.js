@@ -547,7 +547,17 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                         gridItem.join(messageGrid.getStore());
                         me.getLivegrid().add(gridItem);
                     } else {
-                        owningStore && messageItem.join(owningStore);
+                        if (owningStore) {
+                            messageItem.join(owningStore);
+                        } else {
+                            // make sure rcord is registered with MessageGrid Store since
+                            // it gets added here
+                            // owning store was unoined, but in this case it
+                            // is not available, so we make sure we do not add the store
+                            // twice by unjoining beforehand
+                            messageItem.unjoin(messageGrid.getStore());
+                            messageItem.join(messageGrid.getStore());
+                        }
                         me.getLivegrid().add(messageItem);
                     }
                 } else if (!isDraftClass) {

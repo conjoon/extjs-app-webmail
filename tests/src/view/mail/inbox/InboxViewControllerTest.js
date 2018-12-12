@@ -1114,4 +1114,44 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     });
 
 
+    t.it("app-cn_mail#90 - joining to store", function(t) {
+
+        panel = createPanelWithViewModel();
+
+        const viewController = panel.getController();
+
+        t.waitForMs(750, function() {
+
+            let mailFolder = selectMailFolder(panel, 2);
+
+            t.waitForMs(750, function() {
+
+                let messageItem = selectMessage(panel, 3);
+                deselectMessage(panel, messageItem);
+                let targetFolder = selectMailFolder(panel, 4);
+
+                t.waitForMs(750, function() {
+                    // UNJOIN
+                    messageItem.unjoin(messageItem.store);
+
+                    let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
+                        request : {
+                            type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+                            record         : messageItem,
+                            targetFolderId : targetFolder.getId()
+                            // NO OWNING STORE MARKED
+                        }
+                    });
+
+                    t.isntCalled('remove', viewController.getLivegrid());
+                    t.isCalled('add', viewController.getLivegrid());
+
+
+                    t.expect(viewController.onMessageMovedOrDeleted(op)).toBe(op);
+                    t.expect(messageItem.store).toBe(getMessageGridStore(panel));
+                });
+            });
+        });
+    });
+
 });});});
