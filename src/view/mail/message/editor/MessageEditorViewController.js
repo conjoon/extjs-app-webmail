@@ -76,6 +76,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
     /**
+     * @type {conjoon.cn_mail.data.mail.service.MailboxService}
+     * @private
+     */
+    mailboxService : null,
+
+    /**
      * Makes sure
      * conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener#installDragDropListeners
      * is called as soon as the controller's
@@ -537,8 +543,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 isCreated    = messageDraft.phantom === true,
                 saveBatch;
 
-            // will trigger a save in the case the date value changes.
-            messageDraft.set('date', new Date());
+            me.applyAccountInformation(messageDraft);
 
             if (view.fireEvent('cn_mail-mailmessagebeforesave', view, messageDraft, isSend === true, isCreated === true) === false) {
                 return false;
@@ -564,6 +569,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 complete : {
                     fn : function(batch, operation) {
+                        messageDraft.set('savedAt', new Date());
                         view.fireEvent(
                             'cn_mail-mailmessagesavecomplete',
                             view, messageDraft,
@@ -578,6 +584,72 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             });
 
             saveBatch.start();
+        },
+
+
+        /**
+         * Helper method to apply additional information to the MessageDraft
+         * right before saving.
+         *
+         * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+         *
+         * @private
+         */
+        applyAccountInformation : function(messageDraft) {
+
+            const me             = this,
+                  view           = me.getView(),
+                  vm             = view.getViewModel(),
+                  mailboxService = me.getMailboxService(),
+                  mailAccountId  = messageDraft.get('mailAccountId');
+
+            let mailFolderId = mailboxService.getMailFolderHelper().getMailFolderIdForType(
+                mailAccountId, 'DRAFT'
+            );
+
+            if (!mailFolderId) {
+                Ext.raise({
+                    msg           : "Unexpected error: No draft folder for mailAccountId found",
+                    mailAccountId : mailAccountId
+                })
+            }
+
+            messageDraft.set('mailFolderId', mailFolderId);
+
+            let accRecord = vm.get('cn_mail-mailfoldertreestore').findRecord(
+                'id', mailAccountId
+            );
+
+            messageDraft.set('from', {
+                name    : accRecord.get('name'),
+                address : accRecord.get('from')
+            });
+
+            // will trigger a save in the case the date value changes.
+            messageDraft.set('date', new Date());
+        },
+
+
+        /**
+         * Returns the MailboxService for the cn_mail-mailfoldertreestore which
+         * is part of this view's viewModel.
+         *
+         * @return {conjoon.cn_mail.data.mail.service.MailboxService}
+         */
+        getMailboxService : function() {
+
+            const me = this,
+            vm = me.getView().getViewModel();
+
+            if (!me.mailboxService) {
+                me.mailboxService = Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
+                    mailFolderHelper : Ext.create('conjoon.cn_mail.data.mail.service.MailFolderHelper', {
+                        store : vm.get('cn_mail-mailfoldertreestore')
+                    })
+                });
+            }
+
+            return me.mailboxService;
         },
 
 

@@ -249,14 +249,57 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      */
     loadingMask : null,
 
-    buttons : [{
-        text   : 'Save',
-        width  : 108,
-        itemId : 'saveButton'
-    }, {
-        text   : 'Send',
-        itemId : 'sendButton',
-        width  : 108
+    dockedItems : [{
+        xtype : 'toolbar',
+        dock  : 'bottom',
+        items : [{
+            xtype : 'combobox',
+            itemId : 'accountCombo',
+            flex : 1,
+            cls : 'accountCombo',
+            matchFieldWidth : false,
+            hideTrigger : true,
+            editable : false,
+            forceSelection : true,
+            queryMode : 'local',
+            bind  : {
+                disabled : '{!isPhantom}',
+                store    : '{mailAccountStore}',
+                value    : '{messageDraft.mailAccountId}'
+            },
+            /**
+             * @i18n
+             */
+            labelWidth : 50,
+            fieldLabel : 'Account',
+            displayField : 'name',
+            valueField   : 'id',
+            listConfig : {
+                getInnerTpl: function() {
+                    return '{name} &lt;{from}&gt;';
+                }
+            },
+            displayTpl : '<tpl for=".">{from}</tpl>'
+        }, '->', {
+            xtype : 'displayfield',
+            cls  : 'lastSavedDateField',
+            bind : {
+                hidden : '{!messageDraft.savedAt}',
+                value : 'Last saved at {messageDraft.savedAt:date("d.m.Y H:i:s")}'
+            }
+        }, {
+            scale  : 'small',
+            ui     : 'cn-btn-medium-base-color',
+            text   : 'Save',
+            width  : 108,
+            itemId : 'saveButton'
+        }, {
+            scale  : 'small',
+            ui     : 'cn-btn-medium-base-color',
+            text   : 'Send',
+            itemId : 'sendButton',
+            width  : 108
+        }]
     }],
 
     items : [{

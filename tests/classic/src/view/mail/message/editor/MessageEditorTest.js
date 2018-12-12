@@ -103,10 +103,9 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             renderTo     : document.body,
             width        : 400,
             height       : 400,
-            messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
-                mailAccountId : 'foo',
-                mailFolderId  : 'bar'
-            })
+            messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+                createMessageItem(undefined, "INBOX").data
+            )
         };
     });
 
@@ -895,6 +894,11 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                 editor = createWithMessageConfig(item.getCompoundKey())
 
+                let store = Ext.create(
+                    'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
+                );
+                store.load();
+                editor.getViewModel().set('cn_mail-mailfoldertreestore', store);
 
                 t.waitForMs(750, function() {
 
@@ -992,6 +996,25 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             view.showLoadingFailedDialog();
 
             t.expect(view.getClosable()).toBe(true);
+
+        });
+
+
+        t.it("app-cn_mail#39 - combobox with default value", function(t) {
+
+            view = createWithViewConfig(viewConfig);
+
+            let combo = view.down('#accountCombo');
+
+            t.expect(combo).toBeTruthy();
+
+            t.waitForMs(750, function() {
+
+                t.expect(view.getViewModel().get('messageDraft.mailAccountId')).toBeTruthy();
+
+                t.expect(combo.getValue()).toBe(view.getViewModel().get('messageDraft.mailAccountId'));
+
+            });
 
         });
 
