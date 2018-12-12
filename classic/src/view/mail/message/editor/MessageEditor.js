@@ -281,6 +281,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             },
             displayTpl : '<tpl for=".">{from}</tpl>'
         }, '->', {
+            width : 213,
             xtype : 'displayfield',
             cls  : 'lastSavedDateField',
             bind : {
