@@ -31,25 +31,16 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
-    extend : 'conjoon.cn_mail.model.mail.BaseTreeModel',
+    extend : 'conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel',
 
     requires : [
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes',
+        'conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey'
     ],
 
     entityName : 'MailFolder',
 
     fields : [{
-        name : 'id',
-        type : 'string'
-    }, {
-        name       : 'mailAccountId',
-        type       : 'string',
-        critical   : true,
-        validators : [{
-            type : 'presence'
-        }]
-    }, {
         name : 'text',
         type : 'string',
         validators : [{
@@ -63,6 +54,22 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         name : 'type',
         type : 'string'
     }],
+
+
+    /**
+     * @private
+     */
+    foreignKeyFields : ['mailAccountId', 'id'],
+
+
+    /**
+     * @inheritdoc
+     *
+     * @returns {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
+     */
+    getRepresentingCompoundKeyClass : function() {
+        return conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey;
+    },
 
 
     /**
@@ -104,13 +111,13 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
               prefix = 'cn_mail/folder/';
 
         if (me.get('type') === 'ACCOUNT') {
-            return prefix + me.getId()
+            return prefix + me.get('id');
         }
 
         return prefix +
                me.get('mailAccountId') +
                '/' +
-               me.getId()
+               me.get('id')
     }
 
 });

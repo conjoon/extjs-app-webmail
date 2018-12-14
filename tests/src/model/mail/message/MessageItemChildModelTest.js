@@ -81,10 +81,16 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 
         let exc, e;
 
-        try{model.load();} catch(e){exc=e};
+        try{model.load({
+            params : {
+                mailAccountId : 'a',
+                mailFolderId  : 'b',
+                id            : 'c'
+            }
+        });} catch(e){exc=e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set in params for load");
+        t.expect(exc.msg.toLowerCase()).toContain("must be set");
         t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         exc = undefined;
 
@@ -95,10 +101,16 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 
         let exc, e;
 
+        model.set({
+            mailAccountId : 'a',
+            mailFolderId  : 'b',
+            id            : 'c'
+        });
+
         try{model.save();} catch(e){exc=e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be set before save");
+        t.expect(exc.msg.toLowerCase()).toContain("must be set");
         t.expect(exc.msg.toLowerCase()).toContain("parentmessageitemid");
         exc = undefined;
 
@@ -150,6 +162,19 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 
         t.isCalledNTimes('checkForeignKeysModified', model, 1);
         t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey');
+    });
+
+
+    t.it("getRepresentingCompoundKeyClass", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
+
+        });
+
+        t.expect(model.getRepresentingCompoundKeyClass()).toBe(
+            conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey
+        );
+
     });
 
 

@@ -61,7 +61,7 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
         exc = undefined;
 
         let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
-
+        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.AbstractCompoundKey');
         t.expect(key.getMailAccountId()).toBe(MAILACCOUNTID);
         t.expect(key.getMailFolderId()).toBe(MAILFOLDERID);
         t.expect(key.getId()).toBe(ID);

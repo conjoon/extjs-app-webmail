@@ -40,8 +40,10 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.it("Should create instance and check basic configuration", function(t) {
+        t.expect(model instanceof conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel).toBe(true);
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
+        t.expect(model.getIdProperty()).toBe('localId');
         t.expect(model.getField('unreadCount').getPersist()).toBe(false);
         t.expect(model.getField('mailAccountId').critical).toBe(true);
     });
@@ -109,14 +111,43 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
     t.it("toUrl()", function(t) {
 
         let accountNode =  Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
-            id   : 'foo@account',
-            type : 'ACCOUNT'
+            localId       : 'meh',
+            id            : 1,
+            mailAccountId : 'foo@account',
+            type          : 'ACCOUNT'
         });
-        t.expect(accountNode.toUrl()).toBe('cn_mail/folder/foo@account');
+        t.expect(accountNode.toUrl()).toBe('cn_mail/folder/1');
 
-        model.set('mailAccountId', 'foo@account');
-        t.expect(model.toUrl()).toBe('cn_mail/folder/foo@account/1');
-    })
+        accountNode.set('type', 'INBOX');
+
+        t.expect(accountNode.toUrl()).toBe('cn_mail/folder/foo@account/1');
+    });
+
+
+    t.it("getRepresentingCompoundKeyClass()", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+
+        });
+
+        t.expect(model.getRepresentingCompoundKeyClass()).toBe(
+            conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey
+        );
+
+    });
+
+
+    t.it("foreignKeyFields", function(t) {
+
+        let model = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+
+        });
+
+        t.expect(model.foreignKeyFields).toEqual(
+            ['mailAccountId', 'id']
+        );
+
+    });
 
 
 });

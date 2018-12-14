@@ -21,31 +21,30 @@
  */
 
 /**
- * CompoundKey for mail entities, consisting of mailAccountId, mailFolderId and
- * the id of the entity, not to confused with the localId which should be configured
- * as the idProperty for implementing models.
+ * AbstractCompoundKey for mail related entities (folders, mails, attachments...)
+ * consisting of mailAccountId the id of the entity, not to confused with the
+ * localId which should be configured as the idProperty for implementing models.
  * Data must be identified by a compound key, whereas localId is a unique string
  * built from the keys in this compound.This key is then used to identify local
  * records.
  *
  * Concrete implementations can be found in the namespace
- * conjoon.cn_mail.data.mail.message.compoundKey.*
+ * conjoon.cn_mail.data.mail.message.compoundKey.* and
+ * conjoon.cn_mail.data.mail.folder.compoundKey.*
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
+Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
 
-
-    extend : 'conjoon.cn_mail.data.mail.AbstractCompoundKey',
 
     inheritableStatics : {
 
         /**
          * Creates a new CompoundKey based on the data found in fromRecord.
          *
-         * @param {conjoon.cn_mail.model.mail.message.CompoundKeyedModel} rec
+         * @param {conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel} rec
          *
-         * @returns {conjoon.cn_mail.data.mail.message.CompoundKey}
+         * @returns {conjoon.cn_mail.data.mail.AbstractCompoundKey}
          *
          * @throws if rec is not an instance of Ext.data.Model.
          */
@@ -60,7 +59,6 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
 
             return new this({
                 mailAccountId : rec.get('mailAccountId'),
-                mailFolderId  : rec.get('mailFolderId'),
                 id            : rec.get('id')
             });
 
@@ -71,16 +69,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
          * Creates a new CompoundKey based on the passed arguments.
          *
          * @param {String} mailAccountId
-         * @param {String} mailFolderId
          * @param {String} id
          *
          * @returns {conjoon.cn_mail.data.mail.message.CompoundKey}
          */
-        createFor : function(mailAccountId, mailFolderId, id) {
+        createFor : function(mailAccountId, id) {
 
             return new this({
                 mailAccountId : mailAccountId,
-                mailFolderId  : mailFolderId,
                 id            : id
             });
 
@@ -93,7 +89,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
         /**
          * @type {String}
          */
-        mailFolderId  : undefined
+        mailAccountId : undefined,
+
+        /**
+         * @type {String}
+         */
+        id    : undefined
     },
 
 
@@ -108,23 +109,22 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
 
         const me = this;
 
-        if (!cfg || !cfg.mailAccountId || !cfg.mailFolderId || !cfg.id) {
+        if (!cfg || !cfg.mailAccountId || !cfg.id) {
             Ext.raise({
                 msg : "\"cfg\" must be an object containing the properties " +
-                      "mailAccountId, mailFolderId and id",
+                "mailAccountId and id",
                 cfg : cfg
             })
         }
 
-        me.callParent(arguments);
+        me.initConfig(cfg);
     },
 
 
     /**
      * Returns an array representation of this obejct, in the following order:
      * 0 - mailAccountId
-     * 1 - mailFolderId
-     * 2 - id
+     * 1 - id
      *
      * @returns {Array}
      */
@@ -134,7 +134,6 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
 
         return [
             me.getMailAccountId(),
-            me.getMailFolderId(),
             me.getId()
         ];
 
@@ -144,7 +143,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
     /**
      * Returns an object representation of this compound key.
      *
-     * @returns {{mailAccountId, mailFolderId, id}}
+     * @returns {{mailAccountId, id}}
      */
     toObject : function() {
 
@@ -152,7 +151,6 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
 
         return {
             mailAccountId : me.getMailAccountId(),
-            mailFolderId  : me.getMailFolderId(),
             id            : me.getId()
         };
 
@@ -160,37 +158,83 @@ Ext.define('conjoon.cn_mail.data.mail.message.CompoundKey', {
 
 
     /**
-     * @inheritdoc
+     * Returns the localId used as the primary key for a data entity which can
+     * be identified by "this" compound key.
+     *
+     * @returns {string}
      */
     toLocalId : function() {
         const me = this;
 
-        return me.getMailAccountId() + '-' + me.getMailFolderId() + '-' +  me.getId();
+        return me.getMailAccountId() + '-' +  me.getId();
     },
 
 
     /**
-     * Applies mailFolderId.
+     * Applies mailAccountId.
      *
-     * @param {String} mailFolderId
+     * @param {String} mailAccountId
      *
      * @return {String}
      *
-     * @throws exception if mailFolderId was already set
+     * @throws exception if mailAccountId was already set
      */
-    applyMailFolderId : function(mailFolderId) {
+    applyMailAccountId : function(mailAccountId) {
 
         const me = this;
 
-        if (me.getMailFolderId() !== undefined) {
+        if (me.getMailAccountId() !== undefined) {
             Ext.raise({
-                msg           : "\"mailFolderId\" was already set",
-                mailFolderId : me.getMailFolderId()
+                msg           : "\"mailAccountId\" was already set",
+                mailAccountId : me.getMailAccountId()
             });
         }
 
-        return mailFolderId;
-    }
+        return mailAccountId;
+    },
 
+
+    /**
+     * Applies id.
+     *
+     * @param {String} id
+     *
+     * @return {String}
+     *
+     * @throws exception if id was already set
+     */
+    applyId : function(id) {
+
+        const me = this;
+
+        if (me.getId() !== undefined) {
+            Ext.raise({
+                msg : "\"id\" was already set",
+                id  : me.getId()
+            });
+        }
+
+        return id;
+    },
+
+
+    /**
+     * Returns true if this CompoundKey references the same compound keys
+     * as the passed compound key.
+     *
+     * @param {conjoon.cn_mail.data.mail.AbstractCompoundKey} cmp
+     *
+     * @return {Boolean}
+     */
+    equalTo : function(cmp) {
+
+        const me = this;
+
+        if (!(cmp instanceof conjoon.cn_mail.data.mail.AbstractCompoundKey)) {
+            return false;
+        }
+
+        return me.toLocalId() === cmp.toLocalId();
+    }
 
 });

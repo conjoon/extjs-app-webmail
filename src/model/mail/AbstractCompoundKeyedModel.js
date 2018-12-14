@@ -21,38 +21,18 @@
  */
 
 /**
- * MessageItemChildModel for making sure child models for MessageItems have
- * required information configured.
+ * AbstractCompoundKeyedModel for items that have a relation to a mailAccountId.
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
-
-
-    extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
+Ext.define('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
 
     requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey'
+        'conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator'
     ],
 
-    fields : [{
-        name : 'parentMessageItemId',
-        type : 'cn_core-datafieldcompoundkey'
-    }],
+    extend : 'conjoon.cn_mail.model.mail.BaseModel',
 
-    /**
-     * @private
-     */
-    foreignKeyFields : ['mailAccountId', 'mailFolderId', 'parentMessageItemId', 'id'],
-
-
-    /**
-     * @inheritdoc
-     * @returns {conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey}
-     */
-    getRepresentingCompoundKeyClass : function() {
-        return conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey;
-    }
-
-
+}, function() {
+    conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator.decorate(this);
 });

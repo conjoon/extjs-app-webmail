@@ -46,10 +46,16 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
             text          : 'Inbox',
             unreadCount   : 3787,
             type          : 'INBOX',
-            iconCls       : 'fa fa-inbox',
-            children      : [],
-            mailAccountId :  "dev_sys_conjoon_org",
-
+            children      : [{
+                id            : "INBOX.ToDo",
+                text          : 'ToDo',
+                unreadCount   : 3787,
+                expandedn     : true,
+                type          : 'INBOX',
+                children      : [],
+                mailAccountId :  "dev_sys_conjoon_org",
+            }],
+            mailAccountId :  "dev_sys_conjoon_org"
         }, {
             id            : "INBOX.Sent Messages",
             text          : 'Sent',
@@ -78,6 +84,52 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
             type         : 'TRASH',
             children     : [],
             mailAccountId :  "dev_sys_conjoon_org",
+        }]
+    }, {
+        id            : "mail_account",
+        text          : "demo@googlemail.com",
+        mailAccountId :  "mail_account",
+        type          : 'ACCOUNT',
+        expanded      : true,
+        from          : 'demo@googlemail.com',
+        replyTo       : 'demo@googlemail.com',
+        name          : "google mail",
+        children : [{
+            id            : "INBOX",
+            text          : 'Inbox',
+            unreadCount   : 3787,
+            type          : 'INBOX',
+            children      : [],
+            mailAccountId :  "mail_account",
+
+        }, {
+            id            : "INBOX.Sent Messages",
+            text          : 'Sent',
+            unreadCount   : 0,
+            type          : 'SENT',
+            children      : [],
+            mailAccountId :  "mail_account",
+        }, {
+            id            : "INBOX.Junk",
+            text          : 'Junk',
+            unreadCount   : 0,
+            type          : 'JUNK',
+            children      : [],
+            mailAccountId :  "mail_account",
+        }, {
+            id            : "INBOX.Drafts",
+            text          : 'Drafts',
+            unreadCount   : 0,
+            type          : 'DRAFT',
+            children      : [],
+            mailAccountId :  "mail_account",
+        }, {
+            id           : "INBOX.Trash",
+            text         : 'Trash',
+            unreadCount  : 5,
+            type         : 'TRASH',
+            children     : [],
+            mailAccountId :  "mail_account",
         }]
     }];
 

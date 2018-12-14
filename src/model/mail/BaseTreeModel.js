@@ -29,10 +29,35 @@ Ext.define('conjoon.cn_mail.model.mail.BaseTreeModel', {
 
     extend : 'conjoon.cn_core.data.BaseTreeModel',
 
+    /**
+     * We need to enforce a different id-field here since subclasses specify
+     * different idProperties, but reuse the default idProperty ("id") for
+     * containing data sent by the backend. This seems to be an issue with ExtJS.
+     * We need to explicitely implement the idProperty in subclasses, now.
+     */
+    idProperty : '__id__',
+
     requires : [
         'conjoon.cn_mail.data.mail.BaseSchema'
     ],
 
-    schema : 'cn_mail-mailbaseschema'
+    schema : 'cn_mail-mailbaseschema',
+
+    /**
+     * Overridden to enforce setting idProperty
+     */
+    constructor : function() {
+
+        const me = this;
+
+        if (me.idProperty === '__id__') {
+            Ext.raise({
+                msg        : "\"idProperty\" of conjoon.cn_core.data.BaseModel needs to be explicitly set",
+                idProperty : me.idProperty
+            });
+        }
+
+        me.callParent(arguments);
+    }
 
 });

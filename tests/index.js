@@ -69,8 +69,13 @@ harness.start({
                     }]
                 }, {
                     group : 'folder',
-                    items : [
-                        'src/data/mail/folder/MailFolderTypesTest.js'
+                    items : [{
+                        group : 'compoundKey',
+                        items : [
+                            'src/data/mail/folder/compoundKey/MailFolderCompoundKeyTest.js'
+                        ]
+                    },
+                    'src/data/mail/folder/MailFolderTypesTest.js'
                     ]
                 }, {
                     group : 'message',
@@ -133,6 +138,7 @@ harness.start({
             items : [{
                 group : 'mail',
                 items : [
+                    'src/model/mail/AbstractCompoundKeyedModelTest.js',
                     'src/model/mail/BaseModelTest.js',
                     'src/model/mail/BaseTreeModelTest.js',
                     {
