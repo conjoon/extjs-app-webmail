@@ -68,6 +68,14 @@ harness.start({
                         }]
                     }]
                 }, {
+                    group : 'account',
+                    items : [{
+                        group : 'reader',
+                        items : [
+                            'src/data/mail/account/reader/MailAccountJsonReaderTest.js'
+                        ]
+                    }]
+                }, {
                     group : 'folder',
                     items : [{
                         group : 'compoundKey',
