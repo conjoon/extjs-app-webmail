@@ -74,6 +74,11 @@ harness.start({
                         items : [
                             'src/data/mail/account/reader/MailAccountJsonReaderTest.js'
                         ]
+                    }, {
+                        group : 'proxy',
+                        items : [
+                            'src/data/mail/account/proxy/MailAccountProxyTest.js'
+                        ]
                     }]
                 }, {
                     group : 'folder',
