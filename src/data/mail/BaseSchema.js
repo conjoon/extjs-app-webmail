@@ -34,6 +34,7 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
     requires : [
         'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
         'conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy',
+        'conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy',
         'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'
     ],
 
@@ -85,6 +86,11 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                 proxy.entityName = entityName;
                 proxy.prefix     = me.getUrlPrefix();
                 proxy.type       = 'cn_mail-mailmessageattachmentproxy';
+
+            } else if (["MailAccount"].indexOf(entityName) !==  -1) {
+
+                proxy.prefix     = me.getUrlPrefix();
+                proxy.type       = 'cn_mail-mailaccountproxy';
 
             } else {
                 proxy.url = me.getUrlPrefix() + '/' + tmpData.entityName;

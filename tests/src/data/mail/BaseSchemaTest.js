@@ -23,6 +23,7 @@
 describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
 
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageItem', function(){
+    t.requireOk('conjoon.cn_mail.model.mail.account.MailAccount', function(){
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageDraft', function(){
 
         t.it("Should properly create the schema and check for default config", function(t) {
@@ -96,7 +97,17 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
             t.expect(ret.type).toBe('cn_mail-mailmessageattachmentproxy');
         });
 
+
+        t.it("Make sure proxy for MailAccount is of type MailAccountdProxy", function(t) {
+
+            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
+
+            var ret = schema.constructProxy(conjoon.cn_mail.model.mail.account.MailAccount);
+
+            t.expect(ret.type).toBe('cn_mail-mailaccountproxy');
+        });
+
     });
 
 
-})})
+})})});
