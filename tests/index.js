@@ -149,6 +149,11 @@ harness.start({
         }, {
             group : 'model',
             items : [{
+                group : 'account',
+                items : [
+                    'src/model/mail/account/MailAccountTest.js',
+                ]
+            },{
                 group : 'mail',
                 items : [
                     'src/model/mail/AbstractCompoundKeyedModelTest.js',
