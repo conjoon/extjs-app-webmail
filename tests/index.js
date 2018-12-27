@@ -87,6 +87,11 @@ harness.start({
                         items : [
                             'src/data/mail/folder/compoundKey/MailFolderCompoundKeyTest.js'
                         ]
+                    }, {
+                        group : 'reader',
+                        items : [
+                            'src/data/mail/folder/reader/MailFolderJsonReaderTest.js'
+                        ]
                     },
                     'src/data/mail/folder/MailFolderTypesTest.js'
                     ]
