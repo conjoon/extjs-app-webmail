@@ -37,8 +37,6 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
 
         t.expect(reader.mailAccountModelClass).toBe('conjoon.cn_mail.model.mail.account.MailAccount');
 
-        t.expect(reader.mailFolderModelClass).toBe('conjoon.cn_mail.model.mail.folder.MailFolder');
-
         t.expect(reader.alias).toContain('reader.cn_mail-mailaccountjsonreader');
 
     });
@@ -81,8 +79,7 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
                 }]
             }, result = {
                 data : [{
-                    modelType  : 'conjoon.cn_mail.model.mail.account.MailAccount',
-                    childType : 'conjoon.cn_mail.model.mail.folder.MailFolder'
+                    modelType  : 'conjoon.cn_mail.model.mail.account.MailAccount'
                 }]
             };
 
@@ -109,15 +106,28 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
     });
 
 
-    t.it("readRecords()", function(t){
+    t.it("processHybridData()", function(t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader');
+        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader'),
+            data = {
+                data : [{
+                    mailAccountId : 'foo',
+                    id            : 'bar'
+                }]
+            },
+            result = {
+                data : [{
+                    modelType  : 'conjoon.cn_mail.model.mail.folder.MailFolder',
+                    mailAccountId : 'foo',
+                    id            : 'bar',
+                    localId       : 'foo-bar'
+                }]
+            };
 
-        t.isCalledNTimes('applyModelTypes', reader, 1);
+        t.isCalledNTimes('peekFolder', reader, 1);
 
-        // exception is expected here and okay.
-        try {reader.readRecords();}catch(e){}
-    })
+        t.expect(reader.processHybridData(data)).toEqual(result);
+    });
 
 
 });

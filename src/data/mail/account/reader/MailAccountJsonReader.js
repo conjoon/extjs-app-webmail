@@ -22,11 +22,17 @@
 
 /**
  * Specialized version of a JSON Reader used by MailAccountProxy.
+ *
+ * This class uses internally a mailFolderJsonReader if THIS reader detects the
+ * data to be a MailFolder (see peekFolder).
  */
 Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
 
     extend : 'Ext.data.reader.Json',
 
+    requires : [
+        'conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader'
+    ],
 
     alias : 'reader.cn_mail-mailaccountjsonreader',
 
@@ -35,8 +41,6 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
     typeProperty : 'modelType',
 
     mailAccountModelClass : 'conjoon.cn_mail.model.mail.account.MailAccount',
-
-    mailFolderModelClass : 'conjoon.cn_mail.model.mail.folder.MailFolder',
 
 
     /**
@@ -47,13 +51,13 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
      * @throws if data is is not an object, or if the embedded property "data" is
      * neither an array nor an object
      *
-     * @see applyCompoundKey
+     * @see processHybridData
      */
     readRecords : function(data, readOptions, internalReadOptions) {
 
         const me = this;
 
-        data = me.applyModelTypes(data);
+        data = me.processHybridData(data);
 
         return me.callParent([data, readOptions, internalReadOptions]);
     },
@@ -70,7 +74,6 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
 
         const me = this;
 
-
         if (Ext.isObject(data)) {
 
             if (Ext.isArray(data.data)) {
@@ -81,7 +84,6 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
                     rec = records[i];
 
                     rec[me.getTypeProperty()] = me.mailAccountModelClass;
-                    rec['childType']          = me.mailFolderModelClass;
                 }
 
                 return data;
@@ -91,7 +93,6 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
                 let d = data.data;
 
                 d[me.getTypeProperty()] = me.mailAccountModelClass;
-                d['childType']          = me.mailFolderModelClass;
 
                 return data;
             }
@@ -106,7 +107,56 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
             data : data
         });
 
+    },
+
+
+    /**
+     * @private
+     */
+    processHybridData : function(data) {
+        const me = this;
+
+        if (me.peekFolder(data)) {
+
+            if (!me.mailFolderReader) {
+                me.mailFolderReader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader');
+            }
+            data = me.mailFolderReader.applyCompoundKey(data);
+        } else {
+            data = me.applyModelTypes(data);
+        }
+
+        return data;
+    },
+
+
+    /**
+     * Peeks the specified object for any signs of being an entity representing
+     * a MailFolder
+     *
+     * @param {Object} data
+     *
+     * @returns {Boolean} true if the specified object represents a MailFolder,
+     * otherwise false.
+     *
+     * @private
+     */
+    peekFolder : function(data) {
+
+        if (Ext.isObject(data)) {
+
+            let t = [].concat(data.data);
+
+            if (t[0] && t[0].hasOwnProperty('mailAccountId')) {
+                return true;
+            }
+
+        }
+
+        return false;
+
     }
+
 
 
 });
