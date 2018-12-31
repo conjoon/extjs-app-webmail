@@ -96,13 +96,9 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
         model.set('type', null);
         t.expect(model.isValid()).toBe(false);
 
-        model.set('type', 'ACCOUNT');
-        t.expect(model.isValid()).toBe(true);
-
         model.set('type', 'foo');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('type', 'ACCOUNT');
         model.set('mailAccountId', null);
         t.expect(model.isValid()).toBe(false);
     });
@@ -113,12 +109,8 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
         let accountNode =  Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
             localId       : 'meh',
             id            : 1,
-            mailAccountId : 'foo@account',
-            type          : 'ACCOUNT'
+            mailAccountId : 'foo@account'
         });
-        t.expect(accountNode.toUrl()).toBe('cn_mail/folder/1');
-
-        accountNode.set('type', 'INBOX');
 
         t.expect(accountNode.toUrl()).toBe('cn_mail/folder/foo@account/1');
     });

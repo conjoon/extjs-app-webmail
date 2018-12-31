@@ -86,7 +86,6 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         me.getField('type').setModelValidators([{
             type : 'inclusion',
             list : [
-                'ACCOUNT',
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.JUNK,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH,
@@ -109,10 +108,6 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
     toUrl : function() {
         const me     = this,
               prefix = 'cn_mail/folder/';
-
-        if (me.get('type') === 'ACCOUNT') {
-            return prefix + me.get('id');
-        }
 
         return prefix +
                me.get('mailAccountId') +

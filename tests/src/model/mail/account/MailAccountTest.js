@@ -61,4 +61,18 @@ describe('conjoon.cn_mail.model.mail.account.MailAccountTest', function(t) {
 
     });
 
+
+    t.it("Test Record Validity", function(t) {
+        t.expect(model.isValid()).toBe(false);
+
+        model.set('type', 'Posteingang');
+        t.expect(model.isValid()).toBe(false);
+
+        model.set('type', 'ACCOUNT');
+        t.expect(model.isValid()).toBe(true);
+
+    });
+
+
+
 });

@@ -27,10 +27,38 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
 
     extend : 'conjoon.cn_mail.model.mail.BaseTreeModel',
 
-
     entityName : 'MailAccount',
 
     idProperty : 'id',
+
+    requires : [
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+    ],
+
+
+    fields : [{
+        name : 'type',
+        type : 'string'
+    }],
+
+    /**
+     * Overriden to make sure we can specify class statics for values of
+     * field validation for "type".
+     *
+     * @inheritdoc
+     */
+    constructor : function() {
+        const me = this;
+
+        me.callParent(arguments);
+
+        me.getField('type').setModelValidators([{
+            type : 'inclusion',
+            list : [
+                conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
+            ]
+        }]);
+    },
 
 
     /**
