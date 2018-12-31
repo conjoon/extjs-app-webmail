@@ -48,6 +48,9 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
         let proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy'),
             request = Ext.create('Ext.data.Request', {
                 action : 'read',
+                params : {
+                    mailAccountId : 'root'
+                },
                 operation : Ext.create('Ext.data.operation.Read')
             }),
             targetUrl = '/MailAccounts';
@@ -57,6 +60,23 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
         t.expect(request.getUrl()).toBe(targetUrl);
     });
 
+
+    t.it("buildUrl() - params trigger url for MailFolder", function(t) {
+
+        let proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy'),
+            request = Ext.create('Ext.data.Request', {
+                action : 'read',
+                params : {
+                    mailAccountId : 'foo'
+                },
+                operation : Ext.create('Ext.data.operation.Read')
+            }),
+            targetUrl = '/MailAccounts/foo/MailFolders';
+
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
+    });
 });
 
 

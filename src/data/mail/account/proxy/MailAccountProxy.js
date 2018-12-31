@@ -61,7 +61,8 @@ Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
 
         const me = this;
 
-        let url = me.getUrl(request);
+        let url    = me.getUrl(request),
+            params = request.getParams();
 
         if (!url.match(me.slashRe)) {
             url += '/';
@@ -72,6 +73,15 @@ Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
         }
 
         url += 'MailAccounts';
+
+        // if we are here, the mailAccountId is specified as the mail-account
+        // for which the child items should get loaded
+        if (params.mailAccountId && params.mailAccountId !== "root") {
+            url += '/' +
+                   params.mailAccountId +
+                   '/MailFolders';
+        }
+
         request.setUrl(url);
 
         return me.callParent([request]);
