@@ -191,7 +191,7 @@ harness.start({
                 items : [{
                     group : 'folder',
                     items : [
-                        'src/store/mail/folder/MailFolderStoreTest.js'
+                        'src/store/mail/folder/MailFolderTreeStoreTest.js'
                     ]
                 }, {
                     group : 'message',
