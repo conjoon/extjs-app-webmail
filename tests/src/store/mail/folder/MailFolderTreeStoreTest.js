@@ -49,6 +49,8 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
             // proxy
             t.expect(store.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
 
+            t.expect(store.getRoot().isExpanded()).toBe(false);
+
             t.expect(store.getRoot().isLoading()).toBe(false);
 
 

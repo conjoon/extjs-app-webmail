@@ -43,7 +43,9 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
     nodeParam : 'mailAccountId',
 
     root: {
-        expanded : true,
+        // set initially to false so no ugly fragments will blink when account node
+        // was loaded and load mask is hidden / shown when mail folder loads.
+        expanded : false,
         data     : []
     },
 
@@ -62,6 +64,12 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
                     node.expand(false, node.collapse);
                 }
             },
+            // set delay to 1 since a defer to hiding the loadMask after loading the
+            // account nodes makes it impossible for the mask to recover from being hidden
+            // and being shown again (account node load -> load mail folders -> account  node
+            // load defer to hide load mask processed -> load mask hidden,
+            // although it should be shown for the mail folderd
+            delay  : 1,
             single : true
         }
     }
