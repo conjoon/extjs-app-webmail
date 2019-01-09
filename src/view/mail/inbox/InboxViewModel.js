@@ -41,10 +41,6 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
     alias : 'viewmodel.cn_mail-mailinboxviewmodel',
 
     stores : {
-       /* 'cn_mail-mailfoldertreestore' : {
-            type     : 'cn_mail-mailfoldertreestore',
-            autoLoad : true
-        },*/
         'cn_mail-mailmessageitemstore' : {
             type     : 'cn_mail-mailmessageitemstore',
             autoLoad : true,
