@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,12 +70,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
             store = me.get('cn_mail-mailfoldertreestore'),
             folder;
 
-        folder = store.findExact('mailAccountId', mailAccountId);
+        folder = store.getRoot().findChild('id', mailAccountId, false);
 
-        if (folder === -1) {
+        if (!folder) {
             return;
         }
-        folder = store.getAt(folder);
         folder = folder.findChild("id", mailFolderId, true);
 
         if (!folder) {

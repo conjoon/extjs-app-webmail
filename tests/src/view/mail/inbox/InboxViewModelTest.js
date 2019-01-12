@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
  */
 
 describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
+
+    const TIMEOUT = 1250;
 
     var viewModel;
 
@@ -66,7 +68,7 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
 
     t.it("Should properly test updateUnreadMessageCount", function(t) {
 
-        t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function() {
+        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
             Ext.ux.ajax.SimManager.init({
                 delay: 1
@@ -82,9 +84,9 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
             });
 
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
                 var store = viewModel.getStore('cn_mail-mailfoldertreestore'),
-                    rec = store.getAt(store.findExact('id', 'INBOX'));
+                    rec = store.getRoot().findChild('id', 'dev_sys_conjoon_org').findChild('id', 'INBOX');
 
                 t.expect(rec.get('unreadCount')).toBe(3787);
 
