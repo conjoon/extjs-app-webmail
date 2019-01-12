@@ -21,9 +21,25 @@
  */
 
 /**
- * Base store for managing {@link conjoon.cn_mail.model.mail.folder.MailFolder}.
- * Store's proxy is set to memory and should be overridden in subclasses.
+ * Base store for managing {@link conjoon.cn_mail.model.mail.folder.MailFolder} as
+ * child nodes of {@link conjoon.cn_mail.model.mail.account.MailAccount}.
  *
+ * The hierarchy of the tree content of a MailFolderTreeStore looks as follows:
+ *
+ * - root
+ *     |
+ *     +- MailAccount
+ *     |        |
+ *     |        + MailFolder
+ *     |        + MailFolder
+ *     |        + MailFolder
+ *     |
+ *     +- MailAccount
+ *             |
+ *             + MailFolder
+ *             + MailFolder
+ *
+ * Model types will be set by the readers specified by the proxies et al.
  */
 Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
 
@@ -51,30 +67,48 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
 
 
     /**
-     * This is a single observer to make sure the MailAccount-nodes load the MailFolder
-     * nodes. There is currently no other way to trigger the loading properly with
-     * ExtJS6.2.
+     * Makes sure the append listener #onRootNodeAppend for the root node gets
+     * installed.
+     *
+     * @see onRootNodeAppend
      */
-    listeners : {
-        load : {
-            fn : function(store, nodes) {
-                let node;
-                for (let i = 0, len  = nodes.length; i < len; i++) {
-                    node = nodes[i];
-                    node.expand(false, node.collapse);
-                }
-            },
-            // set delay to 1 since a defer to hiding the loadMask after loading the
-            // account nodes makes it impossible for the mask to recover from being hidden
-            // and being shown again (account node load -> load mail folders -> account  node
-            // load defer to hide load mask processed -> load mask hidden,
-            // although it should be shown for the mail folderd
-            delay  : 1,
-            single : true
+    constructor : function() {
+
+        const me = this;
+
+        me.callParent(arguments);
+
+        let root = me.getRoot();
+
+        root.on('append', me.onRootNodeAppend, me);
+    },
+
+
+    /**
+     * Callback for the root node's append event. Makes sure the root node is expanded and
+     * furthermore expands the appended MailAccount-nodes to make sure they are loaded
+     * with their MailFolder's.
+     */
+    onRootNodeAppend : function(rootNode, node) {
+
+        const me   = this,
+              root = me.getRoot(),
+              cb   = function() {
+                  node.expand(false, function() {node.collapse()});
+              };
+
+        if (rootNode !== root) {
+            return;
+        }
+
+        switch (rootNode.isExpanded()) {
+            case true:
+                rootNode.expand(false, cb);
+                break;
+            default:
+                cb();
         }
     }
-
-
 
 
 });

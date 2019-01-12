@@ -22,7 +22,7 @@
 
 describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t) {
 
-
+    const TIMEOUT = 1250;
 
     t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
@@ -62,7 +62,7 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
 
             t.expect(store.getRoot().isLoading()).toBe(true);
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 t.expect(store.getRoot().childNodes.length).toBe(2);
 
