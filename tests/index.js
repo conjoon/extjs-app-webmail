@@ -40,6 +40,7 @@ harness.configure({
     },
     preload        : [
         conjoon.tests.config.paths.extjs.css.url,
+        conjoon.tests.config.paths.conjoon.css.url,
         conjoon.tests.config.paths.extjs.js.url
     ]
 });

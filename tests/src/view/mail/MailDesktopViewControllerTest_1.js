@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,29 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
             return key;
         },
+        getChildAt = function(panel, rootId, index, shouldBe, t) {
+
+            let root = panel.down('cn_mail-mailfoldertree').getStore().getRoot().findChild('id', rootId),
+                c    = root.getChildAt(index);
+
+            if (shouldBe && t) {
+                t.expect(c.get('id')).toBe(shouldBe);
+            }
+
+            return c;
+        },
         selectMailFolder = function(panel, storeAt, shouldBeId, t) {
 
-            let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
+            let folder = storeAt instanceof Ext.data.TreeModel
+                ? storeAt
+                : panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
+
+            let p = folder.parentNode;
+
+            while (p) {
+                p.expand();
+                p = p.parentNode;
+            }
 
             panel.down('cn_mail-mailfoldertree').getSelectionModel()
                 .select(folder);
@@ -109,10 +129,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
         conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.resetAll();
     });
 
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function () {
-// place AttachmentSim before MessageItemSim due to similiar regex
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.AttachmentSim', function () {
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function () {
+t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function () {
 
     const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
@@ -167,7 +184,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(750, function() {
 
-            selectMailFolder(panel, 1, 'INBOX', t);
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t));
 
 
             t.waitForMs(751, function(){
@@ -301,10 +318,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.waitForMs(750, function () {
 
             let treeStore = panel.down('cn_mail-mailfoldertree').getStore();
-            t.expect(treeStore.getAt(4).get('type')).toBe('DRAFT');
-            panel.down('cn_mail-mailfoldertree').getSelectionModel().select(
-                treeStore.getAt(4)
-            );
+
+
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
+
 
             t.waitForMs(1250, function () {
 
@@ -373,10 +390,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(251, function () {
 
-            t.expect(panel.down('cn_mail-mailfoldertree').getStore().getAt(4).get('type')).toBe('DRAFT');
-            panel.down('cn_mail-mailfoldertree').getSelectionModel().select(
-                panel.down('cn_mail-mailfoldertree').getStore().getAt(4)
-            );
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
 
             t.waitForMs(1252, function () {
 
@@ -387,7 +401,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                 t.waitForMs(753, function () {
 
-                    t.click(editor.down('#saveButton'));
+                    t.click(editor.down('#saveButton'), function() {
 
                     t.waitForMs(1754, function () {
 
@@ -412,10 +426,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             t.expect(mvRec.get('mailFolderId')).toBe('INBOX.Trash');
                             t.expect(editor.getViewModel().get('messageDraft').get('mailFolderId')).toBe('INBOX.Trash');
 
-                            t.expect(panel.down('cn_mail-mailfoldertree').getStore().getAt(5).get('type')).toBe('TRASH');
-                            panel.down('cn_mail-mailfoldertree').getSelectionModel().select(
-                                panel.down('cn_mail-mailfoldertree').getStore().getAt(5)
-                            );
+                            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 4, 'INBOX.Trash', t));
+
 
                             t.waitForMs(1756, function() {
 
@@ -426,32 +438,39 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                                 editor.down('#subjectField').setValue('uaav-456');
 
-                                t.click(editor.down('#saveButton'));
+                                t.click(editor.down('#saveButton'), function() {
 
-                                t.waitForMs(1757, function () {
+                                    t.waitForMs(1757, function() {
 
-                                    panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
-
-                                    subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                                    t.expect(subjectCont[0].innerHTML).toContain('uaav-456');
-
-                                    panel.setActiveTab(editor);
-                                    editor.down('#subjectField').setValue('andagain');
-                                    t.click(editor.down('#saveButton'));
-
-                                    t.waitForMs(1758, function () {
-
-                                        editor.close();
                                         panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
                                         subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                                        t.expect(subjectCont[0].innerHTML).toContain('andagain');
+                                        t.expect(subjectCont[0].innerHTML).toContain('uaav-456');
 
-                                        panel.destroy();
-                                        panel = null;
+                                        panel.setActiveTab(editor);
+                                        editor.down('#subjectField').setValue('andagain');
+
+
+                                        t.click(editor.down('#saveButton'), function() {
+
+                                            t.waitForMs(1758, function() {
+
+                                                editor.close();
+                                                panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+
+                                                subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                                t.expect(subjectCont[0].innerHTML).toContain('andagain');
+
+                                                panel.destroy();
+                                                panel = null;
+
+
+                                            });
+
+
+                                        });
 
                                     });
-
 
 
                                 });
@@ -460,7 +479,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                         });
 
 
-                    });
+                    });});
                 });
             });
         });
@@ -592,16 +611,15 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(750, function () {
 
-            let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(4);
-            t.expect(folder.get('type')).toBe('DRAFT');
-            panel.down('cn_mail-mailfoldertree').getSelectionModel().select(folder);
+
+            let folder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
 
             t.waitForMs(1250, function () {
 
                 let ck = '1';
 
                 if (context != 'compose') {
-                    ck = createMessageItem(1, folder.getId()).getCompoundKey();
+                    ck = createMessageItem(1, folder.get('id')).getCompoundKey();
                 }
 
                 let editor = viewController.showMailEditor(ck, context);
@@ -613,32 +631,38 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                     t.waitForMs(750, function () {
 
-                        t.click(editor.down('#saveButton'));
+                        t.click(editor.down('#saveButton'), function() {
 
-                        t.waitForMs(1750, function () {
-
-                            panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
-
-                            let subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                            t.expect(subjectCont[0].innerHTML).toContain(myValue);
-
-                            panel.setActiveTab(editor);
-
-                            editor.down('#subjectField').setValue('456');
-
-                            t.click(editor.down('#saveButton'));
-
-                            t.waitForMs(750, function () {
+                            t.waitForMs(1750, function () {
 
                                 panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
-                                subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
-                                t.expect(subjectCont[0].innerHTML).toContain('456');
+                                let subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                t.expect(subjectCont[0].innerHTML).toContain(myValue);
 
-                                panel.destroy();
-                                panel = null;
+                                panel.setActiveTab(editor);
+
+                                editor.down('#subjectField').setValue('456');
+
+                                t.click(editor.down('#saveButton'), function() {
+
+                                    t.waitForMs(750, function () {
+
+                                        panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
+
+                                        subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
+                                        t.expect(subjectCont[0].innerHTML).toContain('456');
+
+                                        panel.destroy();
+                                        panel = null;
+                                    });
+
+                                });
+
                             });
                         });
+
+
                     });
 
                 });
@@ -666,6 +690,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
+
     t.it("conjoon/app-cn_mail#55", function(t) {
         let viewController = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopViewController'
@@ -686,13 +711,13 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(250, function () {
 
-            let draftFolder = mailFolderTree.getStore().getAt(4),
-                inboxFolder = mailFolderTree.getStore().getAt(1);
+            let draftFolder = getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t),
+                inboxFolder = getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t);
 
             t.expect(draftFolder.get('type')).toBe('DRAFT');
             t.expect(inboxFolder.get('type')).toBe('INBOX');
 
-            mailFolderTree.getSelectionModel().select(inboxFolder);
+            selectMailFolder(panel, inboxFolder);
 
             t.waitForMs(1751, function () {
 
@@ -709,7 +734,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                         panel.setActiveTab(inboxView);
 
-                        mailFolderTree.getSelectionModel().select(draftFolder);
+                        selectMailFolder(panel, draftFolder);
 
                         t.waitForMs(1754, function() {
 
@@ -764,7 +789,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(750, function() {
 
-            let mailFolder = selectMailFolder(panel, 4);
+            let mailFolder =  selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
+
             t.expect(mailFolder.get('type')).toBe('DRAFT');
 
             t.waitForMs(751, function(){
@@ -803,7 +829,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             t.expect(panel.down('cn_mail-mailmessagegrid').getStore().getAt(0)
                                           .getCompoundKey().equalTo(draft.getCompoundKey())).toBe(false);
 
-                            let trashMailFolder = selectMailFolder(panel, 5);
+                            let trashMailFolder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 4, 'INBOX.Trash', t));
                             t.expect(trashMailFolder.get('type')).toBe('TRASH');
 
                             t.waitForMs(1755, function() {
@@ -927,18 +953,19 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(1751, function() {
 
-            let mailFolder = selectMailFolder(panel, 4);
+            let mailFolder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
+
             t.expect(mailFolder.get('type')).toBe('DRAFT');
 
             t.waitForMs(1752, function(){
 
                 // intentionally not selected
                 draft = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
-                t.expect(draft.get('mailFolderId')).toBe(mailFolder.getId());
+                t.expect(draft.get('mailFolderId')).toBe(mailFolder.get('id'));
 
                 t.waitForMs(1753, function() {
 
-                    mailFolder = selectMailFolder(panel, 5);
+                    mailFolder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 4, 'INBOX.Trash', t));
                     t.expect(mailFolder.get('type')).toBe('TRASH');
 
                     t.waitForMs(1754, function() {
@@ -1140,7 +1167,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(1750, function() {
 
-            selectMailFolder(panel, 1);
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t));
+
 
             t.waitForMs(1750, function() {
 
@@ -1158,7 +1186,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     let inboxView   = panel.setActiveTab(panel.down('cn_mail-mailinboxview')),
                         messageView = inboxView.down('cn_mail-mailmessagereadermessageview');
 
-                    selectMailFolder(panel, 3);
+                    selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 2, 'INBOX.Junk', t));
 
                     t.waitForMs(750, function() {
 
@@ -1239,7 +1267,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(1750, function() {
 
-            selectMailFolder(panel, 1);
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t));
 
             t.waitForMs(1750, function() {
 
@@ -1258,7 +1286,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     let inboxView   = panel.setActiveTab(panel.down('cn_mail-mailinboxview')),
                         messageView = inboxView.down('cn_mail-mailmessagereadermessageview');
 
-                    selectMailFolder(panel, 3);
+                    selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 2, 'INBOX.Junk', t));
 
                     t.waitForMs(750, function() {
 
@@ -1322,7 +1350,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(1750, function() {
 
-            selectMailFolder(panel, 1);
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t));
 
 
             t.waitForMs(1750, function() {
@@ -1351,7 +1379,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     let inboxView   = panel.setActiveTab(panel.down('cn_mail-mailinboxview')),
                         messageView = inboxView.down('cn_mail-mailmessagereadermessageview');
 
-                    selectMailFolder(panel, 3);
+                    selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 2, 'INBOX.Junk', t));
+
 
                     t.waitForMs(750, function() {
 
@@ -1421,7 +1450,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.waitForMs(1750, function() {
 
-            selectMailFolder(panel, 1);
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t));
 
             let field = 'foo',
                 id    = '1',
@@ -1526,4 +1555,4 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-});})});});});
+});})});

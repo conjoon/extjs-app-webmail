@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.EditingModes',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
     ],
 
     alias : 'controller.cn_mail-maildesktopviewcontroller',
@@ -174,7 +175,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         me.updateMessageItemsFromOpenedViews(
-            messageItem.getPreviousCompoundKey(), 'mailFolderId', targetFolder.getId());
+            messageItem.getPreviousCompoundKey(), 'mailFolderId', targetFolder.get('id'));
 
         // we have an updated compound key now
         let collection = me.getMessageItemsFromOpenedViews(messageItem.getCompoundKey(), true),
@@ -313,12 +314,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               store     = tree.getStore();
 
         if (store.isLoading() || store.getProxy().type === 'memory') {
-            tree.on(
-                'load',
+            inboxView.mon(tree, 'load',
                 Ext.Function.bind(
                     me.processMailFolderSelectionForRouting, me, [mailAccountId, mailFolderId]
-                ), me, {single : true}
-            );
+                ),
+            me);
         } else {
             me.processMailFolderSelectionForRouting(mailAccountId, mailFolderId);
         }
@@ -366,6 +366,13 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         inboxView.cn_href = rec.toUrl();
         tree.getSelectionModel().select(rec);
         Ext.History.add(inboxView.cn_href);
+
+        let pn = rec.parentNode;
+        while (pn) {
+            pn.expand();
+            pn = pn.parentNode;
+        }
+
         return true;
     },
 
@@ -1130,22 +1137,43 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
     /**
      * Registered by this view's ViewModel to make sure the controller is notified
-     * of the initial load of the MailFolderTreeStore to seed mailAccountId and
+     * of the  load of the MailFolderTreeStore to seed mailAccountId and
      * mailFolderId amongst the editors when composing a message.
      *
      * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
      * @param {Array} records
+     *
+     * @return null if the node being loaded was of type ACCOUNT,
+     * otherwise the defaultAccountInformations fetched by this operation.
+     *
+     * @throws if no suitable draftNode was found
      */
     onMailFolderTreeStoreLoad : function(store, records) {
 
         const me           = this,
               view         = me.getView(),
-              EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+              TYPES        = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        me.defaultAccountInformations = {
-            mailAccountId : records[0].get('id'),
-            mailFolderId  : records[0].findChild("type", 'DRAFT', false).get('id')
-        };
+        if (records[0].get('type') === TYPES.ACCOUNT) {
+            return null;
+        }
+
+
+        if (!me.defaultAccountInformations) {
+            let accountNode = records[0].parentNode,
+                draftNode   = accountNode.findChild("type", TYPES.DRAFT, false);
+
+            if (!draftNode) {
+                Ext.raise({
+                    msg: "No suitable node found for saving drafts"
+                });
+            }
+
+            me.defaultAccountInformations = {
+                mailAccountId: accountNode.get('id'),
+                mailFolderId: draftNode.get('id')
+            };
+        }
 
         if (me.starvingEditors) {
             let md, vm, editor,
@@ -1180,13 +1208,15 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                 }
             }
         }
+
+        return me.defaultAccountInformations;
     },
 
     /**
      * @private
      */
     computeIdForMessageViewMap : function(id, type) {
-        return id = type + '-' + id;
+        return type + '-' + id;
     }
 
 
