@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 
 describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTest', function(t) {
 
+    const TIMEOUT = 1250;
+
     var view,
         viewConfig,
         controller,
@@ -29,8 +31,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             let store = Ext.create(
                 'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
             );
-            store.load();
             editor.getViewModel().set('cn_mail-mailfoldertreestore', store);
+            store.load();
         },
         createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
@@ -61,28 +63,42 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 type : type ? type : 'image/jpg'
             }], 'foo.png');
         },
-        createEditorForController = function(controller, editMode) {
+        createEditorForController = function(controller, editMode, messageDraft) {
 
-            var messageDraft,
-                editMode = editMode ? editMode : 'CREATE';
+            if (!messageDraft) {
+                var editMode = editMode ? editMode : 'CREATE';
 
-            switch (editMode) {
-                case 'CREATE':
-                    messageDraft = Ext.create(
-                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
-                            mailAccountId : 'dev_sys_conjoon_org',
-                            mailFolderId : 'INBOX'
-                    });
-                    break;
+                switch (editMode) {
+                    case 'CREATE':
+                        messageDraft = Ext.create(
+                            'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+                                mailAccountId : 'dev_sys_conjoon_org',
+                                mailFolderId : 'INBOX'
+                            });
+                        break;
+                }
             }
 
-            return Ext.create(
+
+            let store = Ext.create(
+                'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
+            );
+
+
+           // conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel
+
+            let ed = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     controller   : controller,
-                    renderTo     : document.body,
                     messageDraft : messageDraft
                 });
 
+            vm = ed.getViewModel();
+
+            vm.set('cn_mail-mailfoldertreestore', store);
+            store.load();
+
+            return ed;
         };
 
     t.afterEach(function() {
@@ -156,7 +172,10 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
             t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
                 t.expect(itemremove).toBe(-1);
                 t.expect(itemadd).toBe(0);
                 t.expect(formFileButtonChange).toBe(0);
@@ -213,11 +232,16 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            t.waitForMs(500, function() {
-                var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
-                t.expect(attachmentList.getStore().getRange().length).toBe(0);
-                controller.onFormFileButtonChange(null, null, null, [createFile()]);
-                t.expect(attachmentList.getStore().getRange().length).toBe(1);
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                t.waitForMs(TIMEOUT, function() {
+                    var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
+                    t.expect(attachmentList.getStore().getRange().length).toBe(0);
+                    controller.onFormFileButtonChange(null, null, null, [createFile()]);
+                    t.expect(attachmentList.getStore().getRange().length).toBe(1);
+                });
             });
         });
 
@@ -228,15 +252,22 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            t.waitForMs(500, function() {
-                t.expect(view.down('#ccField').isHidden()).toBe(true);
-                t.expect(view.down('#bccField').isHidden()).toBe(true);
-                controller.onShowCcBccButtonClick();
-                t.expect(view.down('#ccField').isHidden()).toBe(false);
-                t.expect(view.down('#bccField').isHidden()).toBe(false);
-                controller.onShowCcBccButtonClick();
-                t.expect(view.down('#ccField').isHidden()).toBe(true);
-                t.expect(view.down('#bccField').isHidden()).toBe(true);
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    t.expect(view.down('#ccField').isHidden()).toBe(true);
+                    t.expect(view.down('#bccField').isHidden()).toBe(true);
+                    controller.onShowCcBccButtonClick();
+                    t.expect(view.down('#ccField').isHidden()).toBe(false);
+                    t.expect(view.down('#bccField').isHidden()).toBe(false);
+                    controller.onShowCcBccButtonClick();
+                    t.expect(view.down('#ccField').isHidden()).toBe(true);
+                    t.expect(view.down('#bccField').isHidden()).toBe(true);
+
+                });
             });
         });
 
@@ -248,75 +279,80 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            var wrap  = view.down('#attachmentListWrap').el,
-                event = {
-                    preventDefault : Ext.emptyFn,
-                    event          : {}
-                },
-                expectCountAndHover = function(t, count, hover) {
-                    if (hover) {
-                        t.expect(wrap.dom.className).toContain('hover');
-                    } else {
-                        t.expect(wrap.dom.className).not.toContain('hover');
-                    }
+            t.waitForMs(TIMEOUT, function() {
 
-                    t.expect(controller.ddListener.dragEnterCount).toBe(count);
-                };
+                view.render(document.body);
 
-            // dragenter, dragleave, dragend
-            t.expect(controller.ddListener.dragEnterCount).toBe(0);
-            wrap.fireEvent('dragenter', event);
-            expectCountAndHover(t, 1, true);
-            wrap.fireEvent('dragenter', event);
-            expectCountAndHover(t, 2, true);
-            wrap.fireEvent('dragenter', event);
-            expectCountAndHover(t, 3, true);
-            wrap.fireEvent('dragenter', event);
-            expectCountAndHover(t, 4, true);
-            wrap.fireEvent('dragleave', event);
-            expectCountAndHover(t, 3, true);
-            wrap.fireEvent('dragleave', event);
-            expectCountAndHover(t, 2, true);
-            wrap.fireEvent('dragend', event);
-            expectCountAndHover(t, 0, false);
+                var wrap  = view.down('#attachmentListWrap').el,
+                    event = {
+                        preventDefault : Ext.emptyFn,
+                        event          : {}
+                    },
+                    expectCountAndHover = function(t, count, hover) {
+                        if (hover) {
+                            t.expect(wrap.dom.className).toContain('hover');
+                        } else {
+                            t.expect(wrap.dom.className).not.toContain('hover');
+                        }
 
-            // registerAttachmentListWrapEnter
-            controller.ddListener.registerAttachmentListWrapEnter(true);
-            expectCountAndHover(t, 1, true);
-            controller.dragEnterCount = 8970;
-            controller.ddListener.registerAttachmentListWrapEnter(false, true);
-            expectCountAndHover(t, 0, false);
-            controller.dragEnterCount = -8970;
-            wrap.fireEvent('drop', event);
-            expectCountAndHover(t, 0, false);
+                        t.expect(controller.ddListener.dragEnterCount).toBe(count);
+                    };
 
-            controller.dragEnterCount = 0;
-            controller.ddListener.onAttachmentListWrapDragEnter(event);
-            expectCountAndHover(t, 1, true);
-            controller.ddListener.onAttachmentListWrapDragLeave(event);
-            expectCountAndHover(t, 0, false);
-            controller.dragEnterCount = 9890;
-            controller.ddListener.onAttachmentListWrapDragEnd(event);
-            expectCountAndHover(t, 0, false);
-            controller.dragEnterCount = 9890;
-            controller.ddListener.onAttachmentListWrapDrop(event);
-            expectCountAndHover(t, 0, false);
+                // dragenter, dragleave, dragend
+                t.expect(controller.ddListener.dragEnterCount).toBe(0);
+                wrap.fireEvent('dragenter', event);
+                expectCountAndHover(t, 1, true);
+                wrap.fireEvent('dragenter', event);
+                expectCountAndHover(t, 2, true);
+                wrap.fireEvent('dragenter', event);
+                expectCountAndHover(t, 3, true);
+                wrap.fireEvent('dragenter', event);
+                expectCountAndHover(t, 4, true);
+                wrap.fireEvent('dragleave', event);
+                expectCountAndHover(t, 3, true);
+                wrap.fireEvent('dragleave', event);
+                expectCountAndHover(t, 2, true);
+                wrap.fireEvent('dragend', event);
+                expectCountAndHover(t, 0, false);
 
-            // wait for viewmodel bindings
-            t.waitForMs(500, function() {
-                var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
-                t.expect(attachmentList.getStore().getRange().length).toBe(0);
-                controller.addAttachmentsFromFileList([createFile()]);
-                t.expect(attachmentList.getStore().getRange().length).toBe(1);
+                // registerAttachmentListWrapEnter
+                controller.ddListener.registerAttachmentListWrapEnter(true);
+                expectCountAndHover(t, 1, true);
+                controller.dragEnterCount = 8970;
+                controller.ddListener.registerAttachmentListWrapEnter(false, true);
+                expectCountAndHover(t, 0, false);
+                controller.dragEnterCount = -8970;
+                wrap.fireEvent('drop', event);
+                expectCountAndHover(t, 0, false);
 
-                attachmentList.getStore().removeAll();
-
-                event.event.dataTransfer = {files : [createFile()]};
-                t.expect(attachmentList.getStore().getRange().length).toBe(0);
+                controller.dragEnterCount = 0;
+                controller.ddListener.onAttachmentListWrapDragEnter(event);
+                expectCountAndHover(t, 1, true);
+                controller.ddListener.onAttachmentListWrapDragLeave(event);
+                expectCountAndHover(t, 0, false);
+                controller.dragEnterCount = 9890;
+                controller.ddListener.onAttachmentListWrapDragEnd(event);
+                expectCountAndHover(t, 0, false);
+                controller.dragEnterCount = 9890;
                 controller.ddListener.onAttachmentListWrapDrop(event);
-                t.expect(attachmentList.getStore().getRange().length).toBe(1);
-            });
+                expectCountAndHover(t, 0, false);
 
+                // wait for viewmodel bindings
+                t.waitForMs(TIMEOUT, function() {
+                    var attachmentList = view.down('cn_mail-mailmessageeditorattachmentlist');
+                    t.expect(attachmentList.getStore().getRange().length).toBe(0);
+                    controller.addAttachmentsFromFileList([createFile()]);
+                    t.expect(attachmentList.getStore().getRange().length).toBe(1);
+
+                    attachmentList.getStore().removeAll();
+
+                    event.event.dataTransfer = {files : [createFile()]};
+                    t.expect(attachmentList.getStore().getRange().length).toBe(0);
+                    controller.ddListener.onAttachmentListWrapDrop(event);
+                    t.expect(attachmentList.getStore().getRange().length).toBe(1);
+                });
+
+            });
 
         });
 
@@ -326,39 +362,43 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            view.getViewModel().set('isSaving',  true);
-            view.getViewModel().set('isSending', true);
-            view.setBusy({msg : 'foo'});
+            t.waitForMs(TIMEOUT, function() {
 
-            t.expect(view.busyMask.isHidden()).toBe(false);
-            controller.endBusyState('saving');
+                view.render(document.body);
 
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('isSaving')).toBe(false);
-                t.expect(view.getViewModel().get('isSending')).toBe(true);
-
-                t.expect(view.busyMask.isHidden()).toBe(true);
-
+                view.getViewModel().set('isSaving',  true);
+                view.getViewModel().set('isSending', true);
                 view.setBusy({msg : 'foo'});
-                controller.endBusyState('sending');
 
-                t.waitForMs(500, function() {
-                    t.expect(view.getViewModel().get('isSending')).toBe(false);
+                t.expect(view.busyMask.isHidden()).toBe(false);
+                controller.endBusyState('saving');
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    t.expect(view.getViewModel().get('isSaving')).toBe(false);
+                    t.expect(view.getViewModel().get('isSending')).toBe(true);
+
                     t.expect(view.busyMask.isHidden()).toBe(true);
 
-                    var exc, e;
-                    try{
-                        controller.endBusyState();
-                    } catch (e) {
-                        exc = e;
-                    }
-                    t.expect(exc).toBeDefined();
-                    t.expect(exc.msg).toContain("Unknown");
+                    view.setBusy({msg : 'foo'});
+                    controller.endBusyState('sending');
 
-                });
-            });
+                    t.waitForMs(TIMEOUT, function() {
+                        t.expect(view.getViewModel().get('isSending')).toBe(false);
+                        t.expect(view.busyMask.isHidden()).toBe(true);
+
+                        var exc, e;
+                        try{
+                            controller.endBusyState();
+                        } catch (e) {
+                            exc = e;
+                        }
+                        t.expect(exc).toBeDefined();
+                        t.expect(exc.msg).toContain("Unknown");
+
+                    });
+                });});
         });
 
 
@@ -368,16 +408,24 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            t.isCalledNTimes('setBusy', view, 2);
-            t.expect(view.busyMask).toBeFalsy();
-            controller.setViewBusy(createOperation());
+            t.waitForMs(TIMEOUT, function() {
 
-            t.expect(view.busyMask).toBeTruthy();
-            t.expect(view.busyMask.isHidden()).toBe(false);
-            t.expect(view.busyMask.waitTimer).toBeTruthy();
+                view.render(document.body);
 
-            controller.setViewBusy(createOperation(), 1);
-            t.expect(view.busyMask.waitTimer).toBeFalsy();
+                t.isCalledNTimes('setBusy', view, 2);
+                t.expect(view.busyMask).toBeFalsy();
+                controller.setViewBusy(createOperation());
+
+                t.expect(view.busyMask).toBeTruthy();
+                t.expect(view.busyMask.isHidden()).toBe(false);
+                t.expect(view.busyMask.waitTimer).toBeTruthy();
+
+                controller.setViewBusy(createOperation(), 1);
+                t.expect(view.busyMask.waitTimer).toBeFalsy();
+
+            });
+
+
         });
 
 
@@ -387,22 +435,30 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
              });
             view = createEditorForController(controller);
 
-            // dummy
-            view.setBusy({msg : 'foo'});
+            t.waitForMs(TIMEOUT, function() {
 
-            t.expect(controller.deferTimers).toBeDefined();
-            controller.deferTimers['test'] = 456;
-            t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
+                view.render(document.body);
 
-            t.expect(view.busyMask).toBeDefined();
-            t.isCalledNTimes('destroy', view.busyMask, 1);
 
-            t.expect(controller.ddListener).toBeDefined();
-            t.isCalledNTimes('destroy', controller.ddListener, 1);
+                // dummy
+                view.setBusy({msg : 'foo'});
 
-            controller.onMailMessageEditorBeforeDestroy();
+                t.expect(controller.deferTimers).toBeDefined();
+                controller.deferTimers['test'] = 456;
+                t.isCalledNTimes('onMailMessageEditorBeforeDestroy', controller, 1);
 
-            t.expect(controller.deferTimers['test']).toBeUndefined();
+                t.expect(view.busyMask).toBeDefined();
+                t.isCalledNTimes('destroy', view.busyMask, 1);
+
+                t.expect(controller.ddListener).toBeDefined();
+                t.isCalledNTimes('destroy', controller.ddListener, 1);
+
+                controller.onMailMessageEditorBeforeDestroy();
+
+                t.expect(controller.deferTimers['test']).toBeUndefined();
+            });
+
+
         });
 
 
@@ -414,22 +470,27 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
-                view.down('#subjectField').setValue('test');
-                view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+            t.waitForMs(TIMEOUT, function() {
 
-                t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
-                t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
-                t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
-                t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
+                view.render(document.body);
 
-                controller.onSaveButtonClick();
+                t.waitForMs(TIMEOUT, function() {
+                    view.down('#subjectField').setValue('test');
+                    view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
-                t.waitForMs(1500, function() {
-                    // give enough time for the tests to finish
+                    t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
+                    t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
+                    t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
+                    t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
+
+                    controller.onSaveButtonClick();
+
+                    t.waitForMs(TIMEOUT, function() {
+                        // give enough time for the tests to finish
+                    });
                 });
+
             });
 
         });
@@ -440,25 +501,31 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
 
-            t.waitForMs(750, function() {
-                view.down('#subjectField').setValue('TESTFAIL');
-                view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+            t.waitForMs(TIMEOUT, function() {
 
-                t.isCalledNTimes('onMailMessageBeforeSave',            controller, 1);
-                t.isCalledNTimes('onMailMessageSaveOperationComplete', controller, 1);
-                t.isCalledNTimes('onMailMessageSaveComplete',          controller, 0);
-                t.isCalledNTimes('onMailMessageSaveOperationException', controller, 1);
+                view.render(document.body);
 
-                controller.onSaveButtonClick();
+                t.waitForMs(TIMEOUT, function() {
+                    view.down('#subjectField').setValue('TESTFAIL');
+                    view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
-                t.waitForMs(1500, function() {
-                    // give enough time for the tests to finish
+                    t.isCalledNTimes('onMailMessageBeforeSave',            controller, 1);
+                    t.isCalledNTimes('onMailMessageSaveOperationComplete', controller, 1);
+                    t.isCalledNTimes('onMailMessageSaveComplete',          controller, 0);
+                    t.isCalledNTimes('onMailMessageSaveOperationException', controller, 1);
+
+                    controller.onSaveButtonClick();
+
+                    t.waitForMs(TIMEOUT, function() {
+                        // give enough time for the tests to finish
+                    });
                 });
+
             });
         });
+
 
 
         t.it("onMailMessageSaveOperationComplete()", function(t) {
@@ -467,9 +534,15 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            t.isCalledNTimes('setViewBusy', controller, 1);
-            controller.onMailMessageSaveOperationComplete(
-                view, view.getViewModel().get('messageDraft'), createOperation());
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                t.isCalledNTimes('setViewBusy', controller, 1);
+                controller.onMailMessageSaveOperationComplete(
+                    view, view.getViewModel().get('messageDraft'), createOperation());
+
+            });
 
         });
 
@@ -480,39 +553,50 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            var batch = {retry : function() {}};
+            t.waitForMs(TIMEOUT, function() {
 
-            view.getViewModel().set('messageDraft.subject', 'TEST');
-            view.getViewModel().set('isSaving', true);
-            view.getViewModel().notify();
+                view.render(document.body);
 
+                var batch = {retry : function() {}};
 
-            t.isCalledNTimes('showMailMessageSaveFailedNotice', view, 2);
-
-            controller.onMailMessageSaveOperationException(
-                view, view.getViewModel().get('messageDraft'), createOperation(), false, false, batch);
-
-            var noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
-            t.click(noButton[0]);
-
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('isSaving')).toBe(false);
-
+                view.getViewModel().set('messageDraft.subject', 'TEST');
                 view.getViewModel().set('isSaving', true);
+                view.getViewModel().notify();
+
+
+                t.isCalledNTimes('showMailMessageSaveFailedNotice', view, 2);
 
                 controller.onMailMessageSaveOperationException(
                     view, view.getViewModel().get('messageDraft'), createOperation(), false, false, batch);
 
-                t.isCalledOnce('retry', batch);
+                var noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
+                t.click(noButton[0], function() {
 
-                var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-                t.click(yesButton[0]);
+                    t.waitForMs(TIMEOUT, function() {
+                        t.expect(view.getViewModel().get('isSaving')).toBe(false);
 
-                t.waitForMs(500, function() {
-                    t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                        view.getViewModel().set('isSaving', true);
+
+                        controller.onMailMessageSaveOperationException(
+                            view, view.getViewModel().get('messageDraft'), createOperation(), false, false, batch);
+
+                        t.isCalledOnce('retry', batch);
+
+                        var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+                        t.click(yesButton[0], function() {
+                            t.waitForMs(TIMEOUT, function() {
+                                t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                            });
+                        });
+
+                    });
+
                 });
 
+
             });
+
+
         });
 
 
@@ -521,16 +605,21 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
+            t.waitForMs(TIMEOUT, function() {
 
-            t.isCalledNTimes('setBusy', view, 1);
-            view.getViewModel().get('messageDraft').set('subject', 'foo');
-            controller.onMailMessageBeforeSave(
-                view, view.getViewModel().get('messageDraft'), false, false);
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                view.render(document.body);
+
+                t.isCalledNTimes('setBusy', view, 1);
+                view.getViewModel().get('messageDraft').set('subject', 'foo');
+                controller.onMailMessageBeforeSave(
+                    view, view.getViewModel().get('messageDraft'), false, false);
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                });
+
             });
+
         });
 
 
@@ -539,15 +628,21 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+            t.waitForMs(TIMEOUT, function() {
 
-            controller.onMailMessageBeforeSave(
-                view, view.getViewModel().get('messageDraft'), false, false);
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('isSaving')).toBe(false);
+                view.render(document.body);
+
+                t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+
+                controller.onMailMessageBeforeSave(
+                    view, view.getViewModel().get('messageDraft'), false, false);
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(view.getViewModel().get('isSaving')).toBe(false);
+                });
             });
+
+
         });
 
 
@@ -556,19 +651,25 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            view.getViewModel().set('isSubjectRequired', false);
-            view.getViewModel().notify();
+            t.waitForMs(TIMEOUT, function() {
 
-            t.isntCalled('showSubjectMissingNotice', view);
-            t.isCalledNTimes('setBusy', view, 1);
+                view.render(document.body);
 
-            controller.onMailMessageBeforeSave(
-                view, view.getViewModel().get('messageDraft'), false, false);
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                view.getViewModel().set('isSubjectRequired', false);
+                view.getViewModel().notify();
+
+                t.isntCalled('showSubjectMissingNotice', view);
+                t.isCalledNTimes('setBusy', view, 1);
+
+                controller.onMailMessageBeforeSave(
+                    view, view.getViewModel().get('messageDraft'), false, false);
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(view.getViewModel().get('isSaving')).toBe(true);
+                });
             });
+
+
         });
 
 
@@ -577,21 +678,29 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.isCalledNTimes('showSubjectMissingNotice', view, 1);
-            controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), false, false);
+            t.waitForMs(TIMEOUT, function() {
 
-            var cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom),
-                mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+                view.render(document.body);
 
-            t.click(cancelButton[0]);
+                t.isCalledNTimes('showSubjectMissingNotice', view, 1);
+                controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), false, false);
 
-            t.waitForMs(500, function() {
-                t.expect(view.getViewModel().get('subject')).toBeFalsy();
-                t.expect(view.getViewModel().get('isSubjectRequired')).toBe(true);
-                t.expect(view.getViewModel().get('isSaving')).toBe(false);
+                var cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom),
+                    mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+
+                t.click(cancelButton[0], function() {
+                    t.waitForMs(TIMEOUT, function() {
+                        t.expect(view.getViewModel().get('subject')).toBeFalsy();
+                        t.expect(view.getViewModel().get('isSubjectRequired')).toBe(true);
+                        t.expect(view.getViewModel().get('isSaving')).toBe(false);
+                    });
+                });
+
+
             });
+
+
         });
 
 
@@ -600,22 +709,26 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
                 t.isCalledNTimes('showSubjectMissingNotice', view, 1);
                 controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), false, false);
 
                 var okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom),
                     mask     = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
 
-                t.click(okButton[0]);
+                t.click(okButton[0], function() {
 
-                t.waitForMs(500, function() {
                     t.expect(view.getViewModel().get('subject')).toBeFalsy();
                     t.expect(view.getViewModel().get('isSubjectRequired')).toBe(false);
                     t.expect(view.getViewModel().get('isSaving')).toBe(true);
+
                 });
+
+
             });
 
         });
@@ -626,9 +739,12 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
+
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
                 t.isCalledNTimes('showSubjectMissingNotice', view, 1);
                 controller.onMailMessageBeforeSave(view, view.getViewModel().get('messageDraft'), false, false);
 
@@ -638,13 +754,13 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
                 inputField[0].value = 'foo';
 
-                t.click(okButton[0]);
-
-                t.waitForMs(500, function() {
+                t.click(okButton[0], function() {
                     t.expect(view.getViewModel().get('messageDraft').get('subject')).toBe('foo');
                     t.expect(view.getViewModel().get('isSubjectRequired')).toBe(true);
                     t.expect(view.getViewModel().get('isSaving')).toBe(true);
                 });
+
+
             });
         });
 
@@ -656,15 +772,22 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            let exc, e;
+            t.waitForMs(TIMEOUT, function() {
 
-            try{controller.onMailMessageBeforeSave(view, Ext.create(
-                'conjoon.cn_mail.model.mail.message.MessageDraft'
-            ))} catch(e) {exc=e};
+                view.render(document.body);
 
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain("compound key for message draft missing");
+
+                let exc, e;
+
+                try{controller.onMailMessageBeforeSave(view, Ext.create(
+                    'conjoon.cn_mail.model.mail.message.MessageDraft'
+                ))} catch(e) {exc=e};
+
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain("compound key for message draft missing");
+
+            });
 
         });
 
@@ -674,14 +797,16 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
                 t.isCalledNTimes('setViewBusy', controller, 1);
                 t.isCalledNTimes('endBusyState', controller, 1);
                 controller.onMailMessageSaveComplete(
                     view, view.getViewModel().get('messageDraft'), createOperation(), false, false);
-                t.waitForMs(1500, function () {
+                t.waitForMs(TIMEOUT, function () {
                     // 1500 for delay for endBusyState
                     t.expect(view.getViewModel().get('isSaving')).toBe(false);
                 });
@@ -697,9 +822,12 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
+
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
                 view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
                 view.down('#subjectField').setValue('SEND');
                 view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
@@ -716,7 +844,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
                 // send / save both add defers with each appr. 750 ms
                 // wait long enough here
-                t.waitForMs(3000, function () {
+                t.waitForMs(TIMEOUT + 1000, function () {
                     // give enough time for the tests to finish
                 });
             });
@@ -728,28 +856,32 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
-            view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
-            view.down('#subjectField').setValue('SENDFAIL');
-            view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
-            t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
-            t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
-            t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
-            t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
-            t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
-            t.isCalledNTimes('onMailMessageSendComplete',           controller, 0);
-            t.isCalledNTimes('onMailMessageSendException',          controller, 1);
+            t.waitForMs(TIMEOUT, function() {
 
-            controller.onSendButtonClick();
+                view.render(document.body);
 
-            // send / save both add defers with each appr. 750 ms
-            // wait long enough here
-            t.waitForMs(3000, function() {
-                t.expect(view.getViewModel()).toBeDefined();
-            });});
+                view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
+                view.down('#subjectField').setValue('SENDFAIL');
+                view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+
+                t.isCalledNTimes('onMailMessageBeforeSave',             controller, 1);
+                t.isCalledNTimes('onMailMessageSaveOperationComplete',  controller, 2);
+                t.isCalledNTimes('onMailMessageSaveComplete',           controller, 1);
+                t.isCalledNTimes('onMailMessageSaveOperationException', controller, 0);
+                t.isCalledNTimes('onMailMessageBeforeSend',             controller, 1);
+                t.isCalledNTimes('onMailMessageSendComplete',           controller, 0);
+                t.isCalledNTimes('onMailMessageSendException',          controller, 1);
+
+                controller.onSendButtonClick();
+
+                // send / save both add defers with each appr. 750 ms
+                // wait long enough here
+                t.waitForMs(TIMEOUT + 1000, function() {
+                    t.expect(view.getViewModel()).toBeDefined();
+                });
+            });
         });
 
 
@@ -759,12 +891,19 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             });
             view = createEditorForController(controller);
 
-            controller.onMailMessageSendException();
+            t.waitForMs(TIMEOUT, function() {
 
-            t.waitForMs(1500, function() {
-                t.expect(view.busyMask.isHidden()).toBe(true);
-                t.expect(view.getViewModel().get('isSending')).toBe(false);
+                view.render(document.body);
+
+                controller.onMailMessageSendException();
+
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(view.busyMask.isHidden()).toBe(true);
+                    t.expect(view.getViewModel().get('isSending')).toBe(false);
+                });
             });
+
+
         });
 
 
@@ -773,17 +912,20 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
-            view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
-            controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'));
 
-            t.waitForMs(500, function() {
-                t.expect(view.busyMask).toBeDefined();
-                t.expect(view.busyMask.isHidden()).toBe(false);
-                t.expect(view.getViewModel().get('isSending')).toBe(true);
-            });});
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+                view.getViewModel().get('messageDraft').set('to', 'address@domain.tld');
+                controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'));
+
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(view.busyMask).toBeDefined();
+                    t.expect(view.busyMask.isHidden()).toBe(false);
+                    t.expect(view.getViewModel().get('isSending')).toBe(true);
+                });
+            });
         });
 
 
@@ -792,13 +934,14 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
+
+            t.waitForMs(TIMEOUT, function() {
+                view.render(document.body);
             t.isCalledOnce('showAddressMissingNotice', view);
             t.expect(controller.onMailMessageBeforeSend(view, view.getViewModel().get('messageDraft'))).toBe(false);
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
 
             });});
         });
@@ -809,9 +952,9 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
+            view.render(document.body);
             view.down('#subjectField').setValue('SEND');
             view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
@@ -827,7 +970,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
             // send / save both add defers with each appr. 750 ms
             // wait long enough here
-            t.waitForMs(3000, function() {
+            t.waitForMs(TIMEOUT + 1000, function() {
                 // give enough time for the tests to finish
             });});
         });
@@ -839,12 +982,17 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-            t.isCalledNTimes('close', view, 1);
-            controller.onMailMessageSendComplete();
+            t.waitForMs(TIMEOUT, function() {
+                view.render(document.body);
 
-            t.waitForMs(1500, function() {
-                // 1500 for delay for endBusyState
+                t.isCalledNTimes('close', view, 1);
+                controller.onMailMessageSendComplete();
+
+                t.waitForMs(TIMEOUT + 500, function() {
+                    // intentionally left blank
+                });
             });
+
         });
 
 
@@ -853,50 +1001,56 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    messageDraft :Ext.create(
-                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
+            view = createEditorForController(controller, null, Ext.create(
+                        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'));
+
+            t.waitForMs(TIMEOUT, function() {
+
+                let COMPOSED;
+                view.showMessageDraftLoadingNotice = function(isComposed) {
+                    COMPOSED = isComposed;
+                };
+
+                t.expect(COMPOSED).toBeUndefined();
+                view.render(document.body);
+                t.expect(COMPOSED).toBe(true);
+
+                t.waitForMs(TIMEOUT, function(){
+                    // intentionally left blank
                 });
-
-            let COMPOSED;
-            view.showMessageDraftLoadingNotice = function(isComposed) {
-                COMPOSED = isComposed;
-            };
-
-            t.expect(COMPOSED).toBeUndefined();
-            view.render(document.body);
-            t.expect(COMPOSED).toBe(true);
-
-            t.waitForMs(750, function(){
-                // intentionally left blank
             });
+
+
         });
+
 
         t.it('onMessageEditorAfterrender() - editMode: EDIT', function(t) {
 
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller : controller,
-                    messageDraft : createKeyForExistingMessage(1)
+
+            view = createEditorForController(controller, null, createKeyForExistingMessage(1));
+
+            t.waitForMs(TIMEOUT, function() {
+
+
+                let COMPOSED;
+                view.showMessageDraftLoadingNotice = function(isComposed) {
+                    COMPOSED = isComposed;
+                };
+
+                t.expect(COMPOSED).toBeUndefined();
+                view.render(document.body);
+                t.expect(COMPOSED).toBe(false);
+
+                t.waitForMs(TIMEOUT, function(){
+                    // intentionally left blank
                 });
 
-            let COMPOSED;
-            view.showMessageDraftLoadingNotice = function(isComposed) {
-                COMPOSED = isComposed;
-            };
 
-            t.expect(COMPOSED).toBeUndefined();
-            view.render(document.body);
-            t.expect(COMPOSED).toBe(false);
+           });
 
-            t.waitForMs(750, function(){
-                // intentionally left blank
-            });
         });
 
 
@@ -906,36 +1060,42 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            let CALLED = 0;
-            view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
-                t.expect(editor).toBe(view);
-                t.expect(isCreated).toBe(true);
-                CALLED++;
-                //debugger;
-            });
+            t.waitForMs(TIMEOUT, function() {
 
-            t.expect(view.getViewModel().get('messageDraft').get('savedAt')).toBeFalsy();
-            view.on('cn_mail-mailmessagesavecomplete', function(editor, messageDraft, operation, isSending, isCreated) {
-                t.expect(messageDraft.get('savedAt')).toBeTruthy();
-                t.expect(isCreated).toBe(true);
-                CALLED++;
-                //debugger;
-            });
+                view.render(document.body);
 
-            t.isCalledOnce('applyAccountInformation', controller);
-
-            t.waitForMs(750, function() {
-
-                t.expect(CALLED).toBe(0);
-                view.down('#subjectField').setValue('test');
-                view.down('#saveButton').fireEvent('click');
-
-                t.waitForMs(750, function() {
-                    t.expect(CALLED).toBe(2);
+                let CALLED = 0;
+                view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
+                    t.expect(editor).toBe(view);
+                    t.expect(isCreated).toBe(true);
+                    CALLED++;
+                    //debugger;
                 });
+
+                t.expect(view.getViewModel().get('messageDraft').get('savedAt')).toBeFalsy();
+                view.on('cn_mail-mailmessagesavecomplete', function(editor, messageDraft, operation, isSending, isCreated) {
+                    t.expect(messageDraft.get('savedAt')).toBeTruthy();
+                    t.expect(isCreated).toBe(true);
+                    CALLED++;
+                    //debugger;
+                });
+
+                t.isCalledOnce('applyAccountInformation', controller);
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    t.expect(CALLED).toBe(0);
+                    view.down('#subjectField').setValue('test');
+                    view.down('#saveButton').fireEvent('click');
+
+                    t.waitForMs(TIMEOUT, function() {
+                        t.expect(CALLED).toBe(2);
+                    });
+                });
+
             });
+
         });
 
 
@@ -944,40 +1104,41 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller   : controller,
-                    renderTo     : document.body,
-                    messageDraft :  createKeyForExistingMessage(1)
+
+            view = createEditorForController(controller, null, createKeyForExistingMessage(1));
+
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                let CALLED = 0;
+                view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
+                    t.expect(editor).toBe(view);
+                    t.expect(isCreated).toBe(false);
+                    CALLED++;
+                    //debugger;
                 });
-            setStoreForEditor(view);
 
-
-            let CALLED = 0;
-            view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
-                t.expect(editor).toBe(view);
-                t.expect(isCreated).toBe(false);
-                CALLED++;
-                //debugger;
-            });
-
-            view.on('cn_mail-mailmessagesavecomplete', function(editor, messageDraft, operation, isSending, isCreated) {
-                t.expect(isCreated).toBe(false);
-                CALLED++;
-                //debugger;
-            });
-
-
-            t.waitForMs(750, function() {
-                t.expect(CALLED).toBe(0);
-                view.down('#saveButton').fireEvent('click');
-
-                t.waitForMs(750, function() {
-
-                    t.expect(CALLED).toBe(2);
-
+                view.on('cn_mail-mailmessagesavecomplete', function(editor, messageDraft, operation, isSending, isCreated) {
+                    t.expect(isCreated).toBe(false);
+                    CALLED++;
+                    //debugger;
                 });
+
+
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(CALLED).toBe(0);
+                    view.down('#saveButton').fireEvent('click');
+
+                    t.waitForMs(TIMEOUT, function() {
+
+                        t.expect(CALLED).toBe(2);
+
+                    });
+                });
+
             });
+
         });
 
 
@@ -986,50 +1147,54 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             controller = Ext.create(
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
-            view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
-                    controller   : controller,
-                    renderTo     : document.body,
-                    messageDraft :  createKeyForExistingMessage(1)
+            view = createEditorForController(controller, null, createKeyForExistingMessage(1));
+
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                let CALLED = 0;
+                view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
+                    t.expect(editor).toBe(view);
+                    t.expect(isCreated).toBe(false);
+                    CALLED++;
+                    //debugger;
                 });
-            setStoreForEditor(view);
+
+                view.on('cn_mail-mailmessagesaveoperationexception', function(editor, messageDraft, operation, isSending, isCreated, batch) {
+                    t.expect(isCreated).toBe(false);
+                    CALLED++;
+                    //debugger;
+                });
 
 
-            let CALLED = 0;
-            view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
-                t.expect(editor).toBe(view);
-                t.expect(isCreated).toBe(false);
-                CALLED++;
-                //debugger;
-            });
+                t.waitForMs(TIMEOUT, function() {
+                    t.expect(CALLED).toBe(0);
 
-            view.on('cn_mail-mailmessagesaveoperationexception', function(editor, messageDraft, operation, isSending, isCreated, batch) {
-                t.expect(isCreated).toBe(false);
-                CALLED++;
-                //debugger;
-            });
+                    view.down('#subjectField').setValue('TESTFAIL');
 
+                    view.down('#saveButton').fireEvent('click');
 
-            t.waitForMs(750, function() {
-                t.expect(CALLED).toBe(0);
+                    t.waitForMs(TIMEOUT, function() {
 
-                view.down('#subjectField').setValue('TESTFAIL');
+                        t.expect(CALLED).toBe(2);
 
-                view.down('#saveButton').fireEvent('click');
+                        var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+                        t.click(yesButton[0], function() {
 
-                t.waitForMs(750, function() {
+                            t.waitForMs(TIMEOUT, function() {
+                                t.expect(CALLED).toBe(4);
+                            });
 
-                    t.expect(CALLED).toBe(2);
+                        });
 
-                    var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-                    t.click(yesButton[0]);
-
-                    t.waitForMs(750, function() {
-                        t.expect(CALLED).toBe(4);
                     });
-
                 });
+
             });
+
+
+
         });
 
 
@@ -1039,42 +1204,45 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
+            t.waitForMs(TIMEOUT, function() {
 
-            let CALLED = 0;
-            view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
-                t.expect(editor).toBe(view);
-                t.expect(isCreated).toBe(true);
-                CALLED++;
-                //debugger;
-            });
+                view.render(document.body);
 
-            view.on('cn_mail-mailmessagesaveoperationexception', function(editor, messageDraft, operation, isSending, isCreated, batch) {
-                t.expect(isCreated).toBe(true);
-                CALLED++;
-                //debugger;
-            });
-
-            t.waitForMs(750, function() {
-
-                t.expect(CALLED).toBe(0);
-                view.down('#subjectField').setValue('TESTFAIL');
-                view.down('#saveButton').fireEvent('click');
-
-                t.waitForMs(750, function() {
-
-                    t.expect(CALLED).toBe(2);
-
-                    var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-                    t.click(yesButton[0]);
-
-                    t.waitForMs(750, function() {
-                        t.expect(CALLED).toBe(4);
-                    });
-
+                let CALLED = 0;
+                view.on('cn_mail-mailmessagebeforesave', function(editor, messageDraft, isSending, isCreated) {
+                    t.expect(editor).toBe(view);
+                    t.expect(isCreated).toBe(true);
+                    CALLED++;
+                    //debugger;
                 });
+
+                view.on('cn_mail-mailmessagesaveoperationexception', function(editor, messageDraft, operation, isSending, isCreated, batch) {
+                    t.expect(isCreated).toBe(true);
+                    CALLED++;
+                    //debugger;
+                });
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    t.expect(CALLED).toBe(0);
+                    view.down('#subjectField').setValue('TESTFAIL');
+                    view.down('#saveButton').fireEvent('click');
+
+                    t.waitForMs(TIMEOUT, function() {
+
+                        t.expect(CALLED).toBe(2);
+
+                        var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+                        t.click(yesButton[0], function() {
+                            t.expect(CALLED).toBe(4);
+                        });
+
+                    });
+                });
+
             });
+
         });
 
 
@@ -1083,26 +1251,33 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.waitForMs(750, function() {
-                let messageDraft = view.getViewModel().get('messageDraft');
+            t.waitForMs(TIMEOUT, function() {
 
-                messageDraft.set('to', 'address@domain.tld');
-                messageDraft.set('subject', 'foo');
-                view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
+                view.render(document.body);
 
-                t.waitForMs(250, function() {
-                    t.expect(messageDraft.get('draft')).toBe(true);
+                t.waitForMs(TIMEOUT, function() {
+                    let messageDraft = view.getViewModel().get('messageDraft');
 
-                    controller.onSendButtonClick();
+                    messageDraft.set('to', 'address@domain.tld');
+                    messageDraft.set('subject', 'foo');
+                    view.down('cn_mail-mailmessageeditorhtmleditor').setValue('Test');
 
-                    t.waitForMs(3000, function() {
+                    t.waitForMs(TIMEOUT, function() {
                         t.expect(messageDraft.get('draft')).toBe(true);
-                    });
 
+                        controller.onSendButtonClick();
+
+                        t.waitForMs(TIMEOUT, function() {
+                            t.expect(messageDraft.get('draft')).toBe(true);
+                        });
+
+                    });
                 });
+
+
             });
+
 
         });
 
@@ -1113,28 +1288,36 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 });
             view = createEditorForController(controller);
 
-           // t.isCalledNTimes('setBusy', view, 1);
-            view.getViewModel().get('messageDraft').set('subject', 'foo');
+            t.waitForMs(TIMEOUT, function() {
 
-            let attachment = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
-                COMMITTED  = false;
+                view.render(document.body);
+
+                // t.isCalledNTimes('setBusy', view, 1);
+                view.getViewModel().get('messageDraft').set('subject', 'foo');
+
+                let attachment = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+                    COMMITTED  = false;
 
 
-            view.getViewModel().get('messageDraft').attachments().add(attachment);
-            // fake CRUD state
-            attachment.crudState = "U";
-            attachment.commit = function(silent) {
-                COMMITTED = silent;
-                Ext.data.Model.prototype.commit.apply(attachment, arguments);
-            };
-            t.expect(attachment.modified.hasOwnProperty('messageItemId')).toBe(true);
+                view.getViewModel().get('messageDraft').attachments().add(attachment);
+                // fake CRUD state
+                attachment.crudState = "U";
+                attachment.commit = function(silent) {
+                    COMMITTED = silent;
+                    Ext.data.Model.prototype.commit.apply(attachment, arguments);
+                };
+                t.expect(attachment.modified.hasOwnProperty('messageItemId')).toBe(true);
 
-            controller.onMailMessageBeforeSave(
-                view, view.getViewModel().get('messageDraft'), false, false);
+                controller.onMailMessageBeforeSave(
+                    view, view.getViewModel().get('messageDraft'), false, false);
 
-            t.expect(COMMITTED).toBe(true);
+                t.expect(COMMITTED).toBe(true);
 
-            t.expect(attachment.modified).toBeFalsy();
+                t.expect(attachment.modified).toBeFalsy();
+
+            });
+
+
         });
 
 
@@ -1144,15 +1327,21 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            t.expect(controller.mailboxService).toBeFalsy();
+            t.waitForMs(TIMEOUT, function() {
 
-            let ms = controller.getMailboxService();
+                view.render(document.body);
 
-            t.isInstanceOf(ms, 'conjoon.cn_mail.data.mail.service.MailboxService');
-            t.expect(controller.mailboxService).toBe(ms);
-            t.expect(controller.getMailboxService()).toBe(ms);
+                t.expect(controller.mailboxService).toBeFalsy();
+
+                let ms = controller.getMailboxService();
+
+                t.isInstanceOf(ms, 'conjoon.cn_mail.data.mail.service.MailboxService');
+                t.expect(controller.mailboxService).toBe(ms);
+                t.expect(controller.getMailboxService()).toBe(ms);
+            });
+
+
         });
 
 
@@ -1162,32 +1351,72 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                 'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
                 });
             view = createEditorForController(controller);
-            setStoreForEditor(view);
 
-            let messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                mailAccountId : 'dev_sys_conjoon_org'
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                let messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                    mailAccountId : 'dev_sys_conjoon_org'
+                });
+
+                t.expect(messageDraft.get('from')).toBeFalsy();
+                t.expect(messageDraft.get('mailFolderId')).toBeFalsy();
+                t.expect(messageDraft.get('date')).toBeFalsy();
+
+                t.waitForMs(TIMEOUT, function() {
+                    controller.applyAccountInformation(messageDraft);
+
+                    t.expect(messageDraft.get('mailFolderId')).toBeTruthy();
+                    t.expect(messageDraft.get('mailFolderId')).toBe(controller.getMailboxService().getMailFolderHelper().getMailFolderIdForType('dev_sys_conjoon_org', 'DRAFT'));
+
+                    let acc = view.getViewModel().get('cn_mail-mailfoldertreestore').findRecord(
+                        'id', 'dev_sys_conjoon_org'
+                    );
+                    let from = {name : acc.get('name'), address : acc.get('from')};
+                    t.expect(messageDraft.get('from')).toEqual(from);
+
+                    t.expect(messageDraft.get('from')).toBeTruthy();
+                });
+
             });
 
-            t.expect(messageDraft.get('from')).toBeFalsy();
-            t.expect(messageDraft.get('mailFolderId')).toBeFalsy();
-            t.expect(messageDraft.get('date')).toBeFalsy();
-
-            t.waitForMs(750, function() {
-                controller.applyAccountInformation(messageDraft);
-
-                t.expect(messageDraft.get('mailFolderId')).toBeTruthy();
-                t.expect(messageDraft.get('mailFolderId')).toBe(controller.getMailboxService().getMailFolderHelper().getMailFolderIdForType('dev_sys_conjoon_org', 'DRAFT'));
-
-                let acc = view.getViewModel().get('cn_mail-mailfoldertreestore').findRecord(
-                    'id', 'dev_sys_conjoon_org'
-                );
-                let from = {name : acc.get('name'), address : acc.get('from')};
-                t.expect(messageDraft.get('from')).toEqual(from);
-
-                t.expect(messageDraft.get('from')).toBeTruthy();
-            });
 
         });
 
 
-});});});
+        t.it("applyAccountInformation() - no mailFolder set if already available in draft", function(t) {
+
+            controller = Ext.create(
+                'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController', {
+                });
+            view = createEditorForController(controller);
+
+            let MAILFOLDERID = 'foo';
+
+            t.waitForMs(TIMEOUT, function() {
+
+                view.render(document.body);
+
+                let messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                    mailAccountId : 'dev_sys_conjoon_org',
+                    mailFolderId  : MAILFOLDERID
+                });
+
+                t.expect(messageDraft.get('mailFolderId')).toBe(MAILFOLDERID);
+
+                t.waitForMs(TIMEOUT, function() {
+                    controller.applyAccountInformation(messageDraft);
+
+                    t.expect(messageDraft.get('mailFolderId')).toBe(MAILFOLDERID);
+                    t.expect(messageDraft.get('mailFolderId')).not.toBe(controller.getMailboxService().getMailFolderHelper().getMailFolderIdForType('dev_sys_conjoon_org', 'DRAFT'));
+
+                });
+
+            });
+
+
+        });
+
+
+});});})

@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
     requires : [
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener',
-        'conjoon.cn_mail.data.mail.message.EditingModes'
+        'conjoon.cn_mail.data.mail.message.EditingModes',
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
     ],
 
     alias : 'controller.cn_mail-mailmessageeditorviewcontroller',
@@ -603,18 +604,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                   mailboxService = me.getMailboxService(),
                   mailAccountId  = messageDraft.get('mailAccountId');
 
-            let mailFolderId = mailboxService.getMailFolderHelper().getMailFolderIdForType(
-                mailAccountId, 'DRAFT'
-            );
+            if (!messageDraft.get('mailFolderId')) {
+                let mailFolderId = mailboxService.getMailFolderHelper().getMailFolderIdForType(
+                    mailAccountId,  conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT
+                );
 
-            if (!mailFolderId) {
-                Ext.raise({
-                    msg           : "Unexpected error: No draft folder for mailAccountId found",
-                    mailAccountId : mailAccountId
-                })
+                if (!mailFolderId) {
+                    Ext.raise({
+                        msg           : "Unexpected error: No draft folder for mailAccountId found",
+                        mailAccountId : mailAccountId
+                    })
+                }
+
+                messageDraft.set('mailFolderId', mailFolderId);
             }
 
-            messageDraft.set('mailFolderId', mailFolderId);
 
             let accRecord = vm.get('cn_mail-mailfoldertreestore').findRecord(
                 'id', mailAccountId
