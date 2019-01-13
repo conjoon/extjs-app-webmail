@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
  */
 
 describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) {
+
+    const TIMEOUT = 1250;
 
     var panel;
 
@@ -73,7 +75,16 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
         },
         selectMailFolder = function(panel, storeAt) {
 
-        let folder = panel.down('cn_mail-mailfoldertree').getStore().getAt(storeAt);
+        let folder = panel.down('cn_mail-mailfoldertree').getStore().getRoot().findChild('id', 'dev_sys_conjoon_org');
+
+        folder = folder.childNodes[storeAt - 1];
+
+        let p = folder.parentNode;
+
+        while(p) {
+            p.expand();
+            p = p.parentNode;
+        }
 
         panel.down('cn_mail-mailfoldertree').getSelectionModel()
              .select(folder);
@@ -274,7 +285,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         viewController.onRowFlyMenuItemClick(null, null, 'markunread', rec);
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
             t.expect(rec.get('seen')).toBe(false);
             t.expect(CALLED).toBe(1);
         });
@@ -311,7 +322,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
             let service = viewController.getMailboxService();
 
             t.isInstanceOf(service, 'conjoon.cn_mail.data.mail.service.MailboxService');
@@ -378,11 +389,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3);
 
@@ -425,11 +436,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3),
                     owningStore = messageItem.store;
@@ -482,11 +493,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3),
                     owningStore = messageItem.store;
@@ -521,18 +532,18 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3),
                     owningStore = messageItem.store;
                 deselectMessage(panel, messageItem);
                 let targetFolder = selectMailFolder(panel, 4);
 
-                t.waitForMs(750, function() {
+                t.waitForMs(TIMEOUT, function() {
                     messageItem.unjoin(messageItem.store);
                     messageItem.set('cn_moved',   true);
 
@@ -540,7 +551,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                         request : {
                             type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                             record         : messageItem,
-                            targetFolderId : targetFolder.getId(),
+                            targetFolderId : targetFolder.get('id'),
                             owningStore    : owningStore
                         }
                     });
@@ -564,11 +575,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(500, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3),
                     owningStore = messageItem.store;
@@ -606,11 +617,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(500, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3),
                     owningStore = messageItem.store;
@@ -644,13 +655,13 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(500, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             // should be move operation since selected folder is not of type
             // TRASH
             t.expect(selectMailFolder(panel, 2).get('type')).not.toBe('TRASH');
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
                 let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
 
                 t.isCalled('moveToTrashOrDeleteMessage', viewController.getMailboxService());
@@ -661,7 +672,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
                 t.isInstanceOf(viewController.moveOrDeleteMessage(messageItem, true), 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
 
-                t.waitForMs(500, function() {
+                t.waitForMs(TIMEOUT, function() {
                     // intentionally left empty
                 })
             });
@@ -675,18 +686,18 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let folder =  selectMailFolder(panel, 5);
             t.expect(folder.get('type')).toBe('TRASH');
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
                 let messageItem = Ext.create(
                     'conjoon.cn_mail.model.mail.message.MessageItem', {
                         localId       : 'bla',
                         id            : 'foobar',
                         mailAccountId : 'dev_sys_conjoon_org',
-                        mailFolderId  : folder.getId()
+                        mailFolderId  : folder.get('id')
                     });
 
                 t.isCalled('onMessageMovedOrDeletedFailure', viewController);
@@ -694,7 +705,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
                 let op = viewController.moveOrDeleteMessage(messageItem, true);
 
-                t.waitForMs(250, function() {
+                t.waitForMs(TIMEOUT, function() {
                     // intentionally left empty
 
                 })
@@ -713,7 +724,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         let messageView = panel.down('cn_mail-mailmessagereadermessageview');
 
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             t.isCalledNTimes('onDeleteClick', viewController, 2);
             t.isCalledNTimes('onDeleteClick', viewController, 2);
@@ -722,24 +733,24 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
             selectMailFolder(panel, 5);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 selectMessage(panel, 2);
 
-                t.waitForMs(250, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     messageView.down('#btn-delete').fireEvent('click');
 
-                    t.waitForMs(250, function() {
+                    t.waitForMs(TIMEOUT, function() {
 
                         selectMessage(panel, 4);
 
-                        t.waitForMs(250, function() {
+                        t.waitForMs(TIMEOUT, function() {
 
                             messageView.down('#btn-deletedraft').fireEvent('click');
 
 
-                            t.waitForMs(250, function() {
+                            t.waitForMs(TIMEOUT, function() {
                                 // intentionally left empty
                             });
 
@@ -758,11 +769,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 5);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3);
 
@@ -799,11 +810,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 5);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3);
 
@@ -827,11 +838,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 5);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3);
 
@@ -850,7 +861,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                 let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
                 t.click(yesButton[0]);
 
-                t.waitForMs(250, function() {
+                t.waitForMs(TIMEOUT, function() {
                     // intentionally left blank
                 });
 
@@ -866,11 +877,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 5);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3);
 
@@ -893,7 +904,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                 t.click(yesButton[0]);
 
 
-                t.waitForMs(1250, function() {
+                t.waitForMs(TIMEOUT, function() {
                     // intentionally left blank
                 });
 
@@ -908,7 +919,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let oldM = conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage,
                 CALLED = 0;
@@ -939,19 +950,19 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             // messageDrafts are sent once they have been moved to DRAFT folder
             let messageDraft = createMessageDraftByFolderId(1, "INBOX.Drafts");
 
             messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let mailFolder = selectMailFolder(panel, 2);
                 let tfid = mailFolder.get('id');
 
-                t.waitForMs(750, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     t.isCalledOnce('onBeforeMessageMoveOrDelete', viewController);
                     t.isCalledOnce('onMessageMovedOrDeleted', viewController);
@@ -962,7 +973,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
                     t.expect(op.getRequest().targetFolderId).toBe(tfid);
 
-                    t.waitForMs(250, function() {
+                    t.waitForMs(TIMEOUT, function() {
                         // intentionally left blank
                     });
                 });
@@ -977,21 +988,21 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let mailFolder = selectMailFolder(panel, 4);
                 t.expect(mailFolder.get('type')).toBe("DRAFT");
 
-                t.waitForMs(750, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     let messageItem  = selectMessage(panel, 0),
                         messageDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                             messageItem.getCompoundKey()
                         );
 
-                    t.waitForMs(750, function() {
+                    t.waitForMs(TIMEOUT, function() {
 
                         let op = viewController.updateViewForSentDraft(messageDraft);
 
@@ -999,7 +1010,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                         t.expect(op.getRequest().targetFolderId).toBe("INBOX.Sent Messages");
                         t.expect(op.getRequest().sourceFolderId).toBe(mailFolder.get('id'));
 
-                        t.waitForMs(250, function() {
+                        t.waitForMs(TIMEOUT, function() {
                             // intentionally left blank
                         });
                     });
@@ -1022,19 +1033,19 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             CALLED++
         });
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             // should be move operation since selected folder is not of type
             // TRASH
             t.expect(selectMailFolder(panel, 1).get('type')).not.toBe('TRASH');
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
                 let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
 
                 t.expect(CALLED).toBe(0);
                 viewController.moveOrDeleteMessage(messageItem, true);
 
-                t.waitForMs(250, function() {
+                t.waitForMs(TIMEOUT, function() {
                     t.expect(CALLED).toBe(1);
                 })
             });
@@ -1048,15 +1059,15 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(500, function() {
+        t.waitForMs(TIMEOUT, function() {
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
 
                 selectMailFolder(panel, 4);
 
-                t.waitForMs(500, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     let op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
                         request : {
@@ -1082,11 +1093,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 1);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 0);
 
@@ -1103,7 +1114,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                 t.expect(messageItem.get('answered')).toBe(false);
                 viewController.updateViewForSentDraft(messageDraft);
 
-                t.waitForMs(750, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     t.expect(messageItem.get('answered')).toBe(true);
 
@@ -1120,17 +1131,17 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
         const viewController = panel.getController();
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             let mailFolder = selectMailFolder(panel, 2);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
 
                 let messageItem = selectMessage(panel, 3);
                 deselectMessage(panel, messageItem);
                 let targetFolder = selectMailFolder(panel, 4);
 
-                t.waitForMs(750, function() {
+                t.waitForMs(TIMEOUT, function() {
                     // UNJOIN
                     messageItem.unjoin(messageItem.store);
 
@@ -1138,7 +1149,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                         request : {
                             type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
                             record         : messageItem,
-                            targetFolderId : targetFolder.getId()
+                            targetFolderId : targetFolder.get('id')
                             // NO OWNING STORE MARKED
                         }
                     });

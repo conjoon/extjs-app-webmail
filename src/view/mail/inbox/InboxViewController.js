@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @param {conjoon.cn_comp.grid.feature.RowFlyMenu} feature
      * @param {HtmlElement} row
-     * @para, {Ext.data.Model} record
+     * @param {Ext.data.Model} record
      *
      * @see conjoon.cn_mail.view.mail.message.MessageGrid#updateRowFlyMenu
      */
@@ -506,9 +506,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                                   ? request.targetFolderId
                                   : messageItem.get('mailFolderId'),
             isNotTargetSelected = targetFolderId && selectedFolder &&
-                                  selectedFolder.getId() !== targetFolderId,
+                                  selectedFolder.get('id') !== targetFolderId,
             isTargetSelected    = targetFolderId && selectedFolder &&
-                                  selectedFolder.getId() === targetFolderId;
+                                  selectedFolder.get('id') === targetFolderId;
 
         // remove the item if possible out of the grid
         if (messageItem.isCompoundKeyConfigured() && gridReady &&
