@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ Ext.define('conjoon.cn_mail.model.mail.BaseModel', {
      * different idProperties, but reuse the default idProperty ("id") for
      * containing data sent by the backend. This seems to be an issue with ExtJS.
      * We need to explicitely implement the idProperty in subclasses, now.
+     * The CompoundKeyedModelDecorator will remove this field later on.
      */
     idProperty : '__id__',
 

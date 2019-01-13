@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,6 +88,8 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
             model.set(field, 0);
             t.expect(model.get(field)).toBe("0");
         }
+
+        t.expect(model.getField('__id__')).toBeFalsy();
 
     });
 

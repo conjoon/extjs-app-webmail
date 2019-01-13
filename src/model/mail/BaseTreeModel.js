@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ Ext.define('conjoon.cn_mail.model.mail.BaseTreeModel', {
 
         if (me.idProperty === '__id__') {
             Ext.raise({
-                msg        : "\"idProperty\" of conjoon.cn_core.data.BaseModel needs to be explicitly set",
+                msg        : "\"idProperty\" of conjoon.cn_core.data.BaseTreeModel needs to be explicitly set",
                 idProperty : me.idProperty
             });
         }

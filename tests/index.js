@@ -158,6 +158,7 @@ harness.start({
                 group : 'mail',
                 items : [
                     'src/model/mail/AbstractCompoundKeyedModelTest.js',
+                    'src/model/mail/AbstractCompoundKeyedTreeModelTest.js',
                     'src/model/mail/BaseModelTest.js',
                     'src/model/mail/BaseTreeModelTest.js',
                     {
