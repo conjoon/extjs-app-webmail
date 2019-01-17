@@ -937,8 +937,52 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
             t.expect(exc).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("no suitable");
 
+            panel.destroy();
+            panel = null;
         });
 
     });
+
+
+    t.it("app-cn_mail#94", function(t) {
+
+        let panel  = createMailDesktopView(),
+            inboxView = panel.down('cn_mail-mailinboxview'),
+            ctrl   = panel.getController(),
+            editor = ctrl.showMailEditor('sffss', 'compose'),
+            editorVm = editor.getViewModel(),
+            CK, view;
+
+        t.expect(editor).toBeTruthy();
+
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, getChildAt(panel, 'mail_account', 3, 'INBOX.Drafts'))
+
+            t.waitForMs(TIMEOUT, function() {
+
+                editorVm.get('messageDraft').set('subject', 'foo');
+                editor.getController().configureAndStartSaveBatch();
+
+                t.waitForMs(TIMEOUT, function() {
+
+                    t.expect(editorVm.get('messageDraft').get('mailAccountId')).toBe('dev_sys_conjoon_org');
+
+                    CK = editorVm.get('messageDraft').getCompoundKey();
+                    editor.close();
+
+                    let livegrid = inboxView.getController().getLivegrid();
+
+                    t.expect(livegrid.getRecordByCompoundKey(CK)).toBeFalsy();
+
+                    panel.destroy();
+                    panel = null;
+
+                });
+            });
+
+        });
+    });
+
 
 });})});});

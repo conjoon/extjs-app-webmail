@@ -599,7 +599,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
               selected = me.getSelectedMailFolder();
 
         if (!selected ||
-            selected.get('type') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT) {
+            selected.get('type') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
+            selected.get('mailAccountId') !== messageDraft.get('mailAccountId')) {
             return;
         }
 
@@ -608,8 +609,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             ),
             messageGrid = me.getMessageGrid();
 
-         addItem.join(messageGrid.getStore());
-         me.getLivegrid().add(addItem);
+        addItem.join(messageGrid.getStore());
+        me.getLivegrid().add(addItem);
     },
 
 
