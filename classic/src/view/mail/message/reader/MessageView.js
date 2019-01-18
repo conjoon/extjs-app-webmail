@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -197,7 +197,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             cls   : 'cn_mail-mailmessagereadermessageviewiframe',
             xtype : 'cn_mail-mailmessagereadermessageviewiframe',
             scrolling : "no",
-            sandbox : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
+            sandbox : Ext.isGecko
+                      ? "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
+                      : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
             src : "",
             bind : {
                 srcDoc : '{messageBody.textHtml}',

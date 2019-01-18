@@ -1,11 +1,11 @@
 
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -649,7 +649,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
         });
 
 
-        t.it("app-cn_mail#88 - sandbox", function(t) {
+        t.it("app-cn_mail#88 / app-cn_mail#96 - sandbox", function(t) {
 
             let view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
@@ -666,9 +666,17 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
             t.expect(res.length).toBe(4);
 
+            let STR = "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation";
+
+            if (Ext.isGecko) {
+                STR = "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation";
+            }
+
             t.expect(res).toEqual(
-                "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation".split(" ")
+                STR.split(" ")
             );
+
+
             view.destroy();
             view = null;
         });
