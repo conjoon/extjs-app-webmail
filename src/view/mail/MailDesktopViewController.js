@@ -514,10 +514,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
 
-        // only update the MessageItems in the view which have not been updated
+        // Previously: only update the MessageItems in the view which have not been updated
         // over the MessageView above. Thus, we have to look up any item which might
         // be loaded in the grid.
-        if (messageGrid && inboxMessageViewId != messageDraft.getId()) {
+        // NOW! since app-cn_mail#95: when switching mailfolders we are loosing the "binding"
+        // between the item in the MessageView and the grid store. This means, that an update
+        // of the MessageView is not reflected in the grid store. We have to actually
+        // manually update the item in the grid store to make sure the item reflects the changes
+        if (messageGrid) {
             recInd = itemStore.findExact('localId', messageDraft.getId());
             if (recInd > -1) {
                 messageItem = itemStore.getAt(recInd);

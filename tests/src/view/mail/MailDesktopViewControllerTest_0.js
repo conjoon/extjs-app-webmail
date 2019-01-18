@@ -959,7 +959,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     messageDetailView = panel.down('#' + viewController.getItemIdForMessageRelatedView(firstRowCK, 'read'));
                     t.expect(messageDetailView).toBeTruthy();
 
-                    t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 2);
+                    // since app-an_mail#95 called 3 times
+                    t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 3);
                     t.isCalledNTimes('updateMessageItem',  messageDetailView, 1);
                     t.isCalledNTimes('updateMessageItem',  inboxMessageView, 1);
                     viewController.onMailMessageSaveComplete(getDummyEditor(), messageDraft);

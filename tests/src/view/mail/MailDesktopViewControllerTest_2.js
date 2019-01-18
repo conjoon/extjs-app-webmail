@@ -985,4 +985,98 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
     });
 
 
+    t.it("app-cn_mail#95", function(t) {
+
+        let panel  = createMailDesktopView(),
+            message,
+            inboxView = panel.down('cn_mail-mailinboxview'),
+            ctrl   = panel.getController(),
+            editor, editorVm,
+            CK, gridRec;
+
+        // select folder
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX'))
+
+            // select draft
+            t.waitForMs(TIMEOUT, function() {
+
+                let i = 0, len = 20;
+                for (let i = 0, len = 20; i < 20; i++) {
+                    message = selectMessage(panel, i);
+                    if (message.get('draft')) {
+                        break;
+                    }
+                }
+                t.expect(message).toBeDefined();
+                t.expect(message.get('draft')).toBe(true);
+
+                CK       = message.getCompoundKey();
+                editor   = ctrl.showMailEditor(CK, 'edit');
+                editorVm = editor.getViewModel();
+
+                // open draft and edit subject
+                t.waitForMs(TIMEOUT, function() {
+
+                    editorVm.get('messageDraft').set('subject', 'foo');
+                    editor.getController().configureAndStartSaveBatch();
+
+                    // test subject changes in grid
+                    t.waitForMs(TIMEOUT, function () {
+
+                        panel.setActiveItem(inboxView);
+
+                        let livegrid = inboxView.getController().getLivegrid();
+                        gridRec      = livegrid.getRecordByCompoundKey(CK)
+                        t.expect(gridRec).toBeTruthy();
+                        t.expect(gridRec.get('subject')).toBe("foo");
+
+                        // select other folder
+                        selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts'))
+                        t.waitForMs(TIMEOUT, function() {
+
+                            // back to previous folder
+                            selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX'))
+
+                            t.waitForMs(TIMEOUT, function () {
+
+                                // make sure rec is still there
+                                gridRec = livegrid.getRecordByCompoundKey(CK)
+                                t.expect(gridRec).toBeTruthy();
+                                t.expect(gridRec.get('subject')).toBe("foo");
+
+                                // edit subject again
+                                panel.setActiveItem(editor);
+                                editorVm.get('messageDraft').set('subject', 'bar');
+                                editor.getController().configureAndStartSaveBatch();
+
+                                t.waitForMs(TIMEOUT, function () {
+
+                                    panel.setActiveItem(inboxView);
+
+                                    gridRec = livegrid.getRecordByCompoundKey(CK)
+                                    t.expect(gridRec).toBeTruthy();
+                                    t.expect(gridRec.get('subject')).toBe("bar");
+
+                                    panel.destroy();
+                                    panel = null;
+                                });
+
+                            });
+
+                        });
+
+
+                    });
+                });
+            });
+
+
+        });
+
+    });
+
+
+
 });})});});
