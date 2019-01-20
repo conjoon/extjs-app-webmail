@@ -264,6 +264,12 @@ harness.start({
         items : [{
             group : 'mail',
             items : [{
+                group : 'account',
+                items : [
+                    'classic/src/view/mail/account/MailAccountViewTest.js',
+                    'classic/src/view/mail/folder/MailFolderTreeTest.js'
+                ]
+            },{
                 group : 'folder',
                 items : [
                     'classic/src/view/mail/folder/MailFolderTreeColumnTest.js',
