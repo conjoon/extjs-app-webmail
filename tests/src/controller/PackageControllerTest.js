@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -258,7 +258,11 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it('onMailFolderTreeSelectionChange()', function(t) {
 
-        var DESELECTED = 0, exc, e, READINGPANEDISABLED, TOGGLEGRIDDISABLED;
+        var ITEMS = [], DESELECTED = 0, exc, e, READINGPANEDISABLED, TOGGLEGRIDDISABLED,
+            FORWARDDISABLED,
+            REPLYTODISABLED,
+            REPLYALLDISABLED, EDITDISABLED, DELETEDISABLED;
+
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         packageCtrl.getSwitchReadingPaneButton = function(){
             return {
@@ -274,8 +278,46 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 }
             };
         };
+        packageCtrl.getReplyToButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    REPLYTODISABLED = disabled;
+                }
+            };
+        };
+        packageCtrl.getReplyAllButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    REPLYALLDISABLED = disabled;
+                }
+            };
+        };
+        packageCtrl.getForwardButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    FORWARDDISABLED = disabled;
+                }
+            };
+        };
+        packageCtrl.getEditButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    EDITDISABLED = disabled;
+                }
+            };
+        };
+        packageCtrl.getDeleteButton = function(){
+            return {
+                setDisabled : function(disabled) {
+                    DELETEDISABLED = disabled;
+                }
+            };
+        };
         packageCtrl.getMailMessageGrid = function() {
             return {
+                getSelection : function() {
+                    return ITEMS;
+                },
                 getSelectionModel : function() {
                     return {
                         deselectAll : function() {
@@ -286,21 +328,51 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             };
         };
 
-        try {packageCtrl.onMailFolderTreeSelectionChange(null, [1, 2]);}catch(e){exc = e;}
+        let rec1 = {get: function(){}},
+            rec2 = {get: function(){return 'ACCOUNT'}};
+
+        try {packageCtrl.onMailFolderTreeSelectionChange(null, [rec1, rec2]);}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected multiple records")
 
         t.expect(READINGPANEDISABLED).toBeUndefined();
         t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
         t.expect(DESELECTED).toBe(0);
-        packageCtrl.onMailFolderTreeSelectionChange(null, [1]);
-        t.expect(DESELECTED).toBe(0);
-        t.expect(READINGPANEDISABLED).toBe(false);
-        t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
         packageCtrl.onMailFolderTreeSelectionChange(null, []);
         t.expect(READINGPANEDISABLED).toBe(true);
-        t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
+        t.expect(TOGGLEGRIDDISABLED).toBe(true);
+        packageCtrl.onMailFolderTreeSelectionChange(null, [rec1]);
+        t.expect(DESELECTED).toBe(0);
+        t.expect(READINGPANEDISABLED).toBe(false);
+        t.expect(TOGGLEGRIDDISABLED).toBe(false);
+        t.expect(REPLYTODISABLED).toBe(true);
+        t.expect(REPLYALLDISABLED).toBe(true);
+        t.expect(FORWARDDISABLED).toBe(true);
+        t.expect(DELETEDISABLED).toBe(true);
+        t.expect(EDITDISABLED).toBe(true);
 
+        /**
+         * app-cn_mail#83
+         */
+        packageCtrl.onMailFolderTreeSelectionChange(null, [rec2]);
+        t.expect(READINGPANEDISABLED).toBe(true);
+        t.expect(TOGGLEGRIDDISABLED).toBe(true);
+        t.expect(REPLYTODISABLED).toBe(true);
+        t.expect(REPLYALLDISABLED).toBe(true);
+        t.expect(FORWARDDISABLED).toBe(true);
+        t.expect(DELETEDISABLED).toBe(true);
+        t.expect(EDITDISABLED).toBe(true);
+
+        ITEMS = [{get : function() {return true; /*draft = true*/}}];
+        packageCtrl.onMailFolderTreeSelectionChange(null, [rec1]);
+
+        t.expect(READINGPANEDISABLED).toBe(false);
+        t.expect(TOGGLEGRIDDISABLED).toBe(false);
+        t.expect(REPLYTODISABLED).toBe(true);
+        t.expect(REPLYALLDISABLED).toBe(true);
+        t.expect(FORWARDDISABLED).toBe(true);
+        t.expect(DELETEDISABLED).toBe(false);
+        t.expect(EDITDISABLED).toBe(false);
     });
 
 
@@ -1480,6 +1552,23 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
             t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
     });
+
+
+    t.it("app-cn_mail#83 - mailaccount route", function(t) {
+
+        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        let pv = {
+            showMailAccountFor : function() {}
+        };
+        packageCtrl.getMainPackageView = function() {
+            return pv;
+        };
+
+        t.isCalledNTimes('showMailAccountFor', packageCtrl.getMainPackageView(), 1);
+        packageCtrl.onMailAccountRoute();
+
+    });
+
 
 
 });});

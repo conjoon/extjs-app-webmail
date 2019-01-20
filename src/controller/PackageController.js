@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         'conjoon.cn_mail.view.mail.MailDesktopView',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
         'conjoon.cn_mail.view.mail.message.reader.MessageView',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
     ],
 
     routes : {
@@ -129,8 +130,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             },
             before     : 'onBeforePackageRoute'
         },
-        'cn_mail/folder/:mailAccountId'  : {
-            action     : Ext.emptyFn,
+        'cn_mail/account/:mailAccountId'  : {
+            action     : 'onMailAccountRoute',
             conditions : {
                 ':mailAccountId' : '(.+)'
             },
@@ -269,16 +270,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         }
 
         if (activatedPanel === me.getMailInboxView()) {
-
-            let selection = me.getMailMessageGrid().getSelection();
-
-            if (selection.length) {
-                me.activateButtonsForMessageItem(selection[0]);
-            } else {
-                me.disableEmailActionButtons(true);
-                me.disableEmailEditButtons(true);
-            }
-
+            me.activateButtonsForMessageGrid();
             return;
         }
 
@@ -358,6 +350,27 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         replyToBtn.setDisabled(disable);
         replyAllBtn.setDisabled(disable);
         forwardBtn.setDisabled(disable);
+    },
+
+
+    /**
+     * Enables or disables toolbar buttons depending on the selection of the
+     * MessageGrid.
+     *
+     * @see activateButtonsForMessageItem
+     * @see disableEmailActionButtons
+     * @see disableEmailEditButtons
+     */
+    activateButtonsForMessageGrid : function() {
+        const me        = this,
+              selection = me.getMailMessageGrid().getSelection();
+
+        if (selection.length) {
+            me.activateButtonsForMessageItem(selection[0]);
+        } else {
+            me.disableEmailActionButtons(true);
+            me.disableEmailEditButtons(true);
+        }
     },
 
 
@@ -524,6 +537,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
     /**
      * Callback for the MailFolderTree#s selectionchange event.
+     * Disables or enables toolbar buttons depending on the current selection
+     * in the MailFolderTree.
      *
      * @param {conjoon.cn_mail.view.mail.folder.MailFolderTree} treeListe
      * @param {conjoon.cn_mail.model.mail.folder.MailFolder[]} records
@@ -542,7 +557,18 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             });
         }
 
-        me.getSwitchReadingPaneButton().setDisabled(records.length <= 0);
+        let accountSelected = records.length <= 0
+                              || records[0].get('type') === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
+
+        me.getSwitchReadingPaneButton().setDisabled(accountSelected);
+        me.getToggleGridListButton().setDisabled(accountSelected);
+
+        if (accountSelected) {
+            me.disableEmailActionButtons(true);
+            me.disableEmailEditButtons(true);
+        } else {
+            me.activateButtonsForMessageGrid();
+        }
     },
 
 
@@ -609,6 +635,21 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
               compoundKey     = me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id);
 
         mailDesktopView.showMailMessageViewFor(compoundKey);
+    },
+
+
+    /**
+     * Action for the cn_mail/account/:mailAccountId route.
+     *
+     * @param {String} mailAccountId
+     *
+     * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailAccountFor}
+     */
+    onMailAccountRoute : function(mailAccountId) {
+        const me              = this,
+            mailDesktopView = me.getMainPackageView();
+
+        mailDesktopView.showMailAccountFor(decodeURI(mailAccountId));
     },
 
 
