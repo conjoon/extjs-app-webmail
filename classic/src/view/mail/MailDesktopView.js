@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,8 +149,24 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
         return conjoon.Toast.warn(
             "Please close all related tabs to this message first.");
 
+    },
+
+
+    /**
+     * Creates and shows the MailAccountView for the MailAccount represented by the
+     * requested mailAccountId.
+     * Delegates to conjoon.cn_mail.view.mail.MailDesktopViewController#showMailAcountFor.
+     *
+     * @param {String} mailAccountId
+     *
+     * @return conjoon.cn_mail.view.mail.account.MailAccountView
+     *
+     * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailAccountFor}
+     */
+    showMailAccountFor : function(mailAccountId) {
+        const me = this;
+
+        return me.getController().showMailAccountFor(mailAccountId);
     }
-
-
 
 });

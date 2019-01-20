@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
@@ -22,7 +22,8 @@
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
-    const createKey = function(id1, id2, id3) {
+    const TIMEOUT = 1250,
+        createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
@@ -59,7 +60,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
     });
 
 t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(){
-
+    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function(){
 
     t.it("Should create and show the view along with default config checks", function(t) {
         view = Ext.create(
@@ -78,9 +79,16 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(
         view = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
 
-        try{view.showMailEditor(1)}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toContain('is not a valid value');
+        t.waitForMs(TIMEOUT, function() {
+            try{view.showMailEditor(1)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toContain('is not a valid value');
+
+            t.waitForMs(TIMEOUT, function() {
+
+            });
+
+        });
 
     });
 
@@ -103,6 +111,10 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(
         t.expect(editor1).toBe(editor2);
 
         t.expect(view.showMailEditor(1, 'compose')).not.toBe(editor1);
+
+        t.waitForMs(TIMEOUT, function() {
+
+        });
     });
 
 
@@ -155,6 +167,24 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(
     });
 
 
-});
+    t.it("showMailAccountFor()", function(t) {
 
-});
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
+
+        let ctrl = view.getController();
+
+        t.isCalled('showMailAccountFor', ctrl);
+
+        let accountView = view.showMailAccountFor('dev_sys_conjoon_org');
+        t.isInstanceOf(accountView, 'conjoon.cn_mail.view.mail.account.MailAccountView');
+
+        t.waitForMs(TIMEOUT, function() {
+
+        });
+
+    });
+
+
+});});});
