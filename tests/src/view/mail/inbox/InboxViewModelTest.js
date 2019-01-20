@@ -33,6 +33,12 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
         }
     });
 
+t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+
+    Ext.ux.ajax.SimManager.init({
+        delay: 1
+    });
+
     t.it("Should create the ViewModel", function(t) {
         viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
         t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
@@ -47,32 +53,30 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
         // check config since store filters uses binding.
         // store won't be available until binding is set,
         // so simply query the defaultConfig
-        t.expect(viewModel.defaultConfig.stores).toEqual({
+        let store = viewModel.defaultConfig.stores['cn_mail-mailmessageitemstore'];
 
+        t.expect(store.type).toBe('cn_mail-mailmessageitemstore');
+        t.expect(store.autoLoad).toBe(true);
 
-            'cn_mail-mailmessageitemstore' : {
-                type : 'cn_mail-mailmessageitemstore',
-                autoLoad : true,
-                filters : [{
-                    property : 'mailFolderId',
-                    value    : '{cn_mail_ref_mailfoldertree.selection.id}'
-                }, {
-                    property : 'mailAccountId',
-                    value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
-                }]
-            }
-        });
+        t.expect(store.filters.length).toBe(2);
+
+        t.expect(store.filters).toEqual([{
+            disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+            property : 'mailFolderId',
+            value    : '{cn_mail_ref_mailfoldertree.selection.id}'
+        }, {
+            disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+            property : 'mailAccountId',
+            value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
+        }]);
 
     });
 
 
     t.it("Should properly test updateUnreadMessageCount", function(t) {
 
-        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
-            Ext.ux.ajax.SimManager.init({
-                delay: 1
-            });
+
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
                 stores : {
@@ -100,8 +104,40 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
 
             });
 
+
+    });
+
+
+    t.it("app-cn_mail#83 - no load if any filter is disabled", function(t) {
+
+            viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
+
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.type', 'foo');
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.id', 'a');
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.mailAccountId', 'b');
+
+            t.waitForMs(TIMEOUT, function() {
+
+                let store = viewModel.getStore('cn_mail-mailmessageitemstore'),
+                    defaultStoreConfig = viewModel.defaultConfig.stores['cn_mail-mailmessageitemstore'];
+
+                t.expect(store.isLoading()).toBe(false);
+                t.expect(store.isLoaded()).toBe(true);
+
+                viewModel.set('cn_mail_ref_mailfoldertree.selection.type', 'ACCOUNT');
+                viewModel.notify();
+
+                t.expect(defaultStoreConfig.listeners.beforeload(store)).toBe(false);
+
+                viewModel.set('cn_mail_ref_mailfoldertree.selection.type', 'INBOX');
+                viewModel.notify();
+                
+                t.expect(defaultStoreConfig.listeners.beforeload(store)).not.toBe(false);
+            });
+
         });
     });
+
 
 
 

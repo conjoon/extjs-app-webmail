@@ -44,10 +44,29 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
         'cn_mail-mailmessageitemstore' : {
             type     : 'cn_mail-mailmessageitemstore',
             autoLoad : true,
+            listeners : {
+                /**
+                 * Makes sure we prevent loading of the store if any of the filter is
+                 * disabled, which is the case if any of the MailAccount nodes in the
+                 * MailFolderTree gets selected
+                 */
+                beforeload : function(store) {
+                    let filters = store.getFilters();
+
+                    for (let i = 0, len = filters.length; i < len; i++) {
+                        if (filters.getAt(i).getDisabled() === true) {
+                            return false;
+                        }
+                    }
+
+                }
+            },
             filters  : [{
+                disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
                 property : 'mailFolderId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.id}'
             }, {
+                disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
                 property : 'mailAccountId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
             }]
