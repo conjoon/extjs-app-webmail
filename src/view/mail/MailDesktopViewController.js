@@ -291,6 +291,39 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
 
     /**
+     * Shwows the conjoon.cn_mail.view.mail.account.MailAccountView for the MailAccount
+     * specified by the mailAccountId.
+     *
+     * @param {String} mailAccountId
+     *
+     * @return {conjoon.cn_mail.view.mail.account.MailAccountView}
+     */
+    showMailAccountFor : function(mailAccountId) {
+
+        const me          = this,
+            view        = me.getView(),
+            inboxView   = view.down('cn_mail-mailinboxview'),
+            accountView = inboxView.down('cn_mail-mailaccountview'),
+            tree        = inboxView.down('cn_mail-mailfoldertree'),
+            store       = tree.getStore();
+
+        if (store.isLoading() || store.getProxy().type === 'memory') {
+            inboxView.mon(tree, 'load',
+                Ext.Function.bind(
+                    me.processMailFolderSelectionForRouting, me, [mailAccountId, null, true]
+                ),
+                me, {single : true});
+        } else {
+            me.processMailFolderSelectionForRouting(mailAccountId, null, true);
+        }
+
+        view.setActiveTab(inboxView);
+        return accountView;
+
+    },
+
+
+    /**
      * Shows the InboxView and selects the specified mailFolderId for the
      * specified mailAccountId.
      * Delegates to #processMailFolderSelectionForRouting. If the store of the
@@ -336,12 +369,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      *
      * @param {String} mailAccountId
      * @param {String} mailFolderId
+     * @param {Boolean} shouldSelectMailFolder advises the method to select the
+     * folder specified by mailAccountId if,  and only if mailFolderId equals to null
      *
      * @return {Boolean} false if the specified MailFolder was not found
      *
      * @private
      */
-    processMailFolderSelectionForRouting : function(mailAccountId, mailFolderId) {
+    processMailFolderSelectionForRouting : function(mailAccountId, mailFolderId, shouldSelectMailFolder = false) {
 
         const me        = this,
               view      = me.getView(),
@@ -355,12 +390,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         if (!accountNode) {
             return false;
-        }
+        } else if (shouldSelectMailFolder === true && mailFolderId === null) {
+            rec = accountNode;
+        } else {
+            rec = accountNode.findChild("id", mailFolderId, true);
 
-        rec = accountNode.findChild("id", mailFolderId, true);
-
-        if (!rec) {
-            return false;
+            if (!rec) {
+                return false;
+            }
         }
 
         inboxView.cn_href = rec.toUrl();
