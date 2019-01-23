@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
 
     var folders =   [{
         id            : "INBOX",
-        text          : 'Inbox',
+        name          : 'Inbox',
         unreadCount   : 3787,
         type          : 'INBOX',
         data      : [{
             id            : "INBOX.MyStuff",
-            text          : 'MyStuff',
+            name          : 'MyStuff',
             unreadCount   : 3787,
             type          : 'INBOX',
             data      : [],
@@ -48,28 +48,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
         mailAccountId :  "dev_sys_conjoon_org",
     }, {
         id            : "INBOX.Sent Messages",
-        text          : 'Sent',
+        name          : 'Sent',
         unreadCount   : 0,
         type          : 'SENT',
         data      : [],
         mailAccountId :  "dev_sys_conjoon_org",
     }, {
         id            : "INBOX.Junk",
-        text          : 'Junk',
+        name          : 'Junk',
         unreadCount   : 0,
         type          : 'JUNK',
         data      : [],
         mailAccountId :  "dev_sys_conjoon_org",
     }, {
         id            : "INBOX.Drafts",
-        text          : 'Drafts',
+        name          : 'Drafts',
         unreadCount   : 0,
         type          : 'DRAFT',
         data      : [],
         mailAccountId :  "dev_sys_conjoon_org",
     }, {
         id           : "INBOX.Trash",
-        text         : 'Trash',
+        name         : 'Trash',
         unreadCount  : 5,
         type         : 'TRASH',
         data     : [],
@@ -78,7 +78,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
     //////////////////////////////
     {
         id            : "INBOX",
-        text          : 'Inbox',
+        name          : 'Inbox',
         unreadCount   : 3787,
         type          : 'INBOX',
         data      : [],
@@ -86,28 +86,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', {
 
     }, {
         id            : "INBOX.Sent Messages",
-        text          : 'Sent',
+        name          : 'Sent',
         unreadCount   : 0,
         type          : 'SENT',
             data      : [],
         mailAccountId :  "mail_account",
     }, {
         id            : "INBOX.Junk",
-        text          : 'Junk',
+        name          : 'Junk',
         unreadCount   : 0,
         type          : 'JUNK',
             data      : [],
         mailAccountId :  "mail_account",
     }, {
         id            : "INBOX.Drafts",
-        text          : 'Drafts',
+        name          : 'Drafts',
         unreadCount   : 0,
         type          : 'DRAFT',
             data      : [],
         mailAccountId :  "mail_account",
     }, {
         id           : "INBOX.Trash",
-        text         : 'Trash',
+        name         : 'Trash',
         unreadCount  : 5,
         type         : 'TRASH',
             data     : [],
