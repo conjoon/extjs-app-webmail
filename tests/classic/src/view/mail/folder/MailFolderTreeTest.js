@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ describe('conjoon.cn_mail.view.mail.folder.MailFolderTreeTest', function(t) {
 
         t.expect(columns.length).toBe(1);
         t.expect(columns[0] instanceof conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn).toBe(true);
+        t.expect(columns[0].dataIndex).toBe("name");
 
     });
 

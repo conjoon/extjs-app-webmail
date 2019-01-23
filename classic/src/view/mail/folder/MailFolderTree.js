@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
 
     columns : [{
         xtype     : 'cn_mail-mailfoldertreecolumn',
-        dataIndex : 'text',
+        dataIndex : 'name',
         flex      : 1,
         renderer  : function(value, metaData, record) {
             var unreadCount = record.get('unreadCount');
