@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
 
     t.it("Test Record Validity", function(t) {
         t.expect(model.isValid()).toBe(false);
-        model.set('text', 'Posteingang');
+        model.set('name', 'Posteingang');
         t.expect(model.isValid()).toBe(false);
 
         model.set('type', 'Posteingang');
