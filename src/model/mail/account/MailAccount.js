@@ -43,8 +43,55 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
             type : 'presence'
         }]
     }, {
-        name : 'type',
+        name : 'cn_folderType',
         type : 'string'
+    }, {
+        name : 'userName',
+        type : 'string'
+    }, {
+        name : 'from',
+        type : 'string'
+    }, {
+        name : 'replyTo',
+        type : 'string'
+    },
+
+    // INBOX CONFIGURATION
+    {
+        name : 'inbox_type',
+        type : 'string'
+    }, {
+        name : 'inbox_address',
+        type : 'string'
+    }, {
+        name : 'inbox_port',
+        type : 'string'
+    }, {
+        name : 'inbox_user',
+        type : 'string'
+    }, {
+        name : 'inbox_password',
+        type : 'string'
+    }, {
+        name : 'inbox_ssl',
+        type : 'boolean'
+    },
+    // OUTBOX CONFIGURATION
+    {
+        name : 'outbox_address',
+        type : 'string'
+    }, {
+        name : 'outbox_port',
+        type : 'string'
+    }, {
+        name : 'outbox_user',
+        type : 'string'
+    }, {
+        name : 'outbox_password',
+        type : 'string'
+    }, {
+        name : 'outbox_ssl',
+        type : 'boolean'
     }],
 
     /**
@@ -58,7 +105,7 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
 
         me.callParent(arguments);
 
-        me.getField('type').setModelValidators([{
+        me.getField('cn_folderType').setModelValidators([{
             type : 'inclusion',
             list : [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT

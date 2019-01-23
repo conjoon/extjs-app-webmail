@@ -51,7 +51,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         type    : 'int',
         persist : false
     }, {
-        name : 'type',
+        name : 'cn_folderType',
         type : 'string'
     }],
 
@@ -83,7 +83,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
         me.callParent(arguments);
 
-        me.getField('type').setModelValidators([{
+        me.getField('cn_folderType').setModelValidators([{
             type : 'inclusion',
             list : [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,

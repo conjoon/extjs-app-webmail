@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +33,30 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.account.MailAccountSim', {
 }, function() {
 
     var accounts = [{
-        id            : "dev_sys_conjoon_org",
-        text          : "dev@conjoon.org",
-        from          : 'dev@conjoon.org',
-        replyTo       : 'dev@conjoon.org',
-        name          : "conjoon developer"
+        id             : "dev_sys_conjoon_org",
+        name           : "conjoon developer",
+        userName       : "John Smith",
+        from           : 'dev@conjoon.org',
+        replyTo        : 'dev@conjoon.org',
+        inbox_type     : 'IMAP',
+        inbox_address  : 'sfsffs.ffssf.sffs',
+        inbox_port     : 993,
+        inbox_user     : 'inboxuser',
+        inbox_password : 'inboxpassword',
+        inbox_ssl       : true,
+        outbox_address  : 'sfsffs.ffssf.sffs',
+        outbox_port     : 993,
+        outbox_user     : 'outboxuser',
+        outbox_password : 'outboxpassword',
+        outbox_ssl      : true
+
     },{
         id            : "mail_account",
-        text          : "demo@googlemail.com",
+        name          : "google mail",
+        userName  : "Peter Parker",
         from          : 'demo@googlemail.com',
         replyTo       : 'demo@googlemail.com',
-        name          : "google mail",
+        inbox_type   : 'IMAP'
 
     }];
 
