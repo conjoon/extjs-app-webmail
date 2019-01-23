@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,7 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
 
     requires : [
         'conjoon.cn_mail.data.mail.ajax.sim.Init',
-        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable',
-        'conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderTable'
+        'conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable'
     ]
 
 }, function() {
@@ -45,7 +44,6 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.message.SendMessageSim', {
             var me              = this,
                 ret             = {},
                 MessageTable    = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable,
-                MailFolderTable = conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderTable,
                 id              = ctx.xhr.options.params.id,
                 mailAccountId   = ctx.xhr.options.params.mailAccountId,
                 mailFolderId    = ctx.xhr.options.params.mailFolderId,
