@@ -659,7 +659,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
             // should be move operation since selected folder is not of type
             // TRASH
-            t.expect(selectMailFolder(panel, 2).get('type')).not.toBe('TRASH');
+            t.expect(selectMailFolder(panel, 2).get('cn_folderType')).not.toBe('TRASH');
 
             t.waitForMs(TIMEOUT, function() {
                 let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
@@ -689,7 +689,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.waitForMs(TIMEOUT, function() {
 
             let folder =  selectMailFolder(panel, 5);
-            t.expect(folder.get('type')).toBe('TRASH');
+            t.expect(folder.get('cn_folderType')).toBe('TRASH');
 
             t.waitForMs(TIMEOUT, function() {
                 let messageItem = Ext.create(
@@ -993,7 +993,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             t.waitForMs(TIMEOUT, function() {
 
                 let mailFolder = selectMailFolder(panel, 4);
-                t.expect(mailFolder.get('type')).toBe("DRAFT");
+                t.expect(mailFolder.get('cn_folderType')).toBe("DRAFT");
 
                 t.waitForMs(TIMEOUT, function() {
 
@@ -1037,7 +1037,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
             // should be move operation since selected folder is not of type
             // TRASH
-            t.expect(selectMailFolder(panel, 1).get('type')).not.toBe('TRASH');
+            t.expect(selectMailFolder(panel, 1).get('cn_folderType')).not.toBe('TRASH');
 
             t.waitForMs(TIMEOUT, function() {
                 let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);

@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
                 for (i = 0; i < len; i++) {
                     rec = records[i];
 
-                    rec.type = ACCOUNT;
+                    rec.cn_folderType = ACCOUNT;
                     rec[tp]  = me.mailAccountModelClass;
                 }
 
@@ -96,7 +96,7 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
                 // POST / PUT
                 let d = data.data;
 
-                d.type                  = ACCOUNT;
+                d.cn_folderType     = ACCOUNT;
                 d[me.getTypeProperty()] = me.mailAccountModelClass;
 
                 return data;

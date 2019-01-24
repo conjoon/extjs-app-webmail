@@ -930,7 +930,7 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
             // will throw if no draft node found
             ctrl.defaultAccountInformations = null;
-            root.childNodes[0].childNodes[3].set('type', 'foo');
+            root.childNodes[0].childNodes[3].set('cn_folderType', 'foo');
 
             let exc, e;
             try{ctrl.onMailFolderTreeStoreLoad(store, records);}catch(e){exc = e};

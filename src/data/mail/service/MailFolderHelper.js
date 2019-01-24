@@ -108,7 +108,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
             return null;
         }
 
-        let node = accountNode.findChild("type", type, false);
+        let node = accountNode.findChild("cn_folderType", type, false);
 
         if (!node) {
             return null;
@@ -147,7 +147,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
         const me    = this,
             store   = me.getStore(),
             nodeInd = store.findBy(function(node) {
-                if (node.get('id') === mailAccountId && node.get('type') ===
+                if (node.get('id') === mailAccountId && node.get('cn_folderType') ===
                     conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT) {
                     return true;
                 }

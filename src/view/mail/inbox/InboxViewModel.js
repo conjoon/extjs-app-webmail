@@ -62,11 +62,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
                 }
             },
             filters  : [{
-                disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+                disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
                 property : 'mailFolderId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.id}'
             }, {
-                disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+                disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
                 property : 'mailAccountId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
             }]

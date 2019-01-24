@@ -61,11 +61,11 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(store.filters.length).toBe(2);
 
         t.expect(store.filters).toEqual([{
-            disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+            disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
             property : 'mailFolderId',
             value    : '{cn_mail_ref_mailfoldertree.selection.id}'
         }, {
-            disabled : '{cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+            disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
             property : 'mailAccountId',
             value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
         }]);
@@ -112,7 +112,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
 
-            viewModel.set('cn_mail_ref_mailfoldertree.selection.type', 'foo');
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'foo');
             viewModel.set('cn_mail_ref_mailfoldertree.selection.id', 'a');
             viewModel.set('cn_mail_ref_mailfoldertree.selection.mailAccountId', 'b');
 
@@ -124,12 +124,12 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                 t.expect(store.isLoading()).toBe(false);
                 t.expect(store.isLoaded()).toBe(true);
 
-                viewModel.set('cn_mail_ref_mailfoldertree.selection.type', 'ACCOUNT');
+                viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'ACCOUNT');
                 viewModel.notify();
 
                 t.expect(defaultStoreConfig.listeners.beforeload(store)).toBe(false);
 
-                viewModel.set('cn_mail_ref_mailfoldertree.selection.type', 'INBOX');
+                viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'INBOX');
                 viewModel.notify();
                 
                 t.expect(defaultStoreConfig.listeners.beforeload(store)).not.toBe(false);

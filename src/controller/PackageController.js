@@ -558,7 +558,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         }
 
         let accountSelected = records.length <= 0
-                              || records[0].get('type') === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
+                              || records[0].get('cn_folderType') === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
         me.getSwitchReadingPaneButton().setDisabled(accountSelected);
         me.getToggleGridListButton().setDisabled(accountSelected);

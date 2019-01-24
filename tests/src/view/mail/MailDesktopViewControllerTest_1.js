@@ -714,8 +714,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             let draftFolder = getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t),
                 inboxFolder = getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t);
 
-            t.expect(draftFolder.get('type')).toBe('DRAFT');
-            t.expect(inboxFolder.get('type')).toBe('INBOX');
+            t.expect(draftFolder.get('cn_folderType')).toBe('DRAFT');
+            t.expect(inboxFolder.get('cn_folderType')).toBe('INBOX');
 
             selectMailFolder(panel, inboxFolder);
 
@@ -791,7 +791,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             let mailFolder =  selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
 
-            t.expect(mailFolder.get('type')).toBe('DRAFT');
+            t.expect(mailFolder.get('cn_folderType')).toBe('DRAFT');
 
             t.waitForMs(751, function(){
 
@@ -830,7 +830,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                                           .getCompoundKey().equalTo(draft.getCompoundKey())).toBe(false);
 
                             let trashMailFolder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 4, 'INBOX.Trash', t));
-                            t.expect(trashMailFolder.get('type')).toBe('TRASH');
+                            t.expect(trashMailFolder.get('cn_folderType')).toBe('TRASH');
 
                             t.waitForMs(1755, function() {
 
@@ -955,7 +955,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             let mailFolder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
 
-            t.expect(mailFolder.get('type')).toBe('DRAFT');
+            t.expect(mailFolder.get('cn_folderType')).toBe('DRAFT');
 
             t.waitForMs(1752, function(){
 
@@ -966,7 +966,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 t.waitForMs(1753, function() {
 
                     mailFolder = selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 4, 'INBOX.Trash', t));
-                    t.expect(mailFolder.get('type')).toBe('TRASH');
+                    t.expect(mailFolder.get('cn_folderType')).toBe('TRASH');
 
                     t.waitForMs(1754, function() {
 

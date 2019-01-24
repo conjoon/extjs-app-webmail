@@ -74,7 +74,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
     /**
      * Overriden to make sure we can specify class statics for values of
-     * field validation for "type".
+     * field validation for "cn_folderType".
      *
      * @inheritdoc
      */

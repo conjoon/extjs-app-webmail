@@ -848,7 +848,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         mailFolderTree = panel.down('cn_mail-mailfoldertree');
 
         t.waitForMs(TIMEOUT, function() {
-            draftNode = mailFolderTree.getStore().findNode('type', 'DRAFT');
+            draftNode = mailFolderTree.getStore().findNode('cn_folderType', 'DRAFT');
             mailFolderTree.getSelectionModel().select(draftNode);
 
             t.waitForMs(TIMEOUT, function() {
@@ -924,7 +924,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         mailFolderTree = panel.down('cn_mail-mailfoldertree');
 
         t.waitForMs(TIMEOUT, function() {
-            draftNode      = mailFolderTree.getStore().findNode('type', 'DRAFT');
+            draftNode      = mailFolderTree.getStore().findNode('cn_folderType', 'DRAFT');
             mailFolderTree.getSelectionModel().select(draftNode);
 
             t.waitForMs(TIMEOUT, function() {

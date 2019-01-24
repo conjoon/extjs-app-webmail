@@ -1195,14 +1195,13 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               view         = me.getView(),
               TYPES        = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (records[0].get('type') === TYPES.ACCOUNT) {
+        if (records[0].get('cn_folderType') === TYPES.ACCOUNT) {
             return null;
         }
 
-
         if (!me.defaultAccountInformations) {
             let accountNode = records[0].parentNode,
-                draftNode   = accountNode.findChild("type", TYPES.DRAFT, false);
+                draftNode   = accountNode.findChild("cn_folderType", TYPES.DRAFT, false);
 
             if (!draftNode) {
                 Ext.raise({
