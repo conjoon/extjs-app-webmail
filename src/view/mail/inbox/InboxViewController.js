@@ -54,7 +54,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         },
 
         'cn_mail-mailfoldertree' : {
-            'select' : 'onMailFolderTreeSelect'
+            'beforeselect' : 'onMailFolderTreeBeforeSelect',
+            'select'       : 'onMailFolderTreeSelect'
         },
 
         'cn_mail-mailmessagegrid' : {
@@ -233,6 +234,33 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         const me = this;
 
         me.redirectTo(node);
+    },
+
+
+    /**
+     * Callback for the beforeselect event of the embedded MailFolderTree.
+     * Will return false if the embedded cn_mail-mailacountview has
+     * pending changes that need user interaction.
+     *
+     * @param {Ext.selection.Model} selModel
+     * @param {Ext.data.TreeModel} node
+     *
+     * @param {Boolean} true if the event can pass, otherwise false
+     */
+    onMailFolderTreeBeforeSelect : function(selModel, node) {
+
+        const me              = this,
+              view            = me.getView(),
+              mailAccountView = view.down('cn_mail-mailaccountview');
+
+        if (mailAccountView.hasPendingChanges()) {
+
+            view.showMailAccountIsBeingEditedNotice(node);
+
+            return false;
+        }
+
+        return true;
     },
 
 
@@ -599,7 +627,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
               selected = me.getSelectedMailFolder();
 
         if (!selected ||
-            selected.get('type') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
+            selected.get('cn_folderType') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
             selected.get('mailAccountId') !== messageDraft.get('mailAccountId')) {
             return;
         }

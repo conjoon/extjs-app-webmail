@@ -1037,7 +1037,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
             // should be move operation since selected folder is not of type
             // TRASH
-            t.expect(selectMailFolder(panel, 1).get('cn_folderType')).not.toBe('TRASH');
+            t.expect(selectMailFolder(panel, 1).get('cn_folderType, ')).not.toBe('TRASH');
 
             t.waitForMs(TIMEOUT, function() {
                 let messageItem = panel.down('cn_mail-mailmessagegrid').getStore().getAt(0);
@@ -1164,5 +1164,83 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
             });
         });
     });
+
+
+    t.it("app-cn_mail#83 - make sure MailFolderTree *select-events are registered", function(t) {
+
+        panel = createPanelWithViewModel();
+
+        let ctrl = panel.getController(),
+            tmp  = panel.down;
+
+
+        panel.down = function(query) {
+
+            if (query !== 'cn_mail-mailaccountview') {
+                return tmp.apply(panel, [query]);
+            }
+
+            return {
+                hasPendingChanges : function() {
+                    return false;
+                }
+            }
+        };
+
+        t.waitForMs(TIMEOUT, function() {
+
+            t.isCalled('onMailFolderTreeSelect', ctrl);
+            t.isCalled('onMailFolderTreeBeforeSelect', ctrl);
+
+            selectMailFolder(panel, 2);
+
+            t.waitForMs(TIMEOUT, function() {
+
+            });
+
+        });
+    });
+
+
+    t.it("app-cn_mail#83 - onMailFolderTreeBeforeSelect()", function(t){
+
+        panel = createPanelWithViewModel();
+
+        let ctrl = panel.getController(),
+            PENDINGCHANGES = false,
+            CALLED;
+
+        t.waitForMs(TIMEOUT, function() {
+
+            panel.showMailAccountIsBeingEditedNotice = function() {
+                CALLED = true;
+            };
+
+            panel.down = function() {
+
+                return {
+                    hasPendingChanges : function() {
+                        return PENDINGCHANGES;
+                    }
+                }
+
+            };
+
+            t.expect(PENDINGCHANGES).toBe(false);
+            t.expect(CALLED).toBeUndefined();
+
+            t.expect(ctrl.onMailFolderTreeBeforeSelect()).toBe(true);
+
+            PENDINGCHANGES = true;
+
+            t.expect(ctrl.onMailFolderTreeBeforeSelect()).toBe(false);
+
+            t.expect(CALLED).toBe(true);
+
+        });
+
+    });
+
+
 
 });});});
