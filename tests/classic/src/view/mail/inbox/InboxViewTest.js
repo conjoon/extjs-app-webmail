@@ -466,4 +466,66 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
     });
 
 
+    t.it("app-cn_mail#83 - showMailAccountIsBeingEditedNotice()", function(t) {
+
+
+        view = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+        let iconCls        = view.getIconCls(),
+            mailFolderTree = view.down('cn_mail-mailfoldertree'),
+            REJECTED = 0;
+
+        t.waitForMs(TIMEOUT, function() {
+
+            view.down('cn_mail-mailaccountview').rejectPendingChanges = function() {
+                REJECTED++;
+            };
+
+            let mailFolder1 = selectMailFolder(view, 0, 'dev_sys_conjoon_org'),
+                mailFolder2 =  selectMailFolder(view, 1, 'mail_account');
+
+            let mask = view.showMailAccountIsBeingEditedNotice(mailFolder1);
+
+            t.isInstanceOf(mask, 'conjoon.cn_comp.component.MessageMask');
+            t.expect(mask.isVisible()).toBe(true);
+
+            let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom),
+                noButton  = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
+
+            t.expect(yesButton.length).toBe(1);
+            t.expect(yesButton[0].parentNode.style.display).not.toBe('none');
+            t.expect(noButton.length).toBe(1);
+            t.expect(noButton[0].parentNode.style.display).not.toBe('none');
+
+            t.expect(view.getIconCls()).not.toBe(iconCls);
+
+            t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(mailFolder2);
+            t.click(noButton[0], function() {
+                t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(mailFolder2);
+
+                view.showMailAccountIsBeingEditedNotice(mailFolder1);
+                t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(1);
+
+                yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
+
+                t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(mailFolder2);
+                t.click(yesButton[0], function() {
+                    t.expect(mailFolderTree.getSelectionModel().getSelection()[0]).toBe(mailFolder1);
+
+                    t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+
+                    t.expect(view.getIconCls()).toBe(iconCls);
+
+                    t.expect(REJECTED).toBe(1);
+
+                    discardView(t);
+                });
+
+            });
+
+        });
+
+    });
+
+
 });});});

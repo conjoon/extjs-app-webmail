@@ -138,6 +138,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 flex   : 1,
                 xtype  : 'box',
                 hidden : false,
+                cls    : 'cn-lightestBox',
                 bind      : {
                     hidden : '{cn_mail_ref_mailfoldertree.selection}'
                 },
@@ -157,7 +158,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 hidden    : true,
                 xtype     : 'cn_mail-mailaccountview',
                 bind      : {
-                    hidden : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.type !== "ACCOUNT"}'
+                    mailAccount : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT" && cn_mail_ref_mailfoldertree.selection}',
+                    hidden : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType !== "ACCOUNT"}'
                 }
             }, {
                 flex      : 1,
@@ -165,9 +167,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 xtype     : 'cn_mail-mailmessagegrid',
                 reference : 'cn_mail_ref_mailmessagegrid',
                 bind      : {
-                    representedFolderType : '{cn_mail_ref_mailfoldertree.selection.type}',
+                    representedFolderType : '{cn_mail_ref_mailfoldertree.selection.cn_folderType}',
                     title                 : '{cn_mail_ref_mailfoldertree.selection.text}',
-                    hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+                    hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
                     store                 : '{cn_mail-mailmessageitemstore}'
                 }
         }]}, {
@@ -238,7 +240,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             header    : false,
             hidden    : true,
             bind      : {
-                hidden      : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.type === "ACCOUNT"}',
+                hidden      : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
                 messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }
 
@@ -321,6 +323,58 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         const me = this
 
         me.getController().updateViewForSentDraft(messageDraft);
-    }
+    },
+
+
+    /**
+     * Shows a message that saving the current message failed.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {Ext.data.operation.Operation} operation The operation that failed
+     * @param {Function} callback Optional callback that gets called in the
+     * scope of this view. Allows further user interaction by specifying logic
+     * to handle the failed process
+     *
+     * @return {conjoon.cn_comp.component.MessageMask}
+     */
+    showMailAccountIsBeingEditedNotice : function(node) {
+        /**
+         * @i18n
+         */
+        var me              = this,
+            iconCls         = me.getIconCls(),
+            tree            = me.down('cn_mail-mailfoldertree'),
+            mailAccountView = me.down('cn_mail-mailaccountview'),
+            myMask;
+
+        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+            title    : "Pending Changes",
+            message  : "The changes to the Email-Account have not been saved yet. Do you want to discard the changes?",
+            target   : me,
+            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
+            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            callback : function(btnAction) {
+
+                const me = this;
+
+                me.setIconCls(iconCls);
+
+                if (btnAction === 'yesButton') {
+                    mailAccountView.rejectPendingChanges();
+                    tree.getSelectionModel().select(node);
+                    return;
+                }
+
+            },
+            scope : me
+        });
+
+        me.setIconCls('fa fa-question-circle');
+        me.setClosable(false);
+
+        myMask.show();
+
+        return myMask;
+    },
 
 });
