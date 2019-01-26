@@ -168,7 +168,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 reference : 'cn_mail_ref_mailmessagegrid',
                 bind      : {
                     representedFolderType : '{cn_mail_ref_mailfoldertree.selection.cn_folderType}',
-                    title                 : '{cn_mail_ref_mailfoldertree.selection.text}',
+                    title                 : '{cn_mail_ref_mailfoldertree.selection.name}',
                     hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
                     store                 : '{cn_mail-mailmessageitemstore}'
                 }
