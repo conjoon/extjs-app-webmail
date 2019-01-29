@@ -25,6 +25,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t)
 
 t.requireOk('conjoon.cn_core.util.Date', function() {
 
+    const TIMEOUT = 1250;
+
     var view,
         viewConfig,
         testDate   = new Date(),
@@ -68,16 +70,24 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
         },
         checkHtmlForValidData = function(t, view) {
             t.expect(view.getTitle()).toContain('SUBJECT');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('FROM');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain('SUBJECT');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(formatDate);
+
+            let node = view.down('#msgHeaderContainer').down('container').el.dom;
+
+            t.expect(node.innerHTML).toContain('FROM');
+            t.expect(node.innerHTML).toContain('SUBJECT');
+            t.expect(node.innerHTML).toContain(formatDate);
             t.expect(view.down('component[cls=cn_mail-mailmessagereadermessageviewiframe]').getSrcDoc()).not.toBe("");
         },
         checkHtmlDataNotPresent = function(t, view) {
+
+            t.expect(view.down('#msgIndicatorBox').isVisible()).toBe(true);
+
+            let node = view.down('#msgHeaderContainer').down('container').el.dom;
+
             t.expect(view.getTitle()).toBe(view.getViewModel().emptySubjectText);
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain('FROM');
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).toContain(view.getViewModel().emptySubjectText);
-            t.expect(view.down('component[cls=message-subject]').el.dom.innerHTML).not.toContain(formatDate);
+            t.expect(node.innerHTML).not.toContain('FROM');
+            t.expect(node.innerHTML).toContain(view.getViewModel().emptySubjectText);
+            t.expect(node.innerHTML).not.toContain(formatDate);
             t.expect(view.down('component[cls=cn_mail-mailmessagereadermessageviewiframe]').getSrcDoc()).toBe("");
         };
 
@@ -95,6 +105,8 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
         viewConfig = {
             callbackWasCalled : false,
+            height:600,
+            width:800,
             renderTo          : document.body,
             listeners         : {
                 'cn_mail-mailmessageitemread' : function(record) {
@@ -173,6 +185,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
                 t.expect(view.callbackWasCalled[0].get('id')).toBe('1');
             });
         });
+
 
 
         t.it("Should set everything to empty when setMessageItem was called with null", function(t) {
@@ -651,7 +664,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
         t.it("app-cn_mail#88 / app-cn_mail#96 - sandbox", function(t) {
 
-            let view = Ext.create(
+            view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
 
             let sandbox = view.down('cn_mail-mailmessagereadermessageviewiframe').cn_iframeEl.dom.sandbox,
@@ -681,5 +694,49 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             view = null;
         });
 
+
+        t.it("updateContextButtonsEnabled()", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let item = createMessageItem(true);
+
+            view.setMessageItem(item);
+
+            t.waitForMs(TIMEOUT, function() {
+
+                t.expect(view.getContextButtonsEnabled()).toBe(false);
+                t.expect(view.getViewModel().get('contextButtonsEnabled')).toBe(false);
+
+                t.expect(view.down('#btn-editdraft').isVisible()).toBe(false);
+                t.expect(view.down('#btn-deletedraft').isVisible()).toBe(false);
+                t.expect(view.down('#btn-replyall').isVisible()).toBe(false);
+
+
+                view.setContextButtonsEnabled(true);
+
+                t.waitForMs(TIMEOUT, function(){
+
+                    t.expect(view.getViewModel().get('contextButtonsEnabled')).toBe(true);
+
+                    t.expect(view.down('#btn-replyall').isVisible()).toBe(true);
+
+                    item.set('draft', true);
+
+                    t.waitForMs(TIMEOUT, function() {
+                        t.expect(view.down('#btn-editdraft').isVisible()).toBe(true);
+                        t.expect(view.down('#btn-deletedraft').isVisible()).toBe(true);
+                        t.expect(view.down('#btn-replyall').isVisible()).toBe(false);
+                    });
+                });
+
+            });
+
+
+
+
+
+        });
 
     });});});

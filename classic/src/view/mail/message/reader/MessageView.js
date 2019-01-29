@@ -61,6 +61,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} item
      */
 
+    config : {
+        /**
+         * Whether the buttons in this MessageView (reply all, edit / delete draft)
+         * should be enabled. Defaults to false.
+         *
+         * @cfg {Boolean}
+         */
+        contextButtonsEnabled : false
+    },
+
+
     /**
      * @private
      */
@@ -132,29 +143,103 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             height : 80,
             width  : 80
         }, {
-            xtype : 'component',
-            flex  : 1,
-            cls   : 'message-subject',
-            bind  : {
-                data : {
-                    displayToAddress   : '{getDisplayToAddress}',
-                    displayFromAddress : '{getDisplayFromAddress}',
-                    subject            : '{getSubject}',
-                    date               : '{getFormattedDate}',
-                    hasAttachments     : '{messageItem.hasAttachments}',
-                    isDraft            : '{messageItem.draft}'
-                }
-            },
-            tpl: [
-                '<div class="from">{displayFromAddress}</div>',
-                '<div class="to">to {displayToAddress} on {date}</div>',
-                '<div class="subject">' +
+           xtype : 'container',
+           flex : 1,
+           layout : { type : 'vbox', align : 'stretch'},
+           items : [{
+               xtype  : 'container',
+               margin : '5 5 0 0',
+               layout : { type : 'hbox'},
+               items  : [{
+                   xtype : 'component',
+                   flex  : 1,
+                   cls   : 'message-subject',
+                   bind  : {
+                       data : {
+                           date               : '{getFormattedDate}',
+                           displayToAddress   : '{getDisplayToAddress}',
+                           displayFromAddress : '{getDisplayFromAddress}'
+                       }
+                   },
+                   tpl: [
+                       '<div class="from">{displayFromAddress}</div>',
+                       '<div class="to">to {displayToAddress} on {date}</div>',
+                   ]
+
+               }, {
+                   xtype     : 'button',
+                   scale     : 'small',
+                   ui        : 'cn-btn-medium-base-color',
+                   iconCls   : 'x-fa fa-edit',
+                   tooltip  : {
+                       text  : "Edit this draft"
+                   },
+                   itemId    : 'btn-editdraft',
+                   visible    : false,
+                   bind      : {
+                       visible : '{messageItem.draft && contextButtonsEnabled}'
+                   }
+               }, {
+                   xtype     : 'button',
+                   scale     : 'small',
+                   ui        : 'cn-btn-medium-base-color',
+                   iconCls   : 'x-fa fa-trash',
+                   itemId    : 'btn-deletedraft',
+                   tooltip  : {
+                       text  : "Delete this draft"
+                   },
+                   visible   : false,
+                   bind      : {
+                       visible : '{messageItem.draft && contextButtonsEnabled}'
+                   }
+               }, {
+                   visible   : false,
+                   bind      : {
+                       visible : '{!messageItem.draft && contextButtonsEnabled}'
+                   },
+                   xtype     : 'splitbutton',
+                   scale     : 'small',
+                   ui        : 'cn-btn-medium-base-color',
+                   iconCls   : 'x-fa fa-mail-reply-all',
+                   text      : 'Reply all',
+                   itemId    : 'btn-replyall',
+                   menuAlign : 'tr-br',
+                   menu    : {
+                       items : [{
+                           text    : 'Reply',
+                           iconCls : 'x-fa fa-mail-reply',
+                           itemId  : 'btn-reply',
+                       }, {
+                           text    : 'Forward',
+                           iconCls : 'x-fa fa-mail-forward',
+                           itemId  : 'btn-forward'
+                       }, '-', {
+                           text    : 'Delete',
+                           iconCls : 'x-fa fa-trash',
+                           itemId  : 'btn-delete'
+                       }]
+                   }
+               }]
+           }, {
+               xtype : 'component',
+               flex  : 1,
+               cls   : 'message-subject',
+               bind  : {
+                   data : {
+                       subject            : '{getSubject}',
+                       hasAttachments     : '{messageItem.hasAttachments}',
+                       isDraft            : '{messageItem.draft}'
+                   }
+               },
+               tpl: [
+                   '<div class="subject">' +
                    '<tpl if="isDraft"><span class="draft">[Draft]</span></tpl>' +
                    '<tpl if="hasAttachments"><span class="fa fa-paperclip"></span></tpl>' +
-                    '{subject}',
-                 '</div>'
-            ]
+                   '{subject}',
+                   '</div>'
+               ]
 
+           }]
         }]
     }, {
         flex   : 1,
@@ -400,9 +485,24 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             me.fireEvent('cn_mail-messageitemload', me, messageItem);
         }
 
+    },
+
+
+    /**
+     * Delegates to this ViewModel and sets its contextButtonsEnabled
+     * property to the specified value.
+     *
+     * @param {Boolean} value
+     *
+     * @private
+     */
+    updateContextButtonsEnabled : function(value) {
+
+        const me = this;
+
+        me.getViewModel().set('contextButtonsEnabled', value);
+
     }
-
-
 
 
 });
