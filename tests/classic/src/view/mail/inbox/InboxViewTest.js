@@ -334,7 +334,6 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
         t.expect(messageView.down('#btn-replyall').getMenu().down('#btn-forward')).toBeTruthy();
         t.expect(messageView.down('#btn-replyall').getMenu().down('#btn-reply')).toBeTruthy();
 
-        t.expect(messageView.down('#btn-replyall').up('toolbar').isVisible()).toBe(false);
 
         t.waitForMs(TIMEOUT, function(){
 
@@ -350,7 +349,6 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
                     grid.getSelectionModel().select(messageItem);
 
                     t.waitForMs(TIMEOUT, function(){
-                        t.expect(messageView.down('#btn-replyall').up('toolbar').isVisible()).toBe(true);
 
                         t.expect(messageView.down('#btn-replyall').isVisible()).toBe(true);
                         t.expect(messageView.down('#btn-editdraft').isVisible()).toBe(false);

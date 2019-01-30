@@ -173,73 +173,13 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     store                 : '{cn_mail-mailmessageitemstore}'
                 }
         }]}, {
-            dockedItems : [{
-                xtype  : 'toolbar',
-                hidden : true,
-                bind   : {
-                    hidden: '{!cn_mail_ref_mailmessagegrid.selection}'
-                },
-                items  : ['->', {
-                    xtype     : 'button',
-                    scale     : 'small',
-                    ui        : 'cn-btn-medium-base-color',
-                    iconCls   : 'x-fa fa-edit',
-                    tooltip  : {
-                        text  : "Edit this draft"
-                    },
-                    itemId    : 'btn-editdraft',
-                    hidden    : true,
-                    bind      : {
-                        hidden : '{!messageItem.draft}'
-                    }
-                }, {
-                    xtype     : 'button',
-                    scale     : 'small',
-                    ui        : 'cn-btn-medium-base-color',
-                    iconCls   : 'x-fa fa-trash',
-                    itemId    : 'btn-deletedraft',
-                    tooltip  : {
-                        text  : "Delete this draft"
-                    },
-                    hidden    : true,
-                    bind      : {
-                        hidden : '{!messageItem.draft}'
-                    }
-                }, {
-                    hidden    : true,
-                    bind      : {
-                        hidden : '{messageItem.draft}'
-                    },
-                    xtype     : 'splitbutton',
-                    scale     : 'small',
-                    ui        : 'cn-btn-medium-base-color',
-                    iconCls   : 'x-fa fa-mail-reply-all',
-                    text      : 'Reply all',
-                    itemId    : 'btn-replyall',
-                    menuAlign : 'tr-br',
-                    menu    : {
-                        items : [{
-                            text    : 'Reply',
-                            iconCls : 'x-fa fa-mail-reply',
-                            itemId  : 'btn-reply',
-                        }, {
-                            text    : 'Forward',
-                            iconCls : 'x-fa fa-mail-forward',
-                            itemId  : 'btn-forward'
-                        }, '-', {
-                            text    : 'Delete',
-                            iconCls : 'x-fa fa-trash',
-                            itemId  : 'btn-delete'
-                        }]
-                    }
-                }]
-            }],
             flex      : 1,
             xtype     : 'cn_mail-mailmessagereadermessageview',
             margin    : '0 5 5 0',
             header    : false,
             hidden    : true,
             bind      : {
+                contextButtonsEnabled : '{cn_mail_ref_mailmessagegrid.selection}',
                 hidden      : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
                 messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }
