@@ -45,11 +45,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             'cn_mail-mailmessageitemread' : 'onMessageItemRead'
         },
 
-        'cn_mail-mailmessagereadermessageview toolbar #btn-deletedraft' : {
+        'cn_mail-mailmessagereadermessageview #btn-deletedraft' : {
             'click' : 'onDeleteClick'
         },
 
-        'cn_mail-mailmessagereadermessageview toolbar #btn-delete' : {
+        'cn_mail-mailmessagereadermessageview #btn-delete' : {
             'click' : 'onDeleteClick'
         },
 
