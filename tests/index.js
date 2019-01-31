@@ -14,6 +14,8 @@ harness.configure({
          * Universal
          */
         'conjoon.cn_mail'      : '../src',
+        'conjoon.cn_mail.view.mail.account.MailAccountViewModel' : '../src/view/mail/account/MailAccountViewModel.js',
+        'conjoon.cn_mail.view.mail.account.MailAccountViewController' : '../src/view/mail/account/MailAccountViewController.js',
         'conjoon.cn_mail.view.mail.inbox.InboxViewModel' : '../src/view/mail/inbox/InboxViewModel.js',
         'conjoon.cn_mail.view.mail.inbox.InboxViewController' : '../src/view/mail/inbox/InboxViewController.js',
         'conjoon.cn_mail.view.mail.message.reader.MessageViewModel' : '../src/view/mail/message/reader/MessageViewModel.js',
