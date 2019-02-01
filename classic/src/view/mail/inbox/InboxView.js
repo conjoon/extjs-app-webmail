@@ -127,7 +127,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             itemId : 'cn_mail-mailmessagegridcontainer',
             cls    : 'messageGridContainer shadow-panel',
             bind   : {
-                margin : '{!cn_mail_ref_mailfoldertree.selection ? "0 5 5 0" : "0 0 5 0"}'
+                margin : '{!cn_mail_ref_mailfoldertree.selection ? "0 5 5 0" : cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT" ? "0 0 0 0" : "0 0 5 0"}'
             },
             layout : {
                 type  : 'vbox',
