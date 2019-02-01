@@ -233,6 +233,13 @@ harness.start({
                     'src/view/mail/MailDesktopViewControllerTest_3.js',
                     'src/view/mail/MailDesktopViewModelTest.js',
                     {
+                        group : 'account',
+                        items : [
+                            'src/view/mail/account/MailAccountViewControllerTest.js',
+                            'src/view/mail/account/MailAccountViewModelTest.js'
+                        ]
+                    },
+                    {
                     group : 'inbox',
                     items : [
                         'src/view/mail/inbox/InboxViewControllerTest.js',

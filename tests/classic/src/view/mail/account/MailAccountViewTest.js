@@ -86,6 +86,8 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
         view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView');
 
+        t.isCalled('setMailAccount', view.getViewModel());
+
         t.expect(view.setMailAccount(null)).toBe(null);
 
         let ma = createModel(),

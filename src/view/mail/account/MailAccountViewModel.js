@@ -38,6 +38,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
     alias : 'viewmodel.cn_mail-mailaccountviewmodel',
 
     /**
+     * Caches the reference to the original mail account that was passed
+     * to this MailAccount via #setMailAccount
+     *
      * @type {conjoon.cn_mail.model.mail.acount.MailAccount}
      */
     sourceMailAccount : null,
@@ -59,13 +62,22 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      *
      * @return {conjoon.cn_mail.model.mail.acount.MailAccount} the cloned instance of
      * mailAccount
+     *
+     * @throws if mailAccount is not an instance of conjoon.cn_mail.model.mail.account.MailAccount
      */
     setMailAccount : function(mailAccount) {
+
+        if (!(mailAccount instanceof conjoon.cn_mail.model.mail.account.MailAccount)) {
+            Ext.raise({
+                msg : "\"mailAccount\" must be an instance of conjoon.cn_mail.model.mail.account.MailAccount",
+                mailAccount : mailAccount
+            });
+        }
 
         const me  = this,
               cln = mailAccount.clone();
 
-        me.parentMailAccount = mailAccount;
+        me.sourceMailAccount = mailAccount;
 
         me.set('mailAccount', cln);
 
