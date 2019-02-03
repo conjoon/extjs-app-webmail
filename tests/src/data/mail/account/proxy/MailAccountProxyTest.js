@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,32 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
     });
+
+
+    t.it("buildUrl() - action \"update\"", function(t) {
+
+        let recs = [Ext.create('Ext.data.Model', {
+                id : 'foo'
+            })],
+            proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
+                entityName : 'MailAccount'
+            }),
+            request = Ext.create('Ext.data.Request', {
+                action : 'update',
+                operation : Ext.create('Ext.data.operation.Update', {
+                    records : recs
+                }),
+                records : recs
+            }),
+            targetUrl = '/MailAccounts/foo';
+
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+
+        proxy.buildUrl(request);
+
+        t.expect(request.getUrl()).toBe(targetUrl);
+    });
+
 });
 
 

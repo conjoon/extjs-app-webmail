@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,16 @@
  */
 
 /**
- * Specialized version of a REST-proxy to be used with
- * MailAccounts.
+ * Specialized version of a REST-proxy to be used with MailAccounts.
+ * Capable of creating the following URLs:
+ *
+ * READ:
+ * MailAccounts
+ * MailAccounts/[id]/MailFolders
+ *
+ * UPDATE:
+ * MailAccounts/[id]
+ *
  */
 Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
 
@@ -59,27 +67,41 @@ Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
      */
     buildUrl: function(request) {
 
-        const me = this;
+        if (request.getRecords() && request.getRecords().length > 1) {
+            Ext.raise({
+                msg : "Doesn't support batch operations with multiple records.",
+                request : request
+            });
+        }
+
+        const me     = this,
+              action = request.getAction();
 
         let url    = me.getUrl(request),
+            rec    = request.getRecords() ? request.getRecords()[0] : null,
             params = request.getParams();
 
         if (!url.match(me.slashRe)) {
             url += '/';
         }
 
-        if (request.getAction() !== "read") {
-            Ext.raise("Unexpected error; any action other but \"read\" not supported.");
+        if (action !== "read" && action !== "update") {
+            Ext.raise("Unexpected error; any action other but \"read\" and \"update\" not supported.");
         }
+
 
         url += 'MailAccounts';
 
-        // if we are here, the mailAccountId is specified as the mail-account
-        // for which the child items should get loaded
-        if (params.mailAccountId && params.mailAccountId !== "root") {
-            url += '/' +
-                   params.mailAccountId +
-                   '/MailFolders';
+        if (action === 'read') {
+            // if we are here, the mailAccountId is specified as the mail-account
+            // for which the child items should get loaded
+            if (params.mailAccountId && params.mailAccountId !== "root") {
+                url += '/' +
+                    params.mailAccountId +
+                    '/MailFolders';
+            }
+        } else {
+            url += '/' + rec.getId();
         }
 
         request.setUrl(url);
