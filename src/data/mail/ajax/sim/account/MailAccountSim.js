@@ -84,7 +84,40 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.account.MailAccountSim', {
             return ret;
 
 
+        },
+
+
+        doPut : function(ctx) {
+
+            const me = this;
+
+            let ret  = {},
+                data = ctx.xhr.options.jsonData,
+                id   = data.id;
+
+            for (let i = 0, len = accounts.length; i < len; i++) {
+                if (accounts[i].id === id) {
+                    Ext.apply(accounts[i], data);
+                }
+            }
+
+            ret.responseText = Ext.JSON.encode({
+                success : true,
+                data    : data
+            });
+
+            Ext.Array.forEach(me.responseProps, function (prop) {
+                if (prop in me) {
+                    ret[prop] = me[prop];
+                }
+            });
+
+            return ret;
+
+
+
         }
+
     });
 
 });
