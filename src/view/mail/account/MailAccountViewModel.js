@@ -38,12 +38,13 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
     alias : 'viewmodel.cn_mail-mailaccountviewmodel',
 
     /**
-     * Caches the reference to the original mail account that was passed
-     * to this MailAccount via #setMailAccount
+     * Caches the references to the original mail accounts that were
+     * passed to this MailAccount via #setMailAccount. An instance of this
+     * ViewModel can manage multiple MailAccounts.
      *
-     * @type {conjoon.cn_mail.model.mail.acount.MailAccount}
+     * @type {Object|conjoon.cn_mail.model.mail.acount.MailAccount}
      */
-    sourceMailAccount : null,
+    sourceMailAccounts : null,
 
     data : {
         /**
@@ -51,6 +52,15 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
          * @private
          */
         mailAccount : null
+    },
+
+    constructor : function() {
+        const me = this;
+
+        me.callParent(arguments);
+
+        me.sourceMailAccounts = {};
+        me.saveOperations     = {};
     },
 
     /**
@@ -75,18 +85,141 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
         }
 
         const me  = this,
-              cln = mailAccount.clone();
+              id  = mailAccount.getId(),
+              rec = me.saveOperations[id] ? me.saveOperations[id].getRecords()[0] : null;
 
-        me.sourceMailAccount = mailAccount;
+        me.cleanup();
 
+        if (me.saveOperations[id]) {
+            me.set('mailAccount', rec);
+            return rec;
+        }
+
+        let cln = mailAccount.clone();
+
+        me.sourceMailAccounts[id] = mailAccount;
         me.set('mailAccount', cln);
 
         return cln;
+    },
+
+
+    /**
+     * Destroys any references to any existing records if there is a completed
+     * save-operation associated with this record.
+     *
+     * @private
+     */
+    cleanup : function() {
+
+        const me    = this,
+              oldId = me.get('mailAccount.id');
+
+        // unload any completed operation first as soon as this ViewModel
+        // should manage a new MailAccount
+        if (oldId && me.saveOperations[oldId] && me.saveOperations[oldId].isComplete()) {
+            delete me.saveOperations[oldId];
+            delete me.sourceMailAccounts[oldId];
+
+            return true;
+        }
+
+        return false;
+    },
+
+
+    /**
+     * Saves the pending changes of the MailAccount available in #mailAccount
+     * and commits those changes to the #sourceMailAccount afterwards.
+     *
+     * @return {Ext.data.Operation|null}null if no change was found, otherwise the
+     * return value of the MailAccount's save() method
+     */
+    savePendingChanges : function() {
+
+        const me          = this,
+              view        = me.getView(),
+              mailAccount = me.get('mailAccount');
+
+        if (!mailAccount.modified) {
+            return null;
+        }
+
+        view.fireEvent('cn_mail-mailaccountbeforesave', view, mailAccount);
+
+        let op = mailAccount.save({
+            success : me.onSaveSuccess,
+            failure : me.onSaveFailure,
+            scope : me
+        });
+
+        me.saveOperations[mailAccount.getId()] = op;
+
+        return op;
+
+    },
+
+
+    /**
+     * Internal callback for the successful attempt of saving a MailAccount.
+     * Applies the changed data to the source record and commits it.
+     * Delegates to this ViewModel's view for triggering the
+     * cn_mail-mailaccountsave event.
+     *
+     *
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount} record
+     */
+    onSaveSuccess : function(record) {
+
+        const me           = this,
+              view         = me.getView(),
+              sourceRecord = me.sourceMailAccounts[record.getId()];
+
+        let data = Ext.copy(
+            {},
+            record.data,
+            ['name',
+            'userName',
+            'from',
+            'replyTo',
+
+            'inbox_type',
+            'inbox_address',
+            'inbox_port',
+            'inbox_ssl',
+            'inbox_user',
+            'inbox_password',
+
+            'outbox_type',
+            'outbox_address',
+            'outbox_port',
+            'outbox_ssl',
+            'outbox_user',
+            'outbox_password'].join(',')
+            );
+
+        sourceRecord.set(data);
+        sourceRecord.commit();
+
+        view.fireEvent('cn_mail-mailaccountsave', view, record);
+    },
+
+
+    /**
+     * Internal callback for the failed attempt of saving a MailAccount.
+     * Delegates to this ViewModel's view for triggering the
+     * cn_mail-mailaccountsavefailure event.
+     *
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount} record
+     *
+     * @private
+     */
+    onSaveFailure : function(record) {
+
+        const me   = this,
+              view = me.getView();
+
+        view.fireEvent('cn_mail-mailaccountsavefailure', view, record);
     }
-
-
-
-
-
 
 });
