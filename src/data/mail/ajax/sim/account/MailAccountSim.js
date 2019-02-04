@@ -95,16 +95,28 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.account.MailAccountSim', {
                 data = ctx.xhr.options.jsonData,
                 id   = data.id;
 
-            for (let i = 0, len = accounts.length; i < len; i++) {
-                if (accounts[i].id === id) {
-                    Ext.apply(accounts[i], data);
+            if (data['name'] === "FAILURE") {
+
+                ret.responseText = Ext.JSON.encode({
+                    success : false
+                });
+
+            } else {
+
+                for (let i = 0, len = accounts.length; i < len; i++) {
+                    if (accounts[i].id === id) {
+                        Ext.apply(accounts[i], data);
+                    }
                 }
+
+                ret.responseText = Ext.JSON.encode({
+                    success : true,
+                    data    : data
+                });
+
             }
 
-            ret.responseText = Ext.JSON.encode({
-                success : true,
-                data    : data
-            });
+
 
             Ext.Array.forEach(me.responseProps, function (prop) {
                 if (prop in me) {
