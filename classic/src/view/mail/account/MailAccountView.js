@@ -47,6 +47,11 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
         align : 'center'
     },
 
+    /**
+     * @type {conjoon.cn_comp.component.LoadMask}
+     */
+    busyMask : null,
+
     items : [{
         scrollable : 'y',
         bodyPadding : '0 40 0 40',
@@ -273,11 +278,14 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
     setMailAccount : function(mailAccount) {
 
         const me = this,
-              vm = me.getViewModel();
+              vm = me.getViewModel(),
+              id = mailAccount ? mailAccount.getId() : null;
 
         if (!mailAccount) {
             return null;
         }
+
+        me.setBusy(!!vm.saveOperations[id]);
 
         return vm.setMailAccount(mailAccount);
     },
@@ -314,6 +322,54 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
 
         mailAccount.reject();
         return true;
+    },
+
+
+    /**
+     * Updates this MailAccount's view to indicate that it is currently busy saving
+     * data. The indicator is represented by a conjoon.cn_comp.component.LoadMask.
+     *
+     * @param {Boolean} show false to hide any currently active
+     * mask indicating busy state, or true to show the mask
+     *
+     * @return {conjoon.cn_comp.component.LoadMask}
+     *
+     * @see #busyMask
+     *
+     * @throws if conf is neither boolean nor an Object
+     */
+
+    setBusy : function(show = true) {
+
+        const me = this;
+
+        let mask = me.busyMask;
+
+        if (show === false) {
+            if (mask) {
+                mask.hide();
+            }
+            return mask;
+        }
+
+        if (!mask && show !== false) {
+            mask = Ext.create('conjoon.cn_comp.component.LoadMask', {
+                /**
+                 * @i18n
+                 */
+                msg       : "Saving account",
+                msgAction : "Please wait...",
+                glyphCls  : 'fa fa-spin fa-gear',
+                target    : me
+            });
+            me.busyMask = mask;
+        }
+
+        mask.show();
+
+        mask.loopProgress();
+
+        return mask;
     }
 
 });

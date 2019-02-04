@@ -171,4 +171,103 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
     });
 
+
+    t.it("cancel button", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+        t.isCalled('onCancelButtonClick', view.getController());
+
+        t.click(view.down('#cancelButton'), function() {
+
+        });
+
+    });
+
+
+    t.it("save button", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+        t.isCalled('onSaveButtonClick', view.getController());
+
+        t.click(view.down('#saveButton'), function() {
+
+        });
+
+    });
+
+
+    t.it("setBusy()", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+
+        let m = view.setBusy();
+
+        t.isInstanceOf(m, conjoon.cn_comp.component.LoadMask);
+
+        t.expect(view.busyMask).toBe(m);
+
+        t.expect(m.isVisible()).toBe(true);
+
+        t.expect(view.setBusy(false)).toBe(m);
+        t.expect(view.busyMask).toBe(m);
+
+        t.expect(m.isVisible()).toBe(false);
+
+        view.close();
+        view.destroy();
+
+
+        t.expect(view.busyMask.destroyed).toBe(true);
+
+        view = null;
+
+    });
+
+
+    t.it("setMailAccount() - switch mailAccounts and check for busyMask", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+        let maNo = createModel();
+
+        view.setMailAccount(maNo);
+
+        view.getViewModel().setMailAccount = Ext.emptyFn;
+
+        t.expect(view.busyMask).toBe(null);
+
+        let maYes = createModel();
+
+        view.getViewModel().saveOperations[maYes.getId()] = true;
+
+        view.setMailAccount(maYes);
+        t.expect(view.busyMask.isVisible()).toBe(true);
+
+        view.setMailAccount(maNo);
+        t.expect(view.busyMask.isVisible()).toBe(false);
+
+        view.setMailAccount(maYes);
+        t.expect(view.busyMask.isVisible()).toBe(true);
+
+    });
+
 });
