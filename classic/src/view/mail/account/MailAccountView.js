@@ -40,6 +40,30 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
 
     controller : 'cn_mail-mailaccountviewcontroller',
 
+    /**
+     * @event cn_mail-mailaccountbeforesave
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount}
+     *
+     * Gets fired before the MailAccount gets saved.
+     */
+
+    /**
+     * @event cn_mail-mailaccountsave
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount}
+     *
+     * Gets fired after the MailAccount was successfully saved.
+     */
+
+    /**
+     * @event cn_mail-mailaccountsavefailure
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount}
+     *
+     * Gets fired if saving a MailAccount failed.
+     */
+
     cls : 'cn_mail-mailaccountview',
 
     layout : {
