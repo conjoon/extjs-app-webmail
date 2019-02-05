@@ -141,7 +141,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
               view        = me.getView(),
               mailAccount = me.get('mailAccount');
 
-        if (!mailAccount.modified) {
+        if (!mailAccount || !mailAccount.modified) {
             return null;
         }
 

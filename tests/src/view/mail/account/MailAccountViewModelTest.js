@@ -172,6 +172,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
 
         viewModel = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountViewModel');
 
+        t.expect(viewModel.savePendingChanges()).toBe(null);
+
         let ma = createModel('snafu');
 
         viewModel.setMailAccount(ma);
