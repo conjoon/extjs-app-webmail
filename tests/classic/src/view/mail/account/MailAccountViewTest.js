@@ -270,4 +270,45 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
     });
 
+
+    t.it("cn_mail-mailaccountbeforesave", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+        t.isCalled('onBeforeMailAccountSave', view.getController());
+
+        view.fireEvent('cn_mail-mailaccountbeforesave', view);
+    });
+
+
+    t.it("cn_mail-mailaccountsave", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+        t.isCalled('onMailAccountSaveCallback', view.getController());
+
+        view.fireEvent('cn_mail-mailaccountsave', view);
+    });
+
+
+    t.it("cn_mail-mailaccountsavefailure", function(t) {
+
+        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
+            renderTo : document.body,
+            width : 800,
+            height : 600
+        });
+
+        t.isCalled('onMailAccountSaveCallback', view.getController());
+
+        view.fireEvent('cn_mail-mailaccountsavefailure', view);
+    });
 });
