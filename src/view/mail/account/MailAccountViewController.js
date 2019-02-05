@@ -34,6 +34,13 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
 
     control : {
 
+        'cn_mail-mailaccountview' : {
+            'cn_mail-mailaccountbeforesave'  : 'onBeforeMailAccountSave',
+            'cn_mail-mailaccountsave'        : 'onMailAccountSaveCallback',
+            'cn_mail-mailaccountsavefailure' : 'onMailAccountSaveCallback',
+            hide                             : 'onMailAccountViewHide'
+        },
+
         '#saveButton' : {
             click : 'onSaveButtonClick'
         },
@@ -51,16 +58,77 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      */
     onSaveButtonClick : function(btn) {
 
+        const me = this,
+            view = me.getView();
 
+        return view.getViewModel().savePendingChanges();
     },
+
 
     /**
      * Callback for the cancelButton's "click" event.
+     * Delegates to this view's rejectPendingChanges
      *
      * @param {Ext.Button} btn
      */
     onCancelButtonClick : function(btn) {
 
+        const me   = this,
+              view = me.getView();
+
+        return view.rejectPendingChanges();
+
+    },
+
+
+    /**
+     * Callback for the cn_mail-mailaccountbeforesave-event of this ViewController's
+     * MailAccountView.
+     *
+     * @param {conjoon.cn_mail.view.mail.accountMailAccountView} view
+     * @param {conjoon.cn_mail.view.model.account.MailAccountModel} mailAccount
+     *
+     * @see #setBusy
+     */
+    onBeforeMailAccountSave : function(view, mailAccount) {
+        const me = this;
+
+        view.setBusy();
+    },
+
+
+    /**
+     * Callback for the cn_mail-mailaccountsave/failure-event of this ViewController's
+     * MailAccountView.
+     *
+     * @param {conjoon.cn_mail.view.mail.accountMailAccountView} view
+     * @param {conjoon.cn_mail.view.model.account.MailAccountModel} mailAccount
+     *
+     * @see #setBusy
+     */
+    onMailAccountSaveCallback : function(view, mailAccount) {
+
+        const me = this;
+
+        view.setBusy(false);
+
+        if (!view.isVisible()) {
+            view.getViewModel().cleanup();
+        }
+    },
+
+
+    /**
+     * Callback for the MailAccountView's hide event. Delegates to
+     * the ViewModel of the view by calling its cleanup() method.
+     *
+     * @param {conjoon.cn_mail.view.mail.account.MailAccountView} view
+     */
+    onMailAccountViewHide : function(view) {
+
+        const me = this;
+
+        view.getViewModel().cleanup();
     }
 
 
