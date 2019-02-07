@@ -24,7 +24,29 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
 
     const TIMEOUT = 1250;
 
-    var viewModel;
+    var viewModel,
+        decorateMockView = function(viewModel) {
+
+            let splitter = {
+                splitter : {
+                    orientation : {
+
+                    }
+                }
+            };
+
+            let view = {
+                down : function() {
+                    return splitter;
+                }
+            };
+
+            viewModel.getView = function() {
+                return view;
+            };
+
+
+        };
 
     t.afterEach(function() {
         if (viewModel) {
@@ -86,6 +108,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
                     }
                 }
             });
+            decorateMockView(viewModel);
 
 
             t.waitForMs(TIMEOUT, function() {
@@ -110,36 +133,66 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     t.it("app-cn_mail#83 - no load if any filter is disabled", function(t) {
 
-            viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
 
-            viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'foo');
-            viewModel.set('cn_mail_ref_mailfoldertree.selection.id', 'a');
-            viewModel.set('cn_mail_ref_mailfoldertree.selection.mailAccountId', 'b');
+        decorateMockView(viewModel);
 
-            t.waitForMs(TIMEOUT, function() {
+        viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'foo');
+        viewModel.set('cn_mail_ref_mailfoldertree.selection.id', 'a');
+        viewModel.set('cn_mail_ref_mailfoldertree.selection.mailAccountId', 'b');
 
-                let store = viewModel.getStore('cn_mail-mailmessageitemstore'),
-                    defaultStoreConfig = viewModel.defaultConfig.stores['cn_mail-mailmessageitemstore'];
+        t.waitForMs(TIMEOUT, function() {
 
-                t.expect(store.isLoading()).toBe(false);
-                t.expect(store.isLoaded()).toBe(true);
+            let store = viewModel.getStore('cn_mail-mailmessageitemstore'),
+                defaultStoreConfig = viewModel.defaultConfig.stores['cn_mail-mailmessageitemstore'];
 
-                viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'ACCOUNT');
-                viewModel.notify();
+            t.expect(store.isLoading()).toBe(false);
+            t.expect(store.isLoaded()).toBe(true);
 
-                t.expect(defaultStoreConfig.listeners.beforeload(store)).toBe(false);
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'ACCOUNT');
+            viewModel.notify();
 
-                viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'INBOX');
-                viewModel.notify();
-                
-                t.expect(defaultStoreConfig.listeners.beforeload(store)).not.toBe(false);
-            });
+            t.expect(defaultStoreConfig.listeners.beforeload(store)).toBe(false);
 
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'INBOX');
+            viewModel.notify();
+
+            t.expect(defaultStoreConfig.listeners.beforeload(store)).not.toBe(false);
         });
+
+    });
+
+
+    t.it("app-cn_mail#98", function(t) {
+
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
+        decorateMockView(viewModel);
+
+        t.expect(viewModel.get('messageViewHidden')).toBe(false);
+
+        let FOLDERTYPE = "ACCOUNT",
+            get = function() {
+                return FOLDERTYPE;
+            };
+
+        FOLDERTYPE = "ACCOUNT";
+        viewModel.getView().down('foo').splitter.orientation = 'vertical';
+        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 0 0");
+
+        viewModel.getView().down('foo').splitter.orientation = 'horizontal';
+        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 0 0");
+
+
+
+        FOLDERTYPE = "bar";
+        viewModel.getView().down('foo').splitter.orientation = 'vertical';
+        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 5 0");
+
+        viewModel.getView().down('foo').splitter.orientation = 'horizontal';
+        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 5 0 0");
+
     });
 
 
 
-
-
-});
+});});

@@ -127,7 +127,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             itemId : 'cn_mail-mailmessagegridcontainer',
             cls    : 'messageGridContainer shadow-panel',
             bind   : {
-                margin : '{!cn_mail_ref_mailfoldertree.selection ? "0 5 5 0" : cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT" ? "0 0 0 0" : "0 0 5 0"}'
+                margin : '{computeMessageGridMargin}'
             },
             layout : {
                 type  : 'vbox',
@@ -137,8 +137,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             items : [{
                 flex   : 1,
                 xtype  : 'box',
+                margin : '0 5 5 0',
                 hidden : false,
-                cls    : 'cn-lightestBox',
+                cls    : 'cn-lightestBox shadow-panel',
                 bind      : {
                     hidden : '{cn_mail_ref_mailfoldertree.selection}'
                 },
@@ -180,7 +181,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             hidden    : true,
             bind      : {
                 contextButtonsEnabled : '{cn_mail_ref_mailmessagegrid.selection}',
-                hidden      : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
+                hidden      : '{messageViewHidden || (!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT")}',
                 messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }
 
@@ -209,11 +210,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
         if (!position) {
             gridContainer.setMargin('0 5 5 0');
-            readingPane.hide();
+            me.getViewModel().set('messageViewHidden', true);
             return;
         }
 
-        readingPane.show();
+        me.getViewModel().set('messageViewHidden', false);
 
         readingPane.splitter.destroy();
 

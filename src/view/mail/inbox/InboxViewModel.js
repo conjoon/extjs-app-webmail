@@ -73,6 +73,39 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
         }
     },
 
+    data : {
+        /**
+         * Controls visibility of the MessageView.
+         * True to hide the view and expand the MessageGrid.
+         */
+        messageViewHidden : false
+    },
+
+    formulas : {
+
+        /**
+         * Computes the margin of the MessageGrid-Container to make sure its shadow
+         * is given the space it needs
+         *
+         * @param get
+         * @returns {string}
+         */
+        computeMessageGridMargin : function(get) {
+
+            const me          = this,
+                  folderType  = get('cn_mail_ref_mailfoldertree.selection.cn_folderType'),
+                  readingPane = me.getView().down('cn_mail-mailmessagereadermessageview'),
+                  orientation = readingPane.splitter.orientation;
+
+            let margin = folderType === "ACCOUNT"
+                         ? "0 0 0 0"
+                         : orientation === 'vertical' ? "0 0 5 0" : "0 5 0 0";
+
+            return margin;
+        }
+
+    },
+
     /**
      * Updates the unreadCount of the associated {@link conjoon.cn_mail.model.mail.folder.MailFolder}
      * found under the given mailFolderId and the given mailAccountId by the number

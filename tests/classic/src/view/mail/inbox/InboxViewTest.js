@@ -197,28 +197,46 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
             'conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
 
         var messageView = view.down('cn_mail-mailmessagereadermessageview'),
-            bodyLayout  = view.down('#cn_mail-mailInboxViewPanelBody').getLayout();
-
-        t.expect(messageView.isVisible()).toBe(false);
-        t.expect(bodyLayout.getVertical()).toBe(false);
-
-        view.toggleReadingPane('bottom');
-        t.expect(messageView.isVisible()).toBe(true);
-        t.expect(bodyLayout.getVertical()).toBe(true);
-
-        view.toggleReadingPane('right');
-        t.expect(messageView.isVisible()).toBe(true);
-        t.expect(bodyLayout.getVertical()).toBe(false);
-
-        view.toggleReadingPane();
-        t.expect(messageView.isVisible()).toBe(false);
-
-        view.toggleReadingPane('bottom');
-        t.expect(messageView.isVisible()).toBe(true);
-        t.expect(bodyLayout.getVertical()).toBe(true);
+            bodyLayout  = view.down('#cn_mail-mailInboxViewPanelBody').getLayout(),
+            tree        = view.down('cn_mail-mailfoldertree');
 
 
-        discardView(t);
+        t.waitForMs(TIMEOUT, function() {
+
+            var mailFolder = getChildAt(view, 'dev_sys_conjoon_org', 0, 'INBOX', t);
+
+            tree.getSelectionModel().select(mailFolder);
+
+            t.waitForMs(TIMEOUT, function () {
+
+                t.expect(messageView.isVisible()).toBe(true);
+                t.expect(bodyLayout.getVertical()).toBe(false);
+
+                view.toggleReadingPane('bottom');
+                view.getViewModel().notify();
+                t.expect(messageView.isVisible()).toBe(true);
+                t.expect(bodyLayout.getVertical()).toBe(true);
+
+                view.toggleReadingPane('right');
+                view.getViewModel().notify();
+                t.expect(messageView.isVisible()).toBe(true);
+                t.expect(bodyLayout.getVertical()).toBe(false);
+
+                view.toggleReadingPane();
+                view.getViewModel().notify();
+                t.expect(messageView.isVisible()).toBe(false);
+
+                view.toggleReadingPane('bottom');
+                view.getViewModel().notify();
+                t.expect(messageView.isVisible()).toBe(true);
+                t.expect(bodyLayout.getVertical()).toBe(true);
+
+
+                 discardView(t);
+
+            });
+        });
+
     });
 
 
