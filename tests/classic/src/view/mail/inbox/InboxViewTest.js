@@ -544,4 +544,46 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
     });
 
 
+    t.it("app-cn_mail#98", function(t) {
+
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.inbox.InboxView', viewConfig);
+
+        var messageView = view.down('cn_mail-mailmessagereadermessageview'),
+            tree        = view.down('cn_mail-mailfoldertree');
+
+
+        t.waitForMs(TIMEOUT, function() {
+
+            var accountFolder = selectMailFolder(view, '0', 'dev_sys_conjoon_org', t);
+            var inboxFolder   = getChildAt(view, 'dev_sys_conjoon_org', 0, 'INBOX', t);
+
+            tree.getSelectionModel().select(inboxFolder);
+
+
+            t.waitForMs(TIMEOUT, function () {
+
+                view.toggleReadingPane();
+                view.getViewModel().notify();
+                t.expect(messageView.isVisible()).toBe(false);
+
+                tree.getSelectionModel().select(accountFolder);
+
+                t.waitForMs(TIMEOUT, function () {
+
+                    tree.getSelectionModel().select(inboxFolder);
+
+                    t.waitForMs(TIMEOUT, function () {
+
+                        t.expect(messageView.isVisible()).toBe(false);
+
+                        discardView(t);
+
+                    });
+                });
+            });
+        });
+    });
+
+
 });});});
