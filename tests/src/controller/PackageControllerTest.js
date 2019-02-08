@@ -261,13 +261,20 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         var ITEMS = [], DESELECTED = 0, exc, e, READINGPANEDISABLED, TOGGLEGRIDDISABLED,
             FORWARDDISABLED,
             REPLYTODISABLED,
-            REPLYALLDISABLED, EDITDISABLED, DELETEDISABLED;
+            REPLYALLDISABLED, EDITDISABLED, DELETEDISABLED, TOGGLEMAILFOLDERDISABLED;
 
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
         packageCtrl.getSwitchReadingPaneButton = function(){
             return {
                 setDisabled : function(disabled) {
                     READINGPANEDISABLED = disabled;
+                }
+            };
+        };
+        packageCtrl.getToggleMailFolderButton = function() {
+            return {
+                setDisabled : function(disabled) {
+                    TOGGLEMAILFOLDERDISABLED = disabled;
                 }
             };
         };
@@ -341,8 +348,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         packageCtrl.onMailFolderTreeSelectionChange(null, []);
         t.expect(READINGPANEDISABLED).toBe(true);
         t.expect(TOGGLEGRIDDISABLED).toBe(true);
+        t.expect(TOGGLEMAILFOLDERDISABLED).toBe(true);
         packageCtrl.onMailFolderTreeSelectionChange(null, [rec1]);
         t.expect(DESELECTED).toBe(0);
+        t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
         t.expect(READINGPANEDISABLED).toBe(false);
         t.expect(TOGGLEGRIDDISABLED).toBe(false);
         t.expect(REPLYTODISABLED).toBe(true);
@@ -669,8 +678,18 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     t.it('onMailInboxViewActivate() / onMailInboxViewDeactivate()', function(t) {
 
         var TOGGLEGRIDDISABLED, SWITCHREADINGPANEDISABLED,
-            TOGGLEMAILFOLDERDISABLED, ISLOADING;
+            TOGGLEMAILFOLDERDISABLED, ISLOADING, SELECTIONLENGTH = 1;
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+
+        packageCtrl.getMailFolderTree = function(){
+            return {
+                getSelection : function() {
+                    return {
+                        length : SELECTIONLENGTH
+                    }
+                }
+            }
+        };
 
         packageCtrl.getMailMessageGrid = function() {
             return {
@@ -733,6 +752,28 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         ISLOADING = false;
         packageCtrl.onMailInboxViewActivate(null);
+        t.expect(TOGGLEGRIDDISABLED).toBe(false);
+
+        // SELECTION LENGTH
+        SELECTIONLENGTH = 0;
+        ISLOADING       = false;
+        packageCtrl.onMailInboxViewActivate(null);
+        t.expect(TOGGLEMAILFOLDERDISABLED).toBe(true);
+        t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
+        t.expect(TOGGLEGRIDDISABLED).toBe(true);
+
+        SELECTIONLENGTH = 1;
+        ISLOADING       = true;
+        packageCtrl.onMailInboxViewActivate(null);
+        t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+        t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
+        t.expect(TOGGLEGRIDDISABLED).toBe(true);
+
+        SELECTIONLENGTH = 1;
+        ISLOADING       = false;
+        packageCtrl.onMailInboxViewActivate(null);
+        t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+        t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
         t.expect(TOGGLEGRIDDISABLED).toBe(false);
 
     });

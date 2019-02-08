@@ -409,14 +409,25 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
      */
     onMailInboxViewActivate : function(view) {
-        var me = this;
 
-        if (!me.getMailMessageGrid().getStore().isLoading()) {
-            me.getToggleGridListButton().setDisabled(false);
+        const me = this;
+
+        let treeDisabled   = false,
+            paneDisabled   = false,
+            toggleDisabled = false;
+
+        if (me.getMailFolderTree().getSelection().length === 0) {
+            treeDisabled   = true;
+            paneDisabled   = true;
+            toggleDisabled = true;
+        } else if (me.getMailMessageGrid().getStore().isLoading()) {
+            toggleDisabled = true;
         }
 
-        me.getSwitchReadingPaneButton().setDisabled(false);
-        me.getToggleMailFolderButton().setDisabled(false);
+        me.getToggleGridListButton().setDisabled(toggleDisabled);
+        me.getSwitchReadingPaneButton().setDisabled(paneDisabled);
+        me.getToggleMailFolderButton().setDisabled(treeDisabled);
+
     },
 
 
@@ -562,6 +573,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
 
         me.getSwitchReadingPaneButton().setDisabled(accountSelected);
         me.getToggleGridListButton().setDisabled(accountSelected);
+        me.getToggleMailFolderButton().setDisabled(records.length === 0);
 
         if (accountSelected) {
             me.disableEmailActionButtons(true);
