@@ -99,7 +99,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
 
             let margin = folderType === "ACCOUNT"
                          ? "0 0 0 0"
-                         : orientation === 'vertical' ? "0 0 5 0" : "0 5 0 0";
+                         : orientation === 'vertical' || !readingPane.isVisible() ? "0 0 5 0" : "0 5 0 0";
 
             return margin;
         }

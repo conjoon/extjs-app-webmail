@@ -28,6 +28,10 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewModelTest', function(t) {
         decorateMockView = function(viewModel) {
 
             let splitter = {
+                visible : true,
+                isVisible : function() {
+                    return this.visible;
+                },
                 splitter : {
                     orientation : {
 
@@ -166,6 +170,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
     t.it("app-cn_mail#98", function(t) {
 
         viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel');
+
         decorateMockView(viewModel);
 
         t.expect(viewModel.get('messageViewHidden')).toBe(false);
@@ -183,13 +188,18 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 0 0");
 
 
-
         FOLDERTYPE = "bar";
         viewModel.getView().down('foo').splitter.orientation = 'vertical';
         t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 5 0");
 
         viewModel.getView().down('foo').splitter.orientation = 'horizontal';
         t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 5 0 0");
+
+        viewModel.getView().down('foo').visible = false;
+        viewModel.getView().down('foo').splitter.orientation = 'horizontal';
+        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 5 0");
+
+
 
     });
 
