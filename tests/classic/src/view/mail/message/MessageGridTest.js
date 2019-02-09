@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,11 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         t.it("Should create and show the grid along with default config checks", function(t) {
             grid = Ext.create(
                 'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
+
+            /**
+             * app-cn_mail#99
+             */
+            t.expect(grid.getEmptyText()).toBeTruthy();
 
             t.expect(grid instanceof Ext.grid.Panel).toBeTruthy();
 
