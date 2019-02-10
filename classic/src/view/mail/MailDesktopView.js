@@ -131,7 +131,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
         return conjoon.Toast.info(
             Ext.String.format(
                 "The message was moved to the \"{0}\" folder.",
-                targetFolder.get('text')
+                targetFolder.get('name')
             )
         );
     },

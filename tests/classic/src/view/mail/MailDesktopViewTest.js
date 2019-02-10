@@ -152,14 +152,20 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(
 
     t.it("showMessageMovedInfo()", function(t) {
 
+        /**
+         * test for app-cn_mail#102
+         */
 
         view = Ext.create(
             'conjoon.cn_mail.view.mail.MailDesktopView', viewConfig);
 
+        let myId = '____' + Ext.id() + Ext.id() + '____';
+
         let toast = view.showMessageMovedInfo(
-            null, null, {get : function() {return 'text';}}
+            null, null, {get : function(field) {return field === 'name' ? myId : null;}}
         );
 
+        t.expect(toast.body.dom.innerHTML).toContain(myId);
         t.isInstanceOf(toast, 'conjoon.cn_comp.window.Toast');
 
         t.expect(toast.context).toBe("info");
