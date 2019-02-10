@@ -360,9 +360,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(DELETEDISABLED).toBe(true);
         t.expect(EDITDISABLED).toBe(true);
 
-        /**
-         * app-cn_mail#83
-         */
+        //app-cn_mail#83
         packageCtrl.onMailFolderTreeSelectionChange(null, [rec2]);
         t.expect(READINGPANEDISABLED).toBe(true);
         t.expect(TOGGLEGRIDDISABLED).toBe(true);
@@ -372,7 +370,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(DELETEDISABLED).toBe(true);
         t.expect(EDITDISABLED).toBe(true);
 
-        ITEMS = [{get : function() {return true; /*draft = true*/}}];
+        ITEMS = [{get : function() {return true;}}];
         packageCtrl.onMailFolderTreeSelectionChange(null, [rec1]);
 
         t.expect(READINGPANEDISABLED).toBe(false);
@@ -675,19 +673,22 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     });
 
+
     t.it('onMailInboxViewActivate() / onMailInboxViewDeactivate()', function(t) {
 
         var TOGGLEGRIDDISABLED, SWITCHREADINGPANEDISABLED,
-            TOGGLEMAILFOLDERDISABLED, ISLOADING, SELECTIONLENGTH = 1;
+            TOGGLEMAILFOLDERDISABLED, ISLOADING, FOLDERTYPE = "INBOX",
+            SELECTIONDEFAULT = [{
+                get    : function() {
+                    return FOLDERTYPE;
+                }}],
+                SELECTION = SELECTIONDEFAULT, SELECTIONEMPTY = [];
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
         packageCtrl.getMailFolderTree = function(){
             return {
                 getSelection : function() {
-                    return {
-                        length : SELECTIONLENGTH
-                    }
-                }
+                    return SELECTION;                }
             }
         };
 
@@ -755,26 +756,34 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(TOGGLEGRIDDISABLED).toBe(false);
 
         // SELECTION LENGTH
-        SELECTIONLENGTH = 0;
-        ISLOADING       = false;
+        SELECTION = SELECTIONEMPTY;
+        ISLOADING = false;
         packageCtrl.onMailInboxViewActivate(null);
         t.expect(TOGGLEMAILFOLDERDISABLED).toBe(true);
         t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
         t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
-        SELECTIONLENGTH = 1;
-        ISLOADING       = true;
+        SELECTION = SELECTIONDEFAULT;
+        ISLOADING = true;
         packageCtrl.onMailInboxViewActivate(null);
         t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
         t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
         t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
-        SELECTIONLENGTH = 1;
-        ISLOADING       = false;
+        SELECTION = SELECTIONDEFAULT;
+        ISLOADING = false;
         packageCtrl.onMailInboxViewActivate(null);
         t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
         t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
         t.expect(TOGGLEGRIDDISABLED).toBe(false);
+
+        FOLDERTYPE = "ACCOUNT";
+        SELECTION = SELECTIONDEFAULT;
+        ISLOADING = false;
+        packageCtrl.onMailInboxViewActivate(null);
+        t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+        t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
+        t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
     });
 

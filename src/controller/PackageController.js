@@ -410,14 +410,17 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      */
     onMailInboxViewActivate : function(view) {
 
-        const me = this;
+        const me      = this,
+              ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
         let treeDisabled   = false,
             paneDisabled   = false,
-            toggleDisabled = false;
+            toggleDisabled = false,
+            sel            = me.getMailFolderTree().getSelection(),
+            type           = sel.length && sel[0].get('cn_folderType');
 
-        if (me.getMailFolderTree().getSelection().length === 0) {
-            treeDisabled   = true;
+        if (sel.length === 0 || type === ACCOUNT) {
+            treeDisabled   = type !== ACCOUNT;
             paneDisabled   = true;
             toggleDisabled = true;
         } else if (me.getMailMessageGrid().getStore().isLoading()) {
