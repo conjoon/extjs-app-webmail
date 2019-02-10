@@ -682,7 +682,11 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 get    : function() {
                     return FOLDERTYPE;
                 }}],
-                SELECTION = SELECTIONDEFAULT, SELECTIONEMPTY = [];
+                SELECTION = SELECTIONDEFAULT, SELECTIONEMPTY = [],
+            EMAILACTIONBUTTONSDISABLED = false,
+            EMAILEDITBUTTONSDISABLED = false,
+            MESSAGEGRIDBUTTONSACTIVATED = true;
+
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
 
         packageCtrl.getMailFolderTree = function(){
@@ -726,6 +730,17 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             };
         };
 
+        packageCtrl.disableEmailActionButtons = function(disabled) {
+            EMAILACTIONBUTTONSDISABLED = disabled;
+        };
+
+        packageCtrl.disableEmailEditButtons = function(disabled) {
+            EMAILEDITBUTTONSDISABLED = disabled;
+        };
+
+        packageCtrl.activateButtonsForMessageGrid = function() {
+            MESSAGEGRIDBUTTONSACTIVATED = true;
+        };
 
         t.expect(ISLOADING).toBeUndefined();
         t.expect(SWITCHREADINGPANEDISABLED).toBeUndefined();
@@ -737,6 +752,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
         t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
         t.expect(TOGGLEGRIDDISABLED).toBe(false);
+        t.expect(MESSAGEGRIDBUTTONSACTIVATED).toBe(true);
 
         // deactivating
         packageCtrl.onMailInboxViewDeactivate(null);
@@ -784,6 +800,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
         t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
         t.expect(TOGGLEGRIDDISABLED).toBe(true);
+        t.expect(EMAILACTIONBUTTONSDISABLED).toBe(true);
+        t.expect(EMAILEDITBUTTONSDISABLED).toBe(true);
 
     });
 
@@ -1025,15 +1043,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("onMailDesktopViewTabChange() - panel is MailInboxView with selection", function(t) {
 
-        let ENABLED = configureButtonMockCaller(),
-            panel,
-            ISDRAFT = false,
-            rec = {
-                get : function() {
-                    return ISDRAFT;
-                }
-            },
-            activatedPanel = {
+        let activatedPanel = {
 
             };
 
@@ -1043,26 +1053,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             return activatedPanel;
         };
 
-        packageCtrl.getMailMessageGrid = function() {
-            return {
-                getSelection : function() {
-                    return [
-                        rec
-                    ];
-                }
-            }
-        };
 
-        configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
-
-
-        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
-
-        t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
-        t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
-        t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
-        t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
-        t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
+        t.expect(packageCtrl.onMailDesktopViewTabChange(null, activatedPanel)).toBe(false);
     });
 
 
@@ -1565,44 +1557,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
 
     });
-
-
-    t.it("app-cn_mail#89", function(t) {
-
-            let ENABLED = configureButtonMockCaller(),
-                rec = {
-                    get : function() {
-                        false;
-                    }
-                },
-                activatedPanel = {
-
-                };
-
-            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-
-            packageCtrl.getMailInboxView = function() {
-                return activatedPanel;
-            };
-
-            packageCtrl.getMailMessageGrid = function() {
-                return {
-                    getSelection : function() {
-                        return [rec];
-                    }
-                }
-            };
-
-            configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
-            packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
-
-            t.expect(ENABLED['#cn_mail-nodeNavReplyTo']).toBe(1);
-            t.expect(ENABLED['#cn_mail-nodeNavReplyAll']).toBe(1);
-            t.expect(ENABLED['#cn_mail-nodeNavForward']).toBe(1);
-            t.expect(ENABLED['#cn_mail-nodeNavEditMessage']).toBe(0);
-            t.expect(ENABLED['#cn_mail-nodeNavDeleteMessage']).toBe(1);
-    });
-
+    
 
     t.it("app-cn_mail#83 - mailaccount route", function(t) {
 

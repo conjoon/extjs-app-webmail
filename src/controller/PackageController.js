@@ -248,6 +248,9 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
      *
      * @param {conjoon.cn_mail.view.mail.MailDesktopView} panel
      * @param {Ext.Panel} activatedPanel
+     *
+     * @return false if no action was initiated and the activatedPanel is the
+     * MailInboxView, otherwise true
      */
     onMailDesktopViewTabChange : function(panel, activatedPanel) {
 
@@ -270,8 +273,7 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         }
 
         if (activatedPanel === me.getMailInboxView()) {
-            me.activateButtonsForMessageGrid();
-            return;
+            return false;
         }
 
         // we have not an inbox view. By default, disable all buttons.
@@ -305,6 +307,8 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             }
 
         }
+
+        return true;
     },
 
 
@@ -413,18 +417,28 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         const me      = this,
               ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
-        let treeDisabled   = false,
-            paneDisabled   = false,
-            toggleDisabled = false,
-            sel            = me.getMailFolderTree().getSelection(),
-            type           = sel.length && sel[0].get('cn_folderType');
+        let treeDisabled    = false,
+            paneDisabled    = false,
+            toggleDisabled  = false,
+            sel             = me.getMailFolderTree().getSelection(),
+            type            = sel.length && sel[0].get('cn_folderType'),
+            accountSelected = type === ACCOUNT;
 
-        if (sel.length === 0 || type === ACCOUNT) {
-            treeDisabled   = type !== ACCOUNT;
+        if (sel.length === 0 || accountSelected) {
+            treeDisabled   = !accountSelected;
             paneDisabled   = true;
             toggleDisabled = true;
+
+            if (accountSelected) {
+                me.disableEmailActionButtons(true);
+                me.disableEmailEditButtons(true);
+            }
         } else if (me.getMailMessageGrid().getStore().isLoading()) {
             toggleDisabled = true;
+        }
+
+        if (!accountSelected) {
+            me.activateButtonsForMessageGrid();
         }
 
         me.getToggleGridListButton().setDisabled(toggleDisabled);
