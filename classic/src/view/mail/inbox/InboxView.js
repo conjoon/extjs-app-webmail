@@ -209,7 +209,6 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             gridContainer = panelBody.down('#cn_mail-mailmessagegridcontainer');
 
         if (!position) {
-            gridContainer.setMargin('0 5 5 0');
             me.getViewModel().set('messageViewHidden', true);
             return;
         }

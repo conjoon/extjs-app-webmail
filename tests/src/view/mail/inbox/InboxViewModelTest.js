@@ -176,8 +176,16 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         t.expect(viewModel.get('messageViewHidden')).toBe(false);
 
         let FOLDERTYPE = "ACCOUNT",
-            get = function() {
-                return FOLDERTYPE;
+            MESSAGEVIEWHIDDEN = false,
+            get = function(key) {
+                switch (key) {
+                    case 'cn_mail_ref_mailfoldertree.selection.cn_folderType':
+                        return FOLDERTYPE;
+
+                    case 'messageViewHidden':
+                        return MESSAGEVIEWHIDDEN;
+                }
+
             };
 
         FOLDERTYPE = "ACCOUNT";
@@ -195,9 +203,8 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
         viewModel.getView().down('foo').splitter.orientation = 'horizontal';
         t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 5 0 0");
 
-        viewModel.getView().down('foo').visible = false;
-        viewModel.getView().down('foo').splitter.orientation = 'horizontal';
-        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 0 5 0");
+        MESSAGEVIEWHIDDEN = true;
+        t.expect(viewModel.getFormulas().computeMessageGridMargin.apply(viewModel, [get])).toBe("0 5 5 0");
 
 
 
