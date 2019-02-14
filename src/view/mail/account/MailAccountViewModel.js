@@ -54,6 +54,79 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
         mailAccount : null
     },
 
+    formulas : {
+
+        /**
+         * Makes sure getter and setter properly process the replyTo-field
+         * of the MailAccount.
+         */
+        processReplyTo : {
+
+            get : function(get) {
+                let replyTo = get('mailAccount.replyTo');
+                return replyTo.address;
+            },
+
+            set : function(value) {
+                const me      = this,
+                      replyTo = Ext.clone(me.get('mailAccount.replyTo')),
+                      ma      = me.get('mailAccount');
+
+                replyTo.address = value;
+                ma.set('replyTo', replyTo);
+            }
+
+        },
+
+
+        /**
+         * Makes sure getter and setter properly process the from-field
+         * of the MailAccount.
+         */
+        processFrom : {
+            get : function(get) {
+                let from = get('mailAccount.from');
+                return from.address;
+            },
+
+            set : function(value) {
+                const me   = this,
+                      from = Ext.clone(me.get('mailAccount.from')),
+                      ma   = me.get('mailAccount');
+
+                from.address = value;
+                ma.set('from', from);
+            }
+        },
+
+
+        /**
+         * Makes sure that the userName specified for this account is both
+         * applied to the from and the replyTo address.
+         */
+        processUserName : {
+
+            get : function(get) {
+                let from = get('mailAccount.from');
+                return from.name;
+            },
+
+            set : function(value) {
+                const me      = this,
+                      from    = Ext.clone(me.get('mailAccount.from')),
+                      replyTo = Ext.clone(me.get('mailAccount.replyTo')),
+                      ma      = me.get('mailAccount');
+
+                from.name    = value;
+                replyTo.name = value;
+
+                ma.set('from', from);
+                ma.set('replyTo', replyTo);
+           }
+
+        }
+    },
+
     constructor : function() {
         const me = this;
 
@@ -179,7 +252,6 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
             {},
             record.data,
             ['name',
-            'userName',
             'from',
             'replyTo',
 

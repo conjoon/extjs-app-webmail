@@ -26,9 +26,8 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
         return Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
             name     : 'name',
-            userName : 'userName',
-            from     : 'from',
-            replyTo  : 'replyTo',
+            from     : {name : 'foo', address : 'from'},
+            replyTo  : {name : 'foo', address : 'replyTo'},
 
             inbox_type     : 'inbox_type',
             inbox_address  : 'inbox_address',
@@ -163,7 +162,26 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
                 if (!values.hasOwnProperty(i)) {
                     continue;
                 }
-                t.expect(data[i]).toBe(values[i]);
+
+               switch (i) {
+                    case 'userName':
+                        t.expect(data['from'].name).toBe(values[i]);
+                        t.expect(data['replyTo'].name).toBe(values[i]);
+                        break;
+
+                    case 'from':
+                        t.expect(data['from'].address).toBe(values[i]);
+                        break;
+
+                    case 'replyTo':
+                        t.expect(data['replyTo'].address).toBe(values[i]);
+                        break;
+
+                    default:
+                        t.expect(data[i]).toBe(values[i]);
+                        break;
+                }
+
             }
 
 

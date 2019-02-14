@@ -79,8 +79,12 @@ describe('conjoon.cn_mail.model.mail.account.MailAccountTest', function(t) {
 
         model.set('cn_folderType', "ACCOUNT");
         t.expect(model.isValid()).toBe(true);
+    });
 
 
+    t.it("app-cn_mail#101", function(t) {
+        t.isInstanceOf(model.getField('from'), 'conjoon.cn_core.data.field.EmailAddress');
+        t.isInstanceOf(model.getField('replyTo'), 'conjoon.cn_core.data.field.EmailAddress');
     });
 
 

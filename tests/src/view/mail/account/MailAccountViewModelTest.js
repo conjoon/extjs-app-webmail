@@ -27,7 +27,6 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewModelTest', function(
         return Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
             id  : id ? id : undefined,
             name: 'name',
-            userName: 'userName',
             from: 'from',
             replyTo: 'replyTo',
 
@@ -46,6 +45,52 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewModelTest', function(
             outbox_password: 'outbox_password'
         });
 
+    }, decorateViewModel = function(viewModel) {
+
+        let ma = {
+                from    : {name : 'fromfoo', address : 'frombar'},
+                replyTo : {name : 'foo', address : 'bar'},
+                get : function(key) {
+                    switch (key) {
+                        case 'from':
+                            return this.from;
+
+                        case 'replyTo':
+                            return this.replyTo;
+
+                    }
+                    Ext.raise("Invalid key " + key);
+                },
+                set : function(key, val) {
+                    switch (key) {
+                        case 'mailAccount.from':
+                        case 'from':
+                            this.from = val;
+                            break;
+                        case 'mailAccount.replyTo':
+                        case 'replyTo':
+                            this.replyTo = val;
+                            break;
+                        default:
+                            Ext.raise("Invalid key " + key);
+                    }
+
+                }
+            },
+            get = function(key) {
+                switch (key) {
+                    case 'mailAccount.replyTo':
+                        return ma.get('replyTo');
+                    case 'mailAccount.from':
+                        return ma.get('from');
+                    case 'mailAccount':
+                        return ma;
+                }
+
+                Ext.raise("Invalid key " + key);
+            };
+
+        viewModel.get = get;
     };
 
     let viewModel;
@@ -254,7 +299,6 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
         viewModel.sourceMailAccounts[id] = ma;
 
         let fields = ['name',
-            'userName',
             'from',
             'replyTo',
 
@@ -279,7 +323,17 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
         };
 
         for (let i = 0, len = fields.length; i < len; i++) {
-            record.data[fields[i]] = fields[i].indexOf('_ssl') !== -1 ? true : Ext.id();
+
+            switch (fields[i]) {
+                case 'from':
+                case 'replyTo':
+                    record.data[fields[i]] = {name : Ext.id(), address : Ext.id()};
+                    break;
+
+                default:
+                    record.data[fields[i]] = fields[i].indexOf('_ssl') !== -1 ? true : Ext.id();
+                    break;
+            }
         }
 
         let CALLED = 0;
@@ -298,7 +352,28 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
         t.expect(CALLED).toBe(1);
 
         for (let i = 0, len = fields.length; i < len; i++) {
-            t.expect(record.data[fields[i]]).toBe(viewModel.sourceMailAccounts[id].data[fields[i]]);
+
+            switch (fields[i]) {
+                case 'from':
+
+                    t.expect(record.data[fields[i]]).toEqual(
+                        viewModel.sourceMailAccounts[id].data[fields[i]]
+                    );
+                    break;
+
+                case 'replyTo':
+                    t.expect(record.data[fields[i]]).toEqual(
+                        viewModel.sourceMailAccounts[id].data[fields[i]]
+                    );
+                    break;
+
+                default:
+                    t.expect(record.data[fields[i]]).toBe(viewModel.sourceMailAccounts[id].data[fields[i]]);
+                    break;
+
+            }
+
+
         }
 
         t.expect(viewModel.sourceMailAccounts[id].modified).toBeFalsy();
@@ -324,6 +399,57 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
         viewModel.onSaveFailure();
 
         t.expect(CALLED).toBe(1);
+    });
+
+
+    t.it("formulas - processReplyTo/processFrom", function(t) {
+
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountViewModel');
+        decorateViewModel(viewModel);
+
+        let ma         = viewModel.get('mailAccount'),
+            oldReplyTo = ma.replyTo,
+            replyTo    = {name : 'foobar', address : 'snafu'},
+            oldFrom    = ma.from,
+            from       = {name : 'foobar', address : 'snafu'};
+
+        t.expect(viewModel.getFormulas().processReplyTo.get.apply(viewModel, [viewModel.get])).toBe(
+            ma.get('replyTo').address);
+        t.expect(viewModel.getFormulas().processFrom.get.apply(viewModel, [viewModel.get])).toBe(
+            ma.get('from').address);
+
+        viewModel.getFormulas().processReplyTo.set.apply(viewModel, [replyTo.address]);
+        t.expect(ma.get('replyTo').address).toBe(replyTo.address);
+        t.expect(ma.get('replyTo')).not.toBe(oldReplyTo);
+
+        viewModel.getFormulas().processFrom.set.apply(viewModel, [from.address]);
+        t.expect(ma.get('from').address).toBe(from.address);
+        t.expect(ma.get('from')).not.toBe(oldFrom);
+
+    });
+
+
+    t.it("formulas - processUserName", function(t) {
+
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountViewModel');
+        decorateViewModel(viewModel);
+
+        let ma         = viewModel.get('mailAccount'),
+            oldReplyTo = ma.get('replyTo'),
+            oldFrom    = ma.get('from'),
+            newName    = Ext.id();
+
+        t.expect(viewModel.getFormulas().processUserName.get.apply(viewModel, [viewModel.get])).toBe(
+            ma.get('from').name);
+        t.expect(viewModel.getFormulas().processUserName.get.apply(viewModel, [viewModel.get])).not.toBe(
+            ma.get('replyTo').name);
+
+        viewModel.getFormulas().processUserName.set.apply(viewModel, [newName]);
+        t.expect(ma.get('replyTo').name).toBe(newName);
+        t.expect(ma.get('from').name).toBe(newName);
+
+        t.expect(ma.get('replyTo')).not.toBe(oldReplyTo);
+        t.expect(ma.get('from')).not.toBe(oldFrom);
     });
 
 })});

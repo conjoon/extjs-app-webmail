@@ -32,7 +32,8 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
     idProperty : 'id',
 
     requires : [
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+        'conjoon.cn_mail.data.mail.folder.MailFolderTypes',
+        'conjoon.cn_core.data.field.EmailAddress'
     ],
 
 
@@ -46,14 +47,11 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
         name : 'cn_folderType',
         type : 'string'
     }, {
-        name : 'userName',
-        type : 'string'
-    }, {
         name : 'from',
-        type : 'string'
+        type : 'cn_core-datafieldemailaddress'
     }, {
         name : 'replyTo',
-        type : 'string'
+        type : 'cn_core-datafieldemailaddress'
     },
 
     // INBOX CONFIGURATION

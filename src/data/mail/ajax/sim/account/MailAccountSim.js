@@ -35,9 +35,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.account.MailAccountSim', {
     var accounts = [{
         id             : "dev_sys_conjoon_org",
         name           : "conjoon developer",
-        userName       : "John Smith",
-        from           : 'dev@conjoon.org',
-        replyTo        : 'dev@conjoon.org',
+        from           : {name : 'John Smith', address : 'dev@conjoon.org'},
+        replyTo        : {name : 'John Smith', address : 'dev@conjoon.org'},
         inbox_type     : 'IMAP',
         inbox_address  : 'sfsffs.ffssf.sffs',
         inbox_port     : 993,
@@ -53,9 +52,8 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.account.MailAccountSim', {
     },{
         id            : "mail_account",
         name          : "google mail",
-        userName  : "Peter Parker",
-        from          : 'demo@googlemail.com',
-        replyTo       : 'demo@googlemail.com',
+        from           : {name : 'Peter Parker', address : 'demo@googlemail.com'},
+        replyTo        : {name : 'Peter Parker', address : 'demo@googlemail.com'},
         inbox_type   : 'IMAP'
 
     }];
@@ -105,6 +103,12 @@ Ext.define('conjoon.cn_mail.data.mail.ajax.sim.account.MailAccountSim', {
 
                 for (let i = 0, len = accounts.length; i < len; i++) {
                     if (accounts[i].id === id) {
+                        if (data.from) {
+                            data.from = Ext.decode(data.from);
+                        }
+                        if (data.replyTo) {
+                            data.replyTo = Ext.decode(data.replyTo);
+                        }
                         Ext.apply(accounts[i], data);
                     }
                 }

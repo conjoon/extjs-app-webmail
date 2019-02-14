@@ -65,7 +65,6 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest', func
 
         return Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
             name     : 'name',
-            userName : 'userName',
             from     : 'from',
             replyTo  : 'replyTo',
 

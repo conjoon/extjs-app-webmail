@@ -134,21 +134,21 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                 fieldLabel: 'Your Name',
                 name : 'userName',
                 bind: {
-                    value: '{mailAccount.userName}'
+                    value : '{processUserName}'
                 }
             }, {
                 xtype: 'textfield',
                 name :  'from',
                 fieldLabel: 'Email-Address',
                 bind: {
-                    value: '{mailAccount.from}'
+                    value: '{processFrom}'
                 }
             }, {
                 xtype: 'textfield',
                 name : 'replyTo',
                 fieldLabel: 'Reply-To',
                 bind: {
-                    value: '{mailAccount.replyTo}'
+                    value: '{processReplyTo}'
                 }
             }]
         }, {
