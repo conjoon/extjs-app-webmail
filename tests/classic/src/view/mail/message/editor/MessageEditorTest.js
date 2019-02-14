@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorTest', function(t) {
 
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
+
+    const TIMEOUT = 1250;
+
     var view,
         createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
@@ -461,20 +464,19 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             view = createWithViewConfig(viewConfig);
 
-            t.waitForMs(500, function() {
+            t.waitForMs(TIMEOUT, function() {
                 expectCcsHidden(true, t, view);
 
                 view.down('#showCcBccButton').setUI('default');
-                t.click(view.down('#showCcBccButton'));
-                expectCcsHidden(false, t, view);
-                view.down('#ccField').focus();
-                view.down('#ccField').el.dom.getElementsByTagName('input')[0].value = 'aaaaaaaaaaaaa';
-                t.click(view.down('#showCcBccButton'));
-                t.waitForMs(500, function() {
-                    expectCcsHidden(true, t, view);
-                    t.expect(view.down('#showCcBccButton').isHidden()).toBe(false);
+                t.click(view.down('#showCcBccButton'), function() {
+                    expectCcsHidden(false, t, view);
+                    view.down('#ccField').focus();
+                    view.down('#ccField').el.dom.getElementsByTagName('input')[0].value = 'aaaaaaaaaaaaa';
+                    t.click(view.down('#showCcBccButton'), function() {
+                        expectCcsHidden(true, t, view);
+                        t.expect(view.down('#showCcBccButton').isHidden()).toBe(false);
+                    });
                 });
-
             });
         });
 
@@ -598,14 +600,15 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             t.expect(view.getIconCls()).not.toBe(iconCls);
             t.expect(view.getClosable()).toBe(false);
 
-            t.click(okButton[0]);
+            t.click(okButton[0], function() {
+                t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
 
-            t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+                t.expect(view.getIconCls()).toBe(iconCls);
+                t.expect(view.getClosable()).toBe(true);
 
-            t.expect(view.getIconCls()).toBe(iconCls);
-            t.expect(view.getClosable()).toBe(true);
+                t.expect(view.down('#toField').hasFocus).toBe(true);
 
-            t.expect(view.down('#toField').hasFocus).toBe(true);
+            });
 
 
         });
@@ -646,38 +649,42 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             // OKBUTTON
             inputField[0].value = 'foobar';
-            t.click(okButton[0]);
+            t.click(okButton[0], function() {
+                t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+                t.expect(view.getIconCls()).toBe(iconCls);
+                t.expect(view.getClosable()).toBe(true);
 
-            t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
-            t.expect(view.getIconCls()).toBe(iconCls);
-            t.expect(view.getClosable()).toBe(true);
+                t.expect(VALUE).toBe('foobar');
+                t.expect(BUTTONID).toBe('okButton');
+                t.expect(SCOPE).toBe(view);
+                view.getViewModel().notify();
+                t.expect(view.down('#subjectField').getValue()).toBe('foobar');
 
-            t.expect(VALUE).toBe('foobar');
-            t.expect(BUTTONID).toBe('okButton');
-            t.expect(SCOPE).toBe(view);
-            view.getViewModel().notify();
-            t.expect(view.down('#subjectField').getValue()).toBe('foobar');
+                // CANCELBUTTON
+                VALUE    = "";
+                BUTTONID = "";
+                view.showSubjectMissingNotice(view.getViewModel().get('messageDraft'), func);
 
-            // CANCELBUTTON
-            VALUE    = "";
-            BUTTONID = "";
-            view.showSubjectMissingNotice(view.getViewModel().get('messageDraft'), func);
+                cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom);
+                mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+                inputField   = Ext.dom.Query.select("input[type=text]", mask);
 
-            cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom);
-            mask         = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
-            inputField   = Ext.dom.Query.select("input[type=text]", mask);
+                inputField[0].value = 'SNAFU';
+                t.click(cancelButton[0], function() {
+                    t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+                    t.expect(view.getIconCls()).toBe(iconCls);
+                    t.expect(view.getClosable()).toBe(true);
 
-            inputField[0].value = 'SNAFU';
-            t.click(cancelButton[0]);
+                    t.expect(VALUE).toBe('SNAFU');
+                    t.expect(BUTTONID).toBe('cancelButton');
+                    view.getViewModel().notify();
+                    t.expect(view.down('#subjectField').getValue()).not.toBe("SNAFU");
+                });
 
-            t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
-            t.expect(view.getIconCls()).toBe(iconCls);
-            t.expect(view.getClosable()).toBe(true);
 
-            t.expect(VALUE).toBe('SNAFU');
-            t.expect(BUTTONID).toBe('cancelButton');
-            view.getViewModel().notify();
-            t.expect(view.down('#subjectField').getValue()).not.toBe("SNAFU");
+            });
+
+
 
         });
 
@@ -711,31 +718,33 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             t.expect(view.getClosable()).toBe(false);
 
             // OKBUTTON
-            t.click(yesButton[0]);
+            t.click(yesButton[0], function() {
+                t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+                t.expect(view.getIconCls()).toBe(iconCls);
+                t.expect(view.getClosable()).toBe(true);
 
-            t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
-            t.expect(view.getIconCls()).toBe(iconCls);
-            t.expect(view.getClosable()).toBe(true);
-
-            t.expect(BUTTONID).toBe('yesButton');
-            t.expect(SCOPE).toBe(view);
-            view.getViewModel().notify();
+                t.expect(BUTTONID).toBe('yesButton');
+                t.expect(SCOPE).toBe(view);
+                view.getViewModel().notify();
 
 
-            // CANCELBUTTON
-            VALUE    = "";
-            BUTTONID = "";
-            view.showMailMessageSaveFailedNotice(view.getViewModel().get('messageDraft'), null, func);
+                // CANCELBUTTON
+                VALUE    = "";
+                BUTTONID = "";
+                view.showMailMessageSaveFailedNotice(view.getViewModel().get('messageDraft'), null, func);
 
-            noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
+                noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
 
-            t.click(noButton[0]);
+                t.click(noButton[0], function() {
+                    t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+                    t.expect(view.getIconCls()).toBe(iconCls);
+                    t.expect(view.getClosable()).toBe(true);
 
-            t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
-            t.expect(view.getIconCls()).toBe(iconCls);
-            t.expect(view.getClosable()).toBe(true);
+                    t.expect(BUTTONID).toBe('noButton');
+                });
 
-            t.expect(BUTTONID).toBe('noButton');
+            });
+
 
         });
 
