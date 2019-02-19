@@ -31,7 +31,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
     requires : [
         'conjoon.cn_mail.model.mail.message.AbstractAttachment',
         'conjoon.cn_mail.view.mail.message.editor.AttachmentListController',
-        'conjoon.cn_core.util.Mime'
+        'coon.core.util.Mime'
     ],
 
     alias : 'widget.cn_mail-mailmessageeditorattachmentlist',

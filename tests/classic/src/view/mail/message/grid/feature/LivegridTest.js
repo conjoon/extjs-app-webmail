@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('conjoon.cn_comp.grid.feature.LivegridTest', function(t) {
+describe('coon.comp.grid.feature.LivegridTest', function(t) {
 
     Ext.define('MockModel', {
         extend : 'Ext.data.Model',
@@ -113,14 +113,14 @@ describe('conjoon.cn_comp.grid.feature.LivegridTest', function(t) {
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_comp.grid.feature.Livegrid', function() {
+    t.requireOk('coon.comp.grid.feature.Livegrid', function() {
 
 
             t.it("constructor()", function(t){
 
                 let feature = Ext.create('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid');
 
-                t.isInstanceOf(feature, 'conjoon.cn_comp.grid.feature.Livegrid');
+                t.isInstanceOf(feature, 'coon.comp.grid.feature.Livegrid');
 
                 t.expect(feature.alias).toContain('feature.cn_mail-mailmessagegridfeature-livegrid');
 
@@ -131,7 +131,7 @@ describe('conjoon.cn_comp.grid.feature.LivegridTest', function(t) {
 
                 let grid           = getGrid({sorters : {property : 'testProp', dir : 'ASC'}, autoLoad : true}),
                     feature        = grid.view.getFeature('livegrid'),
-                    PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+                    PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
 
 
                 t.waitForMs(750, function() {

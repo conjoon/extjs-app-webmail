@@ -408,7 +408,7 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
 
         t.expect(obj.CALLED).toBe(0);
         let mask = view.showMessageDeleteConfirmDialog(null, fn, obj);
-        t.isInstanceOf(mask, 'conjoon.cn_comp.component.MessageMask');
+        t.isInstanceOf(mask, 'coon.comp.component.MessageMask');
         t.expect(mask).toBe(view.deleteMask);
         t.expect(view.showMessageDeleteConfirmDialog(null, fn, obj)).toBe(mask);
 
@@ -502,7 +502,7 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
 
             let mask = view.showMailAccountIsBeingEditedNotice(mailFolder1);
 
-            t.isInstanceOf(mask, 'conjoon.cn_comp.component.MessageMask');
+            t.isInstanceOf(mask, 'coon.comp.component.MessageMask');
             t.expect(mask.isVisible()).toBe(true);
 
             let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom),

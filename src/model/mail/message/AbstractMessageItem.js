@@ -42,7 +42,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
     requires : [
         'conjoon.cn_mail.model.mail.message.MessageBody',
-        'conjoon.cn_core.data.field.EmailAddress'
+        'coon.core.data.field.EmailAddress'
     ],
 
 

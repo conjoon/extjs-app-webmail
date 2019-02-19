@@ -22,7 +22,7 @@
 
 /**
  * Base HtmlEditor for the {@link conjoon.cn_mail.view.mail.message.editor.MessageEditor}.
- * Adds an "Add attachment"-button {@link conjoon.cn_comp.form.field.FileButton} to
+ * Adds an "Add attachment"-button {@link coon.comp.form.field.FileButton} to
  * the toolbar of the editor.
  */
 Ext.define('conjoon.cn_mail.view.mail.message.editor.HtmlEditor', {
@@ -30,7 +30,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.HtmlEditor', {
     extend : 'Ext.form.field.HtmlEditor',
 
     requires : [
-        'conjoon.cn_comp.form.field.FileButton'
+        'coon.comp.form.field.FileButton'
     ],
 
     alias : 'widget.cn_mail-mailmessageeditorhtmleditor',

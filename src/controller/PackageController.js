@@ -22,15 +22,15 @@
 
 /**
  * This is the package controller of the app-cn_mail package to be used with
- * {@link conjoon.cn_comp.app.Application}.
+ * {@link coon.comp.app.Application}.
  *
- * This controller will hook into the launch-process of {@link conjoon.cn_comp.app.Application#launch},
+ * This controller will hook into the launch-process of {@link coon.comp.app.Application#launch},
  * and expose it's navigation info along with the view's class name to the application.
  *
  *      @example
  *      Ext.define('conjoon.Application', {
  *
- *          extend : 'conjoon.cn_comp.app.Application',
+ *          extend : 'coon.comp.app.Application',
  *
  *          mainView : 'Ext.Panel',
  *
@@ -43,7 +43,7 @@
  */
 Ext.define('conjoon.cn_mail.controller.PackageController', {
 
-    extend : 'conjoon.cn_core.app.PackageController',
+    extend : 'coon.core.app.PackageController',
 
     requires : [
         'conjoon.cn_mail.view.mail.MailDesktopView',

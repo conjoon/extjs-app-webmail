@@ -30,7 +30,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
 
 
     requires : [
-        'conjoon.cn_comp.component.MessageMask'
+        'coon.comp.component.MessageMask'
     ],
 
 
@@ -56,7 +56,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
      * @param {Function} cb
      * @param {Object} scope
      *
-     * @return {conjoon.cn_comp.component.MessageMask}
+     * @return {coon.comp.component.MessageMask}
      */
     showMessageDeleteConfirmDialog : function(messageItem, cb, scope) {
 
@@ -66,12 +66,12 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
             return me.deleteMask;
         }
 
-        let mask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+        let mask = Ext.create('coon.comp.component.MessageMask', {
             title    : "Delete Message",
             message  : "Are you sure you want to delete the message permanently?",
             target   : me,
-            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
-            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            buttons  : coon.comp.component.MessageMask.YESNO,
+            icon     : coon.comp.component.MessageMask.QUESTION,
             callback : cb,
             scope    : scope
         });

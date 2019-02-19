@@ -61,13 +61,13 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
     t.it("Test mailFolderId", function(t) {
         t.expect(model.getField('mailFolderId')).toBeTruthy();
         t.expect(model.getField('mailFolderId').critical).toBe(true);
-        t.isInstanceOf(model.getField('mailFolderId'), 'conjoon.cn_core.data.field.CompoundKeyField');
+        t.isInstanceOf(model.getField('mailFolderId'), 'coon.core.data.field.CompoundKeyField');
     });
 
     t.it("Test mailAccountId", function(t) {
         t.expect(model.getField('mailAccountId')).toBeTruthy();
         t.expect(model.getField('mailAccountId').critical).toBe(true);
-        t.isInstanceOf(model.getField('mailAccountId'), 'conjoon.cn_core.data.field.CompoundKeyField');
+        t.isInstanceOf(model.getField('mailAccountId'), 'coon.core.data.field.CompoundKeyField');
     });
 
     t.it("localId", function(t) {
@@ -77,7 +77,7 @@ describe('conjoon.cn_mail.model.mail.message.ItemAttachmentTest', function(t) {
     t.it("id", function(t) {
         t.expect(model.getField('id')).toBeTruthy();
         t.expect(model.getField('id').critical).toBe(true);
-        t.isInstanceOf(model.getField('id'), 'conjoon.cn_core.data.field.CompoundKeyField');
+        t.isInstanceOf(model.getField('id'), 'coon.core.data.field.CompoundKeyField');
     });
 
     t.it("parentMessageItemId", function(t) {

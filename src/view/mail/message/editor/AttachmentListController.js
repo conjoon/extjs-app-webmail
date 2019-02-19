@@ -30,7 +30,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
     extend : 'conjoon.cn_mail.view.mail.message.AbstractAttachmentListController',
 
     requires : [
-        'conjoon.cn_core.util.Mime',
+        'coon.core.util.Mime',
         'conjoon.cn_mail.model.mail.message.DraftAttachment'
     ],
 
@@ -95,7 +95,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
 
         store.add(rec);
 
-        if (conjoon.cn_core.util.Mime.isImage(file.type))  {
+        if (coon.core.util.Mime.isImage(file.type))  {
             reader = new FileReader();
 
             reader.addEventListener(

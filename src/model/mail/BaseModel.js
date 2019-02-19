@@ -29,7 +29,7 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.BaseModel', {
 
-    extend : 'conjoon.cn_core.data.BaseModel',
+    extend : 'coon.core.data.BaseModel',
 
 
     /**
@@ -57,7 +57,7 @@ Ext.define('conjoon.cn_mail.model.mail.BaseModel', {
 
         if (me.idProperty === '__id__') {
             Ext.raise({
-               msg        : "\"idProperty\" of conjoon.cn_core.data.BaseModel needs to be explicitly set",
+               msg        : "\"idProperty\" of coon.core.data.BaseModel needs to be explicitly set",
                idProperty : me.idProperty
             });
         }

@@ -27,11 +27,11 @@
  */
 Ext.define('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid', {
 
-    extend : 'conjoon.cn_comp.grid.feature.Livegrid',
+    extend : 'coon.comp.grid.feature.Livegrid',
 
     requires : [
         'conjoon.cn_mail.data.mail.message.CompoundKey',
-        'conjoon.cn_core.data.pageMap.PageMapUtil'
+        'coon.core.data.pageMap.PageMapUtil'
     ],
 
     alias : 'feature.cn_mail-mailmessagegridfeature-livegrid',
@@ -44,7 +44,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid', {
      *
      * @return {Ext.data.Model|null}
      *
-     * @see conjoon.cn_core.data.pageMap.PageMapUtil#getRecordBy
+     * @see coon.core.data.pageMap.PageMapUtil#getRecordBy
      *
      * @throws if compoudnKey is not an instance of conjoon.cn_mail.data.mail.message.CompoundKey
      */
@@ -59,7 +59,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid', {
             });
         }
 
-        return conjoon.cn_core.data.pageMap.PageMapUtil.getRecordBy(
+        return coon.core.data.pageMap.PageMapUtil.getRecordBy(
             function(rec) {
                 return rec.getCompoundKey().equalTo(compoundKey) === true;
             }, me.pageMapFeeder

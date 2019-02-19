@@ -72,7 +72,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
     },
 
     /**
-     * @type {conjoon.cn_comp.component.LoadMask}
+     * @type {coon.comp.component.LoadMask}
      */
     busyMask : null,
 
@@ -351,12 +351,12 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
 
     /**
      * Updates this MailAccount's view to indicate that it is currently busy saving
-     * data. The indicator is represented by a conjoon.cn_comp.component.LoadMask.
+     * data. The indicator is represented by a coon.comp.component.LoadMask.
      *
      * @param {Boolean} show false to hide any currently active
      * mask indicating busy state, or true to show the mask
      *
-     * @return {conjoon.cn_comp.component.LoadMask}
+     * @return {coon.comp.component.LoadMask}
      *
      * @see #busyMask
      *
@@ -377,7 +377,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
         }
 
         if (!mask && show !== false) {
-            mask = Ext.create('conjoon.cn_comp.component.LoadMask', {
+            mask = Ext.create('coon.comp.component.LoadMask', {
                 /**
                  * @i18n
                  */

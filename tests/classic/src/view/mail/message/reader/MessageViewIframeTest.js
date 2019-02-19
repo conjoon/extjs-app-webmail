@@ -30,7 +30,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', funct
         });
 
 
-        t.isInstanceOf(iframe, 'conjoon.cn_comp.component.Iframe');
+        t.isInstanceOf(iframe, 'coon.comp.component.Iframe');
 
         t.expect(iframe.alias).toContain('widget.cn_mail-mailmessagereadermessageviewiframe');
 

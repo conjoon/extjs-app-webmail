@@ -154,7 +154,7 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function(){
                 return key;
             },
             createSession = function() {
-                return Ext.create('conjoon.cn_core.data.Session', {
+                return Ext.create('coon.core.data.Session', {
                     schema : 'cn_mail-mailbaseschema',
                     batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
                 })

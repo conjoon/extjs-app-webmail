@@ -82,7 +82,7 @@ describe('conjoon.cn_mail.model.mail.BaseModelTest', function(t) {
                 id : 1
             });
 
-            t.expect(model instanceof conjoon.cn_core.data.BaseModel).toBe(true);
+            t.expect(model instanceof coon.core.data.BaseModel).toBe(true);
 
             t.expect(model.getIdProperty()).toBe("foo");
 

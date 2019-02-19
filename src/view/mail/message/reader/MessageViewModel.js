@@ -38,7 +38,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         'conjoon.cn_mail.model.mail.message.ItemAttachment',
         'conjoon.cn_mail.model.mail.message.MessageDraft',
         'conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater',
-        'conjoon.cn_core.util.Date'
+        'coon.core.util.Date'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessagereadermessageviewmodel',
@@ -168,16 +168,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
         /**
          * Returns the date of the message item as formatted by
-         * conjoon.cn_core.util.Date#getHumanReadableDate
+         * coon.core.util.Date#getHumanReadableDate
          *
          * @param {Function} get
          *
          * @returns {String}
          *
-         * @see conjoon.cn_core.util.Date#getHumanReadableDate
+         * @see coon.core.util.Date#getHumanReadableDate
          */
         getFormattedDate : function(get) {
-            return conjoon.cn_core.util.Date.getHumanReadableDate(get('messageItem.date'));
+            return coon.core.util.Date.getHumanReadableDate(get('messageItem.date'));
         },
 
         /**

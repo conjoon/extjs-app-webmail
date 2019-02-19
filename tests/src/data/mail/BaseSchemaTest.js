@@ -30,7 +30,7 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
 
             var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
 
-            t.expect(schema instanceof conjoon.cn_core.data.schema.BaseSchema).toBe(true);
+            t.expect(schema instanceof coon.core.data.schema.BaseSchema).toBe(true);
 
             t.expect(schema.alias).toContain('schema.cn_mail-mailbaseschema');
 

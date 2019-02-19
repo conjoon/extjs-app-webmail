@@ -23,14 +23,14 @@
 
 describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t) {
 
-t.requireOk('conjoon.cn_core.util.Date', function() {
+t.requireOk('coon.core.util.Date', function() {
 
     const TIMEOUT = 1250;
 
     var view,
         viewConfig,
         testDate   = new Date(),
-        formatDate = conjoon.cn_core.util.Date.getHumanReadableDate(testDate),
+        formatDate = coon.core.util.Date.getHumanReadableDate(testDate),
         createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
@@ -583,7 +583,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
             vm.set('isLoading', true);
             t.expect(vm.get('isLoading')).toBe(true);
 
-            t.isInstanceOf(view.onMessageItemLoadFailure({}, {}), 'conjoon.cn_comp.component.MessageMask');
+            t.isInstanceOf(view.onMessageItemLoadFailure({}, {}), 'coon.comp.component.MessageMask');
 
             t.expect(vm.get('isLoading')).toBe(false);
 
@@ -602,7 +602,7 @@ t.requireOk('conjoon.cn_core.util.Date', function() {
 
             t.expect(
                 view.onMessageItemLoadFailure({}, {error: {status : -1}}),
-                'conjoon.cn_comp.component.MessageMask'
+                'coon.comp.component.MessageMask'
             ).toBeFalsy();
 
             t.expect(vm.get('isLoading')).toBe(false);

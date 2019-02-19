@@ -235,7 +235,7 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
         let m = view.setBusy();
 
-        t.isInstanceOf(m, conjoon.cn_comp.component.LoadMask);
+        t.isInstanceOf(m, coon.comp.component.LoadMask);
 
         t.expect(view.busyMask).toBe(m);
 

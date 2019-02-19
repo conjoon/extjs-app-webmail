@@ -27,7 +27,7 @@
  */
 Ext.define('conjoon.cn_mail.model.mail.BaseTreeModel', {
 
-    extend : 'conjoon.cn_core.data.BaseTreeModel',
+    extend : 'coon.core.data.BaseTreeModel',
 
     /**
      * We need to enforce a different id-field here since subclasses specify
@@ -52,7 +52,7 @@ Ext.define('conjoon.cn_mail.model.mail.BaseTreeModel', {
 
         if (me.idProperty === '__id__') {
             Ext.raise({
-                msg        : "\"idProperty\" of conjoon.cn_core.data.BaseTreeModel needs to be explicitly set",
+                msg        : "\"idProperty\" of coon.core.data.BaseTreeModel needs to be explicitly set",
                 idProperty : me.idProperty
             });
         }

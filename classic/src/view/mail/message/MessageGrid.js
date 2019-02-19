@@ -33,11 +33,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     extend : 'Ext.grid.Panel',
 
     requires : [
-        'conjoon.cn_comp.grid.feature.RowBodySwitch',
+        'coon.comp.grid.feature.RowBodySwitch',
         'conjoon.cn_mail.view.mail.message.grid.feature.Livegrid',
         'conjoon.cn_mail.store.mail.message.MessageItemStore',
-        'conjoon.cn_comp.grid.feature.RowFlyMenu',
-        'conjoon.cn_core.util.Date'
+        'coon.comp.grid.feature.RowFlyMenu',
+        'coon.core.util.Date'
 
     ],
 
@@ -104,7 +104,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         getAdditionalData  : function (data, idx, record, orig) {
 
             const me     = this,
-                  CnDate = conjoon.cn_core.util.Date;
+                  CnDate = coon.core.util.Date;
                   Format = Ext.util.Format;
 
             if (me.disabled) {
@@ -322,7 +322,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     /**
      * Allows to switch between preview- and detail view, whereas the detail
      * view is a regular gridpanel view with column headers and table cells,
-     * and the preview view uses the {conjoon.cn_comp.grid.feature.RowBodySwitch}.
+     * and the preview view uses the {coon.comp.grid.feature.RowBodySwitch}.
      * This method will also enable/disable the RowFlyMenu (enabled only if
      * RowPreview is enabled).
      *

@@ -26,7 +26,7 @@
  */
 Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
 
-    extend : 'conjoon.cn_core.data.proxy.RestForm',
+    extend : 'coon.core.data.proxy.RestForm',
 
     requires : [
          'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'

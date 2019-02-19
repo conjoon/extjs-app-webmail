@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,10 +77,13 @@ describe('conjoon.cn_mail.view.mail.message.AbstractAttachmentListControllerTest
 
             // clicked
             t.expect(clicked).toBe(0);
-            t.click(view.el.selectNode('div.attachment'));
-            t.expect(clicked).toBe(1);
-            t.click(view.el.selectNode('div.attachment'));
-            t.expect(clicked).toBe(2);
+            t.click(view.el.selectNode('div.attachment'), function() {
+                t.expect(clicked).toBe(1);
+                t.click(view.el.selectNode('div.attachment'), function() {
+                    t.expect(clicked).toBe(2);
+                });
+
+            });
 
         });
 

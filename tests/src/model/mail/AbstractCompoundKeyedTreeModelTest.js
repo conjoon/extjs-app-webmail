@@ -66,7 +66,7 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest', functi
 
             field = fields[i];
 
-            t.isInstanceOf(model.getField(field), 'conjoon.cn_core.data.field.CompoundKeyField');
+            t.isInstanceOf(model.getField(field), 'coon.core.data.field.CompoundKeyField');
 
             t.expect(model.getField(field)).toBeTruthy();
 

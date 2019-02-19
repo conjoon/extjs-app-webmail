@@ -39,8 +39,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
 
     requires : [
         'conjoon.cn_mail.model.mail.message.ItemAttachment',
-        'conjoon.cn_core.data.field.EmailAddressCollection',
-        'conjoon.cn_core.data.field.FileSize'
+        'coon.core.data.field.EmailAddressCollection',
+        'coon.core.data.field.FileSize'
     ],
 
     entityName : 'MessageItem',

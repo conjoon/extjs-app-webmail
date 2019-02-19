@@ -448,7 +448,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
          * @param {"conjoon.cn_mail.model.mail.message.MessageItem"} messageItem
          * @param {Ext.data.operation.Read} operation
          *
-         * @return {conjoon.cn_comp.component.MessageMask}
+         * @return {coon.comp.component.MessageMask}
          */
         onMessageItemLoadFailure : function(messageItem, operation) {
 

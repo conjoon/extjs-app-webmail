@@ -30,10 +30,10 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
     extend : 'conjoon.cn_mail.model.mail.message.AbstractMessageItem',
 
     requires : [
-        'conjoon.cn_core.data.field.EmailAddressCollection',
-        'conjoon.cn_core.data.validator.EmailAddressCollection',
+        'coon.core.data.field.EmailAddressCollection',
+        'coon.core.data.validator.EmailAddressCollection',
         'conjoon.cn_mail.model.mail.message.DraftAttachment',
-        'conjoon.cn_core.data.field.EmailAddress'
+        'coon.core.data.field.EmailAddress'
     ],
 
     entityName : 'MessageDraft',

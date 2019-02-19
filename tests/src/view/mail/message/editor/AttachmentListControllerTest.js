@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,8 +169,10 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
             rec  = ctrl.addAttachment(file);
 
         t.expect(view.getStore().getRange().length).toBe(1);
-        t.click(view.el.selectNode('a.removebutton'));
-        t.expect(view.getStore().getRange().length).toBe(0);
+        t.click(view.el.selectNode('a.removebutton'), function() {
+            t.expect(view.getStore().getRange().length).toBe(0);
+        });
+
     });
 
 
@@ -240,8 +242,8 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
             rec1, rec2,
             ctrl = view.getController();
 
-        let tmpFn = conjoon.cn_core.util.Mime.isImage;
-        conjoon.cn_core.util.Mime.isImage = function(){return true;};
+        let tmpFn = coon.core.util.Mime.isImage;
+        coon.core.util.Mime.isImage = function(){return true;};
 
 
         rec1 = ctrl.addAttachment(file1);
@@ -264,7 +266,7 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
 
         foundRec = ctrl.onFileReaderLoad(evt2);
 
-        conjoon.cn_core.util.Mime.isImage = tmpFn;
+        coon.core.util.Mime.isImage = tmpFn;
 
         t.expect(foundRec).toBe(rec2);
 

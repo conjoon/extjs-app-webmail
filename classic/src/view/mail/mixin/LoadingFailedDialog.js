@@ -29,8 +29,8 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
 
 
     requires : [
-        'conjoon.cn_comp.component.MessageMask',
-        'conjoon.cn_comp.window.Toast'
+        'coon.comp.component.MessageMask',
+        'coon.comp.window.Toast'
     ],
 
 
@@ -52,7 +52,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
      * @param {Boolean} allowClose whether or not the OK button for closing this
      * mask should be rendered
      *
-     * @return {conjoon.cn_comp.component.MessageMask}
+     * @return {coon.comp.component.MessageMask}
      *
      * @see updateTargetHeader
      */
@@ -64,19 +64,19 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
             return me.loadingFailedMask;
         }
 
-        let mask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+        let mask = Ext.create('coon.comp.component.MessageMask', {
             /**
              * @i18n
              */
             title    : "Loading failed",
             message  : "I'm sorry, I could not load the message.",
             buttons  : allowClose !== false
-                       ? conjoon.cn_comp.component.MessageMask.OK
+                       ? coon.comp.component.MessageMask.OK
                        : undefined,
             target   : me,
             callback : allowClose !== false ? function() {me.close();} : undefined,
             scope    : me,
-            icon     : conjoon.cn_comp.component.MessageMask.FAILURE,
+            icon     : coon.comp.component.MessageMask.FAILURE,
             dialogStyle : false,
         });
 
@@ -113,7 +113,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
      * @private
      */
     showToast : function() {
-        return conjoon.Toast.fail(
+        return coon.Toast.fail(
             /**
              * @i18n
              */

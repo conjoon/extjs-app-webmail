@@ -143,7 +143,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(
 
         let toast = view.showMessageCannotBeDeletedWarning();
 
-        t.isInstanceOf(toast, 'conjoon.cn_comp.window.Toast');
+        t.isInstanceOf(toast, 'coon.comp.window.Toast');
 
         t.expect(toast.context).toBe("warning");
 
@@ -166,7 +166,7 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(
         );
 
         t.expect(toast.body.dom.innerHTML).toContain(myId);
-        t.isInstanceOf(toast, 'conjoon.cn_comp.window.Toast');
+        t.isInstanceOf(toast, 'coon.comp.window.Toast');
 
         t.expect(toast.context).toBe("info");
 

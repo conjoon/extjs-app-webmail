@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
 
     const
+        TIMEOUT   = 500,
         ACCOUNTID = "dev_sys_conjoon_org",
         createService = function(helper) {
 
@@ -78,8 +79,7 @@ describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
 // -----------------------------------------------------------------------------
 // |   Tests
 // -----------------------------------------------------------------------------
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function() {
+t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
 
     Ext.ux.ajax.SimManager.init({
         delay: 1
@@ -278,10 +278,10 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
             messageItem = createMessageItem(1, "INBOX.Trash");
 
         t.isCalledNTimes('deleteMessage', service, 1);
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
             let op = service.moveToTrashOrDeleteMessage(messageItem);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
                 t.expect(op.getResult().success).toBe(true);
             });
         });
@@ -688,4 +688,4 @@ t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.folder.MailFolderSim', function(
     });
 
 
-});});});
+});});

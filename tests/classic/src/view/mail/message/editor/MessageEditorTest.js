@@ -551,7 +551,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             t.expect(exc.msg).toContain('must either be');
 
             view.setBusy({msgAction : 'foo'});
-            t.isInstanceOf(view.busyMask, 'conjoon.cn_comp.component.LoadMask');
+            t.isInstanceOf(view.busyMask, 'coon.comp.component.LoadMask');
             t.expect(view.busyMask).toBeTruthy();
             t.expect(view.busyMask.isHidden()).toBe(false);
 

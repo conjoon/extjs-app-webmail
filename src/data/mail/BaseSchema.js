@@ -29,7 +29,7 @@
  */
 Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
-    extend : 'conjoon.cn_core.data.schema.BaseSchema',
+    extend : 'coon.core.data.schema.BaseSchema',
 
     requires : [
         'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',

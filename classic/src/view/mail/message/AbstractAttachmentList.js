@@ -41,7 +41,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
 
     requires : [
         'conjoon.cn_mail.model.mail.message.AbstractAttachment',
-        'conjoon.cn_core.util.Mime'
+        'coon.core.util.Mime'
     ],
 
     cls : 'cn_mail-attachment-list',
@@ -109,7 +109,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
      * @returns {string}
      */
     getPreviewCssClass : function(type, src) {
-        return conjoon.cn_core.util.Mime.isImage(type) && src ? "preview" : ""
+        return coon.core.util.Mime.isImage(type) && src ? "preview" : ""
     },
 
 

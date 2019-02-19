@@ -80,7 +80,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("Should create the Controller", function(t) {
         packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
-        t.expect(packageCtrl instanceof conjoon.cn_core.app.PackageController).toBe(true);
+        t.expect(packageCtrl instanceof coon.core.app.PackageController).toBe(true);
 
     });
 

@@ -53,7 +53,7 @@ describe('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest', function(t) 
 
         let mask = view.showLoadingFailedDialog(showButton);
 
-        t.isInstanceOf(mask, 'conjoon.cn_comp.component.MessageMask');
+        t.isInstanceOf(mask, 'coon.comp.component.MessageMask');
         t.expect(mask).toBe(view.loadingFailedMask);
         t.expect(view.showLoadingFailedDialog(showButton)).toBe(mask);
 
@@ -75,8 +75,7 @@ describe('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest', function(t) 
         }
 
 
-        t.click(okButton[0]);
-        t.waitForMs(250, function() {
+        t.click(okButton[0], function() {
             t.expect(view.loadingFailedMask).toBe(null);
             t.expect(view.destroyed).toBe(true);
             view = null;
@@ -97,7 +96,7 @@ t.waitForMs(1000, function() {
             renderTo : document.body,
             header   : {title : 'foo'}
         });
-        t.isInstanceOf(view.showToast(), 'conjoon.cn_comp.window.Toast');
+        t.isInstanceOf(view.showToast(), 'coon.comp.window.Toast');
 
         view.destroy();
         view = null;

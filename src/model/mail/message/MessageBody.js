@@ -34,7 +34,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
     extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
 
     requires : [
-        'conjoon.cn_core.data.field.CompoundKeyField'
+        'coon.core.data.field.CompoundKeyField'
     ],
 
     entityName : 'MessageBody',

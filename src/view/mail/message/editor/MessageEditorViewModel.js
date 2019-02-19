@@ -40,10 +40,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier',
-        'conjoon.cn_core.Util',
+        'coon.core.Util',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
         'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
-        'conjoon.cn_core.data.Session'
+        'coon.core.data.Session'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
@@ -258,7 +258,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         me.callParent([config]);
 
         let session = me.getSession();
-        if (!(session instanceof conjoon.cn_core.data.Session) ||
+        if (!(session instanceof coon.core.data.Session) ||
             // we will peek at the type of the created visitor, although we know
             // this is not the *instance* used later on
             !(session.createVisitor() instanceof conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor)) {
@@ -346,7 +346,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * be null if this callback was called from a failed attempt to copy a message
      * @param {Ext.data.operation.Read} operation
      *
-     * @return {conjoon.cn_comp.component.MessageMask} the message mask or null
+     * @return {coon.comp.component.MessageMask} the message mask or null
      * if the view was not advised to build the mask due to cancelled requests
      *
      * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showLoadingFailedDialog}

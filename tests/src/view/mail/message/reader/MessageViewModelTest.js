@@ -478,7 +478,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                 return date
             };
 
-        t.isCalled('getHumanReadableDate', conjoon.cn_core.util.Date);
+        t.isCalled('getHumanReadableDate', coon.core.util.Date);
 
         t.expect(formulas.getFormattedDate(get)).toBe(expected);
     });

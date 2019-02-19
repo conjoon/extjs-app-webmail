@@ -84,7 +84,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * Will not show the menu if the record is currently marked as cn_deleted
      * or cn_moved by returning false.
      *
-     * @param {conjoon.cn_comp.grid.feature.RowFlyMenu} feature
+     * @param {coon.comp.grid.feature.RowFlyMenu} feature
      * @param {HtmlElement} row
      * @param {Ext.data.Model} record
      *
@@ -109,7 +109,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *  - markunread: Marks the record as either read or unread, depending
      *    on it's state.
      *
-     * @param {conjoon.cn_comp.grid.feature.RowFlyMenu} feature
+     * @param {coon.comp.grid.feature.RowFlyMenu} feature
      * @param {HtmlElement} item
      * @param {Strng} action
      * @param {Ext.data.Model} record
@@ -726,7 +726,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     /**
      * @private
      *
-     * @return {conjoon.cn_comp.grid.feature.Livegrid}
+     * @return {coon.comp.grid.feature.Livegrid}
      */
     getLivegrid : function() {
         return this.getMessageGrid().view

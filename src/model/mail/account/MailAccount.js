@@ -33,7 +33,7 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
 
     requires : [
         'conjoon.cn_mail.data.mail.folder.MailFolderTypes',
-        'conjoon.cn_core.data.field.EmailAddress'
+        'coon.core.data.field.EmailAddress'
     ],
 
 

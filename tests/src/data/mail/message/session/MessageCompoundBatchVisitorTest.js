@@ -24,7 +24,7 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
 
     const setupSession = function() {
 
-            let session = Ext.create('conjoon.cn_core.data.Session', {
+            let session = Ext.create('coon.core.data.Session', {
                 schema : 'cn_mail-mailbaseschema',
                 batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             });
@@ -65,7 +65,7 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
 
             let visitor = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor');
 
-            t.isInstanceOf(visitor, 'conjoon.cn_core.data.session.SplitBatchVisitor');
+            t.isInstanceOf(visitor, 'coon.core.data.session.SplitBatchVisitor');
         });
 
 

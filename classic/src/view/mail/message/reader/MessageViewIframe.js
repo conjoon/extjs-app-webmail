@@ -21,13 +21,13 @@
  */
 
 /**
- * Overridden conjoon.cn_comp.component.Iframe-implementation to make sure a
+ * Overridden coon.comp.component.Iframe-implementation to make sure a
  * CSS string is prepended before each message.
  *
  */
 Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
 
-    extend: 'conjoon.cn_comp.component.Iframe',
+    extend: 'coon.comp.component.Iframe',
 
     alias : 'widget.cn_mail-mailmessagereadermessageviewiframe',
 

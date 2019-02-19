@@ -1,7 +1,7 @@
 var harness = new Siesta.Harness.Browser.ExtJS();
 
 harness.configure({
-    title          : 'My Tests',
+    title          : 'app-cn_mail',
     disableCaching : true,
     loaderPath     : {
 
@@ -37,8 +37,8 @@ harness.configure({
         /**
          * Requirements
          */
-        'conjoon.cn_core'   : '../../lib-cn_core/src/',
-        'conjoon.cn_comp'   : '../../lib-cn_comp/classic/src'
+        'coon.core'   : '../../lib-cn_core/src/',
+        'coon.comp'   : '../../lib-cn_comp/classic/src'
     },
     preload        : [
         conjoon.tests.config.paths.extjs.css.url,

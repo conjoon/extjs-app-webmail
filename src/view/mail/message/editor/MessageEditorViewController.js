@@ -185,9 +185,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
     /**
-     * Callback for the change event of this view's {@link conjoon.cn_comp.form.FileButton}.
+     * Callback for the change event of this view's {@link coon.comp.form.FileButton}.
      *
-     * @param {conjoon.cn_comp.form.FileButton} fileButton
+     * @param {coon.comp.form.FileButton} fileButton
      * @param {Ext.event.Event} evt
      * @param {String} value
      * @param {FileList} fileList

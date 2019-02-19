@@ -88,7 +88,7 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
         t.it("parentMessageItemId", function (t) {
             t.expect(model.getField('parentMessageItemId')).toBeTruthy();
-            t.isInstanceOf(model.getField('parentMessageItemId'), 'conjoon.cn_core.data.field.CompoundKeyField');
+            t.isInstanceOf(model.getField('parentMessageItemId'), 'coon.core.data.field.CompoundKeyField');
         });
 
 
@@ -138,7 +138,7 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
         t.it("Test MessageDraft save with MessageBody and Attachments", function(t) {
 
-            var session = Ext.create('conjoon.cn_core.data.Session', {
+            var session = Ext.create('coon.core.data.Session', {
                 schema : 'cn_mail-mailbaseschema',
                 batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             });

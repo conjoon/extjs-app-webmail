@@ -41,7 +41,7 @@
  * This view uses a session with the {@link conjoon.cn_mail.data.mail.BaseSchema}
  * to be able to handle the associations of the used data models properly.
  * The constructor overrides any specified session by creating an individual
- * session of the type {@link conjoon.cn_core.Session} with a
+ * session of the type {@link coon.core.Session} with a
  * {@link conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor} to make sure multiple
  * attachments are uploaded in single requests.
  *
@@ -86,7 +86,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     },
 
     requires : [
-        'conjoon.cn_comp.component.LoadMask',
+        'coon.comp.component.LoadMask',
         'conjoon.cn_mail.view.mail.message.editor.AttachmentList',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController',
         'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
@@ -94,9 +94,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.view.mail.message.editor.AddressField',
         'conjoon.cn_mail.model.mail.message.EmailAddress',
         'conjoon.cn_mail.data.mail.BaseSchema',
-        'conjoon.cn_core.data.Session',
+        'coon.core.data.Session',
         'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
-        'conjoon.cn_comp.component.MessageMask',
+        'coon.comp.component.MessageMask',
         'conjoon.cn_mail.data.mail.message.EditingModes',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
@@ -238,7 +238,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     /**
      * Mask to indicate that the oomponent's input is currently blocked due to
      * a user triggered save process
-     * @private {conjoon.cn_comp.component.LoadMask} busyMask
+     * @private {coon.comp.component.LoadMask} busyMask
      * @see setBusy
      */
     busyMask : null,
@@ -406,7 +406,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @inheritdoc
      *
      * Overrides any specified session by creating an individual session of the
-     * type conjoon.cn_core.Session with a conjoon.cn_core.session.BatchVisitor.
+     * type coon.core.Session with a coon.core.session.BatchVisitor.
      *
      * @throws if config is empty, or if viewModel is being applied using the
      * config argument.
@@ -435,7 +435,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         }
 
         Ext.apply(config, {
-            session : Ext.create('conjoon.cn_core.data.Session', {
+            session : Ext.create('coon.core.data.Session', {
                 schema                : 'cn_mail-mailbaseschema',
                 batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             }),
@@ -526,11 +526,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
     /**
      * Updates this editor's view to indicate that it is currently busy saving
-     * data. The indicator is represented by a conjoon.cn_comp.component.LoadMask.
+     * data. The indicator is represented by a coon.comp.component.LoadMask.
      *
      * @param {Object|Boolean} conf false to hide any currently active
      * indicator, or an object containing properties to configure the texts to
-     * show for the generated conjoon.cn_comp.component.LoadMask
+     * show for the generated coon.comp.component.LoadMask
      *
      * @return this
      *
@@ -553,7 +553,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                 cls  : Ext.getClassName(me),
                 msg  : 'Argument "conf" must either be boolean=false or an ' +
                        'object suiting configuration options for ' +
-                       'conjoon.cn_comp.component.LoadMask'
+                       'coon.comp.component.LoadMask'
             });
         }
 
@@ -562,7 +562,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         }
 
         if (!mask && !hide) {
-            mask = Ext.create('conjoon.cn_comp.component.LoadMask', {
+            mask = Ext.create('coon.comp.component.LoadMask', {
                 msg       : msg,
                 msgAction : msgAction,
                 glyphCls  : 'fa fa-envelope',
@@ -619,12 +619,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         iconCls = me.getIconCls();
 
-        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+        myMask = Ext.create('coon.comp.component.MessageMask', {
             title    : "Address Missing",
             message  : "Could not send the message. Please specify one or more recipients.",
             target   : me,
-            buttons  : conjoon.cn_comp.component.MessageMask.OK,
-            icon     : conjoon.cn_comp.component.MessageMask.ERROR,
+            buttons  : coon.comp.component.MessageMask.OK,
+            icon     : coon.comp.component.MessageMask.ERROR,
             callback : function(btnAction) {
                 var me = this;
                 me.down('#toField').focus();
@@ -644,7 +644,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
     /**
      * Shows a notice that the MessageDraft being edited misses a subject field.
      * The ui shows a textfield and a ok and cancel button using a
-     * conjoon.cn_comp.component.MessageMask. Clicking ok will add the specified
+     * coon.comp.component.MessageMask. Clicking ok will add the specified
      * subject to the editor and reset the close- and icon-state, as clicking
      * "cancel" does, w/o setting a subject for the editor.
      *
@@ -668,12 +668,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         iconCls = me.getIconCls();
 
-        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+        myMask = Ext.create('coon.comp.component.MessageMask', {
             title    : "Subject Missing",
             message  : "If you wish, you can specify a subject here before leaving it empty.",
             target   : me,
-            buttons  : conjoon.cn_comp.component.MessageMask.OKCANCEL,
-            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            buttons  : coon.comp.component.MessageMask.OKCANCEL,
+            icon     : coon.comp.component.MessageMask.QUESTION,
             input    : {emptyText : 'Subject'},
             callback : function(btnAction, value) {
                 var me = this;
@@ -719,12 +719,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         iconCls = me.getIconCls();
 
-        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+        myMask = Ext.create('coon.comp.component.MessageMask', {
             title    : "Saving Failed",
             message  : "Saving the message failed. Do you want to retry to save the message?",
             target   : me,
-            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
-            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            buttons  : coon.comp.component.MessageMask.YESNO,
+            icon     : coon.comp.component.MessageMask.QUESTION,
             callback : function(btnAction, value) {
                 var me = this;
                     me.setClosable(true);

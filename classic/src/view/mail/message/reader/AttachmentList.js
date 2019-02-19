@@ -22,7 +22,7 @@
 
 /**
  * The default AttachmentList implementation for a
- * {@link conjoon.cn_core.view.mail.message.reader.MessageView}.
+ * {@link coon.core.view.mail.message.reader.MessageView}.
  */
 Ext.define('conjoon.cn_mail.view.mail.message.reader.AttachmentList', {
 

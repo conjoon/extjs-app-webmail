@@ -37,7 +37,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
         'conjoon.cn_mail.view.mail.MailDesktopViewController',
         'conjoon.cn_mail.view.mail.MailDesktopViewModel',
         'conjoon.cn_mail.data.mail.BaseSchema',
-        'conjoon.cn_comp.window.Toast'
+        'coon.comp.window.Toast'
     ],
 
     controller : 'cn_mail-maildesktopviewcontroller',
@@ -123,12 +123,12 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} sourceFolder
      * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} targetFolder
      *
-     * @return {conjoon.cn_comp.window.Toast}
+     * @return {coon.comp.window.Toast}
      */
     showMessageMovedInfo : function(messageItem, sourceFolder, targetFolder) {
         const me = this;
 
-        return conjoon.Toast.info(
+        return coon.Toast.info(
             Ext.String.format(
                 "The message was moved to the \"{0}\" folder.",
                 targetFolder.get('name')
@@ -142,11 +142,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @param {conjoon.cn_mail.modelw.mail.message,AbstractMessageItem} messageItem
      *
-     * @return {conjoon.cn_comp.window.Toast}
+     * @return {coon.comp.window.Toast}
      */
     showMessageCannotBeDeletedWarning : function(messageItem) {
 
-        return conjoon.Toast.warn(
+        return coon.Toast.warn(
             "Please close all related tabs to this message first.");
 
     },

@@ -27,7 +27,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
 
         let proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy');
 
-        t.isInstanceOf(proxy, 'conjoon.cn_core.data.proxy.RestForm');
+        t.isInstanceOf(proxy, 'coon.core.data.proxy.RestForm');
 
         t.expect(proxy.getIdParam()).toBe('localId');
 

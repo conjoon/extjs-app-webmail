@@ -99,7 +99,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
 
     /**
-     * @type {conjoon.cn_comp.component.MessageMask}
+     * @type {coon.comp.component.MessageMask}
      * @private
      */
     deleteMask : null,
@@ -275,7 +275,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      * scope of this view. Allows further user interaction by specifying logic
      * to handle the failed process
      *
-     * @return {conjoon.cn_comp.component.MessageMask}
+     * @return {coon.comp.component.MessageMask}
      */
     showMailAccountIsBeingEditedNotice : function(node) {
         /**
@@ -287,12 +287,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             mailAccountView = me.down('cn_mail-mailaccountview'),
             myMask;
 
-        myMask = Ext.create('conjoon.cn_comp.component.MessageMask', {
+        myMask = Ext.create('coon.comp.component.MessageMask', {
             title    : "Pending Changes",
             message  : "The changes to the Email-Account have not been saved yet. Do you want to discard the changes?",
             target   : me,
-            buttons  : conjoon.cn_comp.component.MessageMask.YESNO,
-            icon     : conjoon.cn_comp.component.MessageMask.QUESTION,
+            buttons  : coon.comp.component.MessageMask.YESNO,
+            icon     : coon.comp.component.MessageMask.QUESTION,
             callback : function(btnAction) {
 
                 const me = this;

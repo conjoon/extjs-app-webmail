@@ -39,7 +39,7 @@
  */
 Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', {
 
-    extend : 'conjoon.cn_core.data.session.SplitBatchVisitor',
+    extend : 'coon.core.data.session.SplitBatchVisitor',
 
     /**
      * @inheritdoc

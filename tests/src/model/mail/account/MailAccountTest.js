@@ -83,8 +83,8 @@ describe('conjoon.cn_mail.model.mail.account.MailAccountTest', function(t) {
 
 
     t.it("app-cn_mail#101", function(t) {
-        t.isInstanceOf(model.getField('from'), 'conjoon.cn_core.data.field.EmailAddress');
-        t.isInstanceOf(model.getField('replyTo'), 'conjoon.cn_core.data.field.EmailAddress');
+        t.isInstanceOf(model.getField('from'), 'coon.core.data.field.EmailAddress');
+        t.isInstanceOf(model.getField('replyTo'), 'coon.core.data.field.EmailAddress');
     });
 
 

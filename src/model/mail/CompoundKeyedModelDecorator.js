@@ -26,7 +26,7 @@
 Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
 
     requires : [
-        'conjoon.cn_core.data.field.CompoundKeyField',
+        'coon.core.data.field.CompoundKeyField',
         'conjoon.cn_mail.data.mail.AbstractCompoundKey'
     ],
 

@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * app-cn_mail
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,13 +51,12 @@ describe('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialogTest', function(t) 
 
         t.expect(obj.CALLED).toBe(0);
         let mask = view.showMessageDeleteConfirmDialog(null, fn, obj);
-        t.isInstanceOf(mask, 'conjoon.cn_comp.component.MessageMask');
+        t.isInstanceOf(mask, 'coon.comp.component.MessageMask');
         t.expect(mask).toBe(view.deleteMask);
         t.expect(view.showMessageDeleteConfirmDialog(null, fn, obj)).toBe(mask);
 
         let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-        t.click(yesButton[0]);
-        t.waitForMs(250, function() {
+        t.click(yesButton[0], function() {
             t.expect(obj.CALLED).toBe(1);
             t.expect(view.deleteMask).toBe(null);
 

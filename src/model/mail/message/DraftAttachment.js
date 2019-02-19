@@ -33,8 +33,8 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
     extend : 'conjoon.cn_mail.model.mail.message.AbstractAttachment',
 
     requires : [
-        'conjoon.cn_core.data.proxy.RestForm',
-        'conjoon.cn_core.data.field.Blob',
+        'coon.core.data.proxy.RestForm',
+        'coon.core.data.field.Blob',
         'conjoon.cn_mail.store.mail.message.MessageAttachmentStore'
     ],
 

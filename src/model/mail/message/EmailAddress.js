@@ -26,7 +26,7 @@
  * Note:
  * In some cases we do not need two way associations between specific entities
  * and email addresses, thus, some models use fields of the type
- * {@link conjoon.cn_core.data.field.EmailAddressCollection}.
+ * {@link coon.core.data.field.EmailAddressCollection}.
  */
 Ext.define('conjoon.cn_mail.model.mail.message.EmailAddress', {
 
