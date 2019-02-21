@@ -157,31 +157,31 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
             'cn_mail-mailmessagegridbeforeload' : 'onMailMessageGridBeforeLoad',
             'cn_mail-mailmessagegridload'       : 'onMailMessageGridLoad'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavCreateMessage' : {
+        'cn_navport-tbar > #cn_mail-nodeNavCreateMessage' : {
             click : 'onMessageComposeButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage' : {
+        'cn_navport-tbar > #cn_mail-nodeNavEditMessage' : {
             click : 'onMessageEditButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavDeleteMessage' : {
+        'cn_navport-tbar > #cn_mail-nodeNavDeleteMessage' : {
             click : 'onMessageDeleteButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyTo' : {
+        'cn_navport-tbar > #cn_mail-nodeNavReplyTo' : {
             click : 'onReplyToButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyAll' : {
+        'cn_navport-tbar > #cn_mail-nodeNavReplyAll' : {
             click : 'onReplyAllButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavForward' : {
+        'cn_navport-tbar > #cn_mail-nodeNavForward' : {
             click : 'onForwardButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane > menu > menucheckitem' : {
+        'cn_navport-tbar > #cn_mail-nodeNavReadingPane > menu > menucheckitem' : {
             checkchange : 'onReadingPaneCheckChange'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleList' : {
+        'cn_navport-tbar > #cn_mail-nodeNavToggleList' : {
             toggle : 'onToggleListViewButtonClick'
         },
-        'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleFolder' : {
+        'cn_navport-tbar > #cn_mail-nodeNavToggleFolder' : {
             toggle : 'onToggleFolderViewButtonClick'
         }
     },
@@ -203,31 +203,31 @@ Ext.define('conjoon.cn_mail.controller.PackageController', {
         selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree'
     }, {
         ref      : 'navigationToolbar',
-        selector : 'cn_treenavviewport-tbar'
+        selector : 'cn_navport-tbar'
     }, {
         ref      : 'toggleGridListButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleList'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavToggleList'
     }, {
         ref      : 'toggleMailFolderButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavToggleFolder'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavToggleFolder'
     }, {
         ref      : 'switchReadingPaneButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReadingPane'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavReadingPane'
     }, {
         ref      : 'replyToButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyTo'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavReplyTo'
     }, {
         ref      : 'replyAllButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavReplyAll'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavReplyAll'
     }, {
         ref      : 'forwardButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavForward'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavForward'
     }, {
         ref      : 'editButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavEditMessage'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavEditMessage'
     }, {
         ref      : 'deleteButton',
-        selector : 'cn_treenavviewport-tbar > #cn_mail-nodeNavDeleteMessage'
+        selector : 'cn_navport-tbar > #cn_mail-nodeNavDeleteMessage'
     }],
 
 
