@@ -41,8 +41,8 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(){
-t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function(){
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable', function(){
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
 
     Ext.ux.ajax.SimManager.init({
         delay: 1
@@ -142,10 +142,10 @@ t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function(){
                 return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
             },
             getMessageItemAt = function(messageIndex) {
-                return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+                return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
             },
             createKeyForExistingMessage = function(messageIndex){
-                let item = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+                let item = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
 
                 let key = createKey(
                     item.mailAccountId, item.mailFolderId, item.id

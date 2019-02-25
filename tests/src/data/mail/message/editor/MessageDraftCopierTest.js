@@ -22,14 +22,14 @@
 
 describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest', function(t) {
 
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
 
         const createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
             },
             createKeyForExistingMessage = function(messageIndex){
-                let item = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+                let item = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
 
                 let key = createKey(
                     item.mailAccountId, item.mailFolderId, item.id

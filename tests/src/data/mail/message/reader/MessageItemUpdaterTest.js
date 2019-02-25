@@ -77,7 +77,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
 
     t.requireOk('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', function() {
 
-        t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+        t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
         t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function () {
 

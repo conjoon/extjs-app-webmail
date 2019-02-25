@@ -46,7 +46,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         }
     });
 
-    t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim', function() {
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageItem', function() {
     t.requireOk('conjoon.cn_mail.store.mail.message.MessageItemStore', function() {
 

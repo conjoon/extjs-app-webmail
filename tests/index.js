@@ -38,7 +38,8 @@ harness.configure({
          * Requirements
          */
         'coon.core'   : '../../lib-cn_core/src/',
-        'coon.comp'   : '../../lib-cn_comp/classic/src'
+        'coon.comp'   : '../../lib-cn_comp/classic/src',
+        'conjoon.dev.cn_mailsim'   : '../../dev-cn_mailsim/src'
     },
     preload        : [
         conjoon.tests.config.paths.extjs.css.url,
@@ -60,17 +61,6 @@ harness.start({
                 group : 'mail',
 
                 items : [{
-                    group : 'ajax',
-                    items : [{
-                        group : 'sim',
-                        items : [{
-                            group : 'message',
-                            items : [
-                                'src/data/mail/ajax/sim/message/MessageTableTest.js'
-                            ]
-                        }]
-                    }]
-                }, {
                     group : 'account',
                     items : [{
                         group : 'reader',

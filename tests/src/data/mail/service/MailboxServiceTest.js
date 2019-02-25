@@ -50,13 +50,13 @@ describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
 
         index = index === undefined ? 1 : index;
 
-        let mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
+        let mi = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
 
         if (mailFolderId) {
             let i = index >= 0 ? index : 0, upper = 10000;
 
             for (; i <= upper; i++) {
-                mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                mi = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
                 if (mi.mailFolderId === mailFolderId) {
                     break;
                 }
@@ -79,7 +79,7 @@ describe('conjoon.cn_mail.data.mail.service.MailboxServiceTest', function(t) {
 // -----------------------------------------------------------------------------
 // |   Tests
 // -----------------------------------------------------------------------------
-t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
     Ext.ux.ajax.SimManager.init({
         delay: 1

@@ -39,7 +39,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
-            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
         },
         createKeyForExistingMessage = function(messageIndex){
             let item = getMessageItemAt(messageIndex);
@@ -97,13 +97,13 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
             index = index === undefined ? 1 : index;
 
-            let mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
+            let mi = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
 
             if (mailFolderId) {
                 let i = index >= 0 ? index : 0, upper = 10000;
 
                 for (; i <= upper; i++) {
-                    mi = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                    mi = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
                     if (mi.mailFolderId === mailFolderId) {
                         break;
                     }
@@ -139,12 +139,12 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
 
     t.beforeEach(function() {
-        conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.resetAll();
+        conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.resetAll();
     });
 
 
 
-t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function () {
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function () {
 
     const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
@@ -367,7 +367,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 let remoteRec, remoteCompoundKey, remoteLocalId, ind = 0;
 
                 for (ind = 0; ind < 1000; ind++) {
-                    remoteRec = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(ind),
+                    remoteRec = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(ind),
                     remoteCompoundKey = MessageEntityCompoundKey.createFor(remoteRec.mailAccountId, remoteRec.mailFolderId, remoteRec.id),
                     remoteLocalId = remoteCompoundKey.toLocalId();
 

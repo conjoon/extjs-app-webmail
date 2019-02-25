@@ -33,10 +33,10 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
-            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
         },
         createKeyForExistingMessage = function(messageIndex){
-            let item = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            let item = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
 
             let key = createKey(
                 item.mailAccountId, item.mailFolderId, item.id
@@ -140,7 +140,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function(){
     t.requireOk('coon.core.data.Session', function(){
     t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function(){
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
 
 

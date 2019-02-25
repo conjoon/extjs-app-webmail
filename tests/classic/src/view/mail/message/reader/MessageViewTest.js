@@ -35,7 +35,7 @@ t.requireOk('coon.core.util.Date', function() {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
-            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
         },
         createKeyForExistingMessage = function(messageIndex){
             let item = getMessageItemAt(messageIndex);
@@ -117,7 +117,7 @@ t.requireOk('coon.core.util.Date', function() {
     });
 
 
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
         Ext.ux.ajax.SimManager.init({
             delay : 1
@@ -473,7 +473,7 @@ t.requireOk('coon.core.util.Date', function() {
 
             t.expect(view.getMessageItem()).toBe(null);
 
-            let rec  = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+            let rec  = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             view.loadMessageItem(createKeyForExistingMessage(1));
 

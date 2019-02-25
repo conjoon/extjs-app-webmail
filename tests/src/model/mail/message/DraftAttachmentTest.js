@@ -44,7 +44,7 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function() {
 
         Ext.ux.ajax.SimManager.init({

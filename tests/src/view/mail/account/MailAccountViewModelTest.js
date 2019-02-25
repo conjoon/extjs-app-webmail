@@ -109,7 +109,7 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewModelTest', function(
 
     });
 
-t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function () {
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function () {
 
     t.it("Should create and show the MailAccountViewModel along with default config checks", function (t) {
         viewModel = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountViewModel');

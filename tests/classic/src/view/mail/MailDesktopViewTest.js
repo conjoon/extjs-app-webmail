@@ -27,7 +27,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
-            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
         },
         createKeyForExistingMessage = function(messageIndex){
             let item = getMessageItemAt(messageIndex);
@@ -59,8 +59,8 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
     });
 
-t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable', function(){
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function(){
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable', function(){
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
 
     t.it("Should create and show the view along with default config checks", function(t) {
         view = Ext.create(

@@ -97,7 +97,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
         }
     });
 
-t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() {
 
     Ext.ux.ajax.SimManager.init({

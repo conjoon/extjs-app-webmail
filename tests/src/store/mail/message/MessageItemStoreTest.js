@@ -28,7 +28,7 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
         });
     };
 
-    t.requireOk('conjoon.cn_mail.data.mail.ajax.sim.message.MessageItemSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim', function() {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1

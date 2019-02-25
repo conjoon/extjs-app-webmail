@@ -48,7 +48,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function() {
 
         Ext.ux.ajax.SimManager.init({
@@ -139,7 +139,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test addresses load", function(t) {
 
-            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+            let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                 conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -160,7 +160,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test MessageBody load", function(t) {
 
-            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+            let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                 conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -189,7 +189,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         t.it("Test attachments load", function(t) {
 
-            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+            let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                 conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -479,7 +479,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
 
         t.it("save() - phantom", function(t) {
-            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+            let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             delete messageItem.localId;
 
@@ -505,7 +505,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
 
         t.it("save() - consider modified", function(t) {
-            let messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+            let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
             var draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                 conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -547,7 +547,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
             });
 
             for (let i = 0, len = 1000; i < len; i++) {
-                messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
 
                 if (messageItem.hasAttachments) {
                     break;
@@ -599,7 +599,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
                 });
 
             for (let i = 0, len = 1000; i < len; i++) {
-                messageItem = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
 
                 if (messageItem.hasAttachments) {
                     break;

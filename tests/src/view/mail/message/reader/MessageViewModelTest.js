@@ -30,7 +30,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
         },
         getMessageItemAt = function(messageIndex) {
-            return conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
         },
         createKeyForExistingMessage = function(messageIndex){
             let item = getMessageItemAt(messageIndex);
@@ -43,7 +43,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         },
         createMessageItem = function() {
 
-            const MessageTable = conjoon.cn_mail.data.mail.ajax.sim.message.MessageTable;
+            const MessageTable = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable;
 
             let index, messageItem;
 
@@ -85,7 +85,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function () {
 
         t.it("1. Should create the ViewModel", function(t) {

@@ -52,7 +52,7 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
         };
 
     t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", function() {
-    t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
 
 

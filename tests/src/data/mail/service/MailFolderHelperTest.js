@@ -36,7 +36,7 @@ describe('conjoon.cn_mail.data.mail.service.MailFolderHelperTest', function(t) {
 // -----------------------------------------------------------------------------
 // |   Tests
 // -----------------------------------------------------------------------------
-t.requireOk('conjoon.cn_mail.data.mail.PackageSim', function() {
+t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
     Ext.ux.ajax.SimManager.init({
         delay: 1
