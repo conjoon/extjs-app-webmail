@@ -34,14 +34,16 @@
  *
  *          mainView : 'Ext.Panel',
  *
+ *          // If specifying the PackageController in the requires-property of the app.json of the
+ *          // application which uses this package, you can omit the this.
  *          controllers : [
- *              'conjoon.cn_mail.controller.PackageController'
+ *              'conjoon.cn_mail.app.PackageController'
  *          ]
  *
  *      });
  *
  */
-Ext.define('conjoon.cn_mail.controller.PackageController', {
+Ext.define('conjoon.cn_mail.app.PackageController', {
 
     extend : 'coon.core.app.PackageController',
 

@@ -51,9 +51,9 @@ harness.configure({
 harness.start({
         group : 'universal',
         items : [{
-            group : 'controller',
+            group : 'app',
             items : [
-                'src/controller/PackageControllerTest.js'
+                'src/app/PackageControllerTest.js'
             ]
         }, {
             group : 'data',

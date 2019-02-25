@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('conjoon.cn_mail.controller.PackageControllerTest', function(t) {
+describe('conjoon.cn_mail.app.PackageControllerTest', function(t) {
 
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
 
@@ -79,14 +79,14 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
     t.it("Should create the Controller", function(t) {
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         t.expect(packageCtrl instanceof coon.core.app.PackageController).toBe(true);
 
     });
 
 
     t.it("postLaunchHook should return valid object", function(t) {
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         var ret = packageCtrl.postLaunchHook();
 
@@ -98,7 +98,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("showMailEditor()", function(t) {
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         let mvp = {
             getActiveTab : function() {
                 return {
@@ -142,7 +142,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             }
         };
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getMainPackageView = function() {
             return mpv;
         };
@@ -164,7 +164,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("message edit buttons", function(t) {
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         let activeTab = null;
 
@@ -214,7 +214,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     t.it("message delete button", function(t) {
 
         let CALLED = 0;
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getMailInboxView = function() {
             return {
                 getController : function() {
@@ -263,7 +263,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             REPLYTODISABLED,
             REPLYALLDISABLED, EDITDISABLED, DELETEDISABLED, TOGGLEMAILFOLDERDISABLED;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getSwitchReadingPaneButton = function(){
             return {
                 setDisabled : function(disabled) {
@@ -391,7 +391,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             '#cn_mail-nodeNavForward'       : 0,
             '#cn_mail-nodeNavDeleteMessage' : 0
         };
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         let ACTIVETAB     = 1,
             MAILINBOXVIEW = 2;
@@ -483,7 +483,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     '#cn_mail-nodeNavDeleteMessage' : 0
                 };
             };
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getReplyToButton = function() {
             return {setDisabled: function (doIt) {
                 if (doIt !== true) {ENABLED['#cn_mail-nodeNavReplyTo']++;}
@@ -554,7 +554,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             menuItem2 = {getItemId : function() {return 'bottom'}},
             menuItem3 = {getItemId : function() {return 'hide';}};
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getMailInboxView = function() {
             return {
                 toggleReadingPane : function(dir) {
@@ -580,7 +580,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         var ENABLED;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getMailMessageGrid = function() {
             return {
                 enableRowPreview : function(pressed) {
@@ -601,7 +601,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         var HIDDEN;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         packageCtrl.getMailFolderTree = function() {
             return {
                 show : function() {
@@ -625,7 +625,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     t.it('onMailMessageGridBeforeLoad() / onMailMessageGridLoad()', function(t) {
 
         var TOGGLEGRIDDISABLED, ISSAME_LEFT = false, ISSAME_RIGHT = false;
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         packageCtrl.getMailInboxView = function() {
             return ISSAME_LEFT;
@@ -687,7 +687,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             EMAILEDITBUTTONSDISABLED = false,
             MESSAGEGRIDBUTTONSACTIVATED = true;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         packageCtrl.getMailFolderTree = function(){
             return {
@@ -808,7 +808,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("mailfolder route", function(t) {
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         let pv = {
             showInboxViewFor : function() {}
         };
@@ -826,7 +826,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         let ENABLED = configureButtonMockCaller();
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -850,7 +850,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         let ENABLED = configureButtonMockCaller();
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -895,7 +895,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         let ENABLED = configureButtonMockCaller();
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -933,7 +933,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             panel,
             activatedPanel;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -970,7 +970,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             panel, rec,
             activatedPanel;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -1006,7 +1006,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             panel, rec,
             activatedPanel, otherPanel;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -1047,7 +1047,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             };
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         packageCtrl.getMailInboxView = function() {
             return activatedPanel;
@@ -1072,7 +1072,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             };
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         packageCtrl.getMailInboxView = function() {
             return activatedPanel;
@@ -1106,7 +1106,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
             });
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
         packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
@@ -1125,7 +1125,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             panel,
             activatedPanel = Ext.create('Ext.Panel');
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
         packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
@@ -1142,7 +1142,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.it("message edit buttons", function(t) {
 
-            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+            packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
             let activeTab = null, ID = null,
                 COMPOUNDKEY = MessageEntityCompoundKey.createFor(
@@ -1190,7 +1190,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.it("message edit buttons", function(t) {
 
-            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+            packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
             let activeTab = null, KEY = null,
                 SETKEY = MessageEntityCompoundKey.createFor(1, 2, 3);
@@ -1237,7 +1237,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.it("message edit buttons", function(t) {
 
-            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+            packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
             let activeTab = null, KEY = null,
                 SETKEY = MessageEntityCompoundKey.createFor(1, 2, 3);
@@ -1284,7 +1284,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         t.it("message edit buttons", function(t) {
 
-            packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+            packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
             let activeTab = null, KEY = null,
                 SETKEY = MessageEntityCompoundKey.createFor(1, 2, 3);
@@ -1331,7 +1331,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         let ACTIVETAB = "", MAILINBOXVIEW = "";
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         packageCtrl.getMailDesktopView = function() {
             return {
@@ -1373,7 +1373,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("app-cn_mail#69", function(t) {
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         let REPLYALLROUTE = 0;
 
@@ -1401,7 +1401,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("app-cn_mail#79", function(t) {
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         let ck = packageCtrl.createCompoundKeyFromUrlFragments('a%20b', 'foo', 'ba%20r');
 
@@ -1423,7 +1423,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         let ENABLED = configureButtonMockCaller();
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
         packageCtrl.messageEditorIsActivatedTab();
@@ -1466,7 +1466,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 break;
         }
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
         packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
@@ -1510,7 +1510,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             panel, rec,
             activatedPanel, otherPanel;
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
 
         configurePackageCtrlWithButtonMocks(packageCtrl, ENABLED);
 
@@ -1561,7 +1561,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
     t.it("app-cn_mail#83 - mailaccount route", function(t) {
 
-        packageCtrl = Ext.create('conjoon.cn_mail.controller.PackageController');
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
         let pv = {
             showMailAccountFor : function() {}
         };
