@@ -203,7 +203,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     stores : {
 
         mailAccountStore : {
-            source: '{cn_mail-mailfoldertreestore}',
+            source: '{cn_mail_mailfoldertreestore}',
 
             filters : [{
                 property : 'cn_folderType',

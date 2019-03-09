@@ -23,9 +23,9 @@
 /**
  * The default viewModel for {@link conjoon.cn_mail.view.mail.inbox.InboxView}.
  * This default implementation is configured to be used with {@link conjoon.cn_mail.view.mail.inbox.InboxView},
- * which binds the stores "cn_mail-mailfolderstore" and
- * "cn_mail-mailmessageitemstore" to its MailFolderTree and MessageGrid.
- * Additionally, the filter of the "cn_mail-mailmessageitemstore" is bound to the
+ * which binds the stores "cn_mail_mailfolderstore" and
+ * "cn_mail_mailmessageitemstore" to its MailFolderTree and MessageGrid.
+ * Additionally, the filter of the "cn_mail_mailmessageitemstore" is bound to the
  * id of the selection in the MailFolderTree.
  *
  */
@@ -40,7 +40,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewModel', {
     alias : 'viewmodel.cn_mail-maildesktopviewmodel',
 
     stores : {
-        'cn_mail-mailfoldertreestore' : {
+        'cn_mail_mailfoldertreestore' : {
             type     : 'cn_mail-mailfoldertreestore',
             autoLoad : true,
             listeners : {

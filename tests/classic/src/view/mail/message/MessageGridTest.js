@@ -157,13 +157,13 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
         });
 
 
-        t.it("bindStore with exception and ext-empty-store", function(t) {
+        t.it("bindStore with exception", function(t) {
             var exc, e;
 
             grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
-                width    : 400,
-                height   : 400,
-                renderTo : document.body
+                width: 400,
+                height: 400,
+                renderTo: document.body
             });
 
             try {
@@ -174,7 +174,18 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             t.expect(exc).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("store must be an instance of");
+        });
 
+
+
+        t.it("bindStore ext-empty-store", function(t) {
+            var exc, e;
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width: 400,
+                height: 400,
+                renderTo: document.body
+            });
 
             grid.setStore(Ext.data.StoreManager.lookup('ext-empty-store'));
             t.expect(grid.getStore()).toBe(Ext.data.StoreManager.lookup('ext-empty-store'));
@@ -187,7 +198,6 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             });
         });
-
 
 
         t.it("bindStore with proper store config and event behavior", function(t) {

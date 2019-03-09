@@ -796,6 +796,8 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
         t.expect(REDIRECTED).toBe(4);
 
+        panel.destroy();
+        panel = null;
     });
 
 
@@ -886,6 +888,8 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
                         t.expect(editor.destroyed).toBe(true);
 
+                        panel.destroy();
+                        panel = null;
                     });
 
                 });

@@ -23,9 +23,9 @@
 /**
  * The default viewModel for {@link conjoon.cn_mail.view.mail.inbox.InboxView}.
  * This default implementation is configured to be used with {@link conjoon.cn_mail.view.mail.inbox.InboxView},
- * which binds the stores "cn_mail-mailfolderstore" and
- * "cn_mail-mailmessageitemstore" to its MailFolderTree and MessageGrid.
- * Additionally, the filter of the "cn_mail-mailmessageitemstore" is bound to the
+ * which binds the stores "cn_mail_mailfolderstore" and
+ * "cn_mail_mailmessageitemstore" to its MailFolderTree and MessageGrid.
+ * Additionally, the filter of the "cn_mail_mailmessageitemstore" is bound to the
  * id of the selection in the MailFolderTree.
  *
  */
@@ -41,7 +41,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
     alias : 'viewmodel.cn_mail-mailinboxviewmodel',
 
     stores : {
-        'cn_mail-mailmessageitemstore' : {
+        'cn_mail_mailmessageitemstore' : {
             type     : 'cn_mail-mailmessageitemstore',
             autoLoad : true,
             listeners : {
@@ -121,7 +121,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
     updateUnreadMessageCount : function(mailAccountId, mailFolderId, unreadCount) {
 
         var me    = this,
-            store = me.get('cn_mail-mailfoldertreestore'),
+            store = me.get('cn_mail_mailfoldertreestore'),
             folder;
 
         folder = store.getRoot().findChild('id', mailAccountId, false);

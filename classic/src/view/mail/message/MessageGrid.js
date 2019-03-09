@@ -128,14 +128,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             };
         },
         previewColumnConfig : {
-            'seen'                : {visible : false},
-            'subject'             : {visible : false},
-            'to'                  : {visible : false},
-            'from'                : {visible : false},
+            'seen'                : {hidden : true},
+            'subject'             : {hidden : true},
+            'to'                  : {hidden : true},
+            'from'                : {hidden : true},
             'draftDisplayAddress' : {flex : 1},
-            'date'                : {visible : false},
+            'date'                : {hidden : true},
             'hasAttachments'      : {},
-            'size'                : {visible : false}
+            'size'                : {hidden : true}
         }
     }, {
         ftype : 'cn_comp-gridfeature-rowflymenu',
@@ -228,7 +228,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         }
     }, {
         dataIndex    : 'draftDisplayAddress',
-        visible      : false,
+        hidden       : true,
         hideable     : false,
         text         : 'Draft Display Address',
         menuDisabled : true

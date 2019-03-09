@@ -79,7 +79,7 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
         // check config since store filters uses binding.
         // store won't be available until binding is set,
         // so simply query the defaultConfig
-        let store = viewModel.defaultConfig.stores['cn_mail-mailmessageitemstore'];
+        let store = viewModel.defaultConfig.stores['cn_mail_mailmessageitemstore'];
 
         t.expect(store.type).toBe('cn_mail-mailmessageitemstore');
         t.expect(store.autoLoad).toBe(true);
@@ -106,7 +106,7 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
             viewModel = Ext.create('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
                 stores : {
-                    'cn_mail-mailfoldertreestore' : {
+                    'cn_mail_mailfoldertreestore' : {
                         type : 'cn_mail-mailfoldertreestore',
                         autoLoad : true
                     }
@@ -116,7 +116,7 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
 
             t.waitForMs(TIMEOUT, function() {
-                var store = viewModel.getStore('cn_mail-mailfoldertreestore'),
+                var store = viewModel.getStore('cn_mail_mailfoldertreestore'),
                     rec = store.getRoot().findChild('id', 'dev_sys_conjoon_org').findChild('id', 'INBOX');
 
                 t.expect(rec.get('unreadCount')).toBe(3787);
@@ -147,8 +147,8 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
         t.waitForMs(TIMEOUT, function() {
 
-            let store = viewModel.getStore('cn_mail-mailmessageitemstore'),
-                defaultStoreConfig = viewModel.defaultConfig.stores['cn_mail-mailmessageitemstore'];
+            let store = viewModel.getStore('cn_mail_mailmessageitemstore'),
+                defaultStoreConfig = viewModel.defaultConfig.stores['cn_mail_mailmessageitemstore'];
 
             t.expect(store.isLoading()).toBe(false);
             t.expect(store.isLoaded()).toBe(true);

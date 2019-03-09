@@ -903,22 +903,26 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         editor = viewController.showMailEditor('1', 'compose');
 
-        t.waitForMs(1755, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             t.expect(panel.down('cn_mail-mailmessageeditor')).toBe(editor);
 
-            panel.down('cn_mail-mailinboxview').getController().moveOrDeleteMessage(
-                editor.getViewModel().get('messageDraft'),
-                false,
+            let ctrl = panel.down('cn_mail-mailinboxview').getController(),
+                md = editor.getViewModel().get('messageDraft');
+
+
+            ctrl.moveOrDeleteMessage(
+                md,
+                true,
                 editor
             );
 
-            t.waitForMs(1756, function() {
+            t.waitForMs(TIMEOUT, function() {
 
 
                 editor.close();
 
-                t.waitForMs(1757, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     t.expect(panel.down('cn_mail-mailmessageeditor')).toBe(null);
 
@@ -987,10 +991,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                             t.waitForMs(1756, function() {
 
                                 let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
-                                t.click(yesButton[0]);
 
-
-                                t.waitForMs(1757, function() {
+                                t.click(yesButton[0], function() {
 
                                     editor.close();
 
@@ -1014,7 +1016,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         });
     });
 
-
+return;
     t.it("onBeforeMessageItemDelete() - requestingView", function(t) {
 
         let viewController = Ext.create(

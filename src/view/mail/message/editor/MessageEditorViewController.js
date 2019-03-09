@@ -620,7 +620,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
 
 
-            let accRecord = vm.get('cn_mail-mailfoldertreestore').findRecord(
+            let accRecord = vm.get('cn_mail_mailfoldertreestore').findRecord(
                 'id', mailAccountId
             );
 
@@ -635,7 +635,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
         /**
-         * Returns the MailboxService for the cn_mail-mailfoldertreestore which
+         * Returns the MailboxService for the cn_mail_mailfoldertreestore which
          * is part of this view's viewModel.
          *
          * @return {conjoon.cn_mail.data.mail.service.MailboxService}
@@ -648,7 +648,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             if (!me.mailboxService) {
                 me.mailboxService = Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
                     mailFolderHelper : Ext.create('conjoon.cn_mail.data.mail.service.MailFolderHelper', {
-                        store : vm.get('cn_mail-mailfoldertreestore')
+                        store : vm.get('cn_mail_mailfoldertreestore')
                     })
                 });
             }

@@ -31,7 +31,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
             let store = Ext.create(
                 'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
             );
-            editor.getViewModel().set('cn_mail-mailfoldertreestore', store);
+            editor.getViewModel().set('cn_mail_mailfoldertreestore', store);
             store.load();
         },
         createKey = function(id1, id2, id3) {
@@ -95,7 +95,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
 
             vm = ed.getViewModel();
 
-            vm.set('cn_mail-mailfoldertreestore', store);
+            vm.set('cn_mail_mailfoldertreestore', store);
             store.load();
 
             return ed;
@@ -1370,7 +1370,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     t.expect(messageDraft.get('mailFolderId')).toBeTruthy();
                     t.expect(messageDraft.get('mailFolderId')).toBe(controller.getMailboxService().getMailFolderHelper().getMailFolderIdForType('dev_sys_conjoon_org', 'DRAFT'));
 
-                    let acc = view.getViewModel().get('cn_mail-mailfoldertreestore').findRecord(
+                    let acc = view.getViewModel().get('cn_mail_mailfoldertreestore').findRecord(
                         'id', 'dev_sys_conjoon_org'
                     );
                     let from = {name : acc.get('name'), address : acc.get('from')};

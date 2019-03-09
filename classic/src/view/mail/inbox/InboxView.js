@@ -109,7 +109,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         margin    : '0 0 5 0',
         reference : 'cn_mail_ref_mailfoldertree',
         bind      : {
-            store : '{cn_mail-mailfoldertreestore}'
+            store : '{cn_mail_mailfoldertreestore}'
         }
     },{
         split   : true,
@@ -171,7 +171,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     representedFolderType : '{cn_mail_ref_mailfoldertree.selection.cn_folderType}',
                     title                 : '{cn_mail_ref_mailfoldertree.selection.name}',
                     hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
-                    store                 : '{cn_mail-mailmessageitemstore}'
+                    store                 : '{cn_mail_mailmessageitemstore}'
                 }
         }]}, {
             flex      : 1,
@@ -215,16 +215,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
 
         me.getViewModel().set('messageViewHidden', false);
 
-        readingPane.splitter.destroy();
-
-        readingPane.splitter          = null;
-        readingPane.collapseDirection = collapseDir;
-
         panelBody.getLayout().setVertical(position !== 'right');
-        panelBody.getLayout().insertSplitter(
-            readingPane, 1, false, {collapseTarget : 'next'}
-        );
-        readingPane.splitter.setOrientation(orientation);
+
         panelBody.updateLayout();
 
         if (position === 'right') {

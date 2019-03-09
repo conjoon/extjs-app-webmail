@@ -907,7 +907,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
                 );
                 store.load();
-                editor.getViewModel().set('cn_mail-mailfoldertreestore', store);
+                editor.getViewModel().set('cn_mail_mailfoldertreestore', store);
 
                 t.waitForMs(750, function() {
 

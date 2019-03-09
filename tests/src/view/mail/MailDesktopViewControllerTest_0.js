@@ -247,6 +247,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             height : 600
         });
 
+
         panel.down('cn_mail-mailinboxview').down('cn_mail-mailmessagereadermessageview')
             .fireEvent('cn_mail-mailmessageitemread', getRecordCollection());
 
@@ -262,6 +263,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         discardView(t);
     });
+
 
     t.it("Should make sure that onMailMessageGridDoubleClick works properly", function(t) {
 

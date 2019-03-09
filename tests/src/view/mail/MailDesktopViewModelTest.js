@@ -61,7 +61,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewModelTest', function(t) {
 
 
         t.expect(viewModel.defaultConfig.stores).toEqual({
-            'cn_mail-mailfoldertreestore' : {
+            'cn_mail_mailfoldertreestore' : {
                 type     : 'cn_mail-mailfoldertreestore',
                 autoLoad : true,
                 listeners : {

@@ -881,14 +881,14 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 messageDraft : Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig')
             });
 
-            viewModel.set('cn_mail-mailfoldertreestore', Ext.create('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'));
+            viewModel.set('cn_mail_mailfoldertreestore', Ext.create('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'));
 
             t.waitForMs(750, function() {
                 t.expect(viewModel.get('mailAccountStore')).toBeTruthy();
 
                 t.isInstanceOf(viewModel.get('mailAccountStore'), 'Ext.data.ChainedStore');
 
-                t.expect(viewModel.get('mailAccountStore').getSource()).toBe(viewModel.get('cn_mail-mailfoldertreestore'));
+                t.expect(viewModel.get('mailAccountStore').getSource()).toBe(viewModel.get('cn_mail_mailfoldertreestore'));
                 viewModel.get('mailAccountStore').getFilters();
 
                 t.expect(viewModel.get('mailAccountStore').getFilters().items[0].getProperty()).toBe('cn_folderType');

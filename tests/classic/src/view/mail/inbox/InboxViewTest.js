@@ -85,7 +85,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
             viewModel : {
                 type : 'cn_mail-mailinboxviewmodel',
                 stores : {
-                    'cn_mail-mailfoldertreestore' : {
+                    'cn_mail_mailfoldertreestore' : {
                         type : 'cn_mail-mailfoldertreestore',
                         autoLoad : true
                     }
@@ -232,7 +232,7 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
                 t.expect(bodyLayout.getVertical()).toBe(true);
 
 
-                 discardView(t);
+                discardView(t);
 
             });
         });

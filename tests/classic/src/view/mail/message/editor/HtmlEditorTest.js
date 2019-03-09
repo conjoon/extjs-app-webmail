@@ -51,9 +51,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.HtmlEditorTest', function(t) 
     });
 
 
-    /**
-     * @see https://github.com/conjoon/app-cn_mail/issues/2
-     */
+    //@see https://github.com/conjoon/app-cn_mail/issues/2
     t.it("Should fix conjoon/app-cn_mail/issues/2", function(t) {
         view = Ext.create(
             'conjoon.cn_mail.view.mail.message.editor.HtmlEditor', viewConfig);
@@ -68,7 +66,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.HtmlEditorTest', function(t) 
 
         let tbar             = view.down('toolbar'),
             DEFAULTPREVENTED = 0,
-            listener         = tbar.managedListeners[6],
+            listener         = tbar.managedListeners[4],
             preventDefault   = function() {DEFAULTPREVENTED++;},
             evt              = {preventDefault : preventDefault};
 

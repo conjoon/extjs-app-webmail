@@ -34,7 +34,7 @@ describe('conjoon.cn_mail.view.mail.inbox.InboxViewControllerTest', function(t) 
                 viewModel : {
                     type : 'cn_mail-mailinboxviewmodel',
                     stores : {
-                        'cn_mail-mailfoldertreestore' : {
+                        'cn_mail_mailfoldertreestore' : {
                             type : 'cn_mail-mailfoldertreestore',
                             autoLoad : true
                         }
