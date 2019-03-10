@@ -4,6 +4,8 @@
      */
     "name": "app-cn_mail",
 
+    "coon-js" : {"packageController" : true},
+
     /**
      * Alternate names for this package.
      *
