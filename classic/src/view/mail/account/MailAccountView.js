@@ -30,6 +30,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
     extend : 'Ext.Panel',
 
     requires : [
+        "Ext.form.FieldSet",
         "conjoon.cn_mail.view.mail.account.MailAccountViewModel",
         "conjoon.cn_mail.view.mail.account.MailAccountViewController"
     ],

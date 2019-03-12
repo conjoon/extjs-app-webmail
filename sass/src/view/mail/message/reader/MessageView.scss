@@ -1,0 +1,118 @@
+/**
+ * conjoon
+ * (c) 2007-2018 conjoon.org
+ * licensing@conjoon.org
+ *
+ * theme-cn_default
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.cn_mail-mailmessagereadermessageview {
+
+    background-color : $lightest-color;
+
+    .messageIndicator {
+
+        .icon {
+            color         : lighten($base-color, 30%);
+            font-size     : 96px;
+            margin-bottom : 12px;
+        }
+
+        position   : relative;
+        text-align : center;
+        font-size  : 14px;
+        top        : 50%;
+        transform  : translateY(-50%);
+    }
+
+    .cn_mail-header {
+        border-bottom : 1px solid $mail-border-color;
+
+        .sender-img {
+
+            margin-left : 10px;
+
+            &.x-fa::before {
+                color     : lighten($color, 70%);
+                font-size : 86px;
+            }
+        }
+
+
+        .message-subject {
+
+            div {
+                text-overflow : ellipsis;
+                white-space   : nowrap;
+                overflow      : hidden;
+            }
+
+            line-height : 1.7em;
+            padding : 0px;
+
+            .fa-paperclip {
+                padding : 0 5px 0 0;
+            }
+
+            .draft {
+                padding : 0 5px 0 0;
+                color   : $cn-draft-color;
+            }
+
+            .from {
+                font-size : 16px;
+            }
+
+            .subject {
+                font-size     : 22px;
+                max-width     : 95%;
+                padding       : 4px 0 2px 0;
+            }
+        }
+
+    }
+
+    .cn_mail-body {
+        padding     : 8px 0px 0px 8px;
+    }
+
+    .cn_mail-mailmessagereadermessageviewiframe {
+        position:initial;
+    }
+
+    .cn_mail-top-toolbar {
+
+        background-color: $lightest-color;
+
+        .x-btn-inner-default-toolbar-small {
+            color: $color;
+        }
+
+        a:first-child {
+            left: 2px !important;
+        }
+    }
+
+
+    .cn_mail-action-button {
+        .mail-compose-save-button, .mail-compose-save-button .x-frame-mc{
+        }
+        .mail-compose-send-button, .mail-compose-send-button .x-frame-mc{
+        }
+    }
+
+}

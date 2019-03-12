@@ -46,6 +46,45 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
 
     alias : 'widget.cn_mail-mailfoldertreecolumn',
 
+
+    cellTpl: [
+        '<tpl for="lines">',
+        '<div class="{parent.childCls} {parent.elbowCls}-img ',
+        '{parent.elbowCls}-<tpl if=".">line<tpl else>empty</tpl>" role="presentation"></div>',
+        '</tpl>',
+
+        '<tpl if="glyph">',
+        '<span class="{baseIconCls}" ',
+        '<tpl if="glyphFontFamily">',
+        'style="font-family:{glyphFontFamily}"',
+        '</tpl>',
+        '>{glyph}</span>',
+        '<tpl else>',
+        '<tpl if="icon">',
+        '<img src="{blankUrl}"',
+        '<tpl else>',
+        '<div',
+        '</tpl>',
+        ' role="presentation" class="{childCls} {baseIconCls} {customIconCls} ',
+        '{baseIconCls}-<tpl if="leaf">leaf<tpl else><tpl if="expanded">parent-expanded<tpl else>parent</tpl></tpl> {iconCls}" ',
+        '<tpl if="icon">style="background-image:url({icon})"/>' +
+        '<tpl else>' +
+        '></div>' +
+        '</tpl>',
+        '</tpl>',
+        '<tpl if="href">',
+        '<a href="{href}" role="link" target="{hrefTarget}" class="{textCls} {childCls}">{value}</a>',
+        '<tpl else>',
+        '<span class="{textCls} {childCls}">{value}</span>',
+        '</tpl>',
+
+        '<div class="{childCls} {elbowCls}-img {elbowCls}',
+        '<tpl if="isLast">-end</tpl>' +
+        '<tpl if="expandable">-plus {expanderCls}</tpl>" role="presentation"></div>',
+
+    ],
+
+
     /**
      * @inheritdoc
      *
@@ -53,13 +92,29 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
      */
     initTemplateRendererData : function(value, metaData, record, rowIdx, colIdx, store, view) {
 
-        var me = this,
-            ret;
+        const me   = this,
+            type = record.get('cn_folderType');
 
-        record.set('iconCls', me.getIconClsForMailFolderType(record.get('cn_folderType')));
+        let ret;
 
-        return Ext.tree.Column.prototype.initTemplateRendererData.apply(me, arguments);
+        ret = Ext.tree.Column.prototype.initTemplateRendererData.apply(this, arguments);
+
+        if (ret.lines.length === 1) {
+            record.set('iconCls', me.getIconClsForMailFolderType(type));
+        } else {
+            record.set('iconCls', '');
+        }
+
+        if (ret.lines && ret.lines.length < 2) {
+            ret.lines = [];
+        } else {
+            ret.lines.pop();
+        }
+
+
+        return ret;
     },
+
 
     /**
      * Returns an iconCls to visually represent the specified folder type.

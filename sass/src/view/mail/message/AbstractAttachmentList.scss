@@ -1,0 +1,144 @@
+/**
+ * conjoon
+ * (c) 2007-2017 conjoon.org
+ * licensing@conjoon.org
+ *
+ * theme-cn_default
+ * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.cn_mail-attachment-list {
+
+    .attachment {
+
+        &.x-view-item-focused {
+            outline : 1px solid $mail-attachment-border-color!important;
+        }
+
+        &.over {
+            div.actioncont {
+                top        : 0px;
+                transition : all 0.5s ease-in-out;
+            }
+        }
+
+        &.preview {
+
+            background-repeat   : no-repeat;
+            background-position : center;
+            background-size     : contain;
+
+            div.imagecont {
+                span.mimetype {
+                    display : none;
+                }
+            }
+
+        }
+
+        border-radius    : 6px;
+        background-color : $lightest-color;
+
+        position : relative;
+        overflow : hidden;
+        border   : 1px solid $mail-attachment-border-color;
+        display  : block;
+        width    : 180px;
+        height   : 120px;
+        margin   : 0 0 10px 10px;
+        float    : left;
+
+        div.imagecont {
+            height     : 85px;
+            text-align : center;
+
+            span.mimetype {
+                color       : $mail-attachment-icon-color;
+                font-size   : 5em;
+                line-height : 88px;
+            }
+        }
+
+        div.actioncont {
+            color            : #fff;
+            background-color : rgba(0, 0, 0, 0.6);
+            border-top       : none;
+            width            : 178px;
+            border-radius    : 6px;
+            height           : 120px;
+            position         : absolute;
+            transition       : all 0.5s ease-in-out;
+            top              : 89px;
+
+            div.attachmenticon {
+                float       : left;
+                height      : 34px;
+                width       : 34px;
+                text-align  : center;
+                line-height : 34px
+            }
+
+            div.linkcont {
+                overflow : hidden;
+
+                div.filename {
+                    cursor       : default;
+                    max-height   : 4.4em;
+                    overflow     : hidden;
+                    font-size    : 12px;
+                    font-weight  : bold;
+                    white-space  : normal;
+                    word-wrap    : break-word;
+                    margin-top   : 8px;
+                    margin-right : 8px;
+                }
+
+                div.filesize {
+                    cursor     : default;
+                    font-size  : 11px;
+                    margin-top : 4px;
+                    color      : #fff;
+                }
+
+                div.attachmentaction {
+                    margin-top : 3px;
+
+
+                    a.downloadbutton,
+                    a.removebutton {
+                        text-decoration  : none;
+                        cursor           : pointer;
+                        display          : block;
+                        height           : 24px;
+                        width            : 24px;
+                        color            : #fff;
+                        background-color : $mail-attachment-dload-button-color;
+                        float            : left;
+                        line-height      : 24px;
+                        text-align       : center;
+                        border-radius    : 4px;
+                        margin-right     :4px;
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    padding : 12px 4px 0px 12px;
+    /*border-left: 1px solid $mail-border-color;*/
+}

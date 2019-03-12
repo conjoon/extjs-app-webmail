@@ -49,14 +49,31 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
     },
 
 
-    /**
-     * Implementations should be overridden in theme packages.
-     *
-     * @return {string}
-     */
     getDefaultCss : function() {
 
-        return "<style type=\"text/css\"></style>";
+        return ["<style type=\"text/css\">",
+            " html, body {",
+            " height:-moz-max-content;",
+            " width:-moz-max-content;",
+            " height:max-content;",
+            " width:max-content;",
+            "margin:0px;",
+            "padding:0px;",
+            "}",
+            "body {",
+            "text-align:justify;",
+            "color: rgb(64, 64, 64);",
+            " font-family: \"Open Sans\", \"Helvetica Neue\", helvetica, arial, verdana, sans-serif;",
+            "font-size: 14px;",
+            "font-weight: 400;",
+            "line-height: 22.4px;",
+            " }",
+            "blockquote {",
+            "margin-left:4px;",
+            "padding-left:10px;",
+            "border-left:4px solid #bee9fc;",
+            "}",
+            "</style>"].join('');
     }
 
 

@@ -1,0 +1,138 @@
+/**
+ * conjoon
+ * (c) 2007-2017 conjoon.org
+ * licensing@conjoon.org
+ *
+ * theme-cn_default
+ * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ *
+ * This program is free software :  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http : //www.gnu.org/licenses/>.
+ */
+
+.cn_mail-mailmessageeditor {
+
+    .x-tagfield {
+        .x-tagfield-input {
+            width  :  280px;
+        }
+        .x-tagfield-item-text {
+            &.x-fa {
+                font-size : inherit;
+                &.cc:before {
+                    content       :  "\f0c5";
+                    padding-right : 4px;
+                    color         : darken($lightest-color, 30%);
+                }
+                &.bcc:before {
+                    content       :  "\f070";
+                    padding-right : 4px;
+                    color         : darken($lightest-color, 30%);
+                }
+            }
+        }
+
+        .x-tagfield-item-selected {
+            .x-tagfield-item-text {
+                &.x-fa {
+                    &.cc:before {
+                        color : $lightest-color;
+                    }
+                    &.bcc:before {
+                        color : $lightest-color;
+                    }
+                }
+            }
+        }
+    }
+
+    .subjectField {
+        .x-form-text-default {
+            /*  font-weight : bold;*/
+        }
+    }
+
+    .x-btn.x-btn-pressed.x-btn-plain-toolbar-small {
+        border-color     :  #d2d2d2;
+        background-image :  none;
+        background-color :  #e2e2e2;
+    }
+
+    .x-btn-over.x-btn-plain-toolbar-small {
+        border-color     :  #dbdbdb;
+        background-image :  none;
+        background-color :  #ececec;
+    }
+
+    .cn_mail-mailmessageeditoraddressfield {
+        .x-tagfield-item {
+            border-radius : 4px;
+        }
+        .x-form-empty-field-default + .x-placeholder-label-default {
+            color : $placeholder-color;
+        }
+    }
+
+    .x-toolbar-footer {
+        background-color : $lightest-color;
+    }
+
+    .showCcBccButton {
+        border-left : none;
+    }
+
+    .lastSavedDateField {
+        .x-form-display-field {
+            margin-top:0px;
+            padding-top:8px;
+            color:#a5a5a5;
+        }
+    }
+
+    .accountCombo {
+        .x-form-item-label-default {
+            color: #919191;
+        }
+        .x-form-trigger-wrap {
+            border: none;
+        }
+        input {
+            color : $base-color;
+            cursor: pointer;
+        }
+    }
+
+
+    .attachmentlist-wrap {
+        border         : 4px dashed lighten($base-color, 25%);
+        border-radius  : 20px;
+
+        &.hover {
+            background-color : lighten($base-color, 28%);
+            border-color     : $lightest-color;
+            .dropzone-text {
+                color : $lightest-color;
+            }
+        }
+
+        .dropzone-text {
+            position    : absolute;
+            margin      : 10px;
+            margin-top  : 20px;
+            line-height : 1.2em;
+            font-size   : 2em;
+            color       : lighten($base-color, 28%);
+            text-align  : center;
+        }
+    }
+}

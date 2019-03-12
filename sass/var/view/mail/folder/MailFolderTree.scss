@@ -1,0 +1,36 @@
+/**
+ * conjoon
+ * (c) 2007-2019 conjoon.org
+ * licensing@conjoon.org
+ *
+ * theme-cn_default
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+$default-tree-node-color : #858585;
+
+$cn-inbox-node-color : #35BAF6;
+$cn-sent-node-color  : #f0b6fc;
+$cn-junk-node-color  : #8e98fa;
+$cn-draft-node-color : $cn-draft-color ;
+$cn-trash-node-color : #ffca58;
+
+
+$cn-inbox-node-light-color : lighten($cn-inbox-node-color, 35%);
+$cn-sent-node-light-color  : lighten($cn-sent-node-color, 10%);
+$cn-junk-node-light-color  : lighten($cn-junk-node-color, 17%);
+$cn-draft-node-light-color : lighten($cn-draft-node-color, 35%);
+$cn-trash-node-light-color : lighten($cn-trash-node-color, 27%);

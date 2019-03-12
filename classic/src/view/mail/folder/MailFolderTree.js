@@ -44,6 +44,48 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
 
     hideHeaders : true,
 
+    viewConfig: {
+        outerRowTpl: [
+            '<table id="{rowId}" role="presentation" ',
+            'data-boundView="{view.id}" ',
+            'data-recordId="{record.internalId}" ',
+            'data-recordIndex="{recordIndex}" ',
+            'class="{[values.itemClasses.join(" ")]} {[this.getOuterRowClass(values.record, values.view.dataSource)]}" cellpadding="0" cellspacing="0" style="{itemStyle};width:0;">',
+
+            // Do NOT emit a <TBODY> tag in case the nextTpl has to emit a <COLGROUP> column sizer element.
+            // Browser will create a tbody tag when it encounters the first <TR>
+            '{%',
+            'this.nextTpl.applyOut(values, out, parent)',
+            '%}',
+            '</table>',
+            {
+                getOuterRowClass : function(record, store) {
+
+                    let type  = record.get('cn_folderType').toLowerCase(),
+                        cls   = 'cn_' + type,
+                        pn    = record.parentNode,
+                        root  = store.getRoot(),
+                        isSub = pn &&
+                            pn !== root &&
+                            pn.parentNode !== root;
+
+                    if (!isSub && type !== "account") {
+                        cls += ' cn_folder';
+                    }
+
+                    if (type === "account" && !record.previousSibling) {
+                        cls += ' first';
+                    } else if (isSub) {
+                        cls += ' cn_subfolder';
+                    }
+
+                    return cls;
+                },
+                priority: 9999
+            }
+        ]
+    },
+
 
     columns : [{
         xtype     : 'cn_mail-mailfoldertreecolumn',

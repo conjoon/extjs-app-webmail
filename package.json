@@ -1,123 +1,60 @@
 {
-    /**
-     * The name of the package.
-     */
+
     "name": "app-cn_mail",
 
-    "coon-js" : {"packageController" : true},
+    "sencha": {
+        "coon-js" : {"packageController" : true},
+        "namespace": "conjoon.cn_mail",
+        "type": "code",
+        "toolkit": "classic",
+        "creator": "conjoon Open Source Project",
+        "summary": "Basic UI providing email client functionality.",
+        "detailedDescription": "This package contains an email client to be used with the conjoon project. It heavily relies on the functionality of the legacy webmail client, here updated for ExtJS 6.*. Requires packages lib-cn_comp, ux.",
+        "version": "1.0.0",
+        "compatVersion": "1.0.0",
+        "format": "1",
+        "slicer": {
+            "js": [
+                {
+                    "path": "${package.dir}/sass/example/custom.js",
+                    "isWidgetManifest": true
+                }
+            ]
+        },
+        "output": {
+            "base" : "${package.dir}/build",
+            "js" : {
+                "version" : "ES6"
+            }
+        },
+        "compressor": {
+            "polyfills": "none"
+        },
+        "local": true,
+        "theme": "theme-cn_default",
+        "sass" : {
+            "namespace": "conjoon.cn_mail",
+            "etc": [
+                "${package.dir}/sass/etc/all.scss"
+            ],
 
-    /**
-     * Alternate names for this package.
-     *
-     *    "alternateName": [],
-     */
+            "var": [
+                "${package.dir}/sass/var/"
+            ],
 
-    /**
-     * The namespace of this package.
-     *
-     * As a general rule, all classes that belong to this package should be under this namespace
-     * if multiple namespaces are part of this package, set this to "".
-     */
-    "namespace": "conjoon.cn_mail",
-
-    /**
-     * The package type.
-     *
-     * Sencha Cmd understands the following types of packages:
-     *  - code : An arbitrary package of code for use by applications or other packages.
-     *  - theme : A package to be used as an application’s theme.
-     *  - locale : A package containing localization strings or locale-specific code.
-     *  - template : A package containing one or more templates.
-     */
-    "type": "code",
-
-    /**
-     * "sencha package build" will not work if either "toolkit" is omitted or
-     * if "builds" is not specified. When adding the modern toolkit later on,
-     * make sure to adjust the output directory.
-     */
-    "builds": {
-        "classic": {
-            "toolkit": "classic"
-        }
-    },
-
-    /**
-     * The author of the package.
-     *
-     * Required only if you are distributing this package through a Sencha Cmd repository,
-     * in which case it should match the name you assign to your local package repository.
-     */
-    "creator": "conjoon Open Source Project",
-
-    /**
-     * A summarized description of this package.
-     */
-    "summary": "Basic UI providing email client functionality.",
-
-    /**
-     * A detailed description of this package.
-     */
-    "detailedDescription": "This package contains an email client to be used with the conjoon project. It heavily relies on the functionality of the legacy webmail client, here updated for ExtJS 6.*. Requires packages lib-cn_comp, ux.",
-
-    /**
-     * The package version.
-     *
-     * Typically, changes to the package should come along with changes to the version.
-     * This number should be in this format: d+(.d+)*
-     */
-    "version": "0.0.1",
-
-    /**
-     * The version that users can transparently update from without requiring code changes.
-     *
-     * In addition the version property, packages can also indicate the degree to which
-     * they are backward compatible using the compatVersion property.
-     */
-    "compatVersion": "0.0.1",
-
-    /**
-     * Spec. version of this package.json file.
-     * This is set automatically by Sencha Cmd when first generating this file
-     */
-    "format": "1",
-
-    /**
-     * Controls the output directory.
-     */
-    "output": "${package.dir}/build",
-
-    /**
-     * Indicates whether this is a locally developed package or downloaded form a repository.
-     * Defaults to true on newly generated packages, should not be changed.
-     */
-    "local": true,
-
-    /**
-     * This is the comma-separated list of folders where classes reside. These
-     * classes must be explicitly required to be included in the build.
-     */
-    "classpath": [
-        "${package.dir}/src",
-        "${package.dir}/${toolkit.name}/src"
-    ],
-
-    /**
-     * Comma-separated string with the paths of directories or files to search. Any classes
-     * declared in these locations will be automatically required and included in the build.
-     * If any file defines an Ext JS override (using Ext.define with an "override" property),
-     * that override will in fact only be included in the build if the target class specified
-     * in the "override" property is also included.
-     */
-    "overrides": [
-        "${package.dir}/overrides",
-        "${package.dir}/${toolkit.name}/overrides"
-    ],
-
-    "framework": "ext",
-
-    "requires": [
-        "ux",
-        "lib-cn_comp"
-    ]
+            "src": [
+                "${package.dir}/sass/src/"
+            ]
+        },
+        "example": null,
+        "classpath": [
+            "${package.dir}/src",
+            "${package.dir}/${toolkit.name}/src"
+        ],
+        "overrides": null,
+        "framework": "ext",
+        "requires": [
+            "lib-cn_comp"
+        ]
+    }
 }
