@@ -214,10 +214,18 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
         }
 
         me.getViewModel().set('messageViewHidden', false);
+        me.getViewModel().notify()
+
+        readingPane.splitter.destroy();
+        readingPane.splitter          = null;
+        readingPane.collapseDirection = collapseDir;
 
         panelBody.getLayout().setVertical(position !== 'right');
+        panelBody.getLayout().insertSplitter(
+            readingPane, 1, false, {collapseTarget : 'next'}
+        );
+        readingPane.splitter.setOrientation(orientation);
 
-        panelBody.updateLayout();
 
         if (position === 'right') {
             gridContainer.setMargin('0 0 5 0');
