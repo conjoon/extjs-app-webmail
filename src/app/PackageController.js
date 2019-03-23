@@ -139,7 +139,10 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
             },
             before     : 'onBeforePackageRoute'
         },
-        'cn_mail/home' : 'onHomeTabRoute'
+        'cn_mail/home' : {
+            action : 'onHomeTabRoute',
+            before : 'onBeforePackageRoute'
+        }
     },
 
     control : {

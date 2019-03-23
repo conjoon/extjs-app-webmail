@@ -1575,5 +1575,59 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
+    t.it("Route configs - app-cn_mail#111", function(t) {
+        packageCtrl = Ext.create('conjoon.cn_mail.app.PackageController');
+
+        let routes = packageCtrl.config.routes,
+            exp = {
+            'cn_mail/message/compose/:id'  : {
+                action     : 'onComposeMessageRoute',
+                before : 'onBeforePackageRoute'
+            },
+            'cn_mail/message/compose/mailto%3A:id'  : {
+                action     : 'onComposeMailtoMessageRoute',
+                before : 'onBeforePackageRoute'
+            },
+            'cn_mail/message/edit/:mailAccountId/:mailFolderId/:id' : {
+                action     : 'onEditMessageRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/message/replyTo/:mailAccountId/:mailFolderId/:id' : {
+                action     : 'onReplyToRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/message/replyAll/:mailAccountId/:mailFolderId/:id' : {
+                action     : 'onReplyAllRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/message/forward/:mailAccountId/:mailFolderId/:id' : {
+                action     : 'onForwardRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/message/read/:mailAccountId/:mailFolderId/:id' : {
+                action     : 'onReadMessageRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/folder/:mailAccountId/:id'  : {
+                action     : 'onMailFolderRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/account/:mailAccountId'  : {
+                action     : 'onMailAccountRoute',
+                before     : 'onBeforePackageRoute'
+            },
+            'cn_mail/home' : {
+                action : 'onHomeTabRoute',
+                before : 'onBeforePackageRoute'
+            }
+        };
+
+        for (let i in routes) {
+            t.expect(exp[i]).toBeDefined();
+            t.expect(exp[i].before).toBe(routes[i].before);
+            t.expect(exp[i].action).toBe(routes[i].action);
+        }
+
+    });
 
 });});
