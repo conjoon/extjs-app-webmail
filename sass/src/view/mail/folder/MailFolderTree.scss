@@ -53,7 +53,15 @@
 
     .cn_account {
         .x-tree-icon {
-            display:none;
+            background:none;
+        }
+        .x-grid-tree-loading {
+            .x-tree-icon {
+                animation : fa-spin 2s infinite linear;
+                &:before {
+                    content: "\f110";
+                }
+            }
         }
     }
 
