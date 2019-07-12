@@ -26,8 +26,12 @@ Tests are written with [Siesta](https://bryntum.com/siesta)
 
 When using this package without a backend implementation, make sure your app uses the [dev-cn_mailsim](https://github.com/conjoon/dev-cn_mailsim) package  of the [conjoon](https://github.com/conjoon) project.
 
+# Available API Implementations
+A simplistic RESTful PHP backend that can be used with single sign-ons to existing IMAP Servers can be found at [php-cn_imapuser](https://github.com/conjoon/php-cn_imapuser).
 
-# Required API
+## Required API
+Any developer striving for an own backend implementation should make sure to provide the following services:
+
 URL          | Method       | Parameters  | Success Status / Response | Failure Status / Response | Description 
 ------------ | -------------|-------------|---------------------------|---------------------------|-----------------------------
 ```cn_mail/MailAccounts``` | **GET** | - | Status 200 ```{success :  true, data : [{...}, {...}, ...] ``` | Status * ```{success : false}``` | Returns a list of all available Email-Accounts according to the model found in ```conjoon.cn_mail.model.mail.account.MailAccount```. Failed attempts to retrieve this list should return appropriate http Status-Code.
