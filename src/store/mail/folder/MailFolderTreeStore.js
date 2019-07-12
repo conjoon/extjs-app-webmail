@@ -64,7 +64,7 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
     root: {
         // set initially to false so no ugly fragments will blink when account node
         // was loaded and load mask is hidden / shown when mail folder loads.
-        expanded : false,
+        expanded : true,
         data     : []
     },
 
@@ -97,7 +97,7 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
         const me   = this,
               root = me.getRoot(),
               cb   = function() {
-                  node.expand(false, function() {node.collapse()});
+                  node.expand(false, function() {node.collapse();node.expand()});
               };
 
         if (rootNode !== root) {

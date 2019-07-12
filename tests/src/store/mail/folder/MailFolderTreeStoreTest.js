@@ -52,7 +52,7 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
             // proxy
             t.expect(store.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
 
-            t.expect(store.getRoot().isExpanded()).toBe(false);
+            t.expect(store.getRoot().isExpanded()).toBe(true);
 
             t.expect(store.getRoot().isLoading()).toBe(false);
 
@@ -73,9 +73,9 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
 
                 t.expect(store.getRoot().childNodes[1].childNodes.length).toBeGreaterThan(1);
 
-                t.expect(store.getRoot().childNodes[0].isExpanded()).toBe(false);
+                t.expect(store.getRoot().childNodes[0].isExpanded()).toBe(true);
 
-                t.expect(store.getRoot().childNodes[1].isExpanded()).toBe(false);
+                t.expect(store.getRoot().childNodes[1].isExpanded()).toBe(true);
             });
 
 
