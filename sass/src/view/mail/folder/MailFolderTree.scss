@@ -87,6 +87,13 @@
 
         &.cn_subfolder {
 
+            &.cn_generic {
+                .badge-unreadcount {
+                    background-color:$cn-generic-node-color;
+                }
+                background-color:lighten($cn-generic-node-light-color, 3%);
+            }
+
             &.cn_inbox {
                 .badge-unreadcount {
                     background-color:$cn-inbox-node-color;
@@ -131,7 +138,7 @@
 
             .x-tree-icon {
                 background-color : $default-tree-node-color;
-               color:white;
+                color:white;
                 width : 42px;
                 height: 42px;
                 font-size: 22px;
@@ -157,6 +164,15 @@
                 .badge-unreadcount,
                 .x-tree-icon {
                     background-color: $cn-inbox-node-color;
+                }
+            }
+            &.cn_generic {
+                .badge-unreadcount {
+                    background-color: $cn-generic-node-color;
+                }
+                .x-tree-icon {
+                    background-color: white;
+                    color: $cn-generic-node-color;
                 }
             }
             &.cn_sent {
@@ -193,7 +209,9 @@
             &.cn_inbox {
                 background-color:$cn-inbox-node-light-color;
             }
-
+            &.cn_generic {
+                background-color:$cn-generic-node-light-color;
+            }
             &.cn_sent {
                 background-color:$cn-sent-node-light-color;
             }

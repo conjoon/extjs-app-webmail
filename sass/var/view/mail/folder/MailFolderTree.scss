@@ -30,10 +30,11 @@ $cn-sent-node-color  : #f0b6fc;
 $cn-junk-node-color  : #8e98fa;
 $cn-draft-node-color : $cn-draft-color ;
 $cn-trash-node-color : #ffca58;
-
+$cn-generic-node-color : $default-tree-node-color;
 
 $cn-inbox-node-light-color : lighten($cn-inbox-node-color, 35%);
 $cn-sent-node-light-color  : lighten($cn-sent-node-color, 10%);
 $cn-junk-node-light-color  : lighten($cn-junk-node-color, 17%);
 $cn-draft-node-light-color : lighten($cn-draft-node-color, 35%);
 $cn-trash-node-light-color : lighten($cn-trash-node-color, 27%);
+$cn-generic-node-light-color : lighten($cn-generic-node-color, 27%);
