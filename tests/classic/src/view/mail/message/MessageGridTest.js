@@ -69,6 +69,9 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             t.expect(grid instanceof Ext.grid.Panel).toBeTruthy();
 
+            t.expect(grid.tools.refresh).toBeDefined();
+            t.expect(grid.tools.refresh.getItemId()).toBe("cn_mail-mailmessagegrid-refresh");
+
             t.expect(grid.alias).toContain('widget.cn_mail-mailmessagegrid');
 
             let feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');

@@ -190,4 +190,87 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
     });
 
 
+    t.it("onMailMessageGridRefreshClick()", function(t) {
+
+        let panel = createMailDesktopView(),
+            ctrl  = panel.getController();
+
+        let CALLED = false,
+            ISAVAILABLE = true;
+
+        let tmp = ctrl.getView;
+
+        t.waitForMs(TIMEOUT, function() {
+
+            ctrl.getView = function() {
+                return {
+                    down : function() {
+                        return {
+                            getStore : function() {
+                                return ISAVAILABLE ? {
+                                    reload : function() {
+                                        CALLED = true;
+                                    }
+                                } : null;
+                            }
+                        }
+                    }
+                }
+            };
+
+            t.expect(CALLED).toBe(false);
+            ctrl.onMailMessageGridRefreshClick();
+            t.expect(CALLED).toBe(true);
+
+            CALLED = false;
+            ISAVAILABLE = false;
+
+            ctrl.onMailMessageGridRefreshClick();
+            t.expect(CALLED).toBe(false);
+
+            t.waitForMs(TIMEOUT, function() {
+
+                ctrl.getView = tmp;
+
+                panel.destroy();
+                panel = null;
+            });
+
+        });
+
+
+
+    });
+
+
+    t.it("onMailMessageGridRefreshClick() - click event observed", function(t) {
+
+        let panel     = createMailDesktopView(),
+            ctrl      = panel.getController();
+
+        t.isCalledOnce("onMailMessageGridRefreshClick", ctrl);
+
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, 3);
+
+            t.waitForMs(TIMEOUT, function() {
+
+                let el = panel.down("cn_mail-mailmessagegrid #cn_mail-mailmessagegrid-refresh");
+
+                t.click(el, function() {
+
+                    panel.destroy();
+                    panel = null;
+
+                });
+
+            });
+
+
+        });
+    });
+
+
+
 });})});});

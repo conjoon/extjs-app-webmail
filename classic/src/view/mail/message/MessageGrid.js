@@ -78,6 +78,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         pruneRemoved : false
     },
 
+    tools: [{
+        itemId : 'cn_mail-mailmessagegrid-refresh',
+        type   : 'refresh'
+    }],
+
     /**
      * @i18n
      */

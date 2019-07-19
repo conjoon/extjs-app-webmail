@@ -59,6 +59,9 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         'cn_mail-mailmessagegrid' : {
             'rowdblclick' : 'onMailMessageGridDoubleClick'
         },
+        'cn_mail-mailmessagegrid #cn_mail-mailmessagegrid-refresh' : {
+            'click' : 'onMailMessageGridRefreshClick'
+        },
         'cn_mail-mailmessageeditor' : {
             'cn_mail-mailmessagesavecomplete' : 'onMailMessageSaveComplete',
             'cn_mail-mailmessagesendcomplete' : 'onMailMessageSendComplete'
@@ -1260,7 +1263,25 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     computeIdForMessageViewMap : function(id, type) {
         return type + '-' + id;
+    },
+
+
+    /**
+     * Callback for the MessageGrid's "refresh"-tool click event.
+     *
+     */
+    onMailMessageGridRefreshClick : function() {
+        const me      = this,
+              view    = me.getView(),
+              msgGrid = view.down('cn_mail-mailmessagegrid'),
+              store   = msgGrid ? msgGrid.getStore(): null;
+
+        if (store) {
+            store.reload();
+        }
+
     }
+
 
 
 
