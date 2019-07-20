@@ -81,6 +81,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     data : {
 
         /**
+         * Should be set to true whenever a loaded message contains remote images,
+         * otherwise to false.
+         */
+        hasImages : false,
+
+        /**
          * Should be set to true whenever the MessageViewIframe's srcdoc is fully loaded,
          * indicated by it's load event.
          */

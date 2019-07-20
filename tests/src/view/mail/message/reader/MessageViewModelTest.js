@@ -341,6 +341,13 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
     });
 
 
+    t.it("data.hasImages", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        t.expect(viewModel.get('hasImages')).toBe(false);
+    });
+
+
     t.it("formula.getIndicatorText", function(t) {
 
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');

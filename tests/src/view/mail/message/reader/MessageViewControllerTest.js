@@ -25,6 +25,30 @@
 
 describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', function(t) {
 
+    let controller;
+
+    if (!Ext.manifest) {
+        Ext.manifest = {};
+    }
+
+    if (!Ext.manifest.resources) {
+        Ext.manifest.resources = {};
+    }
+
+    const createController = function() {
+        return Ext.create(
+            'conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
+        });
+    };
+
+    t.afterEach(function() {
+
+        if (controller) {
+            controller.destroy();
+            controller = null;
+        }
+
+    });
 
     t.beforeEach(function() {
 
@@ -36,9 +60,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', f
 
     t.it("Should make sure setting up controller works", function(t) {
 
-        var controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
-            });
+        controller = createController();
 
         t.isInstanceOf(controller, 'Ext.app.ViewController');
     });
@@ -76,9 +98,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', f
             elements.push(el);
         }
 
-        let controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
-            });
+        controller = createController();
 
         controller.sanitizeLinks(elements);
 
@@ -95,5 +115,260 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', f
 
     });
 
+
+    t.it("onViewResize()", function(t) {
+
+        controller = createController();
+
+        t.expect(controller.getControl()["cn_mail-mailmessagereadermessageview"]).toEqual({
+            resize : 'onViewResize'
+        });
+
+        let CALLED = 0;
+
+        controller.getIframe = function() {
+            return {
+                getBody : function() {
+                    return {};
+                },
+                setSize : function() {
+                    CALLED++;
+                }
+            }
+        };
+
+        t.expect(CALLED).toBe(0);
+        controller.onViewResize();
+        t.expect(CALLED).toBe(2);
+
+    });
+
+
+    t.it("onRemoteImageWarningAfterrender", function(t) {
+
+        controller = createController();
+
+        t.expect(controller.getControl()['#remoteImageWarning']).toEqual({
+            afterrender : 'onRemoteImageWarningAfterrender'
+        });
+
+        let ARGS = [];
+
+        let comp = {
+            getEl : function() {
+                return {
+                    on : function(name, fn, scope) {
+                        ARGS = arguments;
+                    }
+                }
+            }
+        }
+
+        controller.onRemoteImageWarningAfterrender(comp);
+
+        t.expect(ARGS.length).toBe(3);
+
+        t.expect(ARGS[0]).toBe('click');
+        t.expect(ARGS[1]).toBe(controller.reloadWithImages);
+        t.expect(ARGS[2]).toBe(controller);
+    });
+
+
+    t.it("iframe related events", function(t) {
+
+        controller = createController();
+
+        t.expect(controller.getControl()['cn_mail-mailmessagereadermessageviewiframe']).toEqual({
+            load: 'onIframeLoad',
+            beforesrcdoc : 'onBeforeSrcDoc'
+        });
+
+    });
+
+
+    t.it("onBeforeSrcDoc()", function(t) {
+
+        controller = createController();
+
+        let KEY, VALUE;
+
+        controller.getView = function() {
+            return {
+                getViewModel : function() {
+                    return {
+
+                        set : function(key, value) {
+                            KEY = key;
+                            VALUE = value;
+                        }
+
+                    }
+                }
+            }
+        };
+
+        t.expect(KEY).not.toBe("iframeLoaded");
+        t.expect(VALUE).not.toBe(false);
+        controller.onBeforeSrcDoc({}, "foo");
+        t.expect(KEY).toBe("iframeLoaded");
+        t.expect(VALUE).toBe(false);
+    });
+
+
+    t.it("onIframeLoad()", function(t) {
+
+        controller = createController();
+
+        let tmp = Ext.getScrollbarSize;
+
+        Ext.getScrollbarSize = function() {
+            return {width : 0, height : 0};
+        };
+
+        let VM = {};
+
+        let IMAGESALLOWED;
+
+        let TAGS = {
+            a : [],
+            img : []
+        };
+
+        let X, Y;
+        let CNT = {
+            getHeight  : function() {return 1000;},
+            getWidth   : function() {return 1000;},
+            setScrollX : function(v) {X=v;},
+            setScrollY : function(v) {Y=v;}
+        };
+
+        let WIDTH, HEIGHT;
+        let IFRAME = {
+            setSize : function(width, height) {
+                WIDTH = width;
+                HEIGHT = height;
+            },
+            getBody : function() {
+                return {
+                    scrollWidth : 1001,
+                    scrollHeight : 1001
+                };
+            },
+            cn_iframeEl : {
+                dom : {
+                    contentWindow : {
+                        document : {
+                            getElementsByTagName : function(tag) {
+                                return TAGS[tag];
+                            }
+                        }
+                    }
+                }
+            },
+            getImagesAllowed : function(){
+                return IMAGESALLOWED;
+            }
+        };
+
+        controller.getView = function() {
+            return {
+                down : function(query) {
+                    if (query === '#msgBodyContainer') {
+                        return CNT;
+                    }
+                },
+                getViewModel : function() {
+                    return {
+                        set : function(key, value) {
+                            VM[key] = value;
+                        },
+                        notify : function() {}
+                    }
+                }
+            }
+        };
+
+        t.isCalledNTimes("sanitizeLinks", controller, 3);
+        t.isCalledNTimes("sanitizeImages", controller, 1);
+
+        IMAGESALLOWED = false;
+        TAGS["img"] = [{setAttribute : function(){}, style : {}}];
+
+        controller.onIframeLoad(IFRAME);
+
+        t.expect(VM["hasImages"]).toBe(true);
+        t.expect(VM["iframeLoaded"]).toBe(true);
+
+        IMAGESALLOWED = true;
+        TAGS["img"] = [];
+        controller.onIframeLoad(IFRAME);
+        t.expect(VM["hasImages"]).toBe(false);
+
+        t.expect(X).toBe(0);
+        t.expect(Y).toBe(0);
+
+        t.expect(WIDTH).toBe(1001);
+        t.expect(HEIGHT).toBe(1001);
+
+        IMAGESALLOWED = true;
+        TAGS["img"] = [{setAttribute : function(){}, style : {}}];
+        controller.onIframeLoad(IFRAME);
+        t.expect(VM["hasImages"]).toBe(true);
+
+
+        Ext.getScrollbarSize = tmp;
+    });
+
+
+    t.it("reloadWithImages()", function(t) {
+
+        controller = createController();
+
+        let VALUE, ALLOW;
+
+        controller.getIframe = function() {
+
+            return {
+                setSrcDoc : function(val, allow) {
+                    VALUE = val;
+                    ALLOW = allow;
+                }
+            }
+
+        };
+
+        controller.getViewModel = function() {
+            return {
+                get : function(key) {
+                    return key === "messageBody.textHtml" ? "foo" : null;
+                }
+            }
+        }
+
+        controller.reloadWithImages();
+
+        t.expect(VALUE).toBe("foo");
+        t.expect(ALLOW).toBe(true);
+
+    });
+
+
+    t.it("sanitizeImages", function(t) {
+
+        controller = createController();
+
+        let IMAGES = [
+            {setAttribute : function(attr, value){this[attr] = value;}, style : {}},
+            {setAttribute : function(attr, value){this[attr] = value;}, style : {}}
+        ];
+
+        controller.sanitizeImages(IMAGES);
+
+        t.expect(IMAGES[0].src).toBe("resources/app-cn_mail/img_block.png");
+        t.expect(IMAGES[1].src).toBe("resources/app-cn_mail/img_block.png");
+
+        t.expect(IMAGES[0].style.border).toBe("1px solid black");
+        t.expect(IMAGES[1].style.border).toBe("1px solid black");
+    });
 
 });

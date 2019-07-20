@@ -245,11 +245,26 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
            }]
         }]
     }, {
+        xtype: 'component',
+        hidden : true,
+        bind : {
+            hidden : '{!hasImages || cn_mail_iframe.imagesAllowed}',
+        },
+        itemId : 'remoteImageWarning',
+        autoEl: {
+            cls: 'cn_mail-reloadWithImages',
+            tag: 'div',
+            /**
+             * @i18n
+             */
+            html: 'Remote images are blocked in this message to protect your privacy. <span class="loadImg">Display Images</span>'
+        }
+    }, {
         flex   : 1,
         xtype  : 'box',
         hidden : false,
         bind : {
-            hidden : '{messageItem && messageBody}',
+            hidden : '{messageItem && messageBody && iframeLoaded}',
             data   : {
                 indicatorText : '{getIndicatorText}',
                 indicatorIcon : '{getIndicatorIcon}'
@@ -262,28 +277,30 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             '<div>{indicatorText}</div>',
             '</div>'
         ]
-    }, {
+    },  {
         xtype  : 'container',
+        hideMode : 'offsets',
         flex   : 1,
         cls   : 'cn_mail-body',
         hidden : true,
         bind   : {
-            hidden : '{!messageBody}'
+            hidden : '{!messageBody || !iframeLoaded}'
         },
         itemId     : 'msgBodyContainer',
         scrollable : true,
         layout : 'auto',
-
         items :[{
             xtype  : 'cn_mail-mailmessagereaderattachmentlist',
+
             hidden : true,
             bind : {
                 store  : '{attachmentStore}',
                 hidden : '{!messageItem.hasAttachments}'
             }
         }, {
-            cls   : 'cn_mail-mailmessagereadermessageviewiframe',
-            xtype : 'cn_mail-mailmessagereadermessageviewiframe',
+            reference : 'cn_mail_iframe',
+            cls       : 'cn_mail-mailmessagereadermessageviewiframe',
+            xtype     : 'cn_mail-mailmessagereadermessageviewiframe',
             scrolling : "no",
             sandbox : Ext.isGecko
                       ? "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation"

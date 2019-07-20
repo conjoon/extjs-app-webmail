@@ -29,6 +29,14 @@ t.requireOk('coon.core.util.Date', function() {
 
     const TIMEOUT = 1250;
 
+    if (!Ext.manifest) {
+        Ext.manifest = {};
+    }
+
+    if (!Ext.manifest.resources) {
+        Ext.manifest.resources = {};
+    }
+
     var view,
         viewConfig,
         testDate   = new Date(),
@@ -734,11 +742,79 @@ t.requireOk('coon.core.util.Date', function() {
                 });
 
             });
-
-
-
-
-
         });
 
-    });});});
+
+        t.it("Should show/hide remoteImageWarning", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let vm = view.getViewModel();
+
+            view.setMessageItem(createMessageItem());
+
+            t.waitForMs(500, function() {
+
+                // precondition
+                vm.set('hasImages', false);
+                vm.notify();
+
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
+
+                vm.set('hasImages', true);
+                vm.notify();
+
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(true);
+
+                vm.set('cn_mail_iframe.imagesAllowed', true);
+                vm.notify();
+
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
+
+            });
+        });
+
+
+        t.it("Should show/hide remoteImageWarning - click event", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            let vm = view.getViewModel();
+
+            view.setMessageItem(createMessageItem());
+
+
+            t.waitForMs(500, function() {
+
+                // precondition
+                vm.set('hasImages', true);
+                vm.notify();
+
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(true);
+
+                t.click(view.down('#remoteImageWarning'), function() {
+
+                    t.waitForMs(500, function() {
+                        t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
+                    });
+                });
+
+            });
+        });
+
+
+        t.it("messageview iframe / reference", function(t) {
+
+            view = Ext.create(
+                'conjoon.cn_mail.view.mail.message.reader.MessageView', viewConfig);
+
+            t.expect(view.down('cn_mail-mailmessagereadermessageviewiframe').getReference()).toBe('cn_mail_iframe');
+        });
+
+
+
+
+
+});});});

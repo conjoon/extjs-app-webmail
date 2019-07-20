@@ -90,11 +90,12 @@
     }
 
     .cn_mail-body {
-        padding     : 8px 0px 0px 8px;
+        padding     : 8px ;
     }
 
     .cn_mail-mailmessagereadermessageviewiframe {
-        position:initial;
+        height:100%;
+        width:100%;
     }
 
     .cn_mail-top-toolbar {
@@ -110,6 +111,28 @@
         }
     }
 
+    .cn_mail-reloadWithImages {
+        background-color: #FFB242;
+        height: 26px;
+        color: #FFE9C9;
+        padding: 5px;
+        padding-left: 8px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        cursor:pointer;
+
+        .loadImg {
+            text-decoration:underline;
+            font-weight:bold;
+        }
+
+        &:before {
+            font-family: FontAwesome;
+            content: "\f071";
+            margin-right: 6px;
+        }
+    }
 
     .cn_mail-action-button {
         .mail-compose-save-button, .mail-compose-save-button .x-frame-mc{
