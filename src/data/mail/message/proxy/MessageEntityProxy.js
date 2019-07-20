@@ -32,8 +32,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
     extend : 'Ext.data.proxy.Rest',
 
     requires : [
-         'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'
+        'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader',
+        'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
     ],
+
+    mixins : {
+        utilityMixin : 'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
+    },
+
 
     alias : 'proxy.cn_mail-mailmessageentityproxy',
 
@@ -100,15 +106,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
 
         if (action === 'read') {
             source = params;
+
             if (source.filter) {
-                let fl = Ext.decode(source.filter), np = {};
-                for (let i = 0, len = fl.length; i < len; i++) {
-                    np[fl[i].property] = fl[i].value;
-                }
-                source = Ext.apply(source, np);
+                me.purgeFilter(params, ["mailAccountId", "mailFolderId"]);
             } else if (rec && !source.id) {
                 source.id = rec.data.id;
             }
+
         } else {
 
             if (rec.phantom) {
@@ -137,8 +141,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             if (source.hasOwnProperty('id')) {
                 url += '/' + source.id;
             }
-
         }
+
+        if (params) {
+            delete params.mailFolderId;
+            delete params.mailAccountId;
+            delete params.id;
+            delete params.localId;
+        }
+
 
         request.setUrl(url);
 

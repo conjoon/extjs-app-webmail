@@ -44,6 +44,8 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
 
         t.expect(proxy.alias).toContain('proxy.cn_mail-mailmessageentityproxy');
 
+        t.expect(proxy.mixins.utilityMixin).toBe(conjoon.cn_mail.data.mail.message.proxy.UtilityMixin.prototype);
+
         t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
 
 
@@ -342,15 +344,24 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
             proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
                 entityName : 'MessageItem'
             }),
+            copyParams = function() {
+                return Ext.copy({}, params, 'mailAccountId,mailFolderId');
+            },
             request = Ext.create('Ext.data.Request', {
                 action : 'read',
-                params : params,
+                params : copyParams(),
                 operation : Ext.create('Ext.data.operation.Read', {
                     records : recs
                 }),
                 records : recs
             }),
-            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/c';
+            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/c',
+            keysUndefined = function() {
+                t.expect(request.getParams().mailFolderId).toBeUndefined();
+                t.expect(request.getParams().mailAccountId).toBeUndefined();
+                t.expect(request.getParams().id).toBeUndefined();
+                t.expect(request.getParams().localId).toBeUndefined();
+            };
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
@@ -360,20 +371,24 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         t.expect(request.getUrl()).toBe(targetUrl);
 
 
+        request.setParams(copyParams())
         targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/c';
         proxy.entityName = 'MessageDraft';
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams().target).toBe('MessageDraft');
         t.expect(request.getUrl()).toBe(targetUrl);
+        keysUndefined();
 
 
         targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/c';
         proxy.entityName = 'MessageBody';
+        request.setParams(copyParams())
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().target).toBe('MessageBody');
+        keysUndefined();
     });
 
 
@@ -400,14 +415,20 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
                 params : params,
                 operation : Ext.create('Ext.data.operation.Read'),
             }),
-            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/c';
+            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems';
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
-
 
         proxy.buildUrl(request);
 
         t.expect(request.getUrl()).toBe(targetUrl);
+
+        t.expect(request.getParams()).toEqual({
+            filter : "[{\"property\":\"id\",\"value\":\"c\"}]",
+            target : "MessageItem"
+        });
+
+
     });
 
 
