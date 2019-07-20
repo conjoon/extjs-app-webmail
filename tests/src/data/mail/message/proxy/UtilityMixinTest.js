@@ -35,6 +35,12 @@ describe('conjoon.cn_mail.view.mail.message.proxy.UtilityMixinTest', function(t)
         mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
 
         t.expect(params.filter).toBe("[{\"property\":\"foo\",\"value\":\"bar\"}]");
+
+        params = {filter:"[{\"property\":\"mailAccountId\",\"value\":1}]"};
+
+        mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
+
+        t.expect(params.filter).toBeUndefined();
     });
 
 
