@@ -32,18 +32,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.UtilityMixin', {
 
     /**
      * Looks up the values of keys in the  json-encoded source.filter property
-     * and removes them.
+     * and removes them while moving them into the source-object
      *
      * @example:
      *
      *   let mixin = Ext.create("conjoon.cn_mail.data.mail.message.proxy.UtilityMixin");
      *
-     *   let params = {filter:"[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"}
+     *   let params = {snafu:"a",filter:"[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"}
      *
      *   mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
      *
      *   // params is now:
-     *   // {filter:"[{\"property\":\"foo\",\"value\":\"bar\"}]"}
+     *   // {snafu:"a",mailAccountId:1,filter:"[{\"property\":\"foo\",\"value\":\"bar\"}]"}
      *
      * @param {Object} source
      * @param {Array} keys
@@ -55,8 +55,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.UtilityMixin', {
         for (let i = 0, len = fl.length; i < len; i++) {
            if (keys.indexOf(fl[i].property) === -1) {
                nfl.push(fl[i]);
+           } else {
+               np[fl[i].property] = fl[i].value;
            }
-           np[fl[i].property] = fl[i].value;
         }
         source = Ext.apply(source, np);
         if (!nfl.length) {

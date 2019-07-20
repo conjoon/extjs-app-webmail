@@ -30,17 +30,17 @@ describe('conjoon.cn_mail.view.mail.message.proxy.UtilityMixinTest', function(t)
 
         let mixin = Ext.create('conjoon.cn_mail.data.mail.message.proxy.UtilityMixin');
 
-        let params = {filter:"[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"};
+        let params = {snafu:"a",filter:"[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"};
 
         mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
 
-        t.expect(params.filter).toBe("[{\"property\":\"foo\",\"value\":\"bar\"}]");
+        t.expect(params).toEqual({snafu:"a",mailAccountId:1,filter:"[{\"property\":\"foo\",\"value\":\"bar\"}]"});
 
         params = {filter:"[{\"property\":\"mailAccountId\",\"value\":1}]"};
 
         mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
 
-        t.expect(params.filter).toBeUndefined();
+        t.expect(params).toEqual({mailAccountId:1});
     });
 
 
