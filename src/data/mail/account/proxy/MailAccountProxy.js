@@ -107,6 +107,11 @@ Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
             url += '/' + rec.getId();
         }
 
+        if (params) {
+            delete params.mailAccountId;
+        }
+
+
         request.setUrl(url);
 
         return me.callParent([request]);

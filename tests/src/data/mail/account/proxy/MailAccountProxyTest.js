@@ -58,9 +58,11 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
             }),
             targetUrl = '/MailAccounts';
 
+        t.expect(request.getParams().mailAccountId).not.toBeUndefined();
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().mailAccountId).toBeUndefined();
     });
 
 
@@ -76,9 +78,11 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
             }),
             targetUrl = '/MailAccounts/foo/MailFolders';
 
+        t.expect(request.getParams().mailAccountId).not.toBeUndefined();
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().mailAccountId).toBeUndefined();
     });
 
 
