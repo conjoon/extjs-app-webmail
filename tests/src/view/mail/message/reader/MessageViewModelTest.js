@@ -327,12 +327,27 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         });
 
 
+    t.it("data.isLoading", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        t.expect(viewModel.get('isLoading')).toBe(false);
+    });
+
+
+    t.it("data.iframeLoaded", function(t) {
+        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
+
+        t.expect(viewModel.get('iframeLoaded')).toBe(false);
+    });
+
+
     t.it("formula.getIndicatorText", function(t) {
 
         viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
 
         var MESSAGEBODY = false,
             MESSAGEITEM = false,
+            IFRAMELOADED = false,
             formulas    = viewModel.getFormulas(),
             get         = function(key) {
                 switch (key) {
@@ -340,6 +355,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                         return MESSAGEBODY;
                     case 'messageItem':
                         return MESSAGEITEM;
+                    case 'iframeLoaded':
+                        return IFRAMELOADED;
                 }
             }
 
@@ -347,6 +364,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         MESSAGEITEM = true;
         t.expect(formulas.getIndicatorText(get)).toContain('Loading');
         MESSAGEBODY = true;
+        t.expect(formulas.getIndicatorText(get)).toContain("Loading");
+        IFRAMELOADED = true;
         t.expect(formulas.getIndicatorText(get)).toBe("");
 
 
@@ -358,6 +377,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
         var MESSAGEBODY = false,
             MESSAGEITEM = false,
+            IFRAMELOADED = false,
             formulas    = viewModel.getFormulas(),
             get         = function(key) {
                 switch (key) {
@@ -365,6 +385,8 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
                         return MESSAGEBODY;
                     case 'messageItem':
                         return MESSAGEITEM;
+                    case 'iframeLoaded':
+                        return IFRAMELOADED;
                 }
             }
 
@@ -372,7 +394,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         MESSAGEITEM = true;
         t.expect(formulas.getIndicatorIcon(get)).toBeTruthy();
         MESSAGEBODY = true;
-        t.expect(formulas.getIndicatorText(get)).toBe("");
+        t.expect(formulas.getIndicatorIcon(get)).toBeTruthy();
+        IFRAMELOADED = true;
+        t.expect(formulas.getIndicatorIcon(get)).toBe("");
     });
 
 
@@ -385,13 +409,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             t.expect(viewModel.getStore('attachmentStore')).toBeDefined();
             t.expect(viewModel.getStore('attachmentStore').model.$className).toBe('conjoon.cn_mail.model.mail.message.ItemAttachment');
         });
-    });
-
-
-    t.it("data.isLoading", function(t) {
-        viewModel = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewModel');
-
-        t.expect(viewModel.get('isLoading')).toBe(false);
     });
 
 
@@ -634,7 +651,6 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         t.expect(viewModel.get('contextButtonsEnabled')).toBe(false);
 
     });
-
 
 
 })})});

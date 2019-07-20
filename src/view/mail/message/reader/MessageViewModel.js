@@ -81,6 +81,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     data : {
 
         /**
+         * Should be set to true whenever the MessageViewIframe's srcdoc is fully loaded,
+         * indicated by it's load event.
+         */
+        iframeLoaded : false,
+
+        /**
          * Should be set to true whenever a MessageItem is currently loaded
          * before assigning it to this vm's nessageItem property.
          */
@@ -201,7 +207,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
              */
             return !get('messageBody') && !get('messageItem')
                    ? 'Select a message for reading.'
-                   : get('messageItem') && !get('messageBody')
+                   : get('messageItem') && (!get('messageBody') || !get('iframeLoaded'))
                      ? 'Loading message body...'
                      : ''
 
@@ -224,7 +230,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
 
             return !get('messageBody') && !get('messageItem')
                 ? 'fa-envelope-o'
-                : get('messageItem') && !get('messageBody')
+                : get('messageItem') && (!get('messageBody') || !get('iframeLoaded'))
                 ? 'fa-spin fa-spinner'
                 : ''
         }
