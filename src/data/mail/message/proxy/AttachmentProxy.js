@@ -32,8 +32,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
     extend : 'coon.core.data.proxy.RestForm',
 
     requires : [
-         'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
+         'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader',
+         'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
     ],
+
+    mixins : {
+        utilityMixin : 'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
+    },
 
     alias : 'proxy.cn_mail-mailmessageattachmentproxy',
 
@@ -107,13 +112,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
         }
 
         if (action === 'read') {
+
             source = params;
+
             if (source.filter) {
-                let fl = Ext.decode(source.filter), np = {};
-                for (let i = 0, len = fl.length; i < len; i++) {
-                    np[fl[i].property] = fl[i].value;
-                }
-                source = Ext.apply(source, np);
+                me.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
             } else if (rec && !source.id) {
                 source.id = rec.data.id;
             }
@@ -145,11 +148,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
             }));
         }
 
-
         if (action !== 'create') {
             if (source.hasOwnProperty('id')) {
                 url += '/' + source.id;
             }
+        }
+
+        if (params) {
+            delete params.mailFolderId;
+            delete params.mailAccountId;
+            delete params.parentMessageItemId;
+            delete params.id;
+            delete params.localId;
         }
 
         request.setUrl(url);

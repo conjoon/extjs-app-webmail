@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function(t) {
+describe('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxyTest', function(t) {
 
 
     t.it("Should successfully create and test instance", function(t) {
@@ -43,6 +43,8 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
         t.expect(proxy.entityName).toBe(null);
 
         t.expect(proxy.alias).toContain('proxy.cn_mail-mailmessageattachmentproxy');
+
+        t.expect(proxy.mixins.utilityMixin).toBe(conjoon.cn_mail.data.mail.message.proxy.UtilityMixin.prototype);
 
         t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader');
 
@@ -323,28 +325,41 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
             proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
                 entityName : 'DraftAttachment'
             }),
+            copyParams = function() {
+                return Ext.copy({}, params, 'mailAccountId,mailFolderId,parentMessageItemId,parentMessageItemId,filter');
+            },
             request = Ext.create('Ext.data.Request', {
                 action : 'read',
-                params : params,
+                params : copyParams(),
                 operation : Ext.create('Ext.data.operation.Read', {
                     records : recs
                 }),
                 records : recs
             }),
-            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/e/Attachments/c';
+            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/e/Attachments/c',
+            keysUndefined = function() {
+                t.expect(request.getParams().mailFolderId).toBeUndefined();
+                t.expect(request.getParams().mailAccountId).toBeUndefined();
+                t.expect(request.getParams().parentMessageItemId).toBeUndefined();
+                t.expect(request.getParams().id).toBeUndefined();
+                t.expect(request.getParams().localId).toBeUndefined();
+            };
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().type).toBe('draft');
+        keysUndefined();
 
         let exc, e;
         proxy.entityName = 'ItemAttachment';
         request.setUrl("");
+        request.setParams(copyParams());
         delete request.getParams().type;
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().type).toBeUndefined();
+        keysUndefined();
     });
 
 
@@ -359,8 +374,12 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
             }, {
                 property : 'parentMessageItemId',
                 value : 'c'
+            }, {
+                property : "foo",
+                value : "bar"
             }],
             params = {
+                snafu : "YO!",
                 filter : Ext.encode(filters)
             },
             proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
@@ -376,6 +395,8 @@ describe('conjoon.cn_mail.view.mail.message.proxy.AttachmentProxyTest', function
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams()).toEqual({snafu:"YO!",type:"draft", filter : "[{\"property\":\"foo\",\"value\":\"bar\"}]"});
+
     });
 
 
