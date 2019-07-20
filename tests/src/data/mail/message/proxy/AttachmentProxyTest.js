@@ -326,7 +326,7 @@ describe('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxyTest', function
                 entityName : 'DraftAttachment'
             }),
             copyParams = function() {
-                return Ext.copy({}, params, 'mailAccountId,mailFolderId,parentMessageItemId,parentMessageItemId,filter');
+                return Ext.copy({}, params, 'mailAccountId,mailFolderId,parentMessageItemId');
             },
             request = Ext.create('Ext.data.Request', {
                 action : 'read',
