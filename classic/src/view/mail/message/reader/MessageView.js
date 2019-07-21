@@ -248,7 +248,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         xtype: 'component',
         hidden : true,
         bind : {
-            hidden : '{!hasImages || cn_mail_iframe.imagesAllowed}',
+            hidden : '{!hasImages || cn_mail_iframe.imagesAllowed || !iframeLoaded}',
         },
         itemId : 'remoteImageWarning',
         autoEl: {

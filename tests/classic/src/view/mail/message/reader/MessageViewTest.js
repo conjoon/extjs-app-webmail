@@ -762,14 +762,34 @@ t.requireOk('coon.core.util.Date', function() {
 
                 t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
 
+                vm.set('iframeLoaded', false);
+                vm.set('cn_mail_iframe.imagesAllowed', false);
+                vm.set('hasImages', false);
+                vm.notify();
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
+
+                vm.set('iframeLoaded', true);
+                vm.set('cn_mail_iframe.imagesAllowed', false);
+                vm.set('hasImages', false);
+                vm.notify();
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
+
+                vm.set('iframeLoaded', true);
+                vm.set('cn_mail_iframe.imagesAllowed', false);
                 vm.set('hasImages', true);
                 vm.notify();
-
                 t.expect(view.down('#remoteImageWarning').isVisible()).toBe(true);
 
+                vm.set('iframeLoaded', true);
                 vm.set('cn_mail_iframe.imagesAllowed', true);
+                vm.set('hasImages', false);
                 vm.notify();
+                t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
 
+                vm.set('iframeLoaded', false);
+                vm.set('cn_mail_iframe.imagesAllowed', false);
+                vm.set('hasImages', true);
+                vm.notify();
                 t.expect(view.down('#remoteImageWarning').isVisible()).toBe(false);
 
             });
