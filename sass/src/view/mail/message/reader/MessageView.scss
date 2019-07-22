@@ -27,6 +27,10 @@
 
     background-color : $lightest-color;
 
+    .cn_mail-attachment-list {
+        display: flex;
+    }
+
     .messageIndicator {
 
         .icon {
