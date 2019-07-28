@@ -353,6 +353,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
             });
         }
 
+        let reqs =  me.getStore().pageRequests;
+        for (let page in reqs) {
+            if (!reqs.hasOwnProperty(page)) {
+                continue;
+            }
+            reqs[page].getOperation().abort();
+        }
+
+        me.getStore().reload();
+
         if (enable) {
             feature.enable();
             rowFlyMenu.enable();

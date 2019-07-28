@@ -62,9 +62,9 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             grid = Ext.create(
                 'conjoon.cn_mail.view.mail.message.MessageGrid', gridConfig);
 
-            /**
-             * app-cn_mail#99
-             */
+            //
+            // app-cn_mail#99
+            //
             t.expect(grid.getEmptyText()).toBeTruthy();
 
             t.expect(grid instanceof Ext.grid.Panel).toBeTruthy();
@@ -143,12 +143,10 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
                 renderTo : document.body
             });
 
-            grid.getStore().load({
-                params : {
-                    mailAccountId : 'dev_sys_conjoon_org',
-                    mailFolderId  : 'INBOX'
-                }
-            });
+            grid.getStore().filter([
+                {property : 'mailAccountId', value : 'dev_sys_conjoon_org'},
+                {property : 'mailFolderId', value : 'INBOX'}
+            ]);
 
             t.waitForMs(250, function() {
                 try {
@@ -215,7 +213,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
                 delay: 1
             });
 
-            var ULOAD = 0, UBEFORELOAD = 0, store;
+            let ULOAD = 0, UBEFORELOAD = 0, store;
 
             grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
                 width    : 400,
@@ -229,18 +227,16 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.setStore(store);
 
-
             grid.on('cn_mail-mailmessagegridbeforeload', function() {UBEFORELOAD++;});
             grid.on('cn_mail-mailmessagegridload',       function() {ULOAD++;});
 
             t.expect(ULOAD).toBe(0);
             t.expect(UBEFORELOAD).toBe(0);
 
-            store.load({
-                params : {
-                    mailAccountId : 'dev_sys_conjoon_org',
-                    mailFolderId  : 'INBOX'
-            }});
+            store.filter([
+                {property : 'mailAccountId', value : 'dev_sys_conjoon_org'},
+                {property : 'mailFolderId', value : 'INBOX'}
+            ]);
 
             t.waitForMs(850, function() {
                 t.expect(ULOAD).toBe(1);
@@ -248,15 +244,12 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
                 grid.unbindStore(store);
 
-                store.reload({
-                params : {
-                    mailAccountId : 'dev_sys_conjoon_org',
-                    mailFolderId  : 'INBOX'
-                }});
+                store.reload();
 
                 t.waitForMs(850, function() {
                     t.expect(ULOAD).toBe(1);
                     t.expect(UBEFORELOAD).toBe(1);
+
                 });
 
             })
@@ -273,16 +266,16 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             });
 
             store = Ext.create('conjoon.cn_mail.store.mail.message.MessageItemStore', {
-                autoLoad : false
+                autoLoad : false,
+                pageSize : 25
             });
 
             grid.setStore(store);
 
-            store.load({
-                params : {
-                    mailAccountId : 'dev_sys_conjoon_org',
-                    mailFolderId  : 'INBOX'
-            }});
+            store.filter([
+                {property : 'mailAccountId', value : 'dev_sys_conjoon_org'},
+                {property : 'mailFolderId', value : 'INBOX'}
+            ]);
 
             t.waitForMs(850, function() {
 
@@ -438,11 +431,10 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.setStore(store);
 
-            store.load({
-            params : {
-                mailAccountId : 'dev_sys_conjoon_org',
-                mailFolderId  : 'INBOX'
-            }});
+            store.filter([
+                {property : 'mailAccountId', value : 'dev_sys_conjoon_org'},
+                {property : 'mailFolderId', value : 'INBOX'}
+            ]);
 
             t.waitForMs(1250, function() {
 
@@ -487,11 +479,10 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
             grid.setStore(store);
 
-            store.load({
-            params : {
-                mailAccountId : 'dev_sys_conjoon_org',
-                mailFolderId  : 'INBOX'
-            }});
+            store.filter([
+                {property : 'mailAccountId', value : 'dev_sys_conjoon_org'},
+                {property : 'mailFolderId', value : 'INBOX'}
+            ]);
 
             t.waitForMs(750, function() {
 
@@ -573,6 +564,66 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             isDraft = false;
             grid.representedFolderType = '';
             t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+        });
+
+
+        t.it("enable/disable rowPreview removes prefetch-requests and reloads store", function(t) {
+
+
+            t.diag("upping SimManager delay to 1");
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
+            var exc, e;
+
+            grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
+                width    : 400,
+                height   : 400,
+                store    : {
+                    pageSize : 25,
+                    type     : 'cn_mail-mailmessageitemstore',
+                    autoLoad : false,
+                    sorters  : [{
+                        property  : 'testProp',
+                        direction : 'DESC'
+                    }]
+                },
+                renderTo : document.body
+            });
+
+            grid.getStore().filter([
+                {property : 'mailAccountId', value : 'dev_sys_conjoon_org'},
+                {property : 'mailFolderId', value : 'INBOX'}
+            ]);
+
+            let PAGEABORT = 0;
+
+            t.waitForMs(250, function() {
+
+                grid.getStore().pageRequests = [{
+                    getOperation : function() {
+                        return {
+                            abort : function() {
+                                PAGEABORT++;
+                            }
+                        }
+                    }
+                }];
+
+                t.diag("upping SimManager delay to 1500");
+                Ext.ux.ajax.SimManager.init({
+                    delay: 750
+                });
+
+                t.expect(PAGEABORT).toBe(0);
+                t.expect(grid.getStore().isLoading()).toBe(false);
+                grid.enableRowPreview(false);
+                t.expect(grid.getStore().isLoading()).toBe(true);
+                t.expect(PAGEABORT).toBe(1);
+
+            });
+
         });
 
 
