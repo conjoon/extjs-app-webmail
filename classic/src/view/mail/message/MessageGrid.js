@@ -99,6 +99,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         id    : 'cn_mail-mailMessageFeature-livegrid'
     }, {
         ftype              : 'cn_comp-gridfeature-rowbodyswitch',
+        variableRowHeight  : false,
         enableCls          : 'previewEnabled',
         disableCls         : 'previewDisabled',
         id                 : 'cn_mail-mailMessageFeature-messagePreview',

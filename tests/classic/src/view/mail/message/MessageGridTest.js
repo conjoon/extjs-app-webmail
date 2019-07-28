@@ -75,6 +75,7 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
             t.expect(grid.alias).toContain('widget.cn_mail-mailmessagegrid');
 
             let feature = grid.view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+            t.expect(feature.variableRowHeight).toBe(false);
             t.isInstanceOf(feature, 'coon.comp.grid.feature.RowBodySwitch');
             t.expect(feature.disabled).toBeFalsy();
 
