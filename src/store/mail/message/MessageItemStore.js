@@ -45,6 +45,8 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
 
     remoteFilter : true,
 
+    pageSize : 100,
+
     autoLoad : false,
 
     sorters : [{

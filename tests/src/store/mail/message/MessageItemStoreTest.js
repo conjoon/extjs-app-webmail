@@ -48,6 +48,8 @@ describe('conjoon.cn_mail.store.mail.message.MessageItemStoreTest', function(t) 
 
             t.expect(store.alias).toContain('store.cn_mail-mailmessageitemstore');
 
+            t.expect(store.getPageSize()).toBe(100);
+
             t.expect(store.getAutoLoad()).toBeFalsy();
 
             t.expect(store.getRemoteFilter()).toBe(true);
