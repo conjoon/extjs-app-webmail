@@ -222,10 +222,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
             img = elements[i];
             img.style.border = "1px solid black";
 
-            img.setAttribute(
-                'src',
-                Ext.getResourcePath('img_block.png', null, 'app-cn_mail')
-            );
+            // isolated tests will not have resources property set
+            if (Ext.manifest.resources) {
+                img.setAttribute(
+                    'src',
+                    Ext.getResourcePath('img_block.png', null, 'app-cn_mail')
+                );
+            }
         }
     },
 
