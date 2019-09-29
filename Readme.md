@@ -53,7 +53,7 @@ Any developer striving for an own backend implementation should make sure to pro
       * `{limit}` (required): The number of items to return; 
       * `{sort}` an array with sorting informations the client requests, e.g.: `sort=[{property : date, direction : DESC}]`     
     * Returns a list of all MessageItems for the MailAccount with the specified `mailAccountId` found in the mailbox with the id `mailFolderId`, according to the model found in `conjoon.cn_mail.model.mail.message.MessageItem`; Failed attempts to retrieve this list should return appropriate http Status-Code. This response returns a list of MessageItems in the boundaries of `start` and `start + limit`; meta-information in the response need to contain the current number of unread messages in the queried mailbox along with the mailbox's identifier (`mailFolderId`) and the associated account (`mailAccountId`) itself.   
-    * Success Status / Response: Status 200 `{success : true, total : (int), meta : {cn_unreadCount : (int), mailFolderId : (string), mailAccountId : (string)}, data : []}`
+    * Success Status / Response: Status 200 `{success : true, total : (int), meta : {unreadCount : (int), mailFolderId : (string), mailAccountId : (string)}, data : []}`
     * Failure Status / Response: Status * `{success : false}`
 
  * `cn_mail/MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageItems/{messageItemId}` | **GET**

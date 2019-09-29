@@ -89,7 +89,7 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
                 for (i = 0; i < len; i++) {
                     rec = records[i];
 
-                    rec.cn_folderType = ACCOUNT;
+                    rec.folderType = ACCOUNT;
                     rec[tp]  = me.mailAccountModelClass;
                 }
 
@@ -99,7 +99,7 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
                 // POST / PUT
                 let d = data.data;
 
-                d.cn_folderType     = ACCOUNT;
+                d.folderType     = ACCOUNT;
                 d[me.getTypeProperty()] = me.mailAccountModelClass;
 
                 return data;

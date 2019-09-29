@@ -429,7 +429,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
             paneDisabled    = false,
             toggleDisabled  = false,
             sel             = me.getMailFolderTree().getSelection(),
-            type            = sel.length && sel[0].get('cn_folderType'),
+            type            = sel.length && sel[0].get('folderType'),
             accountSelected = type === ACCOUNT;
 
         if (sel.length === 0 || accountSelected) {
@@ -594,7 +594,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
         }
 
         let accountSelected = records.length <= 0
-                              || records[0].get('cn_folderType') === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
+                              || records[0].get('folderType') === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
         me.getSwitchReadingPaneButton().setDisabled(accountSelected);
         me.getToggleGridListButton().setDisabled(accountSelected);

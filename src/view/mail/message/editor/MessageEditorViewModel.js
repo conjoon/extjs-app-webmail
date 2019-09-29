@@ -209,7 +209,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             source: '{cn_mail_mailfoldertreestore}',
 
             filters : [{
-                property : 'cn_folderType',
+                property : 'folderType',
                 value    : 'ACCOUNT'
             }]
         },

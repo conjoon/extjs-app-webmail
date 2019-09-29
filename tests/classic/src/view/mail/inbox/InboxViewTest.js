@@ -77,13 +77,8 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
     let view;
 
-    t.afterEach(function() {
-
-
-    });
 
     t.beforeEach(function() {
-
         viewConfig = {
             viewModel : {
                 type : 'cn_mail-mailinboxviewmodel',
@@ -273,33 +268,33 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
 
                     grid.view.getScrollable().scrollTo(0, 100000);
 
-                    grid.getStore().getData().removeAtKey(1);
-                    t.expect(grid.getStore().getData().map[1]).toBeUndefined();
-
-                    t.expect(grid.getSelection()[0]).toBe(messageItem);
-
-                    tree.getSelectionModel().select(mailFolder2);
-
-                    t.waitForMs(TIMEOUT, function(){
-
+                    t.waitForMs(TIMEOUT, function() {
+                        grid.getStore().getData().removeAtKey(1);
+                        t.expect(grid.getStore().getData().map[1]).toBeUndefined();
 
                         t.expect(grid.getSelection()[0]).toBe(messageItem);
-
-                        var messageItem2 = grid.getStore().getAt(0);
-
-                        grid.getSelectionModel().select(messageItem2);
-
-                        t.expect(grid.getSelection()[0]).toBe(messageItem2);
-
                         tree.getSelectionModel().select(mailFolder2);
 
                         t.waitForMs(TIMEOUT, function(){
+
+                            t.expect(grid.getSelection()[0]).toBe(messageItem);
+
+                            var messageItem2 = grid.getStore().getAt(0);
+
+                            grid.getSelectionModel().select(messageItem2);
+
                             t.expect(grid.getSelection()[0]).toBe(messageItem2);
 
-                            discardView(t);
+                            tree.getSelectionModel().select(mailFolder2);
+
+                            t.waitForMs(TIMEOUT, function(){
+                                t.expect(grid.getSelection()[0]).toBe(messageItem2);
+
+                                discardView(t);
+                            });
+
+
                         });
-
-
                     });
 
                 });
@@ -416,8 +411,7 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
         t.expect(view.showMessageDeleteConfirmDialog(null, fn, obj)).toBe(mask);
 
         let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-        t.click(yesButton[0]);
-        t.waitForMs(TIMEOUT, function() {
+        t.click(yesButton[0], function() {
             t.expect(obj.CALLED).toBe(1);
             t.expect(view.deleteMask).toBe(null);
 

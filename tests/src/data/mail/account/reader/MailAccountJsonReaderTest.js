@@ -83,7 +83,7 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
             }, result = {
                 data : [{
                     modelType     : 'conjoon.cn_mail.model.mail.account.MailAccount',
-                    cn_folderType : conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
+                    folderType : conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
                 }]
             };
 

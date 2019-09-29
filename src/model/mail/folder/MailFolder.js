@@ -54,7 +54,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
         type    : 'int',
         persist : false
     }, {
-        name : 'cn_folderType',
+        name : 'folderType',
         type : 'string'
     }],
 
@@ -77,7 +77,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
     /**
      * Overriden to make sure we can specify class statics for values of
-     * field validation for "cn_folderType".
+     * field validation for "folderType".
      *
      * @inheritdoc
      */
@@ -86,7 +86,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
 
         me.callParent(arguments);
 
-        me.getField('cn_folderType').setModelValidators([{
+        me.getField('folderType').setModelValidators([{
             type : 'inclusion',
             list : [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,

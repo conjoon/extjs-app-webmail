@@ -630,7 +630,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
               selected = me.getSelectedMailFolder();
 
         if (!selected ||
-            selected.get('cn_folderType') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
+            selected.get('folderType') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
             selected.get('mailAccountId') !== messageDraft.get('mailAccountId')) {
             return;
         }

@@ -90,11 +90,11 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
         t.expect(store.filters.length).toBe(2);
 
         t.expect(store.filters).toEqual([{
-            disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
+            disabled : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
             property : 'mailFolderId',
             value    : '{cn_mail_ref_mailfoldertree.selection.id}'
         }, {
-            disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
+            disabled : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
             property : 'mailAccountId',
             value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
         }]);
@@ -144,7 +144,7 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
         decorateMockView(viewModel);
 
-        viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'foo');
+        viewModel.set('cn_mail_ref_mailfoldertree.selection.folderType', 'foo');
         viewModel.set('cn_mail_ref_mailfoldertree.selection.id', 'a');
         viewModel.set('cn_mail_ref_mailfoldertree.selection.mailAccountId', 'b');
 
@@ -156,12 +156,12 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
             t.expect(store.isLoading()).toBe(false);
             t.expect(store.isLoaded()).toBe(true);
 
-            viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'ACCOUNT');
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.folderType', 'ACCOUNT');
             viewModel.notify();
 
             t.expect(defaultStoreConfig.listeners.beforeload(store)).toBe(false);
 
-            viewModel.set('cn_mail_ref_mailfoldertree.selection.cn_folderType', 'INBOX');
+            viewModel.set('cn_mail_ref_mailfoldertree.selection.folderType', 'INBOX');
             viewModel.notify();
 
             t.expect(defaultStoreConfig.listeners.beforeload(store)).not.toBe(false);
@@ -182,7 +182,7 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
             MESSAGEVIEWHIDDEN = false,
             get = function(key) {
                 switch (key) {
-                    case 'cn_mail_ref_mailfoldertree.selection.cn_folderType':
+                    case 'cn_mail_ref_mailfoldertree.selection.folderType':
                         return FOLDERTYPE;
 
                     case 'messageViewHidden':

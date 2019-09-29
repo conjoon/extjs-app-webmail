@@ -34,7 +34,7 @@
  *
  * The {@link #initTemplateRendererData} method is overriden to choose an icon
  * for the displayed folder. Icons are mapped against the following values found
- * in any model's "cn_folderType" property:
+ * in any model's "folderType" property:
  * INBOX
  * SENT
  * DRAFT
@@ -96,16 +96,18 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
     initTemplateRendererData : function(value, metaData, record, rowIdx, colIdx, store, view) {
 
         const me   = this,
-            type = record.get('cn_folderType');
+              type = record.get('folderType');
 
         let ret;
 
         ret = Ext.tree.Column.prototype.initTemplateRendererData.apply(this, arguments);
 
+        // do not set record data via set() as it seems to trigger
+        // immediate update which calls this method in return (?)
         if (ret.lines.length === 1) {
-            record.set('iconCls', me.getIconClsForMailFolderType(type));
+            record.data.iconCls = me.getIconClsForMailFolderType(type);
         } else {
-            record.set('iconCls', '');
+            record.data.iconCls = "";
         }
 
         if (ret.lines && ret.lines.length < 2) {
@@ -122,7 +124,7 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
     /**
      * Returns an iconCls to visually represent the specified folder type.
      * Considered type-values can be found in {@link conjoon.cn_mail.model.mail.folder.MailFolder}
-     * in the field "cn_folderType".
+     * in the field "folderType".
      *
      * @param {String} type
      *

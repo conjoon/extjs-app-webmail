@@ -140,7 +140,6 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) 
 
     let panel;
 
-
     t.beforeEach(function() {
         conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.resetAll();
     });
@@ -853,7 +852,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         mailFolderTree = panel.down('cn_mail-mailfoldertree');
 
         t.waitForMs(TIMEOUT, function() {
-            draftNode = mailFolderTree.getStore().findNode('cn_folderType', 'DRAFT');
+            draftNode = mailFolderTree.getStore().findNode('folderType', 'DRAFT');
             mailFolderTree.getSelectionModel().select(draftNode);
 
             t.waitForMs(TIMEOUT, function() {
@@ -929,7 +928,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         mailFolderTree = panel.down('cn_mail-mailfoldertree');
 
         t.waitForMs(TIMEOUT, function() {
-            draftNode      = mailFolderTree.getStore().findNode('cn_folderType', 'DRAFT');
+            draftNode      = mailFolderTree.getStore().findNode('folderType', 'DRAFT');
             mailFolderTree.getSelectionModel().select(draftNode);
 
             t.waitForMs(TIMEOUT, function() {
@@ -1124,7 +1123,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         });
 
     });
-return;
+
 
     t.it("getCompoundKeyFromInboxMessageView()", function(t) {
 

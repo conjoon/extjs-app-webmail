@@ -894,7 +894,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 t.expect(viewModel.get('mailAccountStore').getSource()).toBe(viewModel.get('cn_mail_mailfoldertreestore'));
                 viewModel.get('mailAccountStore').getFilters();
 
-                t.expect(viewModel.get('mailAccountStore').getFilters().items[0].getProperty()).toBe('cn_folderType');
+                t.expect(viewModel.get('mailAccountStore').getFilters().items[0].getProperty()).toBe('folderType');
                 t.expect(viewModel.get('mailAccountStore').getFilters().items[0].getValue()).toBe('ACCOUNT');
 
             });

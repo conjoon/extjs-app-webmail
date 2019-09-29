@@ -64,7 +64,7 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
             {
                 getOuterRowClass : function(record, store) {
 
-                    let type  = record.get('cn_folderType').toLowerCase(),
+                    let type  = record.get('folderType').toLowerCase(),
                         cls   = 'cn_' + (type === "folder" ? "generic" : type),
                         pn    = record.parentNode,
                         root  = store.getRoot(),

@@ -62,44 +62,44 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
         model.set('name', 'Posteingang');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'Posteingang');
+        model.set('folderType', 'Posteingang');
         t.expect(model.isValid()).toBe(false);
 
         model.set('mailAccountId', 'foo');
-        model.set('cn_folderType', 'INBOX');
+        model.set('folderType', 'INBOX');
         t.expect(model.isValid()).toBe(true);
-        model.set('cn_folderType', '');
+        model.set('folderType', '');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'DRAFT');
+        model.set('folderType', 'DRAFT');
         t.expect(model.isValid()).toBe(true);
-        model.set('cn_folderType', '');
+        model.set('folderType', '');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'JUNK');
+        model.set('folderType', 'JUNK');
         t.expect(model.isValid()).toBe(true);
-        model.set('cn_folderType', '');
+        model.set('folderType', '');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'TRASH');
+        model.set('folderType', 'TRASH');
         t.expect(model.isValid()).toBe(true);
-        model.set('cn_folderType', '');
+        model.set('folderType', '');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'SENT');
+        model.set('folderType', 'SENT');
         t.expect(model.isValid()).toBe(true);
-        model.set('cn_folderType', '');
+        model.set('folderType', '');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'FOLDER');
+        model.set('folderType', 'FOLDER');
         t.expect(model.isValid()).toBe(true);
-        model.set('cn_folderType', '');
+        model.set('folderType', '');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', null);
+        model.set('folderType', null);
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'foo');
+        model.set('folderType', 'foo');
         t.expect(model.isValid()).toBe(false);
 
         model.set('mailAccountId', null);

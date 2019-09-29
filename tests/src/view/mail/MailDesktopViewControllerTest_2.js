@@ -139,11 +139,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_2', function(t
             });
         };
 
-    t.afterEach(function() {
-    });
-
     t.beforeEach(function() {
-
         conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.resetAll();
     });
 
@@ -937,7 +933,8 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
             // will throw if no draft node found
             ctrl.defaultAccountInformations = null;
-            root.childNodes[0].childNodes[3].set('cn_folderType', 'foo');
+
+            root.childNodes[0].childNodes[3].set('folderType', 'foo');
 
             let exc, e;
             try{ctrl.onMailFolderTreeStoreLoad(store, records);}catch(e){exc = e};
@@ -946,6 +943,7 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
             panel.destroy();
             panel = null;
+
         });
 
     });

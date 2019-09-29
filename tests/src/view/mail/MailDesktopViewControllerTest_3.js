@@ -139,11 +139,7 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_3', function(t
             });
         };
 
-    t.afterEach(function() {
-    });
-
     t.beforeEach(function() {
-
         conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.resetAll();
     });
 

@@ -68,19 +68,19 @@ describe('conjoon.cn_mail.model.mail.account.MailAccountTest', function(t) {
     t.it("Test Record Validity", function(t) {
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'Posteingang');
+        model.set('folderType', 'Posteingang');
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', 'ACCOUNT');
+        model.set('folderType', 'ACCOUNT');
         t.expect(model.isValid()).toBe(false);
 
         model.set('name', 'foo');
         t.expect(model.isValid()).toBe(true);
 
-        model.set('cn_folderType', null);
+        model.set('folderType', null);
         t.expect(model.isValid()).toBe(false);
 
-        model.set('cn_folderType', "ACCOUNT");
+        model.set('folderType', "ACCOUNT");
         t.expect(model.isValid()).toBe(true);
     });
 

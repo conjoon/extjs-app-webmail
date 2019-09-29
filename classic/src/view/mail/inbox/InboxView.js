@@ -162,8 +162,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 hidden    : true,
                 xtype     : 'cn_mail-mailaccountview',
                 bind      : {
-                    mailAccount : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT" && cn_mail_ref_mailfoldertree.selection}',
-                    hidden : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType !== "ACCOUNT"}'
+                    mailAccount : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT" && cn_mail_ref_mailfoldertree.selection}',
+                    hidden : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType !== "ACCOUNT"}'
                 }
             }, {
                 flex      : 1,
@@ -171,9 +171,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                 xtype     : 'cn_mail-mailmessagegrid',
                 reference : 'cn_mail_ref_mailmessagegrid',
                 bind      : {
-                    representedFolderType : '{cn_mail_ref_mailfoldertree.selection.cn_folderType}',
+                    representedFolderType : '{cn_mail_ref_mailfoldertree.selection.folderType}',
                     title                 : '{cn_mail_ref_mailfoldertree.selection.name}',
-                    hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
+                    hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
                     store                 : '{cn_mail_mailmessageitemstore}'
                 }
         }]}, {
@@ -184,7 +184,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
             hidden    : true,
             bind      : {
                 contextButtonsEnabled : '{cn_mail_ref_mailmessagegrid.selection}',
-                hidden      : '{messageViewHidden || (!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT")}',
+                hidden      : '{messageViewHidden || (!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT")}',
                 messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
             }
 

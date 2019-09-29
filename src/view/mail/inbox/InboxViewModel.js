@@ -65,11 +65,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
                 }
             },
             filters  : [{
-                disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
+                disabled : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
                 property : 'mailFolderId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.id}'
             }, {
-                disabled : '{cn_mail_ref_mailfoldertree.selection.cn_folderType === "ACCOUNT"}',
+                disabled : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
                 property : 'mailAccountId',
                 value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
             }]
@@ -96,7 +96,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
         computeMessageGridMargin : function(get) {
 
             const me          = this,
-                  folderType  = get('cn_mail_ref_mailfoldertree.selection.cn_folderType'),
+                  folderType  = get('cn_mail_ref_mailfoldertree.selection.folderType'),
                   readingPane = me.getView().down('cn_mail-mailmessagereadermessageview'),
                   orientation = readingPane.splitter.orientation;
 
