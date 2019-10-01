@@ -66,4 +66,15 @@ Any developer striving for an own backend implementation should make sure to pro
    * Success Status / Response: Status 200 `{success : true, data : {}}`
    * Failure Status / Response: Status * `{success : false}`; if the parameter `{target}` is missing, a *400 - Bad Request* should be returned
    
- 
+ * `cn_mail/MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageItems/{messageItemId}` | **PUT**
+    * **Parameters:** 
+      * `{mailAccountId}` (required): The id of the MailAccount for which the Message should be queried; 
+      * `{mailFolderId}` (required): The id of the folder for which the Message should be returned; 
+      * `{messageItemId}` (required): The id of the Message to return; 
+      * `{target}` (required): `{target=MessageItem}`
+      * The following data can be submitted:
+      * `seen (true/false)` sets the \Seen flag for the specified Message
+      * `flagged (true/false)` sets the \Flagged flag for the specified Message
+    * Success Status / Response: Status 200 `{success : true, data :{id : (string), mailFolderId : (string), mailAccountId : (string), seen : (bool), flagged : (bool)}}` If the operation was successfull, the data must contain the id, the mailFolderId and the mailAccountId representing the compound key of the message, along with the properties `seen` and/or `flagged` and their newly set value. 
+    * Failure Status / Response: Status * `{success : false}`; if the parameter `{target}` is not valid, or the request payload is invalid, a *400 - Bad Request* should be returned
+  
