@@ -66,6 +66,8 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
     t.it("Test getMessageBody", function(t) {
         model.setMessageBody(messageBody);
         t.expect(model.getMessageBody()).toBeTruthy();
+        t.expect(model.getField('messageBodyId').persist).toBe(false);
+        t.expect(model.getField('messageBodyId').unique).toBe(true);
     });
 
 
