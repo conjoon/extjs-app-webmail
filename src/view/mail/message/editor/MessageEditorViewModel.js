@@ -45,8 +45,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier',
         'coon.core.Util',
         'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
-        'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
-        'coon.core.data.Session'
+        'conjoon.cn_mail.data.mail.message.session.MessageDraftSession'
     ],
 
     alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
@@ -261,12 +260,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         me.callParent([config]);
 
         let session = me.getSession();
-        if (!(session instanceof coon.core.data.Session) ||
-            // we will peek at the type of the created visitor, although we know
-            // this is not the *instance* used later on
-            !(session.createVisitor() instanceof conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor)) {
+        if (!(session instanceof conjoon.cn_mail.data.mail.message.session.MessageDraftSession)) {
             Ext.raise({
-                msg     : "This ViewModel requires a data session configured with a MessageCompoundBatchVisitor",
+                msg     : "This ViewModel requires a data session of the type conjoon.cn_mail.data.mail.message.session.MessageDraftSession",
                 session : session
             })
         }
@@ -296,7 +292,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                             const me = this,
                                   view = me.getView();
 
-                            me.getSession().adopt(record);
+                            me.getSession().setMessageDraft(record);
                             me.set('messageDraft', record);
                             me.notify();
                             me.loadingDraft = null;
@@ -307,6 +303,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                     };
                     me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
                 } else {
+                    me.getSession().setMessageDraft(sessDraft);
                     me.set('messageDraft', sessDraft);
                 }
 
@@ -518,6 +515,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                 type   : 'MessageDraft',
                 create : data
             });
+
+            me.getSession().setMessageDraft(me.get('messageDraft'));
 
             /**
              * @bug

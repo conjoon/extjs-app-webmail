@@ -48,10 +48,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             return key;
         },
         createSession = function() {
-            return Ext.create('coon.core.data.Session', {
-                schema : 'cn_mail-mailbaseschema',
-                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-            })
+            return Ext.create('conjoon.cn_mail.data.mail.message.session.MessageDraftSession')
         },
         createWithSession = function() {
             return Ext.create('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
@@ -169,7 +166,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             try {Ext.create(cls, {messageDraft : 1});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toContain("MessageCompoundBatchVisitor");
+            t.expect(exc.msg).toContain("MessageDraftSession");
 
 
             try {Ext.create(cls, {
@@ -329,7 +326,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
         t.it('createDraftFromData()', function(t) {
 
-            viewModel = createWithSession();
+            viewModel = createWithSession(false);
 
             var exc, e;
 
@@ -345,6 +342,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
             t.isCalledOnce('toObject', c);
             t.isCalledOnce('linkTo', viewModel);
 
+            // force reset of private property
+            viewModel.getSession()._messageDraft = undefined;
             viewModel.createDraftFromData(c);
 
             t.waitForMs(500, function() {
@@ -362,6 +361,8 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
 
             viewModel = createWithSession();
 
+            // force reset of private property
+            viewModel.getSession()._messageDraft = undefined;
             t.isCalledOnce('createDraftFromData', viewModel);
 
             viewModel.onMessageDraftCopyLoad(null, Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'));

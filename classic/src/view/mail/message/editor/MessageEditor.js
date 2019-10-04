@@ -41,12 +41,13 @@
  *
  * Session:
  * ==============
- * This view uses a session with the {@link conjoon.cn_mail.data.mail.BaseSchema}
+ * This view uses a MessageDraftSession with the {@link conjoon.cn_mail.data.mail.BaseSchema}
  * to be able to handle the associations of the used data models properly.
  * The constructor overrides any specified session by creating an individual
- * session of the type {@link coon.core.Session} with a
+ * session of the type {@link conjoon.cn_mail.data.mail.message.session.MessageDraftSession} with a
  * {@link conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor} to make sure multiple
- * attachments are uploaded in single requests.
+ * attachments are uploaded in single requests, and id-changes (coming from an IMAP server
+ * are considered among loaded associations).
  *
  *
  * Note:
@@ -96,9 +97,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         'conjoon.cn_mail.view.mail.message.editor.HtmlEditor',
         'conjoon.cn_mail.view.mail.message.editor.AddressField',
         'conjoon.cn_mail.model.mail.message.EmailAddress',
-        'conjoon.cn_mail.data.mail.BaseSchema',
-        'coon.core.data.Session',
-        'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
+        'conjoon.cn_mail.data.mail.message.session.MessageDraftSession',
         'coon.comp.component.MessageMask',
         'conjoon.cn_mail.data.mail.message.EditingModes',
         'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
@@ -438,10 +437,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         }
 
         Ext.apply(config, {
-            session : Ext.create('coon.core.data.Session', {
-                schema                : 'cn_mail-mailbaseschema',
-                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-            }),
+            session   : Ext.create('conjoon.cn_mail.data.mail.message.session.MessageDraftSession'),
             viewModel : {
                 type         : 'cn_mail-mailmessageeditorviewmodel',
                 messageDraft : messageDraft
