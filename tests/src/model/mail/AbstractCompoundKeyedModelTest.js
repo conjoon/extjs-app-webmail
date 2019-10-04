@@ -56,7 +56,7 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
     t.it("Should create instance", function(t) {
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
 
-        t.expect(model.suspendSetter).toBe(false);
+        t.expect(model.callerEntityName).toBe("");
 
         t.expect(model.compoundKeyFields).toEqual([]);
 

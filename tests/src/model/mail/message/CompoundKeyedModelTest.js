@@ -48,7 +48,7 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
     t.it("Should create instance", function(t) {
         t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
 
-        t.expect(model.suspendSetter).toBe(false);
+        t.expect(model.callerEntityName).toBe("");
 
         t.expect(model.compoundKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'id']);
 
@@ -361,9 +361,7 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         modelLeft = createModel(field4);
         modelRight = createModel(Ext.applyIf({mailFolderId : 'meh.'}, field4));
         try{modelLeft.compareAndApplyCompoundKeys(modelRight, true);}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("compound key differs");
+        t.expect(exc).toBeUndefined();
         exc = undefined;
 
         // left 4 right 4 fields same BUT localId
@@ -441,31 +439,31 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
     });
 
 
-    t.it("isCompoundKeySet()", function(t) {
+    t.it("isCompoundKeyConfigured()", function(t) {
         let model;
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
         });
 
-        t.expect(model.isCompoundKeySet()).toBe(false);
+        t.expect(model.isCompoundKeyConfigured()).toBe(false);
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
             id : 1
         });
-        t.expect(model.isCompoundKeySet()).toBe(false);
+        t.expect(model.isCompoundKeyConfigured()).toBe(false);
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
             id : 1,
             mailAccountId : 'foo'
         });
-        t.expect(model.isCompoundKeySet()).toBe(false);
+        t.expect(model.isCompoundKeyConfigured()).toBe(false);
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
             id : 1,
             mailAccountId : 'foo',
             mailFolderId : undefined
         });
-        t.expect(model.isCompoundKeySet()).toBe(false);
+        t.expect(model.isCompoundKeyConfigured()).toBe(false);
 
 
         model = Ext.create('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
@@ -473,7 +471,7 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
             mailAccountId : 'foo',
             mailFolderId : 'bar'
         });
-        t.expect(model.isCompoundKeySet()).toBe(true);
+        t.expect(model.isCompoundKeyConfigured()).toBe(true);
 
     });
 
@@ -608,9 +606,7 @@ describe('conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest', function(t
         modelLeft = createModel(field4);
         modelRight = createModel(Ext.applyIf({folderField : 'meh.'}, field4_r), true);
         try{modelLeft.compareAndApplyCompoundKeys(modelRight, true);}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("compound key differs");
+        t.expect(exc).toBeUndefined();
         exc = undefined;
 
         // left 4 right 4 fields same BUT localId

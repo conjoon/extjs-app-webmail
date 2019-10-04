@@ -46,9 +46,8 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
     t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
-    t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function() {
+    t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageDraftSession', function() {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
@@ -57,6 +56,14 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
         t.it("Should create instance", function (t) {
 
             t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.MessageItemChildModel');
+
+
+            t.expect(model.compoundKeyFields).toEqual({
+                MessageDraft : {
+                    'mailAccountId' : 'mailAccountId',
+                    'mailFolderId'  : 'mailFolderId',
+                    'parentMessageItemId' : 'id'
+                }});
         });
 
         t.it("Test Entity Name", function (t) {
@@ -92,6 +99,19 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
         t.it("parentMessageItemId", function (t) {
             t.expect(model.getField('parentMessageItemId')).toBeTruthy();
             t.isInstanceOf(model.getField('parentMessageItemId'), 'coon.core.data.field.CompoundKeyField');
+        });
+
+        t.it("messageItemId", function (t) {
+            t.expect(model.getField('messageItemId').persist).toBe(false);
+        });
+
+
+        t.it("getAssociatedCompoundKeyedData", function (t) {
+            let model = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
+            model.getMessageItem = function(){return 1;};
+            t.expect(model.getAssociatedCompoundKeyedData()).toEqual([1]);
+            model.getMessageItem = function(){return null;};
+            t.expect(model.getAssociatedCompoundKeyedData()).toEqual([]);
         });
 
 
@@ -141,28 +161,29 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
         t.it("Test MessageDraft save with MessageBody and Attachments", function(t) {
 
-            var session = Ext.create('coon.core.data.Session', {
-                schema : 'cn_mail-mailbaseschema',
-                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-            });
+            var session = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageDraftSession');
 
             var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
                 subject       : 'test',
-                mailFolderId  : 1,
-                mailAccountId : 3
+                mailFolderId  : "INBOX.Drafts",
+                mailAccountId : "dev_sys_conjoon_org"
             });
 
-            draft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-                mailFolderId  : 1,
-                mailAccountId : 3
-            }));
+            session.setMessageDraft(draft);
+
+            // consider batchvisitor and an issue with associations and
+            // session - see  MessageEditorViewModel, where we are doing the same
+            var messageBody = session.createRecord('MessageBody', {
+                mailFolderId  : "INBOX.Drafts",
+                mailAccountId : "dev_sys_conjoon_org"
+            });
+            draft.setMessageBody(messageBody);
+
 
             let store = draft.attachments(),
                 att   = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
 
             store.add(att);
-
-            session.adopt(draft);
 
             let batch = session.getSaveBatch();
 
@@ -174,10 +195,120 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
             t.waitForMs(1000, function() {
 
                 t.expect(att.phantom).toBe(false);
-                t.expect(att.get('mailAccountId')).toBe('3');
-                t.expect(att.get('mailFolderId')).toBe('1');
+                t.expect(att.get('mailAccountId')).toBe("dev_sys_conjoon_org");
+                t.expect(att.get('mailFolderId')).toBe("INBOX.Drafts");
                 t.expect(draft.get('id')).toBeDefined();
+                t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
                 t.expect(att.get('parentMessageItemId')).toBe(draft.get('id'));
+
+                var oldId = draft.get('id');
+
+                draft.set('subject', 'foo');
+
+                session.getSaveBatch().start();
+
+                t.waitForMs(1000, function() {
+
+                    t.expect(draft.get('id')).not.toBe(oldId);
+                    t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
+                    t.expect(att.get('parentMessageItemId')).toBe(draft.get('id'));
+                    oldId = draft.get('id');
+                    messageBody.set('textHtml', 'foobar');
+
+                    session.getSaveBatch().start();
+
+                    t.waitForMs(1000, function () {
+
+                        t.expect(draft.get('id')).not.toBe(oldId);
+                        t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
+                        t.expect(att.get('parentMessageItemId')).toBe(draft.get('id'));
+
+                    });
+
+                });
+
+
+            });
+
+        });
+
+
+        t.it("Test MessageDraft attachment delete with MessageBody", function(t) {
+
+            var session = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageDraftSession');
+
+            var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject       : 'test',
+                mailFolderId  : "INBOX.Drafts",
+                mailAccountId : "dev_sys_conjoon_org"
+            });
+
+            session.setMessageDraft(draft);
+
+            // consider batchvisitor and an issue with associations and
+            // session - see  MessageEditorViewModel, where we are doing the same
+            var messageBody = session.createRecord('MessageBody', {
+                mailFolderId  : "INBOX.Drafts",
+                mailAccountId : "dev_sys_conjoon_org"
+            });
+            draft.setMessageBody(messageBody);
+
+
+            let store = draft.attachments(),
+                att   = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+                att2  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
+
+            store.add(att);
+            store.add(att2);
+
+            let batch = session.getSaveBatch();
+
+            t.expect(att.phantom).toBe(true);
+            t.expect(draft.get('id')).toBeUndefined();
+
+            batch.start();
+
+            t.waitForMs(1000, function() {
+
+                t.expect(att.phantom).toBe(false);
+                t.expect(att.get('mailAccountId')).toBe("dev_sys_conjoon_org");
+                t.expect(att.get('mailFolderId')).toBe("INBOX.Drafts");
+                t.expect(draft.get('id')).toBeDefined();
+                t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
+                t.expect(att.get('parentMessageItemId')).toBe(draft.get('id'));
+
+                var oldId = draft.get('id');
+
+                draft.attachments().remove(att);
+
+                let btch = session.getSaveBatch();
+                btch.start();
+
+                t.waitForMs(1000, function() {
+
+                    t.expect(draft.get('id')).not.toBe(oldId);
+                    t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
+                    t.expect(draft.attachments().getRange().length).toBe(1);
+                    t.expect(draft.attachments().getRange()[0].get('parentMessageItemId')).toBe(draft.get('id'));
+
+                    oldId = draft.get('id');
+                    store.remove(att2);
+                    draft.set('subject', "test1234");
+
+                    btch = session.getSaveBatch();
+                    btch.start();
+
+                    t.waitForMs(1000, function() {
+
+                        t.expect(draft.get('id')).not.toBe(oldId);
+                        t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
+                        t.expect(draft.attachments().getRange().length).toBe(0);
+
+
+                    });
+
+                });
+
 
             });
 
@@ -185,4 +316,4 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
     });
 
-});});});
+});});

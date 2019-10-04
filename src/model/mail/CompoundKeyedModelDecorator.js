@@ -66,7 +66,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                 /**
                  * @private
                  */
-                suspendSetter : false,
+                callerEntityName : "",
 
 
                 /**
@@ -324,9 +324,11 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                     // which gets erased later on in a call to the parent implementation
                     // in the worst case, leaving us with an empty object. clone here
                     let cK     = Ext.isString(key) ? key : Ext.clone(key),
+                        // read out the range BEFORE any ID changes
+                        range = me.getAssociatedCompoundKeyedData(),
                         ret    = me.callParent(arguments),
                         valids = [],
-                        keys   = {}, curr, val, range, assoc, target;
+                        keys   = {}, curr, val, assoc, target;
 
                     if (Ext.isString(cK)) {
                         keys[cK] = value;
@@ -334,61 +336,57 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                         keys = cK;
                     }
 
-                    if (me.suspendSetter !== true) {
+                    for (let a = 0, lena = range.length; a < lena; a++) {
+
+                        target = null;
+                        assoc  = range[a];
+                        valids = Ext.isArray(me.compoundKeyFields)
+                            ? me.compoundKeyFields
+                            : me.compoundKeyFields[assoc.entityName];
+
+
+                        if (assoc.entityName === me.callerEntityName) {
+                            continue;
+                        }
+
+                        assoc.callerEntityName = me.entityName;
+
+                        for (curr in keys) {
+                            target = curr;
+                            if ((Ext.isArray(valids) && valids.indexOf(curr) === -1) ||
+                                (!Ext.isArray(valids) && !valids[curr])) {
+                                continue;
+                            }
+                            if (!Ext.isArray(valids)) {
+                                target = valids[curr];
+                            }
+
+                            val = keys[curr];
+
+                            assoc.set(target, val, {dirty : false});
+                        }
+
+                        assoc.callerEntityName = "";
+                    }
+
+                    let updateLocal = false;
+                    for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
+                        if (keys.hasOwnProperty(me.foreignKeyFields[i])) {
+                            updateLocal = true;
+                            break;
+                        }
+                    }
+
+                    if (updateLocal) {
+                        me.updateLocalId();
 
                         range = me.getAssociatedCompoundKeyedData();
 
-                        for (let a = 0, lena = range.length; a < lena; a++) {
-
-                            target = null;
-                            assoc  = range[a];
-                            valids = Ext.isArray(me.compoundKeyFields)
-                                ? me.compoundKeyFields
-                                : me.compoundKeyFields[assoc.entityName];
-
-                            assoc.suspendSetter = true;
-
-                            for (curr in keys) {
-                                target = curr;
-                                if ((Ext.isArray(valids) && valids.indexOf(curr) === -1) ||
-                                    (!Ext.isArray(valids) && !valids[curr])) {
-                                    continue;
-                                }
-                                if (!Ext.isArray(valids)) {
-                                    target = valids[curr];
-                                }
-
-                                val = keys[curr];
-
-                                assoc.set(target, val, {dirty : false});
-                            }
-
-                            assoc.suspendSetter = false;
+                        for (let i = 0, len = range.length; i < len; i++) {
+                            range[i].updateLocalId();
                         }
                     }
 
-
-                    if (me.suspendSetter !== true) {
-
-                        let updateLocal = false;
-                        for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
-                            if (keys.hasOwnProperty(me.foreignKeyFields[i])) {
-                                updateLocal = true;
-                                break;
-                            }
-                        }
-
-                        if (updateLocal) {
-                            me.updateLocalId();
-
-                            range = me.getAssociatedCompoundKeyedData();
-
-                            for (let i = 0, len = range.length; i < len; i++) {
-                                range[i].updateLocalId();
-                            }
-                        }
-
-                    }
                     return ret;
                 },
 
@@ -430,18 +428,6 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
 
                         myVal = me.get(field);
                         addedVal = addedRecord.get(targetField);
-
-                        if (myVal && addedVal && myVal !== addedVal && field !== me.getIdProperty()
-                            && targetField !== addedRecord.getIdProperty()) {
-
-                            Ext.raise({
-                                msg : "Added record's compound key differs from this key.",
-                                field : field,
-                                targetField : targetField,
-                                leftVal : myVal,
-                                rightVal : addedVal
-                            });
-                        }
                     }
 
 

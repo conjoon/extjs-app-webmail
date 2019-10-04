@@ -44,6 +44,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
     entityName : 'DraftAttachment',
 
     fields : [{
+        persist : false,
         name      : 'messageItemId',
         type      : 'string',
         reference : {
@@ -58,7 +59,24 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
     }, {
         name : 'file',
         type : 'cn_core-datafieldblob'
-    }]
+    }],
+
+    compoundKeyFields : {
+        MessageDraft : {
+            'mailAccountId'       : 'mailAccountId',
+            'mailFolderId'        : 'mailFolderId',
+            'parentMessageItemId' : 'id'
+        }
+
+    },
+
+    /**
+     * @inheritdoc
+     */
+    getAssociatedCompoundKeyedData : function() {
+        const me = this;
+        return me.getMessageItem() ? [me.getMessageItem()] : [];
+    },
 
 
 });

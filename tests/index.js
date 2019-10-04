@@ -124,7 +124,8 @@ harness.start({
                     {
                         group : 'session',
                         items : [
-                            'src/data/mail/message/session/MessageCompoundBatchVisitorTest.js'
+                            'src/data/mail/message/session/MessageCompoundBatchVisitorTest.js',
+                            'src/data/mail/message/session/MessageDraftSessionTest.js'
                         ]
                     },
                     'src/data/mail/message/CompoundKeyTest.js',

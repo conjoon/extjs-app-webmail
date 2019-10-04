@@ -39,6 +39,28 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
         model = null;
     });
 
+    var createKey = function(id1, id2, id3) {
+            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+        },
+        getMessageItemAt = function(messageIndex) {
+            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+        },
+        createKeyForExistingMessage = function(messageIndex){
+            let item = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
+
+            let key = createKey(
+                item.mailAccountId, item.mailFolderId, item.id
+            );
+
+            return key;
+        },
+        createSession = function() {
+            return Ext.create('coon.core.data.Session', {
+                schema : 'cn_mail-mailbaseschema',
+                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+            })
+        };
+
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
@@ -46,7 +68,9 @@ describe('conjoon.cn_mail.model.mail.message.MessageBodyTest', function(t) {
 
 t.requireOk('conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable', function(){
 t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
-
+t.requireOk('conjoon.cn_mail.data.mail.BaseSchema', function() {
+t.requireOk('conjoon.cn_mail.model.mail.message.MessageDraft', function() {
+t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function() {
     Ext.ux.ajax.SimManager.init({
         delay: 1
     });
@@ -97,11 +121,12 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
             mailAccountId : 3
         });
 
-
-        rec.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+        let mb = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
             mailFolderId  : 1,
             mailAccountId : 3
-        }));
+        });
+
+        rec.setMessageBody(mb);
 
         var rec2 = rec.getMessageBody();
 
@@ -141,28 +166,6 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
     t.it("load() - with session and proper param settings when loaded in session", function(t) {
 
 
-        var createKey = function(id1, id2, id3) {
-                return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
-            },
-            getMessageItemAt = function(messageIndex) {
-                return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
-            },
-            createKeyForExistingMessage = function(messageIndex){
-                let item = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
-
-                let key = createKey(
-                    item.mailAccountId, item.mailFolderId, item.id
-                );
-
-                return key;
-            },
-            createSession = function() {
-                return Ext.create('coon.core.data.Session', {
-                    schema : 'cn_mail-mailbaseschema',
-                    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
-                })
-            };
-
         let session = createSession(),
             item    = getMessageItemAt(1),
             key     = createKeyForExistingMessage(1);
@@ -170,11 +173,13 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
         let model = session.getRecord('MessageDraft', key.toLocalId(), {params : key.toObject()});
 
 
-        t.waitForMs(500, function() {
+        t.waitForMs(1500, function() {
+
+            console.log(model);
 
             model.getMessageBody();
 
-            t.waitForMs(500, function() {
+            t.waitForMs(1500, function() {
                 t.expect(model.getMessageBody().get('mailAccountId')).toBe(model.data.mailAccountId);
                 t.expect(model.getMessageBody().get('mailAccountId')).toBe(item.mailAccountId);
 
@@ -192,4 +197,4 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
 
 
 
-});
+})})})});

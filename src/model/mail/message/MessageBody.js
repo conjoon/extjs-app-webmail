@@ -58,11 +58,12 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
     getAssociatedCompoundKeyedData : function() {
         const me = this;
 
-        let data =  (me.messageDrafts && me.messageDrafts()
-                    ? me.messageDrafts().getRange() : []).concat(
-                    me.messageItems && me.messageItems()
-                    ? me.messageItems().getRange() : []
-                     );
+        let data =  me.getMessageDraft && me.getMessageDraft() ? [me.getMessageDraft()] : [];
+
+            data = data.concat(
+                me.getMessageItem && me.getMessageItem()
+                ? [me.getMessageItem() ] : []
+            );
 
         return data;
     },
@@ -86,6 +87,15 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
         options = options || {};
 
         options.params = options.params || {};
+
+
+        if (!assoc || !assoc.length) {
+            // if no associations have been set, we look up an existing session
+            // and see if we can find a MessageDraft that shares our localId
+            if (me.session && me.session.peekRecord("MessageDraft", me.getId())) {
+                assoc.push(me.session.getRecord("MessageDraft", me.getId()));
+            }
+        }
 
         if (assoc && assoc.length === 1 && assoc[0].entityName === 'MessageDraft') {
             Ext.applyIf(options.params, assoc[0].getCompoundKey().toObject());
