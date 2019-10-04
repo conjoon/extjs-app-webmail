@@ -32,23 +32,56 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             });
 
-            var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
                 subject       : 'test',
-                mailFolderId  : 1,
-                mailAccountId : 3
+                mailFolderId  : "1",
+                mailAccountId : "3"
             });
 
-            draft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody'));
+            draft.setMessageBody(session.createRecord("MessageBody"));
+
             session.adopt(draft);
+
+            session.createVisitor = function() {
+
+                let visitor = coon.core.data.Session.prototype.createVisitor.apply(session);
+
+                visitor.setMessageDraft(draft);
+
+                this.visitorForTesting = visitor;
+
+                return visitor;
+            }
+
 
             return session;
 
         },
-        createVisitor = function() {
-            return Ext.create('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor');
+        createVisitor = function(setDraft = true) {
+            let visitor = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor');
+
+            if (setDraft !== false) {
+                let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                    subject       : 'test',
+                    mailFolderId  : "1",
+                    mailAccountId : "3"
+                });
+
+                visitor.setMessageDraft(draft);
+            }
+
+            return visitor;
         },
         createOp = function() {
-            return Ext.create('Ext.data.operation.Operation');
+            const op = Ext.create('Ext.data.operation.Operation');
+
+            op.getResponse = function() {
+                return {
+                    responseText : "{}"
+                };
+            }
+
+            return op;
         },
         createBatch = function() {
             return Ext.create('Ext.data.Batch');
@@ -56,7 +89,7 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
 
     t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", function() {
     t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
-
+    t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function() {
 
 
         Ext.ux.ajax.SimManager.init({
@@ -196,14 +229,29 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
 
             let batch = session.getSaveBatch();
 
-            let operations = batch.getOperations(),
-                oldOp      = operations[1],
+            let operations = batch.getOperations();
+
+            t.expect(operations.length).toBe(2);
+
+            let oldOp      = operations[1],
                 oldId      = operations[1].id,
                 oldRecord  = operations[1].getRecords();
+
+            let REFR_OP = [];
+            session.visitorForTesting.refreshKeyForDestroy = function(op) {
+                if (op) {
+                  //  debugger;
+                    REFR_OP.push(op.getRecords()[0]);
+                } else {
+                    REFR_OP.push(false);
+                }
+
+            };
 
             t.expect(oldId).toBeDefined();
             t.expect(operations[1].getAction()).toBe('create');
 
+            let CMP_REC = -1;
             // wait for the first operation to complete
             batch.on('operationcomplete', function(batch, operation) {
 
@@ -215,19 +263,136 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 t.expect(operations[1]).not.toBe(oldOp);
                 t.expect(operations[1].getAction()).toBe('update');
                 t.expect(operations[1].getRecords()[0]).toBe(oldRecord[0]);
+                CMP_REC = operations[1].getRecords()[0];
            });
 
             batch.start();
 
             t.waitForMs(2000, function() {
 
+                t.expect(REFR_OP[0]).toBeTruthy();
+                t.expect(REFR_OP[0]).toBe(CMP_REC);
+
+                t.expect(REFR_OP[1]).toBe(false);
+
             });
 
         });
 
 
+        t.it('Test setMessageDraft()', function(t) {
+
+            const visitor = createVisitor(false)
+
+            let exc;
+
+            // wrong type
+            exc = undefined;
+            try {
+                visitor.setMessageDraft({});
+            } catch(e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg).toContain('must be an instance of');
+
+            // okay
+            t.expect(visitor.getMessageDraft()).toBeUndefined();
+            const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
+            visitor.setMessageDraft(draft);
+            t.expect(visitor.getMessageDraft()).toBe(draft);
+
+            // already set
+            exc = undefined;
+            try {
+                visitor.setMessageDraft({});
+            } catch(e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg).toContain('already set');
+        });
+
+
+        t.it('Test seedRetrievedKey()', function(t) {
+
+            const visitor = createVisitor(false)
+
+            t.expect(visitor.seedRetrievedKey()).toBe(false);
+
+            const op = createOp();
+
+            t.expect(visitor.seedRetrievedKey(op)).toBe(false);
+
+            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject       : 'test',
+                mailFolderId  : "1",
+                mailAccountId : "3"
+            });
+
+            visitor.setMessageDraft(draft);
+
+            op.action = "destroy";
+            let CMP = "STRTIOULRFC2Z7Ä";
+            op.getResponse = function() {
+                return {
+                    responseText : Ext.encode({
+                        data : {
+                            parentMessageItemId : CMP
+                        }
+                    })
+                };
+            }
+            op.setRecords([ Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+                mailFolderId  : "1",
+                mailAccountId : "3"
+            })]);
+
+            t.expect(visitor.seedRetrievedKey(op)).toBe(true);
+            t.expect(draft.get("id")).toBe(CMP);
+            t.expect(draft.dirty).toBe(false);
+
+        });
+
+
+        t.it('Test refreshKeyForDestroy()', function(t) {
+
+            const visitor = createVisitor(false)
+
+            t.expect(visitor.refreshKeyForDestroy()).toBe(false);
+
+            const op = createOp();
+
+            t.expect(visitor.refreshKeyForDestroy(op)).toBe(false);
+
+            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                subject       : 'test',
+                id            : "FOOBAR",
+                mailFolderId  : "1",
+                mailAccountId : "3"
+            });
+
+            visitor.setMessageDraft(draft);
+
+            op.action = "destroy";
+            let attachment = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+                id            : "567",
+                mailFolderId  : "1",
+                mailAccountId : "3"
+            });
+            op.setRecords([attachment]);
+
+            t.expect(attachment.get("parentMessageItemId")).not.toBe(draft.get("id"));
+            t.expect(visitor.refreshKeyForDestroy(op)).toBe(true);
+            t.expect(attachment.get("parentMessageItemId")).toBe(draft.get("id"));
+            t.expect(attachment.dirty).toBe(false);
+
+        });
+
     });
 
-})});
+})})});
 
 

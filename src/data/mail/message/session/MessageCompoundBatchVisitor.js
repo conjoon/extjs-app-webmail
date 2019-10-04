@@ -32,17 +32,49 @@
  * an UPDATE operation.
  * This class takes care of proper handling and should be used whenever
  * Message compounds (Boddy/Draft/Item/Attachments) are used in conjunction.
- *
  * Extends SplitBatchVisitor to make sure each batch has only ONE operation.
+ * This class is used internally by conjoon.cn_mail.data.mail.message.session.MessageDraftSession
+ * and makes sure that removed data (DraftAttachment-operations) updates the id of
+ * the messageDraft-record this class was configured with.
  *
  *
  * NOTE:
- * By using this visitor, operatiosn get changed during runtime. Do not rely
+ * By using this visitor, operations get changed during runtime. Do not rely
  * on the state of the operations when the visitor has created the batches.
  */
 Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', {
 
     extend : 'coon.core.data.session.SplitBatchVisitor',
+
+    config : {
+        messageDraft : undefined
+    },
+
+
+    /**
+     * Applies the MessageDraft to this instance.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @returns {conjoon.cn_mail.model.mail.message.MessageDraft}
+     *
+     * @throws if a messageDraft is already available for this session, or if the
+     * messageDraft is not an instance of conjoon.cn_mail.model.mail.message.MessageDraft
+     */
+    applyMessageDraft : function(messageDraft) {
+
+        const me = this;
+
+        if (me.getMessageDraft()) {
+            Ext.raise("\"messageDraft\" was already set")
+        }
+
+        if (messageDraft !== undefined && !(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
+            Ext.raise("\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft")
+        }
+
+        return messageDraft;
+    },
+
 
     /**
      * @inheritdoc
@@ -72,12 +104,24 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      * Swaps a CREATE operation with an UPDATE operation if the previous operation
      * applied a compound key to the record that is part of the following
      * operation.
+     * Will assign the id returned by the DESTROY operation and update the
+     * MessageDraft this class was configured with.
+     * Makes sure that data that is about to be destroyed gets the current
+     * parentMesssageItem-id set of this MessageDraft (since an automatic seed done by
+     * the model itself wont work since associations are lost once "remove" was called
+     * on the store the data belongs to).
      *
      * @param {Ext.data.Batch} batch
      * @param {Ext.data.operation.Operation} operation
      *
      * @return null if no operation was swapped, otherwise the newly created
      * {Ext.data.Operation}
+     *
+     * @throws if no MessageDraft is configured, or if the number of records
+     * per operation is > 1
+     *
+     * @see seedRetrievedKey
+     * @see refreshKeyForDestroy
      */
     onBatchOperationComplete : function(batch, operation) {
 
@@ -89,25 +133,41 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
 
         let next       = batch.current + 1,
             operations = batch.getOperations(),
-            op         = operations[next];
+            op         = operations[next],
+            rec, newOp, proxy, recs;
+
+        if (!me.getMessageDraft()) {
+            Ext.raise("Missing messageDraft configuration.");
+        }
+
+        // check if operation WAS DESTROY and seed the retrieved key
+        me.seedRetrievedKey(operation);
+
+        // check if operation IS GOING TO BE DESTROY and set the new key
+        me.refreshKeyForDestroy(op);
+
 
         if (!op) {
             return null;
         }
-
-        let rec = op.getRecords();
+        rec = op.getRecords();
 
         if (!rec || !rec.length) {
             return null;
         }
 
+        if (rec.length > 1) {
+            Ext.raise("Unexpected number of records. Need 1, got " + rec.length)
+        }
+
         rec = rec[0];
 
-        let newOp = null;
+        newOp = null;
+
 
         if (me.isOperationSwappable(op)) {
 
-            let proxy = rec.getProxy();
+            proxy = rec.getProxy();
 
             newOp = proxy.createOperation('update', {
                 records : [rec]
@@ -117,9 +177,74 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
             op.destroy();
             op = null;
             operations[next] = newOp;
+
         }
 
         return newOp;
+    },
+
+
+    /**
+     * Checks whether this operation is a destroy-operation of a DraftAttachment
+     * and seeds the new parentMessageItemId that was returned by this operation
+     * among the MessageDraft of this instance.
+     *
+     * @param {Ext.data.operation.Operation} operation
+     *
+     * @return {Boolean} true if the key was seeded, otherwise false
+     *
+     * @private
+     */
+    seedRetrievedKey : function(operation) {
+
+        if (!operation || !operation.getRecords()) {
+            return false;
+        }
+
+        const me            = this,
+              rec           = operation.getRecords()[0],
+              messageDraft  = me.getMessageDraft(),
+              resp          = Ext.decode(operation.getResponse().responseText);
+
+        if (operation.getAction() === "destroy" && rec.entityName === "DraftAttachment") {
+            messageDraft.set('id', resp.data.parentMessageItemId);
+            messageDraft.commit();
+
+            return true;
+        }
+
+        return false;
+    },
+
+
+    /**
+     * Checks whether this operation is a destroy-operation of a DraftAttachment
+     * and sets the parentMessageItemId to the id of the MessageDraft of this class.
+     *
+     * @param {Ext.data.operation.Operation} operation
+     *
+     * @return {Boolean} true if the parentMessageItemId was set, otherwise false.
+     *
+     * @private
+     */
+    refreshKeyForDestroy : function(operation) {
+
+        if (!operation || operation.getAction() != "destroy") {
+            return false;
+        }
+
+        const me           = this,
+              rec          = operation.getRecords()[0],
+              messageDraft = me.getMessageDraft();
+
+        if (rec.entityName !== "DraftAttachment") {
+            Ext.raise("no handler for \""  + rec.entityName + "\" found")
+        }
+
+        rec.set("parentMessageItemId", messageDraft.get("id"));
+        rec.commit();
+
+        return true;
     },
 
 
@@ -143,7 +268,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
         rec = Ext.isArray(rec) ? rec[0] : rec;
 
         return op.getAction() === 'create' && (rec.entityName === 'MessageDraft'
-                || rec.entityName === 'MessageItem') && rec.isCompoundKeySet();
+                || rec.entityName === 'MessageItem') && rec.isCompoundKeyConfigured();
     }
 
 
