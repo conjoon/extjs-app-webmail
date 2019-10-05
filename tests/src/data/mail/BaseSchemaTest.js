@@ -82,8 +82,8 @@ describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
 
             ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
             proxy = Ext.Factory.proxy(ret);
-            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
-            t.expect(proxy.getReader() instanceof conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader).toBe(false);
+            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader');
+            t.expect(proxy.getReader() instanceof conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader).toBe(true);
         });
 
 

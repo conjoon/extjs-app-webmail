@@ -683,4 +683,71 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
         });
 
 
+        t.it("Test MessageBody assoc", function(t) {
+
+            let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+               mailFolderId : "INBOX",
+               mailAccountId : "dev"
+            });
+
+            let mb = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+                mailFolderId : "INBOX",
+                mailAccountId : "dev"
+            });
+
+
+            draft.setMessageBody(mb);
+
+            t.expect(draft.getMessageBody()).toBe(mb);
+            t.expect(mb.getMessageDraft()).toBe(draft);
+
+        });
+
+
+        t.it("Test MessageBody save", function(t) {
+            let session = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageDraftSession');
+
+            let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+
+            var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                    messageItem.mailAccountId,
+                    messageItem.mailFolderId,
+                    messageItem.id
+                )
+            );
+
+            session.setMessageDraft(rec);
+
+            t.waitForMs(500, function() {
+                var mb = rec.loadMessageBody();
+
+                t.waitForMs(500, function() {
+
+                    rec.set("subject", "a");
+                    mb.set("text/plain", "foo");
+
+                    t.expect(rec.loadMessageBody()).toBe(mb);
+                    t.expect(mb.getMessageDraft()).toBe(rec);
+
+                    session.getSaveBatch().start();
+                    t.waitForMs(500, function() {
+
+                        rec.set("subject", "b");
+                        mb.set("text/plain", "foobar");
+
+                        t.expect(rec.getMessageBody()).toBe(mb);
+                        t.expect(mb.getMessageDraft()).toBe(rec);
+
+                        session.getSaveBatch().start();
+                        t.waitForMs(500, function() {
+
+                        });
+                    });
+                });
+
+            });
+
+        });
+
 });});});});

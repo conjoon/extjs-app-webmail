@@ -49,6 +49,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
     }, {
         name : 'textHtml',
         type : 'string'
+    }, {
+        // we are hardcoding a messageDraftId-field here, although the
+        // a MessageBody related with any item might NOT be a draft.
+        // however, we keep this field here to make sure
+        // associations (MessageDraft <-> MessageBody) work in both directions
+        persist     : false,
+        name        : 'messageDraftId',
+        type        : 'string',
+        reference   : {
+            parent : 'MessageDraft',
+        },
+        unique : true,
+        validators : 'presence'
     }],
 
 
@@ -64,6 +77,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
                 me.getMessageItem && me.getMessageItem()
                 ? [me.getMessageItem() ] : []
             );
+
 
         return data;
     },
@@ -88,20 +102,10 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
 
         options.params = options.params || {};
 
-
-        if (!assoc || !assoc.length) {
-            // if no associations have been set, we look up an existing session
-            // and see if we can find a MessageDraft that shares our localId
-            if (me.session && me.session.peekRecord("MessageDraft", me.getId())) {
-                assoc.push(me.session.getRecord("MessageDraft", me.getId()));
-            }
-        }
-
-        if (assoc && assoc.length === 1 && assoc[0].entityName === 'MessageDraft') {
+       if (assoc && assoc.length === 1 && assoc[0].entityName === 'MessageDraft') {
             Ext.applyIf(options.params, assoc[0].getCompoundKey().toObject());
         }
 
        return me.callParent([options]);
     }
-
 });

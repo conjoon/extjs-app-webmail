@@ -86,6 +86,8 @@ t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function() {
     });
 
     t.it("Test Record Validity", function(t) {
+        t.expect(model.isValid()).toBe(false);
+        model.set("messageDraftId", "123");
         t.expect(model.isValid()).toBe(true);
     });
 
@@ -106,6 +108,13 @@ t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function() {
     t.it("id", function(t) {
         t.expect(model.getField('id')).toBeTruthy();
         t.expect(model.getField('id').critical).toBe(true);
+    });
+
+
+    t.it("messageDraftId", function(t) {
+        t.expect(model.getField('messageDraftId')).toBeTruthy();
+        t.expect(model.getField('messageDraftId').persist).toBe(false);
+        t.expect(model.getField('messageDraftId').unique).toBe(true);
     });
 
 
@@ -175,9 +184,7 @@ t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function() {
 
         t.waitForMs(1500, function() {
 
-            console.log(model);
-
-            model.getMessageBody();
+            model.loadMessageBody();
 
             t.waitForMs(1500, function() {
                 t.expect(model.getMessageBody().get('mailAccountId')).toBe(model.data.mailAccountId);
