@@ -25,7 +25,7 @@
 
 /**
  * Specialized version of a JSON Reader used by Message Items, makes sure messageBodyId
- * gets computed
+ * gets computed if the action passed to #applyCompoundKey is "read"
  */
 Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
@@ -37,10 +37,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
     alias : 'reader.cn_mail-mailmessageitemjsonreader',
 
+
     /**
      * @inheritdoc
      */
-    applyCompoundKey : function(data) {
+    applyCompoundKey : function(data, action) {
 
         const me = this,
               MessageEntityCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
@@ -56,9 +57,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
                 for (i = 0; i < len; i++) {
                     rec = records[i];
 
-                    rec.messageBodyId = MessageEntityCompoundKey.createFor(
-                        rec.mailAccountId, rec.mailFolderId, rec.id
-                    ).toLocalId();
+                    if (action === 'read') {
+                         rec.messageBodyId = MessageEntityCompoundKey.createFor(
+                             rec.mailAccountId, rec.mailFolderId, rec.id
+                         ).toLocalId();
+                    }
 
                 }
 
@@ -66,10 +69,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
             } else if (Ext.isObject(data.data)) {
                 // POST / PUT
-                data.data.messageBodyId = MessageEntityCompoundKey.createFor(
-                    data.data.mailAccountId, data.data.mailFolderId, data.data.id
-                ).toLocalId();
+                if (action === 'read') {
+                    data.data.messageBodyId = MessageEntityCompoundKey.createFor(
+                       data.data.mailAccountId, data.data.mailFolderId, data.data.id
+                    ).toLocalId();
 
+                }
                 return data;
             }
         }
@@ -80,7 +85,6 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
             return data;
         }
     }
-
 
 
 });

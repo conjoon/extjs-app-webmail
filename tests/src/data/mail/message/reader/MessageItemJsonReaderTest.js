@@ -46,41 +46,61 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
 
         let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'),
             ret,
-            keys = {
+            keys = function(){return {
                 mailAccountId : 'a',
                 mailFolderId : 'b',
-                id : 'c',
-                localId : 'f-t-l',
-                messageBodyId : 'f-l-t'
+                id : 'c'
+            };},
+            data = function() {
+                return {data : [keys()]};
             },
-            data = {
-                data : [keys]
-            },
-            result = {
-                data : [{
-                    mailAccountId : 'a',
-                    mailFolderId : 'b',
-                    id : 'c',
-                    messageBodyId : MessageEntityCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.id).toLocalId()
-                }]
-            };
+            result = function(){
+                return {
+                    data : [{
+                        mailAccountId : 'a',
+                        mailFolderId : 'b',
+                        id : 'c',
+                        messageBodyId : MessageEntityCompoundKey.createFor(keys().mailAccountId, keys().mailFolderId, keys().id).toLocalId()
+                    }]
+                };
+            }, pResult, pData;
 
-        ret = reader.applyCompoundKey(data);
 
-        t.expect(ret.data[0].messageBodyId).toBe(result.data[0].messageBodyId);
-        t.expect(ret.data[0].localId).toBe(result.data[0].messageBodyId);
+        // Array
+        pData = data();
+        ret = reader.applyCompoundKey(pData, "read");
+        t.expect(ret.data[0].messageBodyId).not.toBeUndefined();
+        t.expect(ret.data[0].messageBodyId).toBe(result().data[0].messageBodyId);
+        t.expect(ret.data[0].localId).toBe(result().data[0].messageBodyId);
 
-        data = {data : data.data[0]};
-        ret = reader.applyCompoundKey(data);
-        result = {data : result.data[0]};
-        t.expect(ret.data.messageBodyId).toBe(result.data.messageBodyId);
-        t.expect(ret.data.localId).toBe(result.data.messageBodyId);
+        // Object
+        pData = data();
+        pData = {data : pData.data[0]};
+        ret = reader.applyCompoundKey(pData, "read");
+        pResult = {data : result().data[0]};
+        t.expect(ret.data.messageBodyId).not.toBeUndefined();
+        t.expect(ret.data.messageBodyId).toBe(pResult.data.messageBodyId);
+        t.expect(ret.data.localId).toBe(pResult.data.messageBodyId);
+
+        let chkKeys = ["update", "create", "destroy", "read"];
+        for (let i = 0, len = chkKeys.length; i < len; i++) {
+            pData = data();
+            ret = reader.applyCompoundKey(pData, chkKeys[i]);
+            if (chkKeys[i] !== "read") {
+                t.expect(ret.data[0].messageBodyId).toBeUndefined();
+            } else {
+                t.expect(ret.data[0].messageBodyId).toBeDefined();
+            }
+
+        }
+
     });
+
 
     t.it("applyCompoundKey() - success false", function(t) {
 
         let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
-        ret = reader.applyCompoundKey({success : false});
+        ret = reader.applyCompoundKey({success : false}, "read");
         t.expect(ret).toEqual({success : false})
     });
 
