@@ -715,7 +715,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 CALLED = 0, EVTSOURCE, EVTDRAFT;
 
             Ext.ux.ajax.SimManager.init({
-                delay: 1000
+                delay: 500
             });
 
 
@@ -763,7 +763,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModelTest', 
                 CALLED = 0;
 
             Ext.ux.ajax.SimManager.init({
-                delay: 1000
+                delay: 500
             });
 
             let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.processMessageDraftLoadFailure;

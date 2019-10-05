@@ -292,11 +292,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                             const me = this,
                                   view = me.getView();
 
-                            me.getSession().setMessageDraft(record);
-                            me.set('messageDraft', record);
-                            me.notify();
-                            me.loadingDraft = null;
-                            view.fireEvent('cn_mail-messagedraftload', view, record);
+                            record.loadMessageBody({
+                                success : function() {
+                                    me.getSession().setMessageDraft(record);
+                                    me.set('messageDraft', record);
+                                    me.notify();
+                                    me.loadingDraft = null;
+                                    view.fireEvent('cn_mail-messagedraftload', view, record);
+                                },
+                                scope : me
+                            })
                         },
                         failure : me.processMessageDraftLoadFailure,
                         scope : me
