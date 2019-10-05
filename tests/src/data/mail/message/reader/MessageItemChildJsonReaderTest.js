@@ -48,16 +48,18 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTes
 
         let reader = Ext.create(CLASSNAME),
             ret,
-            keys = {
-                mailAccountId : 'a',
-                mailFolderId : 'b',
-                parentMessageItemId : 'c',
-                id : 'd',
-                localId : 'f-t-l',
-                messageItemId : 'l-t-f'
+            dataKeys = function() {
+                return {
+                    mailAccountId : 'a',
+                    mailFolderId : 'b',
+                    parentMessageItemId : 'c',
+                    id : 'd'
+                };
             },
-            data = {
-                data : [keys]
+            data = function() {
+                return {
+                    data : [dataKeys()]
+                };
             },
             result = {
                 data : [{
@@ -65,28 +67,58 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTes
                     mailFolderId : 'b',
                     parentMessageItemId : 'c',
                     id : 'd',
-                    localId : MessageItemChildCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.parentMessageItemId, keys.id).toLocalId(),
-                    messageItemId : MessageEntityCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.parentMessageItemId).toLocalId()
+                    localId : MessageItemChildCompoundKey.createFor(
+                        dataKeys().mailAccountId,
+                        dataKeys().mailFolderId,
+                        dataKeys().parentMessageItemId,
+                        dataKeys().id
+                    ).toLocalId(),
+                    messageItemId : MessageEntityCompoundKey.createFor(
+                        dataKeys().mailAccountId,
+                        dataKeys().mailFolderId,
+                        dataKeys().parentMessageItemId
+                    ).toLocalId()
                 }]
             };
 
-        ret = reader.applyCompoundKey(data);
+        // exception
+        let exc;
+        try{reader.applyCompoundKey({}, "");} catch(e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("unexpected value for");
+        exc = undefined;
 
+        let chkKeys = ["read", "update", "destroy", "create"];
+        for (let i = 0, len = chkKeys.length; i < len; i++) {
+            let pData = data(),
+            ret = reader.applyCompoundKey(pData, chkKeys[i]);
+            if (chkKeys[i] !== "read") {
+                t.expect(ret.data[0].messageItemId).toBeUndefined();
+            } else {
+                t.expect(ret.data[0].messageItemId).toBeDefined();
+            }
+        }
+
+        let pData = data();
+        ret = reader.applyCompoundKey(pData, "read");
         t.expect(ret.data[0].messageItemId).toBe(result.data[0].messageItemId);
         t.expect(ret.data[0].localId).toBe(result.data[0].localId);
 
-        data = {data : data.data[0]};
-        ret = reader.applyCompoundKey(data);
+
+        pData = {data : data().data[0]};
+        ret = reader.applyCompoundKey(pData, "read");
         result = {data : result.data[0]};
         t.expect(ret.data.messageItemId).toBe(result.data.messageItemId);
         t.expect(ret.data.localId).toBe(result.data.localId);
+
     });
 
 
     t.it("applyCompoundKey() - success false", function(t) {
 
         let reader = Ext.create(CLASSNAME);
-        ret = reader.applyCompoundKey({success : false});
+        ret = reader.applyCompoundKey({success : false}, "update");
         t.expect(ret).toEqual({success : false})
     });
 
@@ -94,7 +126,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTes
     t.it("app-cn_mail#67", function(t) {
 
         let reader = Ext.create(CLASSNAME);
-        ret = reader.applyCompoundKey({success : true});
+        ret = reader.applyCompoundKey({success : true}, "update");
         t.expect(ret).toEqual({success : true})
     });
 

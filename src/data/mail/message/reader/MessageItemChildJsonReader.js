@@ -26,6 +26,7 @@
 /**
  * Specialized version of a JSON Reader used by MessageItem child entities, such as
  * attachments.
+ *
  */
 Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader', {
 
@@ -43,25 +44,35 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
      * data mailAccountId, mailFolderId and parentMessageItemId. id is only used
      * for the local id along with the other keys.
      * For the messageItemId, the id is ignored and instead the parentMessageItemId is used.
+     * The value will only be computed if the passed action is "read".
      *
      * Does not call parent implementation!
      *
      * @inheritdoc
+     *
+     * @throws if action is not set to "read", "destroy", "update" or "create"
      */
-    applyCompoundKey : function(data) {
+    applyCompoundKey : function(data, action) {
 
         const me = this,
               ck = conjoon.cn_mail.data.mail.message.compoundKey,
               MessageEntityCompoundKey    = ck.MessageEntityCompoundKey,
-              MessageItemChildCompoundKey = ck.MessageItemChildCompoundKey;
+              MessageItemChildCompoundKey = ck.MessageItemChildCompoundKey,
+              valChk                      = ["create", "update", "read", "destroy"];
+
+
+        if (valChk.indexOf(action) === -1) {
+            let exp = valChk.join(", ");
+            // "unexpected value for \"action\", expected any of \"" + valChk.join(", ") + "\", "+  ")
+            Ext.raise(`unexpected value for "action", expected any of "${exp}", but got "${action}"`);
+        }
+
 
         if (Ext.isObject(data)) {
             if (Ext.isArray(data.data)) {
 
                 let records = data.data,
                     len = records.length, rec, i;
-
-
 
                 for (i = 0; i < len; i++) {
                     rec = records[i];
@@ -70,9 +81,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
                         rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId, rec.id
                     ).toLocalId();
 
-                    rec.messageItemId = MessageEntityCompoundKey.createFor(
-                        rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId
-                    ).toLocalId();
+                    if (action === 'read') {
+                        rec.messageItemId = MessageEntityCompoundKey.createFor(
+                            rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId
+                        ).toLocalId();
+                    }
                 }
 
                 return data;
@@ -86,10 +99,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
                     dt.mailAccountId, dt.mailFolderId, dt.parentMessageItemId, dt.id
                 ).toLocalId();
 
-                dt.messageItemId = MessageEntityCompoundKey.createFor(
-                    dt.mailAccountId, dt.mailFolderId, dt.parentMessageItemId
-                ).toLocalId();
-
+                if (action === 'read') {
+                    dt.messageItemId = MessageEntityCompoundKey.createFor(
+                        dt.mailAccountId, dt.mailFolderId, dt.parentMessageItemId
+                    ).toLocalId();
+                }
                 return data;
             }
         }
