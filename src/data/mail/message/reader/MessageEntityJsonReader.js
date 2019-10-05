@@ -43,6 +43,31 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
 
 
     /**
+     * Overrides parent implementation by injecting a "cn_action" property into
+     * the metaData section of the parsed response. The metaData-section will be created
+     * if it does not already exist.
+     *
+     * @param {Object} response
+     *
+     * @retrurn {Object}
+     */
+    getResponseData : function(response) {
+
+        const me     = this,
+              action = response.request.action,
+              result = me.callParent(arguments);
+
+        if (!result.metaData) {
+            result.metaData = {};
+        }
+
+        result.metaData.cn_action = action;
+
+        return result;
+    },
+
+
+    /**
      * @inheritdoc
      *
      * @return {Object}
@@ -54,9 +79,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
      */
     readRecords : function(data, readOptions, internalReadOptions) {
 
-        const me = this;
+        const me     = this,
+              action = data && data.metaData ? data.metaData.cn_action : "";
 
-        data = me.applyCompoundKey(data);
+        data = me.applyCompoundKey(data, action);
 
         return me.callParent([data, readOptions, internalReadOptions]);
     },
@@ -67,14 +93,23 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
      * by utilizing conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      *
      * @param {Object} data
+     * @param {String} action The type of action of the request that lead to the response
      *
      * @return {Boolean|Object}
+     *
+     * @throws if action is not set to "read", "destroy", "update" or "create"
      */
-    applyCompoundKey : function(data) {
+    applyCompoundKey : function(data, action) {
 
-        const me                    = this,
-            MessageEntityCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+        const me                       = this,
+              MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey,
+              valChk                   = ["create", "update", "read", "destroy"];
 
+        if (valChk.indexOf(action) === -1) {
+            let exp = valChk.join(", ");
+            // "unexpected value for \"action\", expected any of \"" + valChk.join(", ") + "\", "+  ")
+            Ext.raise(`unexpected value for "action", expected any of "${exp}", but got "${action}"`);
+        }
 
         if (Ext.isObject(data)) {
 

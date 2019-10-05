@@ -46,24 +46,31 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
         let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
             exc, e, data;
 
-        try{reader.applyCompoundKey(data);} catch(e) {exc = e;}
+        try{reader.applyCompoundKey(null, "read");} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
         exc = undefined;
 
         data = {};
-        try{reader.applyCompoundKey(data);} catch(e) {exc = e;}
+        try{reader.applyCompoundKey(data, "read");} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
         exc = undefined;
 
         data = {data : ""};
-        try{reader.applyCompoundKey(data);} catch(e) {exc = e;}
+        try{reader.applyCompoundKey(data, "read");} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
+        exc = undefined;
+
+        data = {data : {}};
+        try{reader.applyCompoundKey(data, "");} catch(e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("unexpected value for");
         exc = undefined;
 
     });
@@ -92,12 +99,12 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
                 }]
             };
 
-        ret = reader.applyCompoundKey(data);
+        ret = reader.applyCompoundKey(data, "read");
 
         t.expect(ret).toEqual(result);
 
         data = {data : data.data[0]};
-        ret = reader.applyCompoundKey(data);
+        ret = reader.applyCompoundKey(data, "read");
         result = {data : result.data[0]};
         t.expect(ret).toEqual(result);
 
@@ -108,7 +115,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
     t.it("applyCompoundKey() - success false", function(t) {
 
         let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
-        ret = reader.applyCompoundKey({success : false});
+        ret = reader.applyCompoundKey({success : false}, "read");
         t.expect(ret).toEqual({success : false})
     });
 
@@ -123,6 +130,32 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
         try {reader.readRecords();}catch(e){}
     })
 
+
+    t.it("getResponseData()", function(t){
+
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+
+        let response = {responseText : "{}", request : {action : "create"}};
+
+        t.expect(reader.getResponseData(response)).toEqual({metaData : {cn_action : "create"}});
+    })
+
+
+    t.it("readRecords() - argument check", function(t){
+
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
+            ACTION = "";
+
+        reader.applyCompoundKey = function(data, action) {
+            ACTION = action;
+        };
+
+        reader.readRecords({metaData : {cn_action : "update"}})
+        t.expect(ACTION).toBe("update");
+
+        reader.readRecords({})
+        t.expect(ACTION).toBe("");
+    })
 
 });
 
