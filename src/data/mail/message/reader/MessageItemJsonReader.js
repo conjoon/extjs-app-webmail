@@ -37,6 +37,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
     alias : 'reader.cn_mail-mailmessageitemjsonreader',
 
+    foreignKeyProp : 'messageBodyId',
 
     /**
      * @inheritdoc
@@ -58,7 +59,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
                     rec = records[i];
 
                     if (action === 'read') {
-                         rec.messageBodyId = MessageEntityCompoundKey.createFor(
+                         rec[me.foreignKeyProp] = MessageEntityCompoundKey.createFor(
                              rec.mailAccountId, rec.mailFolderId, rec.id
                          ).toLocalId();
                     }
@@ -70,10 +71,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
             } else if (Ext.isObject(data.data)) {
                 // POST / PUT
                 if (action === 'read') {
-                    data.data.messageBodyId = MessageEntityCompoundKey.createFor(
+                    data.data[me.foreignKeyProp] = MessageEntityCompoundKey.createFor(
                        data.data.mailAccountId, data.data.mailFolderId, data.data.id
                     ).toLocalId();
-
                 }
                 return data;
             }

@@ -23,18 +23,18 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', function(t) {
+describe('conjoon.cn_mail.view.mail.message.reader.MessageBodyJsonReaderTest', function(t) {
 
 
     t.it("Should successfully create and test instance", function(t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader', {
 
         });
 
-        t.isInstanceOf(reader, 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+        t.isInstanceOf(reader, 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
 
-        t.expect(reader.alias).toContain('reader.cn_mail-mailmessageitemjsonreader');
+        t.expect(reader.alias).toContain('reader.cn_mail-mailmessagebodyjsonreader');
 
     });
 
@@ -44,7 +44,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
 
         const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'),
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader'),
             ret,
             keys = function(){return {
                 mailAccountId : 'a',
@@ -60,50 +60,43 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemJsonReaderTest', f
                         mailAccountId : 'a',
                         mailFolderId : 'b',
                         id : 'c',
-                        messageBodyId : MessageEntityCompoundKey.createFor(keys().mailAccountId, keys().mailFolderId, keys().id).toLocalId()
+                        messageDraftId : MessageEntityCompoundKey.createFor(keys().mailAccountId, keys().mailFolderId, keys().id).toLocalId()
                     }]
                 };
             }, pResult, pData;
 
-        t.expect(reader.foreignKeyProp).toBe("messageBodyId")
+        t.expect(reader.foreignKeyProp).toBe("messageDraftId")
 
         // Array
         pData = data();
         ret = reader.applyCompoundKey(pData, "read");
-        t.expect(ret.data[0].messageBodyId).not.toBeUndefined();
-        t.expect(ret.data[0].messageBodyId).toBe(result().data[0].messageBodyId);
-        t.expect(ret.data[0].localId).toBe(result().data[0].messageBodyId);
+        t.expect(ret.data[0].messageDraftId).not.toBeUndefined();
+        t.expect(ret.data[0].messageDraftId).toBe(result().data[0].messageDraftId);
+        t.expect(ret.data[0].localId).toBe(result().data[0].messageDraftId);
 
         // Object
         pData = data();
         pData = {data : pData.data[0]};
         ret = reader.applyCompoundKey(pData, "read");
         pResult = {data : result().data[0]};
-        t.expect(ret.data.messageBodyId).not.toBeUndefined();
-        t.expect(ret.data.messageBodyId).toBe(pResult.data.messageBodyId);
-        t.expect(ret.data.localId).toBe(pResult.data.messageBodyId);
+        t.expect(ret.data.messageDraftId).not.toBeUndefined();
+        t.expect(ret.data.messageDraftId).toBe(pResult.data.messageDraftId);
+        t.expect(ret.data.localId).toBe(pResult.data.messageDraftId);
 
         let chkKeys = ["update", "create", "destroy", "read"];
         for (let i = 0, len = chkKeys.length; i < len; i++) {
             pData = data();
             ret = reader.applyCompoundKey(pData, chkKeys[i]);
             if (chkKeys[i] !== "read") {
-                t.expect(ret.data[0].messageBodyId).toBeUndefined();
+                t.expect(ret.data[0].messageDraftId).toBeUndefined();
             } else {
-                t.expect(ret.data[0].messageBodyId).toBeDefined();
+                t.expect(ret.data[0].messageDraftId).toBeDefined();
             }
 
         }
 
     });
 
-
-    t.it("applyCompoundKey() - success false", function(t) {
-
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
-        ret = reader.applyCompoundKey({success : false}, "read");
-        t.expect(ret).toEqual({success : false})
-    });
 
 
 });

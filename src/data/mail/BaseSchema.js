@@ -38,7 +38,8 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
         'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
         'conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy',
         'conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy',
-        'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader'
+        'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader',
+        'conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader'
     ],
 
     alias : 'schema.cn_mail-mailbaseschema',
@@ -82,6 +83,8 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
 
                 if (entityName !== 'MessageBody')  {
                     proxy.reader = 'cn_mail-mailmessageitemjsonreader';
+                } else {
+                    proxy.reader = 'cn_mail-mailmessagebodyjsonreader';
                 }
 
             } else if (["DraftAttachment", "ItemAttachment"].indexOf(entityName) !==  -1) {
