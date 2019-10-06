@@ -71,8 +71,19 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
     add : function(record) {
 
         const me = this,
-              recs = [].concat(record),
-              ret = me.callParent(arguments);
+              recs = [].concat(record);
+
+        if (Ext.isArray(record)) {
+            let inRet = [];
+            for (let i = 0, len = record.length; i < len; i++) {
+                inRet.push(me.add(record[i]));
+            }
+            return inRet;
+        }
+        if (this.findExact("localId", record.getId()) > -1) {
+            return record;
+        }
+        const ret = me.callParent(arguments);
 
         let assoc = me.getAssociatedEntity();
 

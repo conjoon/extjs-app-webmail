@@ -362,4 +362,27 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
 
     });
 
+
+    t.it("add() - record alread in store", function(t) {
+
+
+        let exc, e,
+            store = Ext.create('conjoon.cn_mail.store.mail.message.MessageAttachmentStore'),
+            ret, anon;;
+
+        let att1  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment'),
+            att2  = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
+
+        store.add([att1, att2]);
+
+
+        t.isntCalled('getAssociatedEntity', store);
+        store.add([att2, att1]);
+
+
+        store.destroy();
+        store = null;
+    });
+
+
 });
