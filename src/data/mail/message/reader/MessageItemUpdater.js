@@ -110,7 +110,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
 
         // from/to fields are COPYING the values so we do not
         // need to take care of cloning them
-        messageItem.set({
+        let copiedData = {
             date           : messageDraft.get('date'),
             to             : messageDraft.get('to'),
             subject        : messageDraft.get('subject'),
@@ -122,9 +122,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
             flagged        : messageDraft.get('flagged'),
             recent         : messageDraft.get('recent'),
             answered       : messageDraft.get('answered'),
-            draft          : messageDraft.get('draft')
-        });
+            draft          : messageDraft.get('draft'),
+            // most likely changed if dealing with IMAP
+            // standards
+            id             : messageDraft.get('id'),
+            messageBodyId : messageDraft.get('messageBodyId')
+        };
 
+        messageItem.set(copiedData);
         messageItem.commit();
 
         return messageItem;

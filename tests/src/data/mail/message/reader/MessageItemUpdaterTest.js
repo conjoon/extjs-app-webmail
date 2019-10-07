@@ -33,6 +33,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
 
             var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
                 id             : 1,
+                messageBodyId  : "1",
                 size           : 400,
                 subject        : 'SUBJECT',
                 from           : {name : 'foo', address : 'bar'},
@@ -50,7 +51,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
         },
         createMessageDraft = function() {
             var messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                id      : 1,
+                id            : 3,
                 subject : 'subject',
                 from    : {name : 'foo', address : 'bar'},
                 date    : '2017-07-30 23:45:00',
@@ -68,10 +69,16 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 size : 40
             }));
 
-            messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-                textHtml  : 'Html text',
-                textPlain : 'Plain Text'
-            }));
+            let mb = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
+                id            : "3",
+                mailFolderId  : "INBOX",
+                mailAccountId : "dev_sys_conjoon_org",
+                textHtml      : 'Html text',
+                textPlain     : 'Plain Text'
+            });
+
+            mb.setId(mb.getCompoundKey().toLocalId());
+            messageDraft.setMessageBody(mb);
 
             return messageDraft;
         };
@@ -111,10 +118,15 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
                 t.expect(exc.msg.toLowerCase()).toContain('messageitem must be an instance of');
 
 
+                t.expect(messageItem.get('messageBodyId')).toBe("1");
+                t.expect(messageDraft.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
                 ret = UPDATER.updateItemWithDraft(messageItem, messageDraft);
 
                 t.expect(ret).toBe(messageItem);
 
+                // messageBodyId
+                t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
+                t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.get('messageBodyId'));
 
                 t.expect(messageItem.get('subject')).toBe(messageDraft.get('subject'));
                 t.expect(messageItem.get('date')).toBe(messageDraft.get('date'));
