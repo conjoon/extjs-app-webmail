@@ -292,9 +292,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
                             const me = this,
                                   view = me.getView();
 
+                            me.getSession().setMessageDraft(record);
+
                             record.loadMessageBody({
-                                success : function() {
-                                    me.getSession().setMessageDraft(record);
+                                success : function(mb) {
                                     me.set('messageDraft', record);
                                     me.notify();
                                     me.loadingDraft = null;
