@@ -385,4 +385,17 @@ describe('conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest', functi
     });
 
 
+    t.it("add() - no record instance", function(t) {
+
+        let store = Ext.create('conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
+
+        let rec = store.add({text : "file1.jpg"});
+
+        // store.model is undefined, so check for base model class
+        t.isInstanceOf(rec[0], 'Ext.data.Model');
+
+        store.destroy();
+        store = null;
+    });
+
 });

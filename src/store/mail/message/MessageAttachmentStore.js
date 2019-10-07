@@ -80,7 +80,7 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
             }
             return inRet;
         }
-        if (this.findExact("localId", record.getId()) > -1) {
+        if ((record instanceof Ext.data.Model) && this.findExact("localId", record.getId()) > -1) {
             return record;
         }
         const ret = me.callParent(arguments);
