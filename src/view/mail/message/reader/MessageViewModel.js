@@ -247,20 +247,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     /**
      * Updates this view models data with the data found in the passed
      * MessageDraft.
-     * This method will also take care of re-calculating the size of the
-     * MessageDraft given its attachments and its body-data.
+     *
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      *
      * @throws if messageDraft is not an instance of {conjoon.cn_mail.model.mail.message.MessageDraft},
-     * or if there is currently not a messageItem available, or if the compoundKey of the
-     * MessageDraft does not equal to the compoundKey of the messageItem.
+     * or if there is currently not a messageItem available, or if the accountId of the compoundKey
+     * is not equal in bot items
      */
     updateMessageItem : function(messageDraft) {
 
         var me             = this,
             messageItem    = me.get('messageItem'),
             newAttachments = [],
-            size           = 0,
             messageBody, attachments;
 
         if (!messageItem) {
@@ -277,9 +275,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
                 messageDraft : messageDraft
             });
         }
-        if (!messageDraft.getCompoundKey().equalTo(messageItem.getCompoundKey())) {
+
+        if (messageDraft.getCompoundKey().getMailAccountId() !== messageItem.getCompoundKey().getMailAccountId()) {
             Ext.raise({
-                msg          : 'The compoundKey of the messageDraft does not equal to the compoundKey of the messageItem',
+                msg          : 'The accountId of the compoundKey of the messageDraft does not equal to the accountId of the compoundKey of the messageItem',
                 cls          : Ext.getClassName(me),
                 messageDraft : messageDraft,
                 messageItem  : messageItem

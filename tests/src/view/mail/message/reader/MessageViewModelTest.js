@@ -52,7 +52,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
 
             for (index = 0, len = 1000; index < len; index++) {
                 item = getMessageItemAt(index);
-                if (!item.seen) {
+                if (!item.seen && item.hasAttachments) {
                     break;
                 }
             }
@@ -468,7 +468,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
             mdCopy.set({mailAccountId : 1, mailFolderId : 2, id : 3}, {dirty : false});
             try {viewModel.updateMessageItem(mdCopy);} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('does not equal to the compoundkey');
+            t.expect(exc.msg.toLowerCase()).toContain('does not equal to the accountid');
 
             viewModelItem = viewModel.get('messageItem');
 
