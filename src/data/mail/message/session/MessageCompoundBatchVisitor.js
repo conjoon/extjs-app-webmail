@@ -84,8 +84,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      * the BE should have created the according MessageDraft also, so the following
      * MessageDraft operation for this Batch would be changed from a "create"
      * to an "update" operation.
+     * Additonally, this method will make sure that the preBatchCompoundKey is stored
+     * in this instance's MessagDraft when the batch's start() method is called.
      *
      * @see onBatchOperationComplete
+     *
+     * @see conjoon.cn_mail.model.mail.message.MessageDraft#storePreBatchCompoundKey
      */
     getBatch: function (sort) {
 
@@ -95,6 +99,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
         // just in case...
         batch.un('operationcomplete', me.onBatchOperationComplete, me);
         batch.on('operationcomplete', me.onBatchOperationComplete, me);
+
+        batch.start = Ext.Function.createInterceptor(batch.start, function(){
+            const me = this,
+                  md = me.getMessageDraft();
+
+            md.storePreBatchCompoundKey();
+
+        }, me);
 
         return batch;
     },

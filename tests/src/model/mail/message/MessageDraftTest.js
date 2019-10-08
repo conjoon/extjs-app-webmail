@@ -750,4 +750,30 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         });
 
+
+        t.it("preBatchCompoundKey", function(t) {
+
+            let model = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft');
+
+            t.expect(model.getPreBatchCompoundKey()).toBeUndefined();
+            t.expect(model.storePreBatchCompoundKey()).toBeUndefined();
+            t.expect(model.getPreBatchCompoundKey()).toBeUndefined();
+
+            model = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                id            : "123",
+                mailAccountId : "dev_sys_conjoon_org",
+                mailFolderId  : "INBOX"
+            });
+
+            t.expect(model.getPreBatchCompoundKey()).toBeUndefined();
+            let ck = model.storePreBatchCompoundKey();
+            t.expect(ck).toBeDefined();
+            t.expect(ck.equalTo(model.getCompoundKey())).toBe(true);
+            let pbk = model.getPreBatchCompoundKey();
+            t.expect(pbk).toBeDefined();
+            // no save operation yet
+            t.expect(pbk.equalTo(ck)).toBe(true);
+
+        });
+
 });});});});

@@ -36,10 +36,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         'coon.core.data.field.EmailAddressCollection',
         'coon.core.data.validator.EmailAddressCollection',
         'conjoon.cn_mail.model.mail.message.DraftAttachment',
-        'coon.core.data.field.EmailAddress'
+        'coon.core.data.field.EmailAddress',
+        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
     ],
 
     entityName : 'MessageDraft',
+
+    /**
+     * Before a MessageDraft gets saved in a batch operation, this
+     * will store the compound key before the batch operations proceed and change
+     * the id of the related message.
+     */
+    preBatchCompoundKey : undefined,
+
 
     /**
      * @private
@@ -152,6 +161,43 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         if (record.entityName === 'DraftAttachment') {
             me.compareAndApplyCompoundKeys(record, false);
         }
+    },
+
+
+    /**
+     * Makes sure the curent configured CompoundKey is saved in #preBatchCompoundKey.
+     *
+     * This method is API only.
+     *
+     * @return {undefined|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} null,
+     * if the compound key is not configured for this instance (record is a phantom) or the compound
+     * key instance to which the preBatchCompoundKey was set
+     */
+    storePreBatchCompoundKey : function() {
+        const me = this;
+
+        let key = undefined ;
+
+        if (me.isCompoundKeyConfigured()) {
+            key = me.getCompoundKey();
+            me.preBatchCompoundKey = key;
+        }
+
+        return key;
+    },
+
+
+    /**
+     * Returns the previously set preBatchCompoundKey of this instance, if
+     * available.
+     *
+     * @return {undefined|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} undefined,
+     * if there is no preBatchCompoundKey available, or the compoundKey.
+     */
+    getPreBatchCompoundKey : function() {
+        const me = this;
+
+        return me.preBatchCompoundKey;
     }
 
 

@@ -25,18 +25,24 @@
 
 describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorTest', function(t) {
 
-    const setupSession = function() {
+    const setupSession = function(withExistingDraft = false) {
 
             let session = Ext.create('coon.core.data.Session', {
                 schema : 'cn_mail-mailbaseschema',
                 batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
             });
 
-            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+            let cfg = {
                 subject       : 'test',
                 mailFolderId  : "1",
                 mailAccountId : "3"
-            });
+            };
+
+            if (withExistingDraft === true) {
+                cfg.id = "123";
+            }
+
+            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', cfg);
 
             draft.setMessageBody(session.createRecord("MessageBody"));
 
@@ -264,9 +270,13 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 t.expect(operations[1].getAction()).toBe('update');
                 t.expect(operations[1].getRecords()[0]).toBe(oldRecord[0]);
                 CMP_REC = operations[1].getRecords()[0];
-           });
+            });
 
+            let md = session.visitorForTesting.getMessageDraft();
+
+            t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
             batch.start();
+            t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
 
             t.waitForMs(2000, function() {
 
@@ -391,8 +401,46 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
 
         });
 
-    });
 
-})})});
+
+        t.it("Should make sure preBatchCompoundKey is saved on MessageDraft", function(t) {
+
+            let session    = setupSession(true),
+                batch      = session.getSaveBatch(),
+                operations = batch.getOperations();
+
+            t.expect(operations.length).toBe(2);
+
+            let oldOp      = operations[1],
+                oldId      = operations[1].id,
+                oldRecord  = operations[1].getRecords();
+
+            let md = session.visitorForTesting.getMessageDraft();
+
+            // wait for the first operation to complete
+            batch.on('operationcomplete', function(batch, operation) {
+
+                // test last operation!
+                if (operation !== operations[0]) {
+                    return;
+                }
+
+                t.expect(md.getPreBatchCompoundKey()).not.toBeUndefined();
+                t.expect(md.getPreBatchCompoundKey().getId()).not.toBe(md.getCompoundKey().getId());
+                t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey())).toBe(false);
+            });
+
+            t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
+            batch.start();
+            t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey()));
+
+            t.waitForMs(2000, function() {
+
+            });
+
+        });
+
+
+});})})});
 
 
