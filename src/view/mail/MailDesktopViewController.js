@@ -181,7 +181,10 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         }
 
         me.updateMessageItemsFromOpenedViews(
-            messageItem.getPreviousCompoundKey(), 'mailFolderId', targetFolder.get('id'));
+            messageItem.getPreviousCompoundKey(), {
+                'mailFolderId' : targetFolder.get('id'),
+                'id'           : messageItem.get('id')
+            });
 
         // we have an updated compound key now
         let collection = me.getMessageItemsFromOpenedViews(messageItem.getCompoundKey(), true),
@@ -511,63 +514,80 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
               messageGrid      = view.down('cn_mail-mailmessagegrid'),
               itemStore        = messageGrid ? messageGrid.getStore() : null,
               inboxView        = view.down('cn_mail-mailinboxview'),
-              EditingModes     = conjoon.cn_mail.data.mail.message.EditingModes,
-              editMode         = editor.editMode,
-              inboxMessageView = inboxView
-                  ? inboxView.down('cn_mail-mailmessagereadermessageview')
-                  : null;
+              inboxMessageView = inboxView ? inboxView.down('cn_mail-mailmessagereadermessageview') : null;
 
-        let inboxMessageViewId, messageItem, recInd, messageView, prevItemId;
+        let inboxMessageViewId, messageItem, recInd, messageView, prevItemId, preBatchCompoundKey;
+
+        preBatchCompoundKey = messageDraft.getPreBatchCompoundKey()
 
         // use the PREVIOUS itemId that was available before saving completed;
         // this is the same behavior as in the onMessageItemMove
-        prevItemId = me.getItemIdForMessageRelatedView(
-            messageDraft.getPreviousCompoundKey(), 'read');
-        messageView = view.down('#' + prevItemId);
-
-        if ([EditingModes.CREATE, EditingModes.REPLY_TO,
-            EditingModes.REPLY_ALL, EditingModes.FORWARD].indexOf(editMode) !== -1) {
-            me.updateHistoryForMessageRelatedView(editor, messageDraft);
-
-            if (isCreated) {
-                inboxView.updateViewForCreatedDraft(messageDraft);
-                return;
-            }
+        if (preBatchCompoundKey) {
+            prevItemId = me.getItemIdForMessageRelatedView(preBatchCompoundKey, 'read');
+            messageView = view.down('#' + prevItemId);
         }
 
+        me.updateHistoryForMessageRelatedView(editor, messageDraft);
+
+        if (isCreated) {
+            inboxView.updateViewForCreatedDraft(messageDraft);
+            return;
+        }
 
         if (messageView) {
             messageView.updateMessageItem(messageDraft);
+            me.updateHistoryForMessageRelatedView(messageView, messageDraft);
         }
 
 
+        // we will add a key later on - the id of the MessageDraft,
+        // if the MessageDraft is currently shown in the MessageView of the InboxPanel
+        let keysToConsider = [];
+        if (preBatchCompoundKey) {
+            keysToConsider.push(preBatchCompoundKey);
+        }
+
         // this is two-way-data bound and should only be queried by us if the
         // selected folder / opened grid is DRAFT related
-        if (inboxMessageView) {
+        if (inboxMessageView && preBatchCompoundKey) {
 
             inboxMessageViewId = inboxMessageView.getViewModel().get('messageItem.localId');
 
-            if (inboxMessageViewId == messageDraft.getId()) {
+            if (inboxMessageViewId == preBatchCompoundKey.toLocalId()) { //previousLocalId) {
                 // Due to the two way-data binding between the grid and the message
                 // view, we do not need to update the associated item in the
                 // grid. Just update the MessageView, changes should be reflected
                 // in the grid
+                // however, if the binding got lost due to a reload of the grid or similiar,
+                // we have to take care of updating the grid again
                 inboxMessageView.updateMessageItem(messageDraft);
+                keysToConsider.push(messageDraft.getCompoundKey());
             }
         }
 
+        if (messageGrid && keysToConsider.length) {
 
-        // Previously: only update the MessageItems in the view which have not been updated
-        // over the MessageView above. Thus, we have to look up any item which might
-        // be loaded in the grid.
-        // NOW! since app-cn_mail#95: when switching mailfolders we are loosing the "binding"
-        // between the item in the MessageView and the grid store. This means, that an update
-        // of the MessageView is not reflected in the grid store. We have to actually
-        // manually update the item in the grid store to make sure the item reflects the changes
-        if (messageGrid) {
-            recInd = itemStore.findExact('localId', messageDraft.getId());
+            // loop through the keys and start with the last index as this
+            // will hold the CompoundKey of the MessageDraft in the MessageView
+            // if we find the item in the grid with this key, we do not have to
+            // query further. Otherwise, we will look up the record with the PreBatchCompoundKey,
+            // as most likely the binding between MessageGrid and MessageView was destroyed
+            // due to reloading the grid or similiar
+            for (let i = keysToConsider.length - 1; i >= 0; i--) {
+                recInd = itemStore.findExact('localId', keysToConsider[i].toLocalId());
+                if (recInd > -1) {
+                    break;
+                }
+            }
+
             if (recInd > -1) {
                 messageItem = itemStore.getAt(recInd);
+                // selection is ut of sync. Recompute and reselect if record was previously selected
+                let currentSelection = messageGrid.getSelectionModel().getSelected().getAt(0);
+                if (currentSelection && currentSelection.getId() === messageDraft.getId()) {
+                    messageGrid.getSelectionModel().clearSelections();
+                    messageGrid.getSelectionModel().select(recInd);
+                }
                 conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.updateItemWithDraft(
                     messageItem, messageDraft
                 );
@@ -1102,7 +1122,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * Note: Compound Keys and id may change depending on the field tat was updated.
      *
      * @param {conjoon.cn_mail.data.mail.message.CompoundKey} compoundKey
-     * @param {String} field
+     * @param {String|Object} field
      * @param {Mixed} value
      *
      * @throws if field is not a defined field in the model.
@@ -1121,17 +1141,26 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             });
         }
 
-        let i, messageItem;
+        if (!Ext.isObject(field)) {
+            let tmp    = field;
+            field      = {};
+            field[tmp] = value;
+        }
+
+        let i, messageItem, len;
         for (i = 0, len = collection.length; i < len; i++) {
             messageItem = collection[i].messageItem;
-            if (!messageItem.getField(field)) {
-                Ext.raise({
-                    msg         : "cannot set field \"" + field + "\" since it was not defined in the Model",
-                    field       : field,
-                    messageItem : messageItem
-                });
+            for (let fieldToSet in field) {
+                if (!messageItem.getField(fieldToSet)) {
+                    Ext.raise({
+                        msg         : "cannot set field \"" + fieldToSet + "\" since it was not defined in the Model",
+                        field       : fieldToSet,
+                        messageItem : messageItem
+                    });
+                }
+                messageItem.set(fieldToSet, field[fieldToSet]);
             }
-            messageItem.set(field, value);
+
             messageItem.commit();
         }
 

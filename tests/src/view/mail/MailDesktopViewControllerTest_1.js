@@ -157,18 +157,20 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             height     : 600
         });
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
             t.isCalledOnce('onBeforeMessageItemDelete', viewController);
             panel.down('cn_mail-mailinboxview').fireEvent(
                 'cn_mail-beforemessageitemdelete', panel.down('cn_mail-mailinboxview'), getRecordCollection()[0]);
 
-            t.waitForMs(750, function() {
+            t.waitForMs(TIMEOUT, function() {
                 panel.destroy();
                 panel = null;
             });
         });
 
     });
+
+
 
 
     t.it("onBeforeMessageItemDelete()", function(t) {
@@ -185,12 +187,12 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         });
 
 
-        t.waitForMs(750, function() {
+        t.waitForMs(TIMEOUT, function() {
 
             selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 0, 'INBOX', t));
 
 
-            t.waitForMs(751, function(){
+            t.waitForMs(TIMEOUT, function(){
 
                 let DRAFTMESSAGE = selectMessage(panel, 1),
                     DRAFTCK      = DRAFTMESSAGE.getCompoundKey(),
@@ -201,15 +203,19 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     ),
                     inboxView = panel.down('cn_mail-mailinboxview');
 
-                t.waitForMs(752, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     let view      = viewController.showMailMessageViewFor(compoundKey),
-                        edit      = viewController.showMailEditor(compoundKey, 'edit'),
-                        replyAll  = viewController.showMailEditor(compoundKey, 'replyAll'),
-                        replyTo   = viewController.showMailEditor(compoundKey, 'replyTo'),
-                        forward   = viewController.showMailEditor(compoundKey, 'forward'),
-                        DRAFTVIEW =  viewController.showMailMessageViewFor(DRAFTCK, 'edit'),
-                        cmpEdit  =  viewController.showMailEditor(compoundKey2, 'replyTo');
+                        edit      = viewController.showMailEditor(compoundKey, 'edit');
+
+                    let replyAll  = viewController.showMailEditor(compoundKey, 'replyAll'),
+                        replyTo   = viewController.showMailEditor(compoundKey, 'replyTo');
+
+
+                    let forward   = viewController.showMailEditor(compoundKey, 'forward'),
+                        DRAFTVIEW = viewController.showMailMessageViewFor(DRAFTCK, 'edit');
+
+                    let cmpEdit  =  viewController.showMailEditor(compoundKey2, 'replyTo');
 
                     let isActive = function(views) {
                         for (let i in views) {
@@ -228,7 +234,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                     panel.setActiveTab(inboxView);
 
-                    t.waitForMs(1753, function() {
+                    t.waitForMs(TIMEOUT, function() {
 
 
                         t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
@@ -236,13 +242,14 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                         t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                         t.expect(isActive([view, edit, replyAll, replyTo, forward])).toBe(true);
 
-                        t.waitForMs(754, function() {
+
+                        t.waitForMs(TIMEOUT, function() {
                             forward.close();
 
                             t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                             t.expect(isActive([view, edit, replyAll, replyTo])).toBe(true);
 
-                            t.waitForMs(755, function() {
+                            t.waitForMs(TIMEOUT, function() {
 
                                 t.expect(
                                     viewController.onBeforeMessageItemDelete(
@@ -256,22 +263,22 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                 t.expect(isActive([view, edit, replyAll])).toBe(true);
 
-                                t.waitForMs(756, function() {
+                                t.waitForMs(TIMEOUT, function() {
                                     replyAll.close();
 
                                     t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                     t.expect(isActive([view, edit])).toBe(true);
 
-                                    t.waitForMs(757, function() {
+                                    t.waitForMs(TIMEOUT, function() {
                                         edit.close();
 
                                         t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                         t.expect(isActive([view])).toBe(true);
 
-                                        t.waitForMs(758, function() {
+                                        t.waitForMs(TIMEOUT, function() {
                                             view.close();
 
-                                            t.waitForMs(759, function() {
+                                            t.waitForMs(TIMEOUT, function() {
                                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(true);
 
                                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
@@ -281,7 +288,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(true);
 
 
-                                                t.waitForMs(760, function () {
+                                                t.waitForMs(TIMEOUT, function () {
                                                     panel.destroy();
                                                     panel = null;
                                                 });
@@ -389,22 +396,22 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         t.isCalled('createItemFromDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater);
 
 
-        t.waitForMs(251, function () {
+        t.waitForMs(TIMEOUT, function () {
 
             selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t));
 
-            t.waitForMs(1252, function () {
+            t.waitForMs(TIMEOUT, function () {
 
                 let editor = viewController.showMailEditor(2253236, 'compose');
                 let myValue = 'ff-snafu-876';
                 editor.down('#subjectField').setValue(myValue);
 
 
-                t.waitForMs(753, function () {
+                t.waitForMs(TIMEOUT, function () {
 
                     t.click(editor.down('#saveButton'), function() {
 
-                    t.waitForMs(1754, function () {
+                    t.waitForMs(TIMEOUT, function () {
 
                         t.expect(editor.getViewModel().get('messageDraft').get('mailFolderId')).toBe('INBOX.Drafts');
 
@@ -419,18 +426,20 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                         let ctrl = panel.down('cn_mail-mailinboxview').getController(),
                             mvRec = panel.down('cn_mail-mailmessagegrid').getStore().getData().map[1].value[0];
 
+                        let oldId = mvRec.get("id");
 
                         ctrl.moveOrDeleteMessage(mvRec);
 
-                        t.waitForMs(1755, function() {
+                        t.waitForMs(TIMEOUT, function() {
 
                             t.expect(mvRec.get('mailFolderId')).toBe('INBOX.Trash');
+                            t.expect(mvRec.get('id')).not.toBe(oldId);
                             t.expect(editor.getViewModel().get('messageDraft').get('mailFolderId')).toBe('INBOX.Trash');
 
                             selectMailFolder(panel, getChildAt(panel, 'dev_sys_conjoon_org', 4, 'INBOX.Trash', t));
 
 
-                            t.waitForMs(1756, function() {
+                            t.waitForMs(TIMEOUT, function() {
 
                                 subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down('cn_mail-mailmessagegrid').el.dom);
                                 t.expect(subjectCont[0].innerHTML).toContain(myValue);
@@ -441,7 +450,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                                 t.click(editor.down('#saveButton'), function() {
 
-                                    t.waitForMs(1757, function() {
+                                    t.waitForMs(TIMEOUT, function() {
 
                                         panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
@@ -454,7 +463,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                                         t.click(editor.down('#saveButton'), function() {
 
-                                            t.waitForMs(1758, function() {
+                                            t.waitForMs(TIMEOUT, function() {
 
                                                 editor.close();
                                                 panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
@@ -1099,7 +1108,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             };
 
         viewController.onMessageItemMove(inboxView,
-            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
+            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn, get : Ext.emptyFn},
             inboxView,
             {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
             {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, get : Ext.emptyFn, getId : Ext.emptyFn});
@@ -1133,7 +1142,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
         viewController.onMessageItemMove(
             inboxView,
-            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn}, null,
+            {getCompoundKey : prevCk ,getPreviousCompoundKey : prevCk, getId : Ext.emptyFn, get : Ext.emptyFn}, null,
             {getCompoundKey : prevCk, getPreviousCompoundKey : prevCk, getId : Ext.emptyFn},
             {getCompoundKey : prevCk, getPreviousCompoundKey : prevCk, get : Ext.emptyFn, getId : Ext.emptyFn});
 
@@ -1503,6 +1512,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         let CK,
             FIELD,
             VALUE,
+            IDVALUE,
             PREVMOCKCK = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor('a', 'b', 'c');;
             COLLS = [{view : {}, messageItem : {}}];
 
@@ -1517,7 +1527,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         ctrl.updateMessageItemsFromOpenedViews = function(ck, field, value) {
             CK    = ck;
             FIELD = field;
-            VALUE = value;
+            VALUE = field.mailFolderId;
+            IDVALUE = field.id;
         };
 
         t.isCalled('showMessageMovedInfo', panel);
@@ -1528,7 +1539,8 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             inboxView,
             {
                 getCompoundKey         : function(){return PREVMOCKCK;},
-                getPreviousCompoundKey : function(){return PREVMOCKCK;}
+                getPreviousCompoundKey : function(){return PREVMOCKCK;},
+                get                    : function(){return "ID";}
 
             },
             null,
@@ -1540,8 +1552,9 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         );
 
         t.expect(CK.toLocalId()).toBe('a-b-c');
-        t.expect(FIELD).toBe('mailFolderId');
+        t.expect(FIELD).toEqual({mailFolderId : 'INBOX', id : "ID"});
         t.expect(VALUE).toBe('INBOX');
+        t.expect(IDVALUE).toBe('ID');
 
         t.expect(COLLS.length).toBe(1);
         t.expect(COLLS[0].view.CALLED).toBe(true);
@@ -1551,6 +1564,5 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             panel = null;
         });
     });
-
 
 });})});

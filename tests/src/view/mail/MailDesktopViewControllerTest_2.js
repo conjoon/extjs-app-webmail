@@ -827,6 +827,7 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
                 t.waitForMs(1750, function () {
 
                     CK = editorVm.get('messageDraft').getCompoundKey();
+                    console.log("CK", CK);
 
                     panel.setActiveTab(panel.down('cn_mail-mailinboxview'));
 
@@ -852,8 +853,6 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
             });
         });
     });
-
-
 
 
     t.it("app-cn_mail#82", function(t) {
@@ -995,6 +994,7 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
         let panel  = createMailDesktopView(),
             message,
             inboxView = panel.down('cn_mail-mailinboxview'),
+            messageView = inboxView.down('cn_mail-mailmessagereadermessageview'),
             ctrl   = panel.getController(),
             editor, editorVm,
             CK, gridRec;
@@ -1032,8 +1032,12 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
                         panel.setActiveItem(inboxView);
 
-                        let livegrid = inboxView.getController().getLivegrid();
-                        gridRec      = livegrid.getRecordByCompoundKey(CK)
+                        let livegrid   = inboxView.getController().getLivegrid();
+                        let UPDATED_CK = editorVm.get('messageDraft').getCompoundKey();
+
+                        t.expect(messageView.getMessageItem().getCompoundKey().toLocalId()).toBe(UPDATED_CK.toLocalId());
+                        gridRec = livegrid.getRecordByCompoundKey(UPDATED_CK);
+
                         t.expect(gridRec).toBeTruthy();
                         t.expect(gridRec.get('subject')).toBe("foo");
 
@@ -1047,9 +1051,11 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
                             t.waitForMs(TIMEOUT, function () {
 
                                 // make sure rec is still there
-                                gridRec = livegrid.getRecordByCompoundKey(CK)
+                                gridRec = livegrid.getRecordByCompoundKey(UPDATED_CK)
                                 t.expect(gridRec).toBeTruthy();
                                 t.expect(gridRec.get('subject')).toBe("foo");
+
+                                t.expect(messageView.getMessageItem().getCompoundKey().toLocalId()).toBe(UPDATED_CK.toLocalId());
 
                                 // edit subject again
                                 panel.setActiveItem(editor);
@@ -1060,7 +1066,11 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
                                     panel.setActiveItem(inboxView);
 
-                                    gridRec = livegrid.getRecordByCompoundKey(CK)
+                                    UPDATED_CK = editorVm.get('messageDraft').getCompoundKey();
+
+                                    t.expect(messageView.getMessageItem().getCompoundKey().toLocalId()).toBe(UPDATED_CK.toLocalId());
+
+                                    gridRec = livegrid.getRecordByCompoundKey(UPDATED_CK)
                                     t.expect(gridRec).toBeTruthy();
                                     t.expect(gridRec.get('subject')).toBe("bar");
 

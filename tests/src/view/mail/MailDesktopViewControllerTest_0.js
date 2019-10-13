@@ -876,10 +876,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     date          : gridStore.getAt(1).get('date')
                 });
 
-
                 messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
                     textHtml : '', textPlain : ''
                 }));
+                messageDraft.storePreBatchCompoundKey();
 
                 grid.getSelectionModel().select(gridStore.getAt(0));
                 panel.showMailMessageViewFor(firstRowCK);
@@ -891,7 +891,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
                     t.isCalledNTimes('updateMessageItem',  messageDetailView, 0);
                     t.isCalledNTimes('updateMessageItem',  inboxMessageView, 0);
+
+                    t.expect(messageDraft.getPreBatchCompoundKey()).toBeTruthy();
                     viewController.onMailMessageSaveComplete(getDummyEditor(), messageDraft);
+
                     t.expect(gridStore.getAt(1).get('subject')).not.toBe(oldSubject);
                     t.expect(gridStore.getAt(1).get('date')).toBe(oldDate);
                     t.expect(gridStore.getAt(1).get('subject')).toBe(messageDraft.get('subject'));
@@ -901,7 +904,6 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             });
         });
     });
-
 
 
     t.it("onMailMessageSaveComplete() - opened inboxView, opened messageView, selected gridRow", function(t) {
@@ -955,6 +957,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 messageDraft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
                     textHtml : '', textPlain : ''
                 }));
+                messageDraft.storePreBatchCompoundKey();
 
                 grid.getSelectionModel().select(gridStore.getAt(0));
                 panel.showMailMessageViewFor(firstRowCK);
@@ -967,7 +970,10 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                     t.isCalledNTimes('updateItemWithDraft', conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 3);
                     t.isCalledNTimes('updateMessageItem',  messageDetailView, 1);
                     t.isCalledNTimes('updateMessageItem',  inboxMessageView, 1);
+
+                    t.expect(messageDraft.getPreBatchCompoundKey()).toBeTruthy();
                     viewController.onMailMessageSaveComplete(getDummyEditor(), messageDraft);
+
                     t.expect(gridStore.getAt(0).get('subject')).not.toBe(oldSubject);
                     t.expect(gridStore.getAt(0).get('date')).toBe(oldDate);
                     t.expect(gridStore.getAt(0).get('subject')).toBe(messageDraft.get('subject'));
