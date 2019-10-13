@@ -373,8 +373,9 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
                     scope   : testObj
                 };
 
-            let targetFolderId = "INBOX.Sent Messages",
-                sourceFolderId = messageItem.get('mailFolderId');
+            let targetFolderId      = "INBOX.Sent Messages",
+                sourceFolderId      = messageItem.get('mailFolderId'),
+                sourceMessageItemId = messageItem.get('id');
 
             t.expect(sourceFolderId).toBeTruthy();
             t.expect(targetFolderId).not.toBe(sourceFolderId);
@@ -401,7 +402,9 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
                 t.expect(result.success).toBe(true);
                 t.expect(testObj.CALLED).toBe(1);
 
-                t.expect(messageItem.get("mailFolderId")).toBe(targetFolderId)
+                t.expect(messageItem.get("mailFolderId")).toBe(targetFolderId);
+                t.expect(messageItem.get("id")).not.toBe(sourceMessageItemId)
+
             });
 
 
@@ -409,6 +412,8 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
 
     });
+
+
 
     t.it("moveToTrashOrDeleteMessage() - message moved to trashfolder", function(t) {
 
@@ -485,6 +490,8 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
             targetFolderId = "INBOX.Trash",
             messageItem = createMessageItem(1, sourceFolderId);
 
+        let oldMessageBodyId = messageItem.get("messageBodyId");
+        t.expect(oldMessageBodyId).toBeFalsy();
 
         t.waitForMs(250, function() {
 
@@ -506,6 +513,9 @@ t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
             });
 
             t.expect(service.moveCallback(op)).toBe(true);
+
+            t.expect(messageItem.get("messageBodyId")).not.toBeFalsy();
+            t.expect(oldMessageBodyId).not.toBe(messageItem.get("messageBodyId"));
 
             t.expect(sourceFolder.get("unreadCount")).toBe(4);
             t.expect(targetFolder.get("unreadCount")).toBe(1);

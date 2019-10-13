@@ -477,6 +477,11 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
               mailAccountId    = record.get('mailAccountId'),
               mailFolderHelper = me.getMailFolderHelper();
 
+        // just like MessageItemUpdater#updateItemWithDraft, we're setting the
+        // messageBodyId here
+        // @see conjoon/app-cn_mail#116
+        record.set('messageBodyId', record.getId());
+
         if (op.getResult().success !== true) {
             return false;
         }
