@@ -49,6 +49,7 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
     t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
     t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageDraftSession', function() {
 
+
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
@@ -108,6 +109,10 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
 
         t.it("getAssociatedCompoundKeyedData", function (t) {
             let model = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment');
+
+            model.getMessageItem = undefined;
+            t.expect(model.getAssociatedCompoundKeyedData()).toEqual([]);
+
             model.getMessageItem = function(){return 1;};
             t.expect(model.getAssociatedCompoundKeyedData()).toEqual([1]);
             model.getMessageItem = function(){return null;};
@@ -276,6 +281,8 @@ describe('conjoon.cn_mail.model.mail.message.DraftAttachmentTest', function(t) {
                 t.expect(draft.get('id')).toBeDefined();
                 t.expect(draft.get('id')).toBe(draft.getMessageBody().get('id'));
                 t.expect(att.get('parentMessageItemId')).toBe(draft.get('id'));
+
+                t.expect(att.get("parentMessageItemId")).toBe(att2.get("parentMessageItemId"));
 
                 var oldId = draft.get('id');
 

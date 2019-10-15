@@ -75,7 +75,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
      */
     getAssociatedCompoundKeyedData : function() {
         const me = this;
-        return me.getMessageItem() ? [me.getMessageItem()] : [];
+        return me.getMessageItem && me.getMessageItem() ? [me.getMessageItem()] : [];
     },
 
 
