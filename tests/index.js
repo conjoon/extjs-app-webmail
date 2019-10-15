@@ -246,7 +246,8 @@ harness.start({
                         group : 'editor',
                         items : [
                             'src/view/mail/message/editor/AttachmentListControllerTest.js',
-                            'src/view/mail/message/editor/MessageEditorViewControllerTest.js',
+                            'src/view/mail/message/editor/MessageEditorViewControllerTest_01.js',
+                            'src/view/mail/message/editor/MessageEditorViewControllerTest_02.js',
                             'src/view/mail/message/editor/MessageEditorViewModelTest.js'
                         ]
                     }, {
