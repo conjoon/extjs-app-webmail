@@ -70,8 +70,7 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
      */
     add : function(record) {
 
-        const me = this,
-              recs = [].concat(record);
+        const me = this;
 
         if (Ext.isArray(record)) {
             let inRet = [];
@@ -80,6 +79,10 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
             }
             return inRet;
         }
+
+
+        const recs = [].concat(record);
+
         if ((record instanceof Ext.data.Model) && this.findExact("localId", record.getId()) > -1) {
             return record;
         }
