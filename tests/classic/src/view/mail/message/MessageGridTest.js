@@ -53,6 +53,9 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
     t.requireOk('conjoon.cn_mail.model.mail.message.MessageItem', function() {
     t.requireOk('conjoon.cn_mail.store.mail.message.MessageItemStore', function() {
 
+        conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
+
+
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
@@ -258,6 +261,8 @@ describe('conjoon.cn_mail.view.mail.message.MessageGridTest', function(t) {
 
         t.it("selection still available after pageremove", function(t) {
             let store;
+
+            t.expect(conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
 
             grid = Ext.create('conjoon.cn_mail.view.mail.message.MessageGrid', {
                 width    : 400,
