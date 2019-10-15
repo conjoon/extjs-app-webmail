@@ -98,6 +98,8 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() {
 
+    conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
+
     Ext.ux.ajax.SimManager.init({
         delay: 1
     });
@@ -249,55 +251,55 @@ t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() 
             messageView    = view.down('cn_mail-mailmessagereadermessageview');
 
 
+
         t.waitForMs(TIMEOUT, function(){
+
+            var mailFolder1 = getChildAt(view, 'dev_sys_conjoon_org', 0, 'INBOX', t),
+                mailFolder2 = getChildAt(view, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t);
+
+            tree.getSelectionModel().select(mailFolder1);
 
             t.waitForMs(TIMEOUT, function(){
 
-                var mailFolder1 = getChildAt(view, 'dev_sys_conjoon_org', 0, 'INBOX', t),
-                    mailFolder2 = getChildAt(view, 'dev_sys_conjoon_org', 3, 'INBOX.Drafts', t);
+                var messageItem = grid.getStore().getAt(0);
 
-                tree.getSelectionModel().select(mailFolder1);
+                grid.getSelectionModel().select(messageItem);
 
-                t.waitForMs(TIMEOUT, function(){
+                t.expect(grid.getSelection()[0]).toBe(messageItem);
 
-                    var messageItem = grid.getStore().getAt(0);
+                grid.view.getScrollable().scrollTo(0, 100000);
 
-                    grid.getSelectionModel().select(messageItem);
+                t.waitForMs(TIMEOUT, function() {
+                    // need at least 1000 items in the mock message Tabe
+                    t.expect(conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
+                    grid.getStore().getData().removeAtKey(1);
+                    t.expect(grid.getStore().getData().map[1]).toBeUndefined();
 
                     t.expect(grid.getSelection()[0]).toBe(messageItem);
+                    tree.getSelectionModel().select(mailFolder2);
 
-                    grid.view.getScrollable().scrollTo(0, 100000);
-
-                    t.waitForMs(TIMEOUT, function() {
-                        grid.getStore().getData().removeAtKey(1);
-                        t.expect(grid.getStore().getData().map[1]).toBeUndefined();
+                    t.waitForMs(TIMEOUT, function(){
 
                         t.expect(grid.getSelection()[0]).toBe(messageItem);
+
+                        var messageItem2 = grid.getStore().getAt(0);
+
+                        grid.getSelectionModel().select(messageItem2);
+
+                        t.expect(grid.getSelection()[0]).toBe(messageItem2);
+
                         tree.getSelectionModel().select(mailFolder2);
 
                         t.waitForMs(TIMEOUT, function(){
-
-                            t.expect(grid.getSelection()[0]).toBe(messageItem);
-
-                            var messageItem2 = grid.getStore().getAt(0);
-
-                            grid.getSelectionModel().select(messageItem2);
-
                             t.expect(grid.getSelection()[0]).toBe(messageItem2);
 
-                            tree.getSelectionModel().select(mailFolder2);
-
-                            t.waitForMs(TIMEOUT, function(){
-                                t.expect(grid.getSelection()[0]).toBe(messageItem2);
-
-                                discardView(t);
-                            });
-
-
+                            discardView(t);
                         });
-                    });
 
+
+                    });
                 });
+
             });
         });
 
