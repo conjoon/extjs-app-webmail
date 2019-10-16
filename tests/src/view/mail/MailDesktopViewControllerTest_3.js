@@ -90,6 +90,18 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_3', function(t
 
             return message;
         },
+        doubleClickMessage = function(grid, storeAt, shouldEqualToCK, t, cb) {
+
+            let message = grid.getStore().getAt(storeAt);
+
+            if (shouldEqualToCK) {
+                t.expect(message.getCompoundKey().toObject()).toEqual(shouldEqualToCK.toObject());
+            }
+
+            t.doubleClick(grid.view.getRow(message), cb);
+
+
+        },
         createMessageItem = function(index, mailFolderId) {
 
             index = index === undefined ? 1 : index;
@@ -267,6 +279,103 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
         });
     });
 
+
+    t.it("changes in attachments are reflected across all MessageViews", function(t) {
+
+        let panel            = createMailDesktopView(),
+            ctrl             = panel.getController(),
+            inboxView        = panel.down('cn_mail-mailinboxview'),
+            inboxMessageView = inboxView.down('cn_mail-mailmessagereadermessageview'),
+            grid             = panel.down('cn_mail-mailmessagegrid');
+
+
+        t.waitForMs(TIMEOUT, function() {
+
+            selectMailFolder(panel, 4, "INBOX.Drafts", t);
+
+            t.waitForMs(TIMEOUT, function() {
+
+                // create editor and draft and save it.
+                let editor = ctrl.showMailEditor("foobar", "compose");
+                editor.down("#subjectField").setValue("Test");
+                t.click(editor.down('#saveButton'), function () {
+
+                    // wait until the message is saved...
+                    t.waitForMs(TIMEOUT, function() {
+
+                        // go back to messagedraft and make sure newly created message is available
+                        // and selected and viewable in the MessageView
+                        panel.setActiveItem(inboxView);
+
+                        let compoundKey = editor.getViewModel().get("messageDraft").getCompoundKey();
+                        doubleClickMessage(grid, 0, compoundKey, t,function() {
+
+                            let mailMessageView = ctrl.showMailMessageViewFor(compoundKey);
+
+                            // wait for the MessageView to properly initialize
+                            t.waitForMs(TIMEOUT, function() {
+
+                                panel.setActiveItem(editor);
+
+                                editor.down("#subjectField").setValue("foobar");
+
+                                t.click(editor.down('#saveButton'), function () {
+
+                                    // wait until the message is saved...
+                                    t.waitForMs(TIMEOUT, function () {
+
+                                        panel.setActiveItem(inboxView);
+
+                                        t.expect(grid.getSelectionModel().getSelection()[0].getCompoundKey().toLocalId()).toEqual(
+                                            editor.getViewModel().get("messageDraft").getCompoundKey().toLocalId()
+                                        );
+
+                                        t.expect(
+                                            grid.view.getRow(grid.getSelectionModel().getSelection()[0]
+                                        ).parentNode.parentNode.className).toContain("selected");
+
+                                        panel.setActiveItem(editor);
+
+                                        editor.getViewModel().get('messageDraft').attachments().add(
+                                            Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {text : "foo", type : "image/jpg", size : 5000})
+                                        );
+
+                                        t.click(editor.down('#saveButton'), function () {
+
+                                            // wait until the message is saved...
+                                            t.waitForMs(TIMEOUT, function () {
+
+                                                panel.setActiveItem(inboxView);
+
+                                                t.expect(
+                                                    inboxMessageView.getViewModel().get('attachmentStore').getRange()[0].getId()
+                                                ).toBe(
+                                                    editor.getViewModel().get('messageDraft').attachments().getRange()[0].getId()
+                                                );
+
+                                            });
+
+                                        });
+                                    });
+
+                                });
+                            })
+
+
+                        });
+
+                    });
+
+
+                });
+
+            });
+
+
+        });
+
+
+    });
 
 
 });})});});

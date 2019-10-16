@@ -534,12 +534,6 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             return;
         }
 
-        if (messageView) {
-            messageView.updateMessageItem(messageDraft);
-            me.updateHistoryForMessageRelatedView(messageView, messageDraft);
-        }
-
-
         // we will add a key later on - the id of the MessageDraft,
         // if the MessageDraft is currently shown in the MessageView of the InboxPanel
         let keysToConsider = [];
@@ -592,6 +586,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
                     messageItem, messageDraft
                 );
             }
+        }
+
+        if (messageView) {
+            messageView.updateMessageItem(messageDraft);
+            me.updateHistoryForMessageRelatedView(messageView, messageDraft);
         }
 
     },
