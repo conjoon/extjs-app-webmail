@@ -114,6 +114,19 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     defaultAccountInformations : null,
 
+
+    /**
+     * Constructor.
+     */
+    constructor : function() {
+        const me = this;
+
+        me.messageViewIdMap = {};
+
+        me.callParent(arguments);
+    },
+
+
     /**
      * Callback for the embedded InboxView's cn_mail-beforemessageitemdelete event.
      * Checks if there are currently any opened editors and vetoes removal
@@ -646,9 +659,27 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      */
     onTabChange : function(tabPanel, newCard, oldCard, eOpts) {
 
-        var me = this;
+        const me     = this,
+              itemId = newCard.getItemId();
 
-        if (newCard.cn_href){
+        if (!newCard.cn_href) {
+            return;
+        }
+
+        let replace = false;
+
+        // look up an existing one, e.g. if the newCard has a previous entry in the messageItemIds
+        for (let i in me.messageViewIdMap) {
+            let entry = me.messageViewIdMap[i];
+            if (entry.itemId === itemId && entry.deprecated === true) {
+                replace = true;
+                break;
+            }
+        }
+
+        if (replace === true) {
+            Ext.History.replace(newCard.cn_href);
+        } else {
             Ext.History.add(newCard.cn_href);
         }
     },
@@ -681,18 +712,14 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
 
         newId = 'cn_mail-' + type + '-' + Ext.id();
 
-        if (!me.messageViewIdMap) {
-            me.messageViewIdMap = {};
-        }
-
         id = (isInstance ? id.toLocalId() : id);
         id = me.computeIdForMessageViewMap(id, type);
 
         if (!me.messageViewIdMap[id]) {
-            me.messageViewIdMap[id] = newId;
+            me.messageViewIdMap[id] = {itemId : newId};
         }
 
-        return  me.messageViewIdMap[id];
+        return  me.messageViewIdMap[id].itemId;
     },
 
 
@@ -944,14 +971,16 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
             panelItemId = panel.getItemId(),
             mapId       = me.computeIdForMessageViewMap(compoundKey.toLocalId(), type);
 
-        for (let id in me.messageViewIdMap) {
-            if (me.messageViewIdMap[id] === panelItemId) {
-                delete me.messageViewIdMap[id];
-                me.messageViewIdMap[mapId] = panelItemId;
-                break;
+        // add the new itemId so we can keep track of relations between
+        // changed compound keys and previous entries in the history,
+        // but mark previous entries as deprecated
+        for (let i in me.messageViewIdMap) {
+            let entry = me.messageViewIdMap[i];
+            if (entry.itemId === panelItemId) {
+                entry.deprecated = true;
             }
         }
-
+        me.messageViewIdMap[mapId] = {itemId : panelItemId};
     },
 
 
