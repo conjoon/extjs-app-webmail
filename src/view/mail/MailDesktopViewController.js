@@ -156,7 +156,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
         let coll = me.getMessageItemsFromOpenedViews(compoundKey, true);
 
         for (let i = 0, len = coll.length; i < len; i++) {
-            openedView = coll[i].view;
+            let openedView = coll[i].view;
 
             if (openedView && openedView !== requestingView) {
                 view.showMessageCannotBeDeletedWarning(messageItem);
