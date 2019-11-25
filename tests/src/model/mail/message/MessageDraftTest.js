@@ -778,4 +778,25 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
 
         });
 
+        t.it("loadMessageBody() - target parameter", function(t) {
+
+            let CALLED = 0,
+                options = {callback : function(){CALLED++;}};
+            model = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                id            : "123",
+                mailAccountId : "dev_sys_conjoon_org",
+                mailFolderId  : "INBOX"
+            });
+            model.loadMessageBody(options);
+
+            t.expect(model.get('mailAccountId')).toBeTruthy();
+            t.expect(model.get('mailFolderId')).toBeTruthy();
+
+            t.expect(options.params.target).toBe("MessageBodyDraft");
+
+            t.waitForMs(250, function() {
+                t.expect(CALLED).toBe(1);
+            });
+        });
+
 });});});});

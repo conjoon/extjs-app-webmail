@@ -133,9 +133,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
             'MessageItems';
 
-        request.setParams(Ext.apply(request.getParams() || {}, {
-            target: me.entityName
-        }));
+        // switch target parameter to MessageBodyDraft if applicable
+        let target = me.entityName;
+        if ((action === 'create' || action === 'update') && target === 'MessageBody') {
+            target = 'MessageBodyDraft';
+        }
+
+        request.setParams(Ext.apply(request.getParams() || {}, {target: target}));
 
         if (action !== 'create') {
             if (source.hasOwnProperty('id')) {

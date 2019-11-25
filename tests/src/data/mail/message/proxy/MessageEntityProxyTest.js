@@ -202,7 +202,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams()).toEqual({foo : 'bar', target : 'MessageBody'});
+        t.expect(request.getParams()).toEqual({foo : 'bar', target : 'MessageBodyDraft'});
 
         // modified
         t.expect(request.getRecords()[0].phantom).toBe(true);
@@ -259,7 +259,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams().target).toBe('MessageBody');
+        t.expect(request.getParams().target).toBe('MessageBodyDraft');
 
         // modified
         t.expect(request.getRecords()[0].phantom).toBe(false);

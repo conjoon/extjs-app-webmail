@@ -197,7 +197,28 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         const me = this;
 
         return me.preBatchCompoundKey;
-    }
+    },
+
+
+    /**
+     * Overridden to make sure target-parameter is set to "MessageBodyDraft"
+     *
+     * @inheritdoc
+     */
+    loadMessageBody : function(options) {
+
+        const me = this;
+
+        options = options || {};
+
+        options.params = options.params || {};
+
+        Ext.applyIf(options.params, {
+            target : "MessageBodyDraft"
+        });
+
+        return me.callParent([options]);
+    },
 
 
 
