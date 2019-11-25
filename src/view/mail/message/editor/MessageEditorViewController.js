@@ -628,8 +628,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             );
 
             messageDraft.set('from', {
-                name    : accRecord.get('name'),
-                address : accRecord.get('from')
+                name    : accRecord.get('from').name,
+                address : accRecord.get('from').address
+            });
+
+            messageDraft.set('replyTo', {
+                name    : accRecord.get('replyTo').name,
+                address : accRecord.get('replyTo').address
             });
 
             // will trigger a save in the case the date value changes.

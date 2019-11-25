@@ -887,10 +887,14 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     let acc = view.getViewModel().get('cn_mail_mailfoldertreestore').findRecord(
                         'id', 'dev_sys_conjoon_org'
                     );
-                    let from = {name : acc.get('name'), address : acc.get('from')};
-                    t.expect(messageDraft.get('from')).toEqual(from);
+                    t.expect(acc.get('from')).toBeTruthy();
+                    t.expect(acc.get('replyTo')).toBeTruthy();
+                    
+                    t.expect(messageDraft.get('from')).not.toBe(acc.get("from"));
+                    t.expect(messageDraft.get('replyTo')).not.toBe(acc.get("replyTo"));
 
-                    t.expect(messageDraft.get('from')).toBeTruthy();
+                    t.expect(messageDraft.get('from')).toEqual(acc.get("from"));
+                    t.expect(messageDraft.get('replyTo')).toEqual(acc.get("replyTo"));
                 });
 
             });
