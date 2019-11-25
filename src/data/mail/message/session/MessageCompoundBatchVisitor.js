@@ -216,7 +216,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
         const me            = this,
               rec           = operation.getRecords()[0],
               messageDraft  = me.getMessageDraft(),
-              resp          = Ext.decode(operation.getResponse().responseText);
+              response      = operation.getResponse(),
+              responseType  = response.responseType,
+              resp          = responseType === "json" ? response.responseJson : Ext.decode(response.responseText);
 
         if (operation.getAction() === "destroy" && rec.entityName === "DraftAttachment") {
             messageDraft.set('id', resp.data.parentMessageItemId);
