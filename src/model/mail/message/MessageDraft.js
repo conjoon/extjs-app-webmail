@@ -58,15 +58,14 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         DraftAttachment : {
             'mailAccountId' : 'mailAccountId',
             'mailFolderId'  : 'mailFolderId',
-            'id'            :  'parentMessageItemId'
+            'id'            : 'parentMessageItemId'
         }
     },
 
 
     fields : [{
         name      : 'replyTo',
-        type      : 'cn_core-datafieldemailaddress',
-        persist   : false
+        type      : 'cn_core-datafieldemailaddress'
     }, {
         name       : 'to',
         type       : 'cn_core-datafieldemailaddresscollection',
