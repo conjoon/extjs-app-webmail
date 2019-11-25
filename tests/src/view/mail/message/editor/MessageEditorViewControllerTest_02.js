@@ -889,7 +889,7 @@ describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewControllerTe
                     );
                     t.expect(acc.get('from')).toBeTruthy();
                     t.expect(acc.get('replyTo')).toBeTruthy();
-                    
+
                     t.expect(messageDraft.get('from')).not.toBe(acc.get("from"));
                     t.expect(messageDraft.get('replyTo')).not.toBe(acc.get("replyTo"));
 

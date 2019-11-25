@@ -367,6 +367,42 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
         });
 
 
+        t.it('Test seedRetrievedKey() - response was application/json - app-cn_mail#119', function(t) {
+
+            const visitor = createVisitor(false),
+                  op = createOp(),
+                  draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
+                    subject       : 'test',
+                    mailFolderId  : "1",
+                    mailAccountId : "3"
+                });
+
+            visitor.setMessageDraft(draft);
+
+            op.action = "destroy";
+            let CMP = "STRTIOULRFC2Z7Ä";
+            op.getResponse = function() {
+                return {
+                    responseType : "json",
+                    responseJson : {
+                        data : {
+                            parentMessageItemId : CMP
+                        }
+                    }
+                };
+            }
+            op.setRecords([ Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+                mailFolderId  : "1",
+                mailAccountId : "3"
+            })]);
+
+            t.expect(visitor.seedRetrievedKey(op)).toBe(true);
+            t.expect(draft.get("id")).toBe(CMP);
+            t.expect(draft.dirty).toBe(false);
+
+        });
+
+
         t.it('Test refreshKeyForDestroy()', function(t) {
 
             const visitor = createVisitor(false)
