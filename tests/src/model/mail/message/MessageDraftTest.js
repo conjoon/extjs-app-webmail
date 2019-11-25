@@ -298,6 +298,8 @@ describe('conjoon.cn_mail.model.mail.message.MessageDraftTest', function(t) {
                 replyTo : 'replyTo@domain.tld'
             });
 
+            t.expect(conjoon.cn_mail.model.mail.message.MessageDraft.getField('replyTo').persist).toBe(true);
+
             t.expect(rec.get('from').address).toBe('from@domain.tld');
             t.expect(rec.get('replyTo').address).toBe('replyTo@domain.tld');
         });
