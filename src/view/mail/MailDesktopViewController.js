@@ -515,7 +515,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewController', {
      * the contents of a DRAFT-inbox.
      *
      * @param {conjoon.mail.message.editor.MessageEditor} editor
-     * @param {{conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      * @param operation
      * @param {Boolean} isSend
      * @param {Boolean} isCreated
