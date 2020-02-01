@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -132,15 +132,18 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
     }, {
         // only required by drafts for now
         name : 'references',
-        type : 'string'
+        type : 'string',
+        defaultValue :  null
     }, {
         // only required by drafts for now
         name : 'inReplyTo',
-        type : 'string'
+        type : 'string',
+        defaultValue :  null
     }, {
         // only required by drafts for now x-cn-draft-info
         name : 'xCnDraftInfo',
-        type : 'string'
+        type : 'string',
+        defaultValue :  null
     }, {
         name    : 'savedAt',
         type    : 'date',
