@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -134,12 +134,20 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             'MessageItems';
 
         // switch target parameter to MessageBodyDraft if applicable
-        let target = me.entityName;
+        let target      = me.entityName,
+            finalParams;
+
         if ((action === 'create' || action === 'update') && target === 'MessageBody') {
             target = 'MessageBodyDraft';
         }
 
-        request.setParams(Ext.apply(request.getParams() || {}, {target: target}));
+        finalParams = {target: target};
+
+        if (target === "MessageItem" && action === "update" && source.mailFolderId !== rec.get("mailFolderId")) {
+            finalParams.action = "move";
+        }
+
+        request.setParams(Ext.apply(request.getParams() || {}, finalParams));
 
         if (action !== 'create') {
             if (source.hasOwnProperty('id')) {

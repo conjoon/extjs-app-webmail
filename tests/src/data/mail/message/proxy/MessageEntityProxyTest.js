@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -195,6 +195,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams()).toEqual({foo : 'bar', target : 'MessageDraft'});
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
         targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems';
@@ -202,6 +203,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({foo : 'bar', target : 'MessageBodyDraft'});
 
         // modified
@@ -214,6 +216,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams()).toEqual({foo : 'bar', target : 'MessageDraft'});
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
     });
@@ -251,6 +254,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         proxy.entityName = 'MessageDraft';
         proxy.buildUrl(request);
         t.expect(request.getParams().target).toBe('MessageDraft');
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
 
@@ -259,6 +263,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams().target).toBe('MessageBodyDraft');
 
         // modified
@@ -271,8 +276,8 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams().target).toBe('MessageDraft');
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
-
     });
 
 
@@ -307,6 +312,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams().target).toBe('MessageDraft');
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
         targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/d';
@@ -314,6 +320,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams().target).toBe('MessageBody');
 
 
@@ -327,6 +334,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams().target).toBe('MessageDraft');
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
     });
 
@@ -377,6 +385,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getParams().target).toBe('MessageDraft');
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
         keysUndefined();
 
@@ -387,6 +396,7 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         request.setUrl("");
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams().target).toBe('MessageBody');
         keysUndefined();
     });
@@ -422,12 +432,47 @@ describe('conjoon.cn_mail.view.mail.message.proxy.MessageEntityProxyTest', funct
         proxy.buildUrl(request);
 
         t.expect(request.getUrl()).toBe(targetUrl);
-
+        t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({
             filter : "[{\"property\":\"id\",\"value\":\"c\"}]",
             target : "MessageItem"
         });
 
+
+    });
+
+
+    t.it("buildUrl() - changing the mailFolderId on MessageItem identifies as \"move\" action", function(t) {
+
+        let recs = [Ext.create('Ext.data.Model', {
+                mailAccountId : 'a',
+                mailFolderId : 'b',
+                localId : 'c',
+                id : 'd'
+            })],
+            proxy = Ext.create('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
+                entityName : 'MessageItem'
+            }),
+            request = Ext.create('Ext.data.Request', {
+                action : 'update',
+                operation : Ext.create('Ext.data.operation.Update', {
+                    records : recs
+                }),
+                records : recs
+            }),
+            targetUrl = '/MailAccounts/a/MailFolders/b/MessageItems/d';
+
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+
+        t.expect(request.getRecords()[0].phantom).toBe(false);
+        request.getRecords()[0].set('mailFolderId', 'xyz');
+
+        proxy.buildUrl(request);
+
+        // modified
+        t.expect(request.getParams().target).toBe('MessageItem');
+        t.expect(request.getParams().action).toBe('move');
+        t.expect(request.getUrl()).toBe(targetUrl);
 
     });
 
