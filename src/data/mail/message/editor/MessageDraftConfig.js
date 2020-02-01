@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -130,8 +130,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
     toObject : function() {
 
         var me  = this,
-            obj = {},
-            attachments;
+            obj = {};
 
         if (me.getTo() !== undefined) {
             obj.to = me.getTo()
@@ -408,8 +407,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getMailFolderId() !== undefined) {
             Ext.raise({
-                subject : me.getMailFolderId(),
-                msg     : "\"mailFolderId\" is immutable"
+                mailFolderId : me.getMailFolderId(),
+                msg          : "\"mailFolderId\" is immutable"
             });
         }
 
@@ -433,8 +432,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getMailAccountId() !== undefined) {
             Ext.raise({
-                subject : me.getMailAccountId(),
-                msg     : "\"mailAccountId\" is immutable"
+                mailAccountId : me.getMailAccountId(),
+                msg           : "\"mailAccountId\" is immutable"
             });
         }
 
@@ -607,8 +606,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getReferences() !== undefined) {
             Ext.raise({
-                subject : me.getReferences(),
-                msg     : "\"referencesc\" is immutable"
+                references : me.getReferences(),
+                msg        : "\"references\" is immutable"
             });
         }
 
@@ -632,8 +631,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getInReplyTo() !== undefined) {
             Ext.raise({
-                subject : me.getInReplyTo(),
-                msg     : "\"inReplyTo\" is immutable"
+                inReplyTo : me.getInReplyTo(),
+                msg       : "\"inReplyTo\" is immutable"
             });
         }
 
@@ -657,8 +656,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getXCnDraftInfo() !== undefined) {
             Ext.raise({
-                subject : me.getXCnDraftInfo(),
-                msg     : "\"xCnDraftInfo\" is immutable"
+                xCnDraftInfo : me.getXCnDraftInfo(),
+                msg          : "\"xCnDraftInfo\" is immutable"
             });
         }
 
