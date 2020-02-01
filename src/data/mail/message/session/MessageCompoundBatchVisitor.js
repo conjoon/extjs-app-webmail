@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -182,7 +182,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
             proxy = rec.getProxy();
 
             newOp = proxy.createOperation('update', {
-                records : [rec]
+                records : [rec],
+                params  : {
+                    origin : op.getAction()
+                }
             });
             newOp.entityType = Ext.getClass(rec);
 

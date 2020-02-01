@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -225,6 +225,7 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
             let newOp = visitor.onBatchOperationComplete(batch, op);
             t.expect(newOp).toBeTruthy();
             t.expect(newOp).not.toBe(op);
+            t.expect(newOp.getParams().origin).toBe('create');
             t.expect(batch.operations[1]).toBe(newOp);
         });
 
@@ -268,6 +269,7 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 //  t.expect(operations[1].id).not.toBe(oldId);
                 t.expect(operations[1]).not.toBe(oldOp);
                 t.expect(operations[1].getAction()).toBe('update');
+                t.expect(operations[1].getParams().origin).toBe("create");
                 t.expect(operations[1].getRecords()[0]).toBe(oldRecord[0]);
                 CMP_REC = operations[1].getRecords()[0];
             });
