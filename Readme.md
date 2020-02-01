@@ -1,4 +1,4 @@
-# app-cn_mail  [![Build Status](https://travis-ci.org/conjoon/app-cn_mail.svg?branch=master)](https://travis-ci.org/conjoon/app-cn_mail)
+# app-cn_mail 
 This **Sencha ExtJS** package is built with the [coon.js-library](https://github.com/coon.js) and provides a pluggable package
 for adding an Email-client to the conjoon application.
 
@@ -45,6 +45,16 @@ Any developer striving for an own backend implementation should make sure to pro
    * Success Status / Response: Status 200 `{success : true, data : []}`
    * Failure Status / Response: Status * `{success : false}`
       
+* `cn_mail/MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageItems` | **POST**
+   * **Parameters:** 
+     * `{mailAccountId}` (required): The id of the MailAccount for which the Message should be queried; 
+     * `{mailFolderId}` (required): The id of the folder for which the Message should be returned; 
+     * `{messageItemId}` (required): The id of the Message to return; 
+     * `{target}` (required): if `{target=MessageBody}` is set, only the the MessageBody should be created and returned; if `{target=MessageItem}` is set, only MessageItem-informations should be created and returned;     
+   * Returns the created MessageBody or MessageItem for the specified parameters.   
+   * Success Status / Response: Status 200 `{success : true, data : {}}`
+   * Failure Status / Response: Status * `{success : false}`; if the parameter `{target}` is missing, a *400 - Bad Request* should be returned      
+      
  *  `cn_mail/MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageItems?{start}&limit&{sort}` | **GET**
     * **Parameters:**  
       * `{mailAccountId}` (required): The id of the MailAccount for which the folders should be queried;
@@ -72,9 +82,16 @@ Any developer striving for an own backend implementation should make sure to pro
       * `{mailFolderId}` (required): The id of the folder for which the Message should be returned; 
       * `{messageItemId}` (required): The id of the Message to return; 
       * `{target}` (required): `{target=MessageItem}`
+      * `{origin}` (required): `{origin=create}` - Required for MessageDrafts to determine if they were initially created
+      * `{action}` (required): `{action=move}` - Required to determine if a move operation is requested by the client
       * The following data can be submitted:
-      * `seen (true/false)` sets the \Seen flag for the specified Message
-      * `flagged (true/false)` sets the \Flagged flag for the specified Message
-    * Success Status / Response: Status 200 `{success : true, data :{id : (string), mailFolderId : (string), mailAccountId : (string), seen : (bool), flagged : (bool)}}` If the operation was successfull, the data must contain the id, the mailFolderId and the mailAccountId representing the compound key of the message, along with the properties `seen` and/or `flagged` and their newly set value. 
-    * Failure Status / Response: Status * `{success : false}`; if the parameter `{target}` is not valid, or the request payload is invalid, a *400 - Bad Request* should be returned
+      * `seen (true/false)` sets the \Seen flag for the specified Message (for `{target=MessageItem}`)
+      * `flagged (true/false)` sets the \Flagged flag for the specified Message  (for `{target=MessageItem}`)
+      * `draft (true/false)` sets the \Draft flag for the specified Message  (for `{target=MessageItem}`)
+      * `mailFolderId (String)` requests a move operation for the specified Message  (for `{target=MessageItem}` along with `{action=move}`)
+      * For `{target=MessageDraft}`, data described in the `conjoon.cn_mail.model.mail.message.MessageDraft` can be submitted
+    * Success Status / Response: 
+        * Status 200 `{success : true, data :{id : (string), mailFolderId : (string), mailAccountId : (string), seen : (bool), flagged : (bool)}}` If the operation was successfull, the data must contain the id, the mailFolderId and the mailAccountId representing the compound key of the message, along with the properties `seen` and/or `flagged` and their newly set value. If a new mailFolderId was submitted with the request, the response must contain a json-encoded MessageItem. See below. 
+        * Status 200 `{success : true, data :{[json encoded MessageItem along with preview-text]}}` If the operation was successful, the data must contain a json encoded MessageItem along with the preview-text. 
+    * Failure Status / Response: Status * `{success : false}`; if the parameter `{target}` is not valid, or the request payload is invalid, a *400 - Bad Request* should be returned. If a move operation for a MessageItem was requested, and the submitted `mailFolderId` is the same as the current for the target MessageItem, a *400 - Bad Request* should be returned. 
   
