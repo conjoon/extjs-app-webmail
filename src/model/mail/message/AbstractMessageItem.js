@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -53,8 +53,9 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
         name : 'subject',
         type : 'string'
     }, {
-        name : 'date',
-        type : 'date'
+        name           : 'date',
+        type           : 'date',
+        dateReadFormat : "Y-m-d H:i:s O"
     }, {
         name : 'from',
         type : 'cn_core-datafieldemailaddress'

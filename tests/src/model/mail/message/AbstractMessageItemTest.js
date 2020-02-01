@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -70,6 +70,10 @@ describe('conjoon.cn_mail.model.mail.message.AbstractMessageItemTest', function(
         t.expect(model.getField('messageBodyId').unique).toBe(true);
     });
 
+    t.it("Test date", function(t) {
+        t.expect(model.getField('date')).toBeTruthy();
+        t.expect(model.getField('date').getDateReadFormat()).toBe("Y-m-d H:i:s O");
+    });
 
     t.it("Test seen", function(t) {
         t.expect(model.getField('seen')).toBeTruthy();
