@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -483,6 +483,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
     privates : {
 
+
+        /**
+         * Returns a configuration object to pass to the request being send to the server
+         * for sending a MessageDraft.
+         *
+         * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+         *
+         * @returns {Object}
+         */
+        getSendMessageDraftRequestConfig : function(messageDraft) {
+
+            return {
+                url    : './cn_mail/SendMessage',
+                params : messageDraft.getCompoundKey().toObject()
+            }
+
+        },
+
+
         /**
          * Sends the current MessageDraft and fires the events
          * cn_mail-mailmessagebeforesend and cn_mail-mailmessagesendcomplete (or
@@ -513,10 +532,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             };
 
-            Ext.Ajax.request({
-                url    : './cn_mail/SendMessage',
-                params : messageDraft.getCompoundKey().toObject()
-            }).then(
+            Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft)).then(
                 function(response, opts) {
                     view.fireEvent('cn_mail-mailmessagesendcomplete', view, messageDraft);
                 },
