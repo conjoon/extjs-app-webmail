@@ -3,7 +3,7 @@
     "name": "app-cn_mail",
 
     "sencha": {
-        "coon-js" : {"packageController" : true},
+        "coon-js" : {"package" : {"controller" :  true}},
         "namespace": "conjoon.cn_mail",
         "type": "code",
         "toolkit": "classic",
