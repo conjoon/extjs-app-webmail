@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,9 +26,6 @@
 /**
  * Specialized version of a JSON Reader used by MessageEntityProxy.
  */
-/*This has to be refactres intp MessageEntityJsonReader which takes care of the entities MessageDraft,
-    MessageBody and MessageItem; additionally, compound keys for messagebody and messageitem has to be
-merged into MessageEntityCompoundKey*/
 Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
 
     extend : 'Ext.data.reader.Json',
@@ -82,7 +79,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
         const me     = this,
               action = data && data.metaData ? data.metaData.cn_action : "";
 
-        data = me.applyCompoundKey(data, action);
+        if (action !== "destroy") {
+            data = me.applyCompoundKey(data, action);
+        }
 
         return me.callParent([data, readOptions, internalReadOptions]);
     },

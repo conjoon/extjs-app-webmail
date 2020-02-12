@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -155,6 +155,17 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
 
         reader.readRecords({})
         t.expect(ACTION).toBe("");
+    })
+
+
+    t.it("readRecords() - applyCompoundKey not called if action was DESTROY", function(t){
+
+        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+
+        t.isntCalled("applyCompoundKey", reader);
+
+        reader.readRecords({metaData : {cn_action : "destroy"}})
+
     })
 
 });
