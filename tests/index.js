@@ -204,7 +204,10 @@ harness.start({
                 group : 'mail',
                 items : [{
                     group : 'message',
-                    items : [
+                    items : [{
+                        group : "reader",
+                        items : ['src/text/mail/message/reader/PlainReadableStrategyTest.js'],
+                    },
                         'src/text/mail/message/CopyDecoratorTest.js',
                         'src/text/mail/message/DecoratorFormatTest.js',
                         'src/text/mail/message/ForwardMessageDecoratorTest.js',
