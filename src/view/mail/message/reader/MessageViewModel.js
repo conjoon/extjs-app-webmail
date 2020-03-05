@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -41,6 +41,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         'conjoon.cn_mail.model.mail.message.ItemAttachment',
         'conjoon.cn_mail.model.mail.message.MessageDraft',
         'conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater',
+        'conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy',
         'coon.core.util.Date'
     ],
 
@@ -98,6 +99,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
          */
         isLoading : false,
 
+        /**
+         * @type {conjoon.cn_mail.model.mail.message.MessageItem}
+         */
         messageItem : null,
 
         /**
@@ -115,6 +119,34 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
     },
 
     formulas : {
+
+        /**
+         * Formula responsible for transforming text/plain portion
+         * of a message into a readable HTML-structure.
+         *
+         * @see {conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy}
+         */
+        textPlainToHtml : {
+
+            bind : {
+                textPlain : "{messageBody.textPlain}"
+            },
+
+            get : function(data) {
+
+                if (!data.textPlain) {
+                    return;
+                }
+
+                const me = this;
+                if (!me.plainReadableStrategy) {
+                    me.plainReadableStrategy = Ext.create("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
+                }
+
+                return me.plainReadableStrategy.process(data.textPlain);
+            }
+
+        },
 
 
         /**

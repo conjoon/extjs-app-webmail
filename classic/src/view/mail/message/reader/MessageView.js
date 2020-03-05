@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -170,6 +170,37 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                    ]
 
                }, {
+                   xtype: 'segmentedbutton',
+                   items: [{
+                       xtype     : 'button',
+                       scale     : 'small',
+                       ui        : 'cn-btn-medium-base-color',
+                       iconCls   : 'x-fa fa-code',
+                       itemId    : 'btn-showhtml',
+                       reference : "htmlplainButton",
+                       published : {
+                           pressed : true
+                       },
+                       bind : {
+                           pressed : "{!!messageBody.textHtml}"
+                       },
+                       tooltip : {
+                           text : "Show text/html"
+                       }
+                   }, {
+                       xtype     : 'button',
+                       scale     : 'small',
+                       itemId    : 'btn-showplain',
+                       ui        : 'cn-btn-medium-base-color',
+                       iconCls   : 'x-fa fa-align-left',
+                       bind : {
+                           pressed : "{!messageBody.textHtml}"
+                       },
+                       tooltip : {
+                           text : "Show text/plain"
+                       }
+                   }]
+               }, {
                    xtype     : 'button',
                    scale     : 'small',
                    ui        : 'cn-btn-medium-base-color',
@@ -307,7 +338,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                       : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
             src : "",
             bind : {
-                srcDoc : '{messageBody.textHtml}',
+                srcDoc : '{htmlplainButton.pressed ? messageBody.textHtml : textPlainToHtml}',
             }
         }]
     }],
