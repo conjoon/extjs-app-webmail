@@ -846,6 +846,7 @@ t.requireOk('coon.core.util.Date', function() {
 
 
             const
+                segmentedbutton = view.down("segmentedbutton"),
                 plainbtn = view.down("#btn-showplain"),
                 htmlbtn = view.down("#btn-showhtml"),
                 messageItem = createMessageItem(true);
@@ -856,6 +857,7 @@ t.requireOk('coon.core.util.Date', function() {
 
                 t.expect(vm.get("messageBody.textHtml")).toBeTruthy();
                 t.expect(vm.get("messageBody.textPlain")).toBeTruthy();
+                t.expect(segmentedbutton.isVisible()).toBe(true);
                 t.expect(plainbtn.pressed).toBe(false);
                 t.expect(htmlbtn.pressed).toBe(true);
                 t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(vm.get("messageBody.textHtml"));
@@ -867,16 +869,23 @@ t.requireOk('coon.core.util.Date', function() {
                 vm.notify();
                 t.expect(plainbtn.pressed).toBe(true);
                 t.expect(htmlbtn.pressed).toBe(false);
+                t.expect(segmentedbutton.isVisible()).toBe(false);
                 t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
 
+                let html = "somehtml";
+                vm.set("messageBody.textPlain", plain);
+                vm.set("messageBody.textHtml", html);
+                vm.notify();
+                t.expect(segmentedbutton.isVisible()).toBe(true);
+                t.expect(htmlbtn.pressed).toBe(true);
                 // switch by button click
-                t.click(htmlbtn, function () {
+                t.click(plainbtn, function () {
                     vm.notify();
-                    t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toBe("");
+                    t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
 
-                    t.click(plainbtn, function () {
+                    t.click(htmlbtn, function () {
                         vm.notify();
-                        t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
+                        t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(html);
 
                     })
                 });

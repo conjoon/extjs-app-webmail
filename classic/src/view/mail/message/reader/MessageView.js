@@ -171,6 +171,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
                }, {
                    xtype: 'segmentedbutton',
+                   hidden : true,
+                   bind : {
+                        visible :  "{messageBody.textHtml && messageBody.textPlain}"
+                   },
                    items: [{
                        xtype     : 'button',
                        scale     : 'small',
