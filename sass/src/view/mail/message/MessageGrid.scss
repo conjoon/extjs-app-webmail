@@ -31,6 +31,15 @@
         }
     }
 
+    .x-grid-cell {
+        position:inherit;
+    }
+
+    .x-grid-cell-inner {
+        padding: 7px 10px 6px;
+    }
+
+
     .previewDisabled {
 
         .x-grid-rowbody-tr {
@@ -39,24 +48,23 @@
     }
 
     .x-panel-header {
-        background : $lightest-color;
+        background : var(--reverse-color);
         border     : none;
+         padding: 10px 17px 10px 17px;
 
         .x-title-text {
-            color : $color;
+            color : var(--color);
+            text-transform:uppercase;
+            font-weight:normal;
+        }
+
+        .x-tool-tool-el {
+            color : var(--color);
         }
     }
 
-    .x-grid-item-selected {
-        background-color : $mail-item-selected-color;
-    }
-
-    .fa-circle:before {
-        color : $unread-icon-color;
-    }
-
-    .fa-circle-thin:before{
-        color : $read-icon-color;
+    .fas.fa-circle:before {
+        color : var(--base-color);
     }
 
     .x-grid-body {
@@ -96,17 +104,18 @@
         .x-grid-cell.previewLarge::before {
             content  : "";
             width    : 2px;
-            height   : 96%;
+            height   : 100%;
             width    : 2px;
             position : absolute;
-            background-color : $base-color;
+            background-color : var(--base-color);
         }
     }
 
     .cn_mail-mailmessagepreviewfeature{
 
         .x-grid-rowbody {
-            padding-top : 0px;
+            padding-top: 4px;
+            padding-left: 10px;
         }
 
         .head {
@@ -118,7 +127,7 @@
 
                 .subject,
                 .date {
-                    color : $base-color;
+                    color : var(--base-color);
                 }
             }
 
@@ -129,7 +138,7 @@
             }
 
             .fa-mail-reply {
-                color   : $base-color;
+                color   : var(--base-color);
             }
 
             .fa-flag {
@@ -137,9 +146,8 @@
             }
 
             .draft {
-                color : $cn-draft-color;
+                color:var(--accent-color);
             }
-
 
             .subject {
                 float         : left;
@@ -158,13 +166,11 @@
             }
         }
 
-
-
         .previewText {
-            padding       : 4px 0px 4px 0px;
+            padding       : 10px 0px 4px 0px;
             white-space   : nowrap;
             text-overflow : ellipsis;
-            color         : lighten($darkest-color, 50%);
+            color         : var(--highlight-color);
         }
     }
 
@@ -181,7 +187,7 @@
         justify-content: center;
 
         &::before {
-            color:lighten($base-color, 30%);
+            color:var(--color);
             font-size:96px;
             font-family:FontAwesome;
             content : '\f115'

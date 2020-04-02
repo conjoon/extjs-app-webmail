@@ -60,7 +60,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
            '<div target="_blank" class="attachment {[this.getPreviewCssClass(values.type, values.previewImgSrc)]}" ',
                'style="background-image:url({previewImgSrc})">',
              '<div class="imagecont">',
-               '<span class="mimetype fa {[this.getMimeTypeIcon(values.type)]}"></span>',
+               '<span class="mimetype far {[this.getMimeTypeIcon(values.type)]}"></span>',
              '</div>',
              '<div class="actioncont">',
                '<div class="attachmenticon fa fa-download"></div>',
@@ -72,7 +72,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
                         '<a role="link" href="{downloadUrl}" class="downloadbutton fa fa-arrow-down" download="{text}"></a>',
                     '</tpl>',
                     '<tpl if="this.displayButtonType(\'REMOVE\')">',
-                        '<a class="removebutton fa fa-close"></a>',
+                        '<a class="removebutton fa fa-times"></a>',
                     '</tpl>',
                   '</div>',
                 '</div>',
@@ -149,28 +149,28 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
             case 'image/gif':
             case 'image/png':
             case 'image':
-                return 'fa-file-image-o';
+                return 'fa-file-image';
 
             case 'audio':
-                return 'fa-file-audio-o';
+                return 'fa-file-audio';
 
             case 'video':
-                return 'fa-file-video-o';
+                return 'fa-file-video';
 
             case 'application/pdf':
-                return 'fa-file-pdf-o';
+                return 'fa-file-pdf';
 
             case 'text/plain':
-                return  'fa-file-text-o';
+                return  'fa-file-alt';
 
             case 'text/html':
             case 'application/json':
-                return 'fa-file-code-o';
+                return 'fa-file-code';
 
             case 'application/gzip':
             case 'application/zip':
             case 'application/x-rar-compressed':
-                return 'fa-file-archive-o';
+                return 'fa-file-archive';
 
         }
 

@@ -140,7 +140,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
             "width:100%;",
             "height:100%;",
             "text-align:justify;",
-            "color: rgb(64, 64, 64);",
+            "color: " + Fashion.css.getVariables()["color"] + ";",
             " font-family: \"Open Sans\", \"Helvetica Neue\", helvetica, arial, verdana, sans-serif;",
             "font-size: 14px;",
             "font-weight: 400;",

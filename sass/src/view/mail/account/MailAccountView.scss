@@ -31,19 +31,19 @@
 
   .x-toolbar-footer,
   .x-panel-header {
-    background: $lightest-color;
+    background: var(--header-background-color);
   }
 
   .x-panel-header {
     border: none;
     .x-title-text {
-      color: $color;
+      color: var(--color);
     }
   }
 
   .fieldsetCnt {
     @include cn-box-shadow(3px, 3px, 6px, -3px, rgba(0,0,0,0.2));
-    background:$lightest-color;
+    background:var(--reverse-color);
   }
 
   .x-fieldset {
@@ -57,7 +57,7 @@
     }
 
     .x-fieldset-body {
-      background:$lightest-color;
+      background:var(--reverse-color);
       border:none;
    }
 

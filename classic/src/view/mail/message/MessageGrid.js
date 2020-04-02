@@ -195,7 +195,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
          * needsUpdate computing and considering argument values?
          */
         renderer  : function(value, metaData, record) {
-            return '<span class="x-fa fa-circle'+ (!value ? '' : '-thin') +'"></span>';
+            return '<span class="' + (!value ? 'fas' : 'far')+ ' fa-circle"></span>';
         },
         menuDisabled : true,
         width        : 40

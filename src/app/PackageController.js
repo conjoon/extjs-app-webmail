@@ -881,10 +881,10 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                 text    : 'Email',
                 route   : 'cn_mail/home',
                 view    : 'conjoon.cn_mail.view.mail.MailDesktopView',
-                iconCls : 'x-fa fa-send',
+                iconCls : 'fas fa-paper-plane',
                 nodeNav : [{
                     xtype   : 'button',
-                    iconCls : 'x-fa fa-plus',
+                    iconCls : 'fas fa-plus',
                     tooltip : {
                         title : 'Create new message',
                         text  : 'Opens the editor for writing a new message.'
@@ -894,7 +894,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     xtype : 'tbseparator'
                 }, {
                     xtype    : 'button',
-                    iconCls  : 'x-fa fa-mail-reply',
+                    iconCls  : 'fas fa-reply',
                     disabled : true,
                     itemId   : 'cn_mail-nodeNavReplyTo',
                     tooltip  : {
@@ -903,7 +903,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     }
                 }, {
                     xtype    : 'button',
-                    iconCls  :'x-fa fa-mail-reply-all',
+                    iconCls  :'fas fa-reply-all',
                     itemId   : 'cn_mail-nodeNavReplyAll',
                     disabled : true,
                     tooltip  : {
@@ -912,7 +912,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     }
                 }, {
                     xtype    : 'button',
-                    iconCls  : 'x-fa fa-mail-forward',
+                    iconCls  : 'fas fa-share',
                     itemId   : 'cn_mail-nodeNavForward',
                     disabled : true,
                     tooltip  : {
@@ -921,7 +921,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     }
                 }, {
                     xtype    : 'button',
-                    iconCls  : 'x-fa fa-edit',
+                    iconCls  : 'fas fa-edit',
                     itemId   : 'cn_mail-nodeNavEditMessage',
                     disabled : true,
                     tooltip  : {
@@ -930,7 +930,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     }
                 }, {
                     xtype    : 'button',
-                    iconCls  : 'x-fa fa-trash',
+                    iconCls  : 'fas fa-trash',
                     itemId   : 'cn_mail-nodeNavDeleteMessage',
                     disabled : true,
                     tooltip  : {
@@ -941,7 +941,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     xtype : 'tbseparator'
                 }, {
                     xtype        : 'button',
-                    iconCls      : 'x-fa fa-folder-o',
+                    iconCls      : 'far fa-folder',
                     disabled     : false,
                     cls          : 'toggleFolderViewBtn',
                     itemId       : 'cn_mail-nodeNavToggleFolder',
@@ -953,7 +953,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                     }
                 }, {
                     xtype        : 'button',
-                    iconCls      : 'x-fa fa-list',
+                    iconCls      : 'fas fa-list',
                     disabled     : true,
                     cls          : 'toggleGridViewBtn',
                     itemId       : 'cn_mail-nodeNavToggleList',
@@ -965,27 +965,27 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
                 }, {
                     xtype    : 'button',
                     disabled : true,
-                    iconCls  : 'x-fa fa-columns',
+                    iconCls  : 'fas fa-columns',
                     itemId   : 'cn_mail-nodeNavReadingPane',
                     tooltip  : {
                         title : 'Change reading pane position',
                         text  : 'Switch the position of the reading pane or hide it.'
                     },
                     menu : [{
-                        iconCls : 'x-fa fa-toggle-right',
+                        iconCls : 'fas fa-toggle-right',
                         text    : 'Right',
                         itemId  : 'right',
                         checked : true,
                         xtype   : 'menucheckitem',
                         group   : 'cn_mail-nodeNavReadingPaneRGroup'
                     }, {
-                        iconCls : 'x-fa fa-toggle-down',
+                        iconCls : 'fas fa-toggle-down',
                         text    : 'Bottom',
                         itemId  : 'bottom',
                         xtype   : 'menucheckitem',
                         group   : 'cn_mail-nodeNavReadingPaneRGroup'
                     }, {
-                        iconCls : 'x-fa fa-close',
+                        iconCls : 'fas fa-close',
                         text    : 'Hidden',
                         itemId  : 'hide',
                         xtype   : 'menucheckitem',

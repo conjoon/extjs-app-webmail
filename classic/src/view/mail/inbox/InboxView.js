@@ -147,13 +147,13 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
                     hidden : '{cn_mail_ref_mailfoldertree.selection}'
                 },
                 data   : {
-                    indicatorIcon : 'fa-folder-o',
+                    indicatorIcon : 'fa-folder',
                     indicatorText : 'Select a folder to view its contents.'
                 },
                 itemId : 'msgIndicatorBox',
                 tpl: [
                     '<div class="messageIndicator">',
-                    '<div class="fa {indicatorIcon} icon"></div>',
+                    '<div class="far {indicatorIcon} icon"></div>',
                     '<div>{indicatorText}</div>',
                     '</div>'
                 ]

@@ -292,13 +292,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             }
         }, {
             scale  : 'small',
-            ui     : 'cn-btn-medium-base-color',
             text   : 'Save',
             width  : 108,
             itemId : 'saveButton'
         }, {
             scale  : 'small',
-            ui     : 'cn-btn-medium-base-color',
             text   : 'Send',
             itemId : 'sendButton',
             width  : 108
@@ -320,10 +318,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             }
         }, {
             xtype  : 'button',
+            scale : "large",
             itemId : 'showCcBccButton',
             cls    : 'showCcBccButton',
             text   : 'CC / BCC',
-            ui     : 'button-lightest-color',
             bind   : {
                 hidden : '{isCcOrBccValueSet}'
             }

@@ -27,13 +27,13 @@
 
     .messageGridContainer {
 
-        background-color: $tabpanel-w-borders-background;
+        background-color: var(--reverse-color);
 
 
         .messageIndicator {
 
             .icon {
-                color         : lighten($base-color, 30%);
+                color         : var(--color);
                 font-size     : 96px;
             }
 

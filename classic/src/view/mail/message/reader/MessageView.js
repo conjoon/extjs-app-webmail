@@ -108,7 +108,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
 
     bind : {
         title   : '{isLoading ? "Loading..." : getSubject}',
-        iconCls : '{isLoading ? "fa fa-spin fa-spinner" : "fa fa-envelope-o"}'
+        iconCls : '{isLoading ? "fas fa-spin fa-spinner" : "far fa-envelope"}'
     },
 
     closable : true,
@@ -134,7 +134,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         cls    : 'cn_mail-header',
         height : 96,
         layout : {
-            type  : 'hbox'
+            type  : 'hbox',
+            align : 'stretch'
         },
         hidden : true,
         bind   : {
@@ -142,9 +143,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         },
         items: [{
             xtype  : 'box',
-            cls    : 'sender-img x-fa fa-user',
-            height : 80,
-            width  : 80
+            cls    : 'sender-img fas fa-user',
+            margin : '8 8 0 8'
         }, {
            xtype : 'container',
            flex : 1,
@@ -178,8 +178,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                    items: [{
                        xtype     : 'button',
                        scale     : 'small',
-                       ui        : 'cn-btn-medium-base-color',
-                       iconCls   : 'x-fa fa-code',
+                       iconCls   : 'fas fa-code',
                        itemId    : 'btn-showhtml',
                        reference : "htmlplainButton",
                        published : {
@@ -195,8 +194,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                        xtype     : 'button',
                        scale     : 'small',
                        itemId    : 'btn-showplain',
-                       ui        : 'cn-btn-medium-base-color',
-                       iconCls   : 'x-fa fa-align-left',
+                       iconCls   : 'fas fa-align-left',
                        bind : {
                            pressed : "{!messageBody.textHtml}"
                        },
@@ -207,8 +205,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                }, {
                    xtype     : 'button',
                    scale     : 'small',
-                   ui        : 'cn-btn-medium-base-color',
-                   iconCls   : 'x-fa fa-edit',
+                   iconCls   : 'fas fa-edit',
                    tooltip  : {
                        text  : "Edit this draft"
                    },
@@ -220,8 +217,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                }, {
                    xtype     : 'button',
                    scale     : 'small',
-                   ui        : 'cn-btn-medium-base-color',
-                   iconCls   : 'x-fa fa-trash',
+                   iconCls   : 'fas fa-trash',
                    itemId    : 'btn-deletedraft',
                    tooltip  : {
                        text  : "Delete this draft"
@@ -236,24 +232,23 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                        visible : '{!messageItem.draft && contextButtonsEnabled}'
                    },
                    xtype     : 'splitbutton',
-                   scale     : 'small',
-                   ui        : 'cn-btn-medium-base-color',
-                   iconCls   : 'x-fa fa-mail-reply-all',
+
+                   iconCls   : 'fas fa-reply-all',
                    text      : 'Reply all',
                    itemId    : 'btn-replyall',
                    menuAlign : 'tr-br',
                    menu    : {
                        items : [{
                            text    : 'Reply',
-                           iconCls : 'x-fa fa-mail-reply',
+                           iconCls : 'fas fa-reply',
                            itemId  : 'btn-reply',
                        }, {
                            text    : 'Forward',
-                           iconCls : 'x-fa fa-mail-forward',
+                           iconCls : 'fas fa-share',
                            itemId  : 'btn-forward'
                        }, '-', {
                            text    : 'Delete',
-                           iconCls : 'x-fa fa-trash',
+                           iconCls : 'fas fa-trash',
                            itemId  : 'btn-delete'
                        }]
                    }
@@ -308,7 +303,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         itemId : 'msgIndicatorBox',
         tpl: [
             '<div class="messageIndicator">',
-            '<div class="fa {indicatorIcon} icon"></div>',
+            '<div class="{indicatorIcon} icon"></div>',
             '<div>{indicatorText}</div>',
             '</div>'
         ]

@@ -27,14 +27,47 @@
 
     .cn_mail-tab-body {
         background : none;
+        top:40px!important;
     }
 
     .x-tab-bar {
-        @include cn-box-shadow(3px, 3px, 6px, -3px, rgba(0,0,0,0.2));
+        min-height: 44px;
+        height: 44px;
+        background-color: var(--alt-background-color);
+        @include cn-box-shadow(3px, 3px, 6px, -2px, rgba(0, 0, 0, 0.2));
 
-        .x-tab-default.x-tab-active .x-tab-close-btn {
-            color : $tabbar-base-color ;
+        .x-tab.x-tab-active.x-tab-default .x-tab-icon-el,
+        .x-tab.x-tab-active.x-tab-default .x-tab-inner {
+            color: var(--color);
         }
+
+
+        .x-tab-default {
+            background-color: var(--base-invisible-color);
+            color: var(--disabled-color);
+            padding: 8px;
+            text-transform: none;
+            border: none;
+
+            .x-tab-close-btn,
+            .x-tab-icon-el-default,
+            .x-tab-inner-default {
+                color: var(--disabled-color);
+            }
+
+            &.x-tab-active {
+                background-color: var(--base-color) !important;
+            }
+
+            .x-tab-wrap {
+                display: flex;
+
+                .x-tab-button {
+                    width: 100%
+                }
+            }
+        }
+
     }
 
     .x-tab-bar-body {
@@ -42,7 +75,7 @@
     }
 
     .cn_mail-panel-body {
-        background : $tabpanel-w-borders-background;
+        background : var(--background-color);
     }
 
 }

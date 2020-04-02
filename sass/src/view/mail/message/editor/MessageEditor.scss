@@ -25,6 +25,31 @@
 
 .cn_mail-mailmessageeditor {
 
+    .x-placeholder-label {
+        top: 8px;
+        padding-left: 0px;
+    }
+
+    .x-html-editor-container {
+        border : none;
+    }
+
+
+    /**
+     * We are actively setting the values here since the HtmlEditor
+     * will look up and reuse these properties in its initEditor-method.
+     */
+    .x-html-editor-wrap textarea {
+        background-color: var(--background-color);
+        color: var(--color);
+        font-size: 1em;
+        line-height: 1.5em;
+        padding: 0.5em;
+    }
+
+
+    .x-border-box,
+
     .x-tagfield {
         .x-tagfield-input {
             width  :  280px;
@@ -35,12 +60,12 @@
                 &.cc:before {
                     content       :  "\f0c5";
                     padding-right : 4px;
-                    color         : darken($lightest-color, 30%);
+                    color         : var(--reverse-color);
                 }
                 &.bcc:before {
                     content       :  "\f070";
                     padding-right : 4px;
-                    color         : darken($lightest-color, 30%);
+                    color         : var(--reverse-color);
                 }
             }
         }
@@ -49,10 +74,10 @@
             .x-tagfield-item-text {
                 &.x-fa {
                     &.cc:before {
-                        color : $lightest-color;
+                        color : blue;
                     }
                     &.bcc:before {
-                        color : $lightest-color;
+                        color : blue;
                     }
                 }
             }
@@ -65,29 +90,16 @@
         }
     }
 
-    .x-btn.x-btn-pressed.x-btn-plain-toolbar-small {
-        border-color     :  #d2d2d2;
-        background-image :  none;
-        background-color :  #e2e2e2;
-    }
-
-    .x-btn-over.x-btn-plain-toolbar-small {
-        border-color     :  #dbdbdb;
-        background-image :  none;
-        background-color :  #ececec;
-    }
 
     .cn_mail-mailmessageeditoraddressfield {
         .x-tagfield-item {
             border-radius : 4px;
         }
-        .x-form-empty-field-default + .x-placeholder-label-default {
-            color : $placeholder-color;
-        }
+
     }
 
     .x-toolbar-footer {
-        background-color : $lightest-color;
+        background-color : var(--headerbackground-color);
     }
 
     .showCcBccButton {
@@ -98,33 +110,29 @@
         .x-form-display-field {
             margin-top:0px;
             padding-top:8px;
-            color:#a5a5a5;
         }
     }
 
     .accountCombo {
-        .x-form-item-label-default {
-            color: #919191;
-        }
         .x-form-trigger-wrap {
             border: none;
         }
         input {
-            color : $base-color;
             cursor: pointer;
+            border:none;
         }
     }
 
 
     .attachmentlist-wrap {
-        border         : 4px dashed lighten($base-color, 25%);
+        border         : 4px dashed var(--base-light-color);
         border-radius  : 20px;
 
         &.hover {
-            background-color : lighten($base-color, 28%);
-            border-color     : $lightest-color;
+            background-color : var(--base-color);
+            border-color     : var(--base-color);
             .dropzone-text {
-                color : $lightest-color;
+                color : var(--base-color);
             }
         }
 
@@ -134,7 +142,7 @@
             margin-top  : 20px;
             line-height : 1.2em;
             font-size   : 2em;
-            color       : lighten($base-color, 28%);
+            color       : var(--base-light-color);
             text-align  : center;
         }
     }

@@ -25,7 +25,7 @@
 
 .cn_mail-mailmessagereadermessageview {
 
-    background-color : $lightest-color;
+    background-color : var(--background-color);
 
     .cn_mail-attachment-list {
         display: flex;
@@ -34,7 +34,7 @@
     .messageIndicator {
 
         .icon {
-            color         : lighten($base-color, 30%);
+            color         : var(--color);
             font-size     : 96px;
             margin-bottom : 12px;
         }
@@ -47,15 +47,16 @@
     }
 
     .cn_mail-header {
-        border-bottom : 1px solid $mail-border-color;
+       border-bottom : 1px solid var(--divider-color);
+
+        background-color:var(--header-background-color);
 
         .sender-img {
 
             margin-left : 10px;
 
-            &.x-fa::before {
-                color     : lighten($color, 70%);
-                font-size : 86px;
+            &.fas::before {
+                font-size : 80px;
             }
         }
 
@@ -77,17 +78,21 @@
 
             .draft {
                 padding : 0 5px 0 0;
-                color   : $cn-draft-color;
+                color   : var(--accent-color);
             }
 
             .from {
                 font-size : 16px;
             }
 
+            .to {
+                margin-top:4px
+            }
+
             .subject {
                 font-size     : 22px;
                 max-width     : 95%;
-                padding       : 4px 0 2px 0;
+                padding       : 10px 0 2px 0;
             }
         }
 
@@ -104,8 +109,6 @@
 
     .cn_mail-top-toolbar {
 
-        background-color: $lightest-color;
-
         .x-btn-inner-default-toolbar-small {
             color: $color;
         }
@@ -116,9 +119,9 @@
     }
 
     .cn_mail-reloadWithImages {
-        background-color: #FFB242;
+        background-color: var(--alert-color);
         height: 26px;
-        color: #FFE9C9;
+        color: var(--color);
         padding: 5px;
         padding-left: 8px;
         white-space: nowrap;
@@ -132,17 +135,12 @@
         }
 
         &:before {
-            font-family: FontAwesome;
+            font-family: $fontawesome-font-family;
             content: "\f071";
             margin-right: 6px;
         }
     }
 
-    .cn_mail-action-button {
-        .mail-compose-save-button, .mail-compose-save-button .x-frame-mc{
-        }
-        .mail-compose-send-button, .mail-compose-send-button .x-frame-mc{
-        }
-    }
+
 
 }
