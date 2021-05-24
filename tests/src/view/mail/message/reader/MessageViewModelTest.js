@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -670,6 +670,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest', functi
         t.expect(formulas.textPlainToHtml.set).toBeUndefined();
         t.expect(vm.plainReadableStrategy).toBeUndefined();
         t.expect(formulas.textPlainToHtml.get.apply(vm, [{textPlain : "foo"}])).toBe(vm.plainReadableStrategy.process("foo"));
+        t.expect(formulas.textPlainToHtml.get.apply(vm, [{}])).toBe("");
 
         t.isInstanceOf(vm.plainReadableStrategy, "conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
 

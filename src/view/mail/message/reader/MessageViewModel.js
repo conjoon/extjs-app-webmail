@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -135,7 +135,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
             get : function(data) {
 
                 if (!data.textPlain) {
-                    return;
+                    return "";
                 }
 
                 const me = this;
