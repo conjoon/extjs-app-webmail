@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,6 +47,8 @@ describe('conjoon.cn_mail.view.mail.folder.MailFolderTreeTest', function(t) {
             'conjoon.cn_mail.view.mail.folder.MailFolderTree', treeConfig);
 
         t.expect(tree instanceof Ext.tree.Panel).toBeTruthy();
+
+        t.expect(tree.getSelectionModel().toggleOnClick).toBe(false);
 
         t.expect(tree.alias).toContain('widget.cn_mail-mailfoldertree');
 

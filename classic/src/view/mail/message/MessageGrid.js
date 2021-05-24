@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -75,6 +75,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     rowLines      : false,
 
     selModel : {
+        toggleOnClick : false,
         pruneRemoved : false
     },
 
