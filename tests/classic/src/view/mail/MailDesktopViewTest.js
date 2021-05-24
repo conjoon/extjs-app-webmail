@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,6 +24,10 @@
  */
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
+    createTemplateSpies(t, function (t) {
+    t.requireOk(
+        'conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable',
+        'conjoon.dev.cn_mailsim.data.mail.PackageSim', () => {
 
     const TIMEOUT = 1250,
         createKey = function(id1, id2, id3) {
@@ -58,12 +62,6 @@ describe('conjoon.cn_mail.view.mail.MailDesktopViewTest', function(t) {
 
     });
 
-    t.beforeEach(function() {
-
-    });
-
-t.requireOk('conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable', function(){
-    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function(){
 
     t.it("Should create and show the view along with default config checks", function(t) {
         view = Ext.create(

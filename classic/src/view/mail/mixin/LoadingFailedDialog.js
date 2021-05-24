@@ -107,7 +107,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
          * @i18n
          */
         me.setTitle("oops.");
-        me.setIconCls("fa fa-frown-o");
+        me.setIconCls("far fa-frown");
     },
 
 

@@ -98,14 +98,10 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
             title : 'Account Settings - {mailAccount.name}'
          },
         buttons : [{
-            scale  : 'small',
-            ui     : 'cn-btn-medium-base-color',
             text   : 'Cancel',
             width  : 108,
             itemId : 'cancelButton'
         }, {
-            scale  : 'small',
-            ui     : 'cn-btn-medium-base-color',
             text   : 'Save',
             itemId : 'saveButton',
             width  : 108
@@ -117,8 +113,10 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
             margin : '40 0 0 0',
             defaults : {
                 labelWidth : 160,
+                labelAlign:"right",
                 flex : '1',
             },
+
             layout : {type : 'vbox', align : 'stretch'},
         },
 
@@ -166,6 +164,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                     type: 'hbox',
                     align : 'stretch'
                 },
+                defaults : {
+                    labelAlign:"right",
+                },
                 items : [{
                     xtype: 'textfield',
                     flex : 9,
@@ -201,6 +202,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                     type: 'hbox',
                     align : 'stretch'
                 },
+                defaults : {
+                    labelAlign:"right",
+                },
                 items : [{
                     xtype: 'textfield',
                     flex : 1,
@@ -231,6 +235,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                 layout : {
                     type: 'hbox',
                     align : 'stretch'
+                },
+                defaults : {
+                    labelAlign:"right",
                 },
                 items : [{
                     xtype: 'textfield',
@@ -266,6 +273,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                 layout : {
                     type: 'hbox',
                     align : 'stretch'
+                },
+                defaults : {
+                    labelAlign:"right",
                 },
                 items : [{
                     xtype: 'textfield',

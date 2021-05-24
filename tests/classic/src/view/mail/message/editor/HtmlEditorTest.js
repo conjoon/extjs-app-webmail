@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,21 +24,23 @@
  */
 
 describe('conjoon.cn_mail.view.mail.message.editor.HtmlEditorTest', function(t) {
+    createTemplateSpies(t, function (t) {
 
     var view;
+
 
     t.afterEach(function() {
         if (view) {
             view.destroy();
             view = null;
         }
-
     });
 
     t.beforeEach(function() {
         viewConfig = {
             renderTo : document.body
-        }
+        };
+
     });
 
 
@@ -89,4 +91,28 @@ describe('conjoon.cn_mail.view.mail.message.editor.HtmlEditorTest', function(t) 
         t.expect(DEFAULTPREVENTED).toBe(2);
 
     });
-});
+
+
+    t.it("initFrameDoc()", async (t) => {
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.HtmlEditor', viewConfig);
+
+        let spy = t.spyOn(view, "loadMarkup").and.callFake(() => "markup");
+
+        await view.initFrameDoc();
+        t.expect(view.editorHtmlTemplateTxt).toBe("markup");
+    });
+
+
+    t.it("loadMarkup()", async (t) => {
+        view = Ext.create(
+            'conjoon.cn_mail.view.mail.message.editor.HtmlEditor', viewConfig);
+
+        let res = await view.loadMarkup();
+        t.expect(res).toBeDefined();
+        t.expect(t.TPL_SPY.calls.mostRecent().args[0].theme).toBe(coon.core.ThemeManager.getTheme().get());
+
+
+    });
+
+});});

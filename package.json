@@ -3,13 +3,27 @@
     "name": "app-cn_mail",
 
     "sencha": {
-        "coon-js" : {"package" : {"controller" :  true}},
+        "coon-js" : {
+            "package" : {
+                "controller" :  true,
+                "config" :  {
+                    "resources" : {
+                        "templates" : {
+                            "html" : {
+                                "editor" : "resources/templates/html/editor.html.tpl",
+                                "reader" : "resources/templates/html/reader.html.tpl"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "namespace": "conjoon.cn_mail",
         "type": "code",
         "toolkit": "classic",
         "creator": "conjoon Open Source Project",
-        "summary": "Basic UI providing email client functionality.",
-        "detailedDescription": "This package contains an email client to be used with the conjoon project. It heavily relies on the functionality of the legacy webmail client, here updated for ExtJS 6.*. Requires packages lib-cn_comp, ux.",
+        "summary": "Webmail client for conjoon.",
+        "detailedDescription": "This package contains an email client to be used with the conjoon project.",
         "version": "1.0.0",
         "compatVersion": "1.0.0",
         "format": "1",
@@ -24,14 +38,21 @@
         "output": {
             "base" : "${package.dir}/build",
             "js" : {
-                "version" : "ES6"
+                "version" : "ES8"
+            }
+        },
+        "language": {
+            "js": {
+                "input": "ES8",
+                "output": "ES8"
             }
         },
         "compressor": {
+            "type" : "closure",
             "polyfills": "none"
         },
         "local": true,
-        "theme": "theme-cn_default",
+        "theme": "theme-cn_material",
         "sass" : {
             "namespace": "conjoon.cn_mail",
             "etc": [

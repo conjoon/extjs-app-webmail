@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,7 +25,33 @@
 
 .cn_mail-mailfoldertree {
 
-    @include cn-box-shadow(3px, 3px, 6px, -3px, rgba(0,0,0,0.2));
+    .x-panel-body {
+        padding-top:10px;
+    }
+
+    // dimension corrections
+    .x-tree-icon, .x-tree-elbow-img, .x-tree-checkbox {
+        margin-top: -7px;
+        margin-bottom: -6px;
+    }
+    .x-tree-icon {
+        font-size:16px;
+        height: 32px;
+        line-height: 32px;
+    }
+    .x-tree-elbow-img {
+        height: 32px;
+        line-height: 32px;
+    }
+    .x-grid-cell-inner-treecolumn {
+        padding: 7px 10px 6px 0px;
+    }
+    .x-grid-item {
+        width:100%!important;
+    }
+
+
+    @include cn-box-shadow(3px, 3px, 6px, -2px, rgba(0,0,0,0.2));
 
     .x-grid-item-focused .x-grid-cell-inner:before {
         border : 0;
@@ -33,12 +59,12 @@
 
 
     .x-tree-icon {
-        color: $default-tree-node-color;
+        color: var(--color);
     }
 
     .x-grid-item-selected {
-        background-color : $mail-item-selected-color;
 
+        .x-grid-tree-node-exp
         .x-tree-node-text {
             font-weight : bold;
         }
@@ -52,8 +78,11 @@
     }
 
     .cn_account {
+
+
         .x-tree-icon {
             background:none;
+            margin-left:22px;
         }
         .x-grid-tree-loading {
             .x-tree-icon {
@@ -67,18 +96,17 @@
 
     .badge-unreadcount {
         border-radius    : 3px;
-        color            : white;
+        background-color : var(--accent-foreground-color);
+        color            : var(--accent-color);
         font-size        : 10px;
-        height           : 18px;
+        height           : 16px;
         line-height      : 18px;
-        padding          : 0 2px;
+        padding          : 0 4px;
         position         : absolute;
         right            : 9px;
     }
 
-
     .x-grid-item {
-
 
         &.cn_account {
             margin-top:16px;
@@ -93,50 +121,6 @@
             }
         }
 
-        &.cn_subfolder {
-
-            &.cn_generic {
-                .badge-unreadcount {
-                    background-color:$cn-generic-node-color;
-                }
-                background-color:lighten($cn-generic-node-light-color, 3%);
-            }
-
-            &.cn_inbox {
-                .badge-unreadcount {
-                    background-color:$cn-inbox-node-color;
-                }
-                background-color:lighten($cn-inbox-node-light-color, 3%);
-            }
-
-            &.cn_sent {
-                .badge-unreadcount {
-                    background-color:$cn-sent-node-color;
-                }
-                background-color:lighten($cn-sent-node-light-color, 3%);
-            }
-
-            &.cn_junk {
-                .badge-unreadcount {
-                    background-color:$cn-junk-node-color;
-                }
-                background-color:lighten($cn-junk-node-light-color, 3%);
-            }
-
-            &.cn_draft {
-                .badge-unreadcount {
-                    background-color:$cn-draft-node-color;
-                }
-                background-color:lighten($cn-draft-node-light-color, 3%);
-            }
-
-            &.cn_trash {
-                .badge-unreadcount {
-                    background-color:$cn-trash-node-color;
-                }
-                background-color:lighten($cn-trash-node-light-color, 3%);
-            }
-        }
 
         &.cn_folder {
 
@@ -145,12 +129,11 @@
             }
 
             .x-tree-icon {
-                background-color : $default-tree-node-color;
-                color:white;
+                color:var(--color);
                 width : 42px;
-                height: 42px;
-                font-size: 22px;
-                line-height: 44px;
+                height: 40px;
+
+                line-height: 40px;
             }
 
             .x-tree-node-text {
@@ -162,89 +145,22 @@
                 padding-left:0px;
             }
 
-
             .x-tree-elbow-img {
                 line-height: 40px;
             }
 
-
-            &.cn_inbox {
-                .badge-unreadcount,
-                .x-tree-icon {
-                    background-color: $cn-inbox-node-color;
-                }
-            }
-            &.cn_generic {
-                .badge-unreadcount {
-                    background-color: $cn-generic-node-color;
-                }
-                .x-tree-icon {
-                    background-color: white;
-                    color: $cn-generic-node-color;
-                }
-            }
-            &.cn_sent {
-                .badge-unreadcount,
-                .x-tree-icon {
-                    background-color: $cn-sent-node-color;
-                }
-            }
-            &.cn_junk {
-                .badge-unreadcount,
-                .x-tree-icon {
-                    background-color: $cn-junk-node-color;
-                }
-            }
-            &.cn_draft {
-                .badge-unreadcount,
-                .x-tree-icon {
-                    background-color: $cn-draft-node-color;
-                }
-            }
-            &.cn_trash {
-                .badge-unreadcount,
-                .x-tree-icon {
-                    background-color: $cn-trash-node-color;
-                }
-            }
         }
     }
 
-    .x-grid-item-over,
     .x-grid-item-selected {
-        &.cn_subfolder,
-        &.cn_folder {
-            &.cn_inbox {
-                background-color:$cn-inbox-node-light-color;
-            }
-            &.cn_generic {
-                background-color:$cn-generic-node-light-color;
-            }
-            &.cn_sent {
-                background-color:$cn-sent-node-light-color;
-            }
-
-            &.cn_junk {
-                background-color:$cn-junk-node-light-color;
-            }
-
-            &.cn_draft {
-                background-color:$cn-draft-node-light-color;
-            }
-
-            &.cn_trash {
-                background-color:$cn-trash-node-light-color;
-            }
-        }
+       .x-tree-icon {
+           color:var(--base-color)!important;
+       }
     }
 
     .x-tree-elbow-img {
         margin-left: 8px;
     }
 
-
-    .x-tree-expander {
-        color : $default-tree-node-color!important;
-    }
 
 }

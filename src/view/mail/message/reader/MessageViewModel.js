@@ -267,9 +267,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewModel', {
         getIndicatorIcon : function(get) {
 
             return !get('messageBody') && !get('messageItem')
-                ? 'fa-envelope-o'
+                ? 'far fa-envelope'
                 : get('messageItem') && (!get('messageBody') || !get('iframeLoaded'))
-                ? 'fa-spin fa-spinner'
+                ? 'fas fa-spin fa-spinner'
                 : ''
         }
 

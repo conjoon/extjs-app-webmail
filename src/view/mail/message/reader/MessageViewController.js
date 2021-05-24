@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,6 +37,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
 
     alias : 'controller.cn_mail-mailmessagereadermessageviewcontroller',
 
+    requires : [
+        "coon.core.Environment"
+    ],
+
     control : {
 
         'cn_mail-mailmessagereadermessageviewiframe' : {
@@ -71,7 +75,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
             body = iframe.getBody(),
             bars = Ext.getScrollbarSize();
 
-        iframe.setSize(width - bars.width, height - bars.height);
+        iframe.setSize(width - bars.width, height - bars.height)
         iframe.setSize(body.scrollWidth, body.scrollHeight);
     },
 
@@ -223,12 +227,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
             img.style.border = "1px solid black";
 
             // isolated tests will not have resources property set
-            if (Ext.manifest.resources) {
-                img.setAttribute(
-                    'src',
-                    Ext.getResourcePath('img_block.png', null, 'app-cn_mail')
-                );
-            }
+            img.setAttribute(
+                'src',
+                coon.core.Environment.getPathForResource("resources/images/img_block.png",'app-cn_mail')
+            );
+
         }
     },
 

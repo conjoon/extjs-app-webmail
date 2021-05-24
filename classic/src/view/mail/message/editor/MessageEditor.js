@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -292,13 +292,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             }
         }, {
             scale  : 'small',
-            ui     : 'cn-btn-medium-base-color',
             text   : 'Save',
             width  : 108,
             itemId : 'saveButton'
         }, {
             scale  : 'small',
-            ui     : 'cn-btn-medium-base-color',
             text   : 'Send',
             itemId : 'sendButton',
             width  : 108
@@ -323,7 +321,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
             itemId : 'showCcBccButton',
             cls    : 'showCcBccButton',
             text   : 'CC / BCC',
-            ui     : 'button-lightest-color',
             bind   : {
                 hidden : '{isCcOrBccValueSet}'
             }

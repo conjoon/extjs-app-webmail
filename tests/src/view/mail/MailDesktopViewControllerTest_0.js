@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest', function(t) {
-
+    createTemplateSpies(t, function (t) {
     const TIMEOUT = 1250,
         discardView = function(t) {
 
@@ -1234,4 +1234,4 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
     });
 
 
-});})});
+});})});});

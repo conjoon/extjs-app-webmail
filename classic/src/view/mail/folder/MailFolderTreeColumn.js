@@ -134,23 +134,23 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
      */
     getIconClsForMailFolderType : function(type) {
 
-        var iconCls = 'fa fa-folder';
+        var iconCls = 'fas fa-folder';
 
         switch (type) {
             case 'INBOX':
-                iconCls = 'fa fa-inbox';
+                iconCls = 'fas fa-inbox';
                 break;
             case 'DRAFT':
-                iconCls = 'fa fa-edit';
+                iconCls = 'fas fa-edit';
                 break;
             case 'JUNK':
-                iconCls = 'fa fa-recycle';
+                iconCls = 'fas fa-recycle';
                 break;
             case 'TRASH':
-                iconCls = 'fa fa-trash';
+                iconCls = 'fas fa-trash';
                 break;
             case 'SENT':
-                iconCls = 'fa fa-send';
+                iconCls = 'fas fa-paper-plane';
                 break;
         }
 

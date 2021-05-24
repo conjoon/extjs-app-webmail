@@ -17,3 +17,5 @@ package directory layout in a sencha workspace.
 Additionally, you will need [dev-cn_mailsim](https://github.com/conjoon/dev-cn_mailsim).
 This is a dev-package and usually not part of any package distribution. Make sure you place this
 package in your local package directory to make sure tests can be processed.
+Some view tests require the css-file of a development-build of conjoon to make sure clickpaths work properly with target 
+elements.

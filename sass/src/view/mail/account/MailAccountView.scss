@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,24 +26,28 @@
 .cn_mail-mailaccountview {
 
   .x-panel-body-default {
-    background:none;
+    background: var(--background-color);
+  }
+
+  .x-scroller {
+    background:var(--reverse-color);
   }
 
   .x-toolbar-footer,
   .x-panel-header {
-    background: $lightest-color;
+    background: var(--header-background-color);
   }
 
   .x-panel-header {
     border: none;
     .x-title-text {
-      color: $color;
+      color: var(--color);
     }
   }
 
   .fieldsetCnt {
     @include cn-box-shadow(3px, 3px, 6px, -3px, rgba(0,0,0,0.2));
-    background:$lightest-color;
+    background:var(--reverse-color);
   }
 
   .x-fieldset {
@@ -57,7 +61,7 @@
     }
 
     .x-fieldset-body {
-      background:$lightest-color;
+      background:none;
       border:none;
    }
 
