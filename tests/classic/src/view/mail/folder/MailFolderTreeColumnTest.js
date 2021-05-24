@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,13 +45,13 @@ describe('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumnTest', function(t
 
     t.it("Should return proper iconCls based upon type", function(t) {
         var mapping = {
-            'INBOX'  : 'fa fa-inbox',
-            'DRAFT'  : 'fa fa-edit',
-            'JUNK'   : 'fa fa-recycle',
-            'TRASH'  : 'fa fa-trash',
-            'SENT'   : 'fa fa-send',
-            'FOLDER' : 'fa fa-folder',
-            'hklhkl' : 'fa fa-folder'
+            'INBOX'  : 'fas fa-inbox',
+            'DRAFT'  : 'fas fa-edit',
+            'JUNK'   : 'fas fa-recycle',
+            'TRASH'  : 'fas fa-trash',
+            'SENT'   : 'fas fa-paper-plane',
+            'FOLDER' : 'fas fa-folder',
+            'hklhkl' : 'fas fa-folder'
         };
 
         for (var i in mapping) {

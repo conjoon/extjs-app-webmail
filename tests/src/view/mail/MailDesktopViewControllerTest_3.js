@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 describe('conjoon.cn_mail.view.mail.MailDesktopViewControllerTest_3', function(t) {
-
+    createTemplateSpies(t, function (t) {
     const TIMEOUT = 1250,
         createKey = function(id1, id2, id3) {
             return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
@@ -168,7 +168,6 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
         delay: 1
     });
 
-
     t.it("app-cn_mail#83 - showMailAccountFor()", function(t) {
 
         let panel     = createMailDesktopView(),
@@ -297,6 +296,7 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
 
                 // create editor and draft and save it.
                 let editor = ctrl.showMailEditor("foobar", "compose");
+
                 editor.down("#subjectField").setValue("Test");
                 t.click(editor.down('#saveButton'), function () {
 
@@ -325,7 +325,7 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
                                     t.waitForMs(TIMEOUT, function () {
 
                                         panel.setActiveItem(inboxView);
-
+                                        t.expect(grid.getSelectionModel().getSelection().length).toBeTruthy();
                                         t.expect(grid.getSelectionModel().getSelection()[0].getCompoundKey().toLocalId()).toEqual(
                                             editor.getViewModel().get("messageDraft").getCompoundKey().toLocalId()
                                         );
@@ -378,4 +378,4 @@ t.requireOk('conjoon.cn_mail.view.mail.MailDesktopView', function(){
     });
 
 
-});})});});
+});})});});});

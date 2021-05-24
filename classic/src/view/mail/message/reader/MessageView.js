@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -132,7 +132,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
         xtype  : 'container',
         itemId : 'msgHeaderContainer',
         cls    : 'cn_mail-header',
-        height : 96,
+        height : 82,
         layout : {
             type  : 'hbox',
             align : 'stretch'
@@ -172,8 +172,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                }, {
                    xtype: 'segmentedbutton',
                    hidden : true,
+                   disabled : true,
                    bind : {
-                        visible :  "{messageBody.textHtml && messageBody.textPlain}"
+                        disabled: "{!messageBody.textHtml || !messageBody.textPlain}",
+                        visible : "{messageBody.textHtml || messageBody.textPlain}"
                    },
                    items: [{
                        xtype     : 'button',
@@ -181,9 +183,6 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                        iconCls   : 'fas fa-code',
                        itemId    : 'btn-showhtml',
                        reference : "htmlplainButton",
-                       published : {
-                           pressed : true
-                       },
                        bind : {
                            pressed : "{!!messageBody.textHtml}"
                        },
@@ -337,7 +336,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
                       : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
             src : "",
             bind : {
-                srcDoc : '{htmlplainButton.pressed ? messageBody.textHtml : textPlainToHtml}',
+                srcDoc : '{htmlplainButton.pressed ? messageBody.textHtml : textPlainToHtml}'
             }
         }]
     }],

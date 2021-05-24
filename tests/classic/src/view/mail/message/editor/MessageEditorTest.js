@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,10 +24,11 @@
  */
 
 describe('conjoon.cn_mail.view.mail.message.editor.MessageEditorTest', function(t) {
-
+    createTemplateSpies(t, function (t) {
 t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', function() {
 
     const TIMEOUT = 1250;
+
 
     var view,
         createKey = function(id1, id2, id3) {
@@ -102,6 +103,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         }
 
         viewConfig = null;
+
     });
 
     t.beforeEach(function() {
@@ -113,7 +115,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                 createMessageItem(undefined, "INBOX").data
             )
         };
-    });
+      });
 
     t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
 
@@ -125,7 +127,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 // +---------------------------------------------------------------------------
 // | BASIC BEHAVIOR
 // +---------------------------------------------------------------------------
-        t.it("constructor() - no config", function(t) {
+       t.it("constructor() - no config", function(t) {
             var exc, e;
 
             try {
@@ -133,7 +135,6 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
             } catch (e) {
                 exc = e;
             }
-
 
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toContain("must be set");
@@ -579,7 +580,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
 
         t.it("showAddressMissingNotice()", function(t) {
-            view = createWithViewConfig(viewConfig);
+            let view = createWithViewConfig(viewConfig);
 
             view.getViewModel().notify();
 
@@ -587,33 +588,35 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             t.expect(view.getClosable()).toBe(true);
 
-            view.down('#subjectField').focus();
-            t.expect(view.down('#subjectField').hasFocus).toBe(true);
+            t.click(view.down('#subjectField'), () => {
 
-            view.showAddressMissingNotice();
+                t.expect(view.down('#subjectField').hasFocus).toBe(true);
 
-            var okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom);
+                view.showAddressMissingNotice();
 
-            var mask = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+                var okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom);
 
-            t.expect(mask.length).toBe(1);
-            t.expect(okButton.length).toBe(1);
-            t.expect(okButton[0].parentNode.style.display).not.toBe('none');
+                var mask = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
 
-            t.expect(view.getIconCls()).not.toBe(iconCls);
-            t.expect(view.getClosable()).toBe(false);
+                t.expect(mask.length).toBe(1);
+                t.expect(okButton.length).toBe(1);
+                t.expect(okButton[0].parentNode.style.display).not.toBe('none');
 
-            t.click(okButton[0], function() {
-                t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+                t.expect(view.getIconCls()).not.toBe(iconCls);
+                t.expect(view.getClosable()).toBe(false);
 
-                t.expect(view.getIconCls()).toBe(iconCls);
-                t.expect(view.getClosable()).toBe(true);
+                t.click(okButton[0], function() {
+                    t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
 
-                t.expect(view.down('#toField').hasFocus).toBe(true);
+                    t.expect(view.getIconCls()).toBe(iconCls);
+                    t.expect(view.getClosable()).toBe(true);
 
-            });
-
-
+                    t.expect(view.down('#toField').hasFocus).toBe(true);
+                    view.hide();// destroying the view trigegrs error with Siesta 5.3.1,
+                                // wrong implementation of overrides for parentNode.removeChild
+                                // and synthetic mouse events?
+                });
+            })
         });
 
 
@@ -652,6 +655,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
             // OKBUTTON
             inputField[0].value = 'foobar';
+
             t.click(okButton[0], function() {
                 t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
                 t.expect(view.getIconCls()).toBe(iconCls);
@@ -807,7 +811,7 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
                         return;
                     }
 
-                    view = createWithMessageConfig(modes[i]);
+                    let view = createWithMessageConfig(modes[i]);
 
                     t.expect(view.editMode).toBe(modes[i].getEditMode());
 
@@ -818,7 +822,9 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
 
                         t.waitForMs(1500, function() {
                             t.expect(view.loadingMask).toBe(null);
-                            view.destroy();
+                            view.hide();// destroying the view trigegrs error with Siesta 5.3.1,
+                                        // wrong implementation of overrides for parentNode.removeChild
+                                        // and synthetic mouse events?
                             view = null;
                             func(t, ++i);
                         });
@@ -1031,4 +1037,4 @@ t.requireOk('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompound
         });
 
 
-    });});});
+    });});});});

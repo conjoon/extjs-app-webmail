@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -115,7 +115,7 @@ t.waitForMs(1000, function() {
         });
 
         let expTitle   = "oops.",
-            expIconCls = "fa fa-frown-o";
+            expIconCls = "far fa-frown";
 
         t.expect(view.getTitle()).not.toBe(expTitle);
         t.expect(view.getIconCls()).not.toBe(expIconCls);

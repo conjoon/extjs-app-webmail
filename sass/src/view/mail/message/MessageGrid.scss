@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,7 +36,14 @@
     }
 
     .x-grid-cell-inner {
-        padding: 7px 10px 6px;
+        padding: 7px 10px 2px;
+        color:var(--accent-dark-color);
+    }
+
+    .x-grid-item-over {
+        .x-grid-cell-inner {
+            color:var(--highlight-color);
+        }
     }
 
 
@@ -48,9 +55,9 @@
     }
 
     .x-panel-header {
-        background : var(--reverse-color);
+        background : var(--header-background-color);
         border     : none;
-         padding: 10px 17px 10px 17px;
+         padding: 10px 18px 10px 10px;
 
         .x-title-text {
             color : var(--color);
@@ -60,6 +67,7 @@
 
         .x-tool-tool-el {
             color : var(--color);
+            font-size:14px;
         }
     }
 
@@ -76,7 +84,7 @@
     }
 
     .x-grid-cell.previewLarge {
-        font-size : 14px;
+        font-size : 13px;
     }
 
     .cn-moved {
@@ -114,8 +122,7 @@
     .cn_mail-mailmessagepreviewfeature{
 
         .x-grid-rowbody {
-            padding-top: 4px;
-            padding-left: 10px;
+            padding: 4px 8px 6px 10px;
         }
 
         .head {
@@ -155,6 +162,7 @@
                 text-overflow : ellipsis;
                 overflow      : hidden;
                 max-width     : calc(100% - 150px);
+                color:var(--base-foreground-color);
             }
 
             .date {
@@ -162,14 +170,16 @@
                 text-align    : right;
                 width         : 150px;
                 white-space   : nowrap;
+                color:var(--base-foreground-color);
 
             }
         }
 
         .previewText {
-            padding       : 10px 0px 4px 0px;
+            padding       : 10px 0px 0px 0px;
             white-space   : nowrap;
             text-overflow : ellipsis;
+            overflow      : hidden;
             color         : var(--highlight-color);
         }
     }
@@ -180,7 +190,7 @@
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
-        font-size:14px;
+        font-size:13px;
         text-align: center;
         display: flex;
         flex-direction: column;
@@ -188,9 +198,10 @@
 
         &::before {
             color:var(--color);
-            font-size:96px;
-            font-family:FontAwesome;
-            content : '\f115'
+            font-size:38px;
+            margin-bottom:8px;
+            font-family: $font-icon-font-family-regular;
+            content : '\f07b'
         }
 
     }

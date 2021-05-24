@@ -42,6 +42,7 @@ harness.configure({
         'conjoon.dev.cn_mailsim'   : '../../dev-cn_mailsim/src'
     },
     preload        : [
+        "./templatinghooks.js",
         conjoon.tests.config.paths.extjs.css.url,
         conjoon.tests.config.paths.conjoon.css.url,
         conjoon.tests.config.paths.extjs.js.url

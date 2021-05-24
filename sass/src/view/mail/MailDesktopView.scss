@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,21 +38,21 @@
 
         .x-tab.x-tab-active.x-tab-default .x-tab-icon-el,
         .x-tab.x-tab-active.x-tab-default .x-tab-inner {
-            color: var(--color);
+            color: var(--reverse-color);
         }
 
 
         .x-tab-default {
             background-color: var(--base-invisible-color);
-            color: var(--disabled-color);
+            color: var(--color);
             padding: 8px;
             text-transform: none;
+            border-radius:2px;
             border: none;
 
-            .x-tab-close-btn,
             .x-tab-icon-el-default,
             .x-tab-inner-default {
-                color: var(--disabled-color);
+                color: var(--color);
             }
 
             &.x-tab-active {

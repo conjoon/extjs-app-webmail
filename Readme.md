@@ -22,7 +22,7 @@ Tests are written with [Siesta](https://bryntum.com/siesta)
 # Usage
 ## Requirements
  * This package requires the [lib-cn_comp](https://github.com/coon-js/lib-cn_comp) package of the [coon.js](https://github.com/coon-js) project.
- * This package requires the [theme-cn_default](https://github.com/conjoon/theme-cn_default) package of the [conjoon](https://github.com/conjoon) project.
+ * This package requires the [theme-cn_material](https://github.com/conjoon/theme-cn_material) package of the [conjoon](https://github.com/conjoon) project.
 
 When using this package without a backend implementation, make sure your app uses the [dev-cn_mailsim](https://github.com/conjoon/dev-cn_mailsim) package  of the [conjoon](https://github.com/conjoon) project.
 

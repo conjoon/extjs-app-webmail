@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', function(t) {
-
+    createTemplateSpies(t, function (t) {
     let controller;
 
     if (!Ext.manifest) {
@@ -364,11 +364,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewControllerTest', f
 
         controller.sanitizeImages(IMAGES);
 
-        t.expect(IMAGES[0].src).toBe("resources/app-cn_mail/img_block.png");
-        t.expect(IMAGES[1].src).toBe("resources/app-cn_mail/img_block.png");
+        t.expect(IMAGES[0].src).toBe("resources/images/img_block.png");
+        t.expect(IMAGES[1].src).toBe("resources/images/img_block.png");
 
         t.expect(IMAGES[0].style.border).toBe("1px solid black");
         t.expect(IMAGES[1].style.border).toBe("1px solid black");
     });
 
-});
+});});

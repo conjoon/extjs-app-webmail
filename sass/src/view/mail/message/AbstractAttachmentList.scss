@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,9 @@
     .attachment {
 
         &.x-view-item-focused {
-            outline : 1px solid var(--highlight-color);
+            outline: none!important;
+            border: 1px solid var(--accent-color);
+            border-radius: 6px;
         }
 
         &.over {

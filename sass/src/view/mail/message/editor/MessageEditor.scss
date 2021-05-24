@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,6 @@
 .cn_mail-mailmessageeditor {
 
     .x-placeholder-label {
-        top: 8px;
         padding-left: 0px;
     }
 
@@ -42,9 +41,13 @@
     .x-html-editor-wrap textarea {
         background-color: var(--background-color);
         color: var(--color);
-        font-size: 1em;
+        font-size: 14px;
         line-height: 1.5em;
         padding: 0.5em;
+
+        a {
+            color:red;
+        }
     }
 
 
@@ -60,28 +63,14 @@
                 &.cc:before {
                     content       :  "\f0c5";
                     padding-right : 4px;
-                    color         : var(--reverse-color);
                 }
                 &.bcc:before {
                     content       :  "\f070";
                     padding-right : 4px;
-                    color         : var(--reverse-color);
                 }
             }
         }
 
-        .x-tagfield-item-selected {
-            .x-tagfield-item-text {
-                &.x-fa {
-                    &.cc:before {
-                        color : blue;
-                    }
-                    &.bcc:before {
-                        color : blue;
-                    }
-                }
-            }
-        }
     }
 
     .subjectField {
@@ -110,6 +99,7 @@
         .x-form-display-field {
             margin-top:0px;
             padding-top:8px;
+            color: var(--accent-dark-color);
         }
     }
 
@@ -125,7 +115,7 @@
 
 
     .attachmentlist-wrap {
-        border         : 4px dashed var(--base-light-color);
+        border         : 1px dashed var(--accent-dark-color);
         border-radius  : 20px;
 
         &.hover {
@@ -141,8 +131,8 @@
             margin      : 10px;
             margin-top  : 20px;
             line-height : 1.2em;
-            font-size   : 2em;
-            color       : var(--base-light-color);
+            font-size   : 1.5em;
+            color       : var(--accent-dark-color);
             text-align  : center;
         }
     }

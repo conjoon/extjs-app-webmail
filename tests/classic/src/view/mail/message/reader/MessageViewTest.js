@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,10 +24,11 @@
  */
 
 describe('conjoon.cn_mail.view.mail.message.reader.MessageViewTest', function(t) {
-
-t.requireOk('coon.core.util.Date', function() {
+    createTemplateSpies(t, function (t) {
+t.requireOk("coon.core.util.Date", function() {
 
     const TIMEOUT = 1250;
+
 
     if (!Ext.manifest) {
         Ext.manifest = {};
@@ -132,7 +133,6 @@ t.requireOk('coon.core.util.Date', function() {
         Ext.ux.ajax.SimManager.init({
             delay : 1
         });
-
 
         t.it("Should create and show the view along with default config checks", function(t) {
             view = Ext.create(
@@ -834,7 +834,7 @@ t.requireOk('coon.core.util.Date', function() {
         });
 
 
-        t.it("show html / text button", function(t) {
+        t.it("show html / text button", async (t) => {
 
             view = Ext.create(
                 'conjoon.cn_mail.view.mail.message.reader.MessageView', {
@@ -853,7 +853,7 @@ t.requireOk('coon.core.util.Date', function() {
 
             view.setMessageItem(messageItem);
 
-            t.waitForMs(TIMEOUT, function() {
+            t.waitForMs(TIMEOUT, async () => {
 
                 t.expect(vm.get("messageBody.textHtml")).toBeTruthy();
                 t.expect(vm.get("messageBody.textPlain")).toBeTruthy();
@@ -863,35 +863,42 @@ t.requireOk('coon.core.util.Date', function() {
                 t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(vm.get("messageBody.textHtml"));
 
                 // switch to plain by setting values / mimmicking loading
+                t.pass("switch to plain by setting values / mimmicking loading");
                 let plain = "[foo/bar]";
                 vm.set("messageBody.textPlain", plain);
                 vm.set("messageBody.textHtml", null);
                 vm.notify();
                 t.expect(plainbtn.pressed).toBe(true);
                 t.expect(htmlbtn.pressed).toBe(false);
-                t.expect(segmentedbutton.isVisible()).toBe(false);
-                t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
-
-                let html = "somehtml";
-                vm.set("messageBody.textPlain", plain);
-                vm.set("messageBody.textHtml", html);
-                vm.notify();
                 t.expect(segmentedbutton.isVisible()).toBe(true);
-                t.expect(htmlbtn.pressed).toBe(true);
-                // switch by button click
-                t.click(plainbtn, function () {
-                    vm.notify();
+                t.expect(segmentedbutton.isDisabled()).toBe(true);
+
+                t.waitForMs(250, () => {
                     t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
+                    let html = "somehtml";
+                    vm.set("messageBody.textPlain", plain);
+                    vm.set("messageBody.textHtml", html);
+                    vm.notify();
 
-                    t.click(htmlbtn, function () {
+                    t.expect(segmentedbutton.isVisible()).toBe(true);
+                    t.expect(htmlbtn.pressed).toBe(true);
+                    t.expect(segmentedbutton.isDisabled()).toBe(false);
+                    // switch by button click
+                    t.click(plainbtn, function () {
                         vm.notify();
-                        t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(html);
+                        t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
 
-                    })
+                        t.click(htmlbtn, function () {
+                            vm.notify();
+                            t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(html);
+                        })
+                    });
+
+
                 });
 
             });
         });
 
 
-});});});
+});});});});

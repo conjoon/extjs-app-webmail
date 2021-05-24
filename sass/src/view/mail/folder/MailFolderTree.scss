@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,6 +24,10 @@
  */
 
 .cn_mail-mailfoldertree {
+
+    .x-panel-body {
+        padding-top:10px;
+    }
 
     // dimension corrections
     .x-tree-icon, .x-tree-elbow-img, .x-tree-checkbox {
@@ -74,8 +78,11 @@
     }
 
     .cn_account {
+
+
         .x-tree-icon {
             background:none;
+            margin-left:22px;
         }
         .x-grid-tree-loading {
             .x-tree-icon {
@@ -92,13 +99,12 @@
         background-color : var(--accent-foreground-color);
         color            : var(--accent-color);
         font-size        : 10px;
-        height           : 18px;
+        height           : 16px;
         line-height      : 18px;
-        padding          : 0 2px;
+        padding          : 0 4px;
         position         : absolute;
         right            : 9px;
     }
-
 
     .x-grid-item {
 
@@ -125,9 +131,9 @@
             .x-tree-icon {
                 color:var(--color);
                 width : 42px;
-                height: 42px;
+                height: 40px;
 
-                line-height: 44px;
+                line-height: 40px;
             }
 
             .x-tree-node-text {

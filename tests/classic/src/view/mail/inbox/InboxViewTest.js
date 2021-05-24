@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,11 @@
  */
 
 describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
+    createTemplateSpies(t, function (t) {
+    t.requireOk(
+        'conjoon.dev.cn_mailsim.data.mail.PackageSim', 'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', () => {
 
+    let TEMPLATE_SPY, ENVIRONMENT_SPY, CONFIG_SPY, THEME_SPY;
 
     const TIMEOUT = 1250,
 
@@ -77,6 +81,14 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
 
     let view;
 
+    t.afterEach(() => {
+        TEMPLATE_SPY.remove();
+        ENVIRONMENT_SPY.remove();
+        CONFIG_SPY.remove();
+        TPL_SPY.remove();
+        THEME_SPY.remove;
+    });
+
 
     t.beforeEach(function() {
         viewConfig = {
@@ -92,11 +104,16 @@ describe('conjoon.cn_mail.view.mail.message.MessageViewTest', function(t) {
             width    : 800,
             height   : 600,
             renderTo : document.body
-        }
+        };
+
+        THEME_SPY = t.spyOn(coon.core.ThemeManager, "getTheme").and.callFake(() => new coon.core.Theme);
+        TPL_SPY = t.spyOn(coon.core.template.javaScript.StringTemplate.prototype, "render");
+        TEMPLATE_SPY = t.spyOn(coon.core.Template, "load");
+        ENVIRONMENT_SPY = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake(() => "../resources/resources/templates/html/reader.html.tpl");
+        CONFIG_SPY = t.spyOn(coon.core.ConfigManager, "get").and.callFake(() => "config");
+
     });
 
-t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
-t.requireOk('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', function() {
 
     conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
 
