@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,23 +48,23 @@
  *
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.session.MessageDraftSession', {
+Ext.define("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", {
 
-    extend : 'coon.core.data.Session',
+    extend: "coon.core.data.Session",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.BaseSchema',
-        'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
-        'conjoon.cn_mail.model.mail.message.MessageDraft'
+    requires: [
+        "conjoon.cn_mail.data.mail.BaseSchema",
+        "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor",
+        "conjoon.cn_mail.model.mail.message.MessageDraft"
     ],
 
-    config : {
-        messageDraft : undefined
+    config: {
+        messageDraft: undefined
     },
 
-    schema : "cn_mail-mailbaseschema",
+    schema: "cn_mail-mailbaseschema",
 
-    batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor',
+    batchVisitorClassName: "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor",
 
 
     /**
@@ -76,16 +76,16 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageDraftSession', {
      * @throws if a messageDraft is already available for this session, or if the
      * messageDraft is not an instance of conjoon.cn_mail.model.mail.message.MessageDraft
      */
-    applyMessageDraft : function(messageDraft) {
+    applyMessageDraft: function (messageDraft) {
 
         const me = this;
 
         if (me.getMessageDraft()) {
-            Ext.raise("\"messageDraft\" was already set")
+            Ext.raise("\"messageDraft\" was already set");
         }
 
         if (messageDraft !== undefined && !(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
-            Ext.raise("\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft")
+            Ext.raise("\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft");
         }
 
         if (messageDraft !== undefined) {
@@ -96,7 +96,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageDraftSession', {
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * @inheritdoc
@@ -113,7 +113,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageDraftSession', {
                 messageDraft = me.getMessageDraft();
 
             if (!messageDraft) {
-                Ext.raise("\"messageDraft\" must be set.")
+                Ext.raise("\"messageDraft\" must be set.");
             }
 
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,32 +23,32 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', function(t) {
+describe("conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest", function (t) {
 
 
-    t.it("Should successfully create and test instance", function(t) {
+    t.it("Should successfully create and test instance", function (t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
+        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader", {
 
         });
 
-        t.isInstanceOf(reader, 'Ext.data.reader.Json');
+        t.isInstanceOf(reader, "Ext.data.reader.Json");
 
-        t.expect(reader.getRootProperty()).toBe('data');
+        t.expect(reader.getRootProperty()).toBe("data");
 
-        t.expect(reader.getTypeProperty()).toBe('modelType');
+        t.expect(reader.getTypeProperty()).toBe("modelType");
 
-        t.expect(reader.mailAccountModelClass).toBe('conjoon.cn_mail.model.mail.account.MailAccount');
+        t.expect(reader.mailAccountModelClass).toBe("conjoon.cn_mail.model.mail.account.MailAccount");
 
-        t.expect(reader.alias).toContain('reader.cn_mail-mailaccountjsonreader');
+        t.expect(reader.alias).toContain("reader.cn_mail-mailaccountjsonreader");
 
     });
 
 
-    t.it("applyCompoundKey - exception", function(t) {
+    t.it("applyCompoundKey - exception", function (t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader'),
-            exc, e, data;
+        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
+            exc, data;
 
         try{reader.applyModelTypes(data);} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
@@ -63,7 +63,7 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
         exc = undefined;
 
-        data = {data : ""};
+        data = {data: ""};
         try{reader.applyModelTypes(data);} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
@@ -73,17 +73,17 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
     });
 
 
-    t.it("applyModelTypes()", function(t) {
+    t.it("applyModelTypes()", function (t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader'),
+        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
             ret,
             data = {
-                data : [{
+                data: [{
                 }]
             }, result = {
-                data : [{
-                    modelType     : 'conjoon.cn_mail.model.mail.account.MailAccount',
-                    folderType : conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
+                data: [{
+                    modelType: "conjoon.cn_mail.model.mail.account.MailAccount",
+                    folderType: conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
                 }]
             };
 
@@ -93,42 +93,42 @@ describe('conjoon.cn_mail.view.mail.account.reader.MailAccountJsonReaderTest', f
 
         data.data[0] = {};
 
-        data = {data : data.data[0]};
+        data = {data: data.data[0]};
         ret = reader.applyModelTypes(data);
-        result = {data : result.data[0]};
+        result = {data: result.data[0]};
         t.expect(ret).toEqual(result);
 
 
     });
 
 
-    t.it("applyCompoundKey() - success false", function(t) {
+    t.it("applyCompoundKey() - success false", function (t) {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader');
-        ret = reader.applyModelTypes({success : false});
-        t.expect(ret).toEqual({success : false})
+        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
+            ret = reader.applyModelTypes({success: false});
+        t.expect(ret).toEqual({success: false});
     });
 
 
-    t.it("processHybridData()", function(t){
+    t.it("processHybridData()", function (t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader'),
+        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
             data = {
-                data : [{
-                    mailAccountId : 'foo',
-                    id            : 'bar'
+                data: [{
+                    mailAccountId: "foo",
+                    id: "bar"
                 }]
             },
             result = {
-                data : [{
-                    modelType  : 'conjoon.cn_mail.model.mail.folder.MailFolder',
-                    mailAccountId : 'foo',
-                    id            : 'bar',
-                    localId       : 'foo-bar'
+                data: [{
+                    modelType: "conjoon.cn_mail.model.mail.folder.MailFolder",
+                    mailAccountId: "foo",
+                    id: "bar",
+                    localId: "foo-bar"
                 }]
             };
 
-        t.isCalledNTimes('peekFolder', reader, 1);
+        t.isCalledNTimes("peekFolder", reader, 1);
 
         t.expect(reader.processHybridData(data)).toEqual(result);
     });

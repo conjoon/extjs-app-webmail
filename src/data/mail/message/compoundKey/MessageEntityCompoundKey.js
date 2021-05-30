@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +27,7 @@
  * CompoundKey for MessageItem, MessageDraft and MessageBody.
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey', {
+Ext.define("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", {
 
-    extend : 'conjoon.cn_mail.data.mail.message.CompoundKey'
+    extend: "conjoon.cn_mail.data.mail.message.CompoundKey"
 });

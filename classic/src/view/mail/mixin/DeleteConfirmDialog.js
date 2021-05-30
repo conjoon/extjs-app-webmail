@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,24 +29,24 @@
  *
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
+Ext.define("conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog", {
 
 
-    requires : [
-        'coon.comp.component.MessageMask'
+    requires: [
+        "coon.comp.component.MessageMask"
     ],
 
 
     /**
      * @private
      */
-    deleteMask : null,
+    deleteMask: null,
 
     /**
      * @cfg {Boolean} canCloseAfterDelete true so that an immediate call to
      * closeAfterDelete from the API can close the implementing view safely.
      */
-    canCloseAfterDelete : true,
+    canCloseAfterDelete: true,
 
 
     /**
@@ -61,7 +61,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
      *
      * @return {coon.comp.component.MessageMask}
      */
-    showMessageDeleteConfirmDialog : function(messageItem, cb, scope) {
+    showMessageDeleteConfirmDialog: function (messageItem, cb, scope) {
 
         const me = this;
 
@@ -69,17 +69,17 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
             return me.deleteMask;
         }
 
-        let mask = Ext.create('coon.comp.component.MessageMask', {
-            title    : "Delete Message",
-            message  : "Are you sure you want to delete the message permanently?",
-            target   : me,
-            buttons  : coon.comp.component.MessageMask.YESNO,
-            icon     : coon.comp.component.MessageMask.QUESTION,
-            callback : cb,
-            scope    : scope
+        let mask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Delete Message",
+            message: "Are you sure you want to delete the message permanently?",
+            target: me,
+            buttons: coon.comp.component.MessageMask.YESNO,
+            icon: coon.comp.component.MessageMask.QUESTION,
+            callback: cb,
+            scope: scope
         });
 
-        me.mon(mask, 'destroy', function() {this.deleteMask = null}, me);
+        me.mon(mask, "destroy", function () {this.deleteMask = null;}, me);
         mask.show();
 
         me.deleteMask = mask;
@@ -93,7 +93,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog', {
      * is set to true.
      *
      */
-    closeAfterDelete : function() {
+    closeAfterDelete: function () {
 
         const me = this;
 

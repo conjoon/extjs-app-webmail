@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,15 +23,15 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.folder.MailFolderTypesTest', function(t) {
+describe("conjoon.cn_mail.data.mail.folder.MailFolderTypesTest", function (t) {
 
 
-// -----------------------------------------------------------------------------
-// |   Tests
-// -----------------------------------------------------------------------------
-    t.requireOk('conjoon.cn_mail.data.mail.folder.MailFolderTypes', function() {
+    // -----------------------------------------------------------------------------
+    // |   Tests
+    // -----------------------------------------------------------------------------
+    t.requireOk("conjoon.cn_mail.data.mail.folder.MailFolderTypes", function () {
 
-        t.it("types", function(t) {
+        t.it("types", function (t) {
 
             let coll = [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,
@@ -47,8 +47,8 @@ describe('conjoon.cn_mail.data.mail.folder.MailFolderTypesTest', function(t) {
                 t.expect(coll[i]).toBeTruthy();
             }
 
-            let fin = coll.filter(function(item, pos, self) {
-                return self.indexOf(item) == pos;
+            let fin = coll.filter(function (item, pos, self) {
+                return self.indexOf(item) === pos;
             });
 
             t.expect(fin).toEqual(coll);
@@ -56,4 +56,4 @@ describe('conjoon.cn_mail.data.mail.folder.MailFolderTypesTest', function(t) {
         });
 
 
-});});
+    });});

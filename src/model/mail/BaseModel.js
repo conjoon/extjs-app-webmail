@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,9 +30,9 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.model.mail.BaseModel', {
+Ext.define("conjoon.cn_mail.model.mail.BaseModel", {
 
-    extend : 'coon.core.data.BaseModel',
+    extend: "coon.core.data.BaseModel",
 
 
     /**
@@ -42,26 +42,26 @@ Ext.define('conjoon.cn_mail.model.mail.BaseModel', {
      * We need to explicitely implement the idProperty in subclasses, now.
      * The CompoundKeyedModelDecorator will remove this field later on.
      */
-    idProperty : '__id__',
+    idProperty: "__id__",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.BaseSchema'
+    requires: [
+        "conjoon.cn_mail.data.mail.BaseSchema"
     ],
 
-    schema : 'cn_mail-mailbaseschema',
+    schema: "cn_mail-mailbaseschema",
 
 
     /**
      * Overridden to enforce setting idProperty
      */
-    constructor : function() {
+    constructor: function () {
 
         const me = this;
 
-        if (me.idProperty === '__id__') {
+        if (me.idProperty === "__id__") {
             Ext.raise({
-               msg        : "\"idProperty\" of coon.core.data.BaseModel needs to be explicitly set",
-               idProperty : me.idProperty
+                msg: "\"idProperty\" of coon.core.data.BaseModel needs to be explicitly set",
+                idProperty: me.idProperty
             });
         }
 

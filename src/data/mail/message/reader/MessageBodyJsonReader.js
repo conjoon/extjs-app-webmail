@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,13 +27,13 @@
  * Specialized version of a JSON Reader used by Message Items, makes sure messageDraftId
  * gets computed if the action passed to #applyCompoundKey is "read"
  */
-Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader', {
+Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader", {
 
-    extend : 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader',
+    extend: "conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader",
 
-    alias : 'reader.cn_mail-mailmessagebodyjsonreader',
+    alias: "reader.cn_mail-mailmessagebodyjsonreader",
 
 
-    foreignKeyProp : "messageDraftId"
+    foreignKeyProp: "messageDraftId"
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,51 +32,51 @@
  * - text (raw text of the message)
  * - textHtml (textHtml of the message)
  */
-Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
+Ext.define("conjoon.cn_mail.model.mail.message.MessageBody", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
+    extend: "conjoon.cn_mail.model.mail.message.CompoundKeyedModel",
 
-    requires : [
-        'coon.core.data.field.CompoundKeyField'
+    requires: [
+        "coon.core.data.field.CompoundKeyField"
     ],
 
-    entityName : 'MessageBody',
+    entityName: "MessageBody",
 
 
-    fields : [{
-        name : 'textPlain',
-        type : 'string'
+    fields: [{
+        name: "textPlain",
+        type: "string"
     }, {
-        name : 'textHtml',
-        type : 'string'
+        name: "textHtml",
+        type: "string"
     }, {
         // we are hardcoding a messageDraftId-field here, although the
         // a MessageBody related with any item might NOT be a draft.
         // however, we keep this field here to make sure
         // associations (MessageDraft <-> MessageBody) work in both directions
-        persist     : false,
-        name        : 'messageDraftId',
-        type        : 'string',
-        reference   : {
-            parent : 'MessageDraft',
+        persist: false,
+        name: "messageDraftId",
+        type: "string",
+        reference: {
+            parent: "MessageDraft"
         },
-        unique : true,
-        validators : 'presence'
+        unique: true,
+        validators: "presence"
     }],
 
 
     /**
      * @inheritdoc
      */
-    getAssociatedCompoundKeyedData : function() {
+    getAssociatedCompoundKeyedData: function () {
         const me = this;
 
         let data =  me.getMessageDraft && me.getMessageDraft() ? [me.getMessageDraft()] : [];
 
-            data = data.concat(
-                me.getMessageItem && me.getMessageItem()
+        data = data.concat(
+            me.getMessageItem && me.getMessageItem()
                 ? [me.getMessageItem() ] : []
-            );
+        );
 
 
         return data;
@@ -93,19 +93,19 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageBody', {
      *
      * @return {Ext.data.operation.Read}
      */
-   load : function(options) {
+    load: function (options) {
 
         const me      = this,
-              assoc   = me.getAssociatedCompoundKeyedData();
+            assoc   = me.getAssociatedCompoundKeyedData();
 
         options = options || {};
 
         options.params = options.params || {};
 
-       if (assoc && assoc.length === 1 && assoc[0].entityName === 'MessageDraft') {
+        if (assoc && assoc.length === 1 && assoc[0].entityName === "MessageDraft") {
             Ext.applyIf(options.params, assoc[0].getCompoundKey().toObject());
         }
 
-       return me.callParent([options]);
+        return me.callParent([options]);
     }
 });

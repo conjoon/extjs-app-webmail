@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,49 +31,49 @@
 Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
 
 
-    statics : {
+    statics: {
         /**
          * @type {Number} MOVE_OR_DELETE
          */
-        MOVE_OR_DELETE : 1,
+        MOVE_OR_DELETE: 1,
 
         /**
          * @type {Number} DELETE
          */
-        DELETE : 2,
+        DELETE: 2,
 
         /**
          * @type {Number} MOVE
          */
-        MOVE : 3,
+        MOVE: 3,
 
         /**
          * @type {Number} NOOP
          */
-        NOOP : 4,
+        NOOP: 4,
 
         /**
          * @type {Number} CANCELED
          */
-        CANCELED : 5,
+        CANCELED: 5,
 
         /**
          * @type {Number} INVALID_TARGET
          */
-        INVALID_TARGET : 6
+        INVALID_TARGET: 6
     },
 
 
-    config : {
+    config: {
         /**
          * @cfg {Object} request
          */
-        request : undefined,
+        request: undefined,
 
         /**
          * @cfg {Object} result
          */
-        result : undefined
+        result: undefined
     },
 
 
@@ -86,16 +86,16 @@ Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
      *
      * @throws if no request-object is specified for the constructor
      */
-    constructor : function(cfg) {
+    constructor: function (cfg) {
         cfg = cfg || {};
 
         const me = this;
 
         if (!cfg.request) {
             Ext.raise({
-                msg     : "'request' must be set",
-                request : cfg.request
-            })
+                msg: "'request' must be set",
+                request: cfg.request
+            });
         }
 
         me.initConfig(cfg);
@@ -109,20 +109,19 @@ Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
      *
      * @throws if result was already set
      */
-    applyResult : function(result) {
+    applyResult: function (result) {
 
         const me = this;
 
         if (me.getResult() !== undefined) {
             Ext.raise({
-                msg    : "'result' was already set",
-                result : me.getResult()
-            })
+                msg: "'result' was already set",
+                result: me.getResult()
+            });
         }
 
         return result;
     },
-
 
 
     /**
@@ -132,20 +131,19 @@ Ext.define("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
      *
      * @throws if request was already set
      */
-    applyRequest : function(request) {
+    applyRequest: function (request) {
 
         const me = this;
 
         if (me.getRequest() !== undefined) {
             Ext.raise({
-                msg    : "'request' was already set",
-                request : me.getRequest()
-            })
+                msg: "'request' was already set",
+                request: me.getRequest()
+            });
         }
 
         return request;
-    },
-
+    }
 
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,51 +39,51 @@
  * gets loaded.
  *
  */
-Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
+Ext.define("conjoon.cn_mail.model.mail.message.AbstractMessageItem", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
+    extend: "conjoon.cn_mail.model.mail.message.CompoundKeyedModel",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageBody',
-        'coon.core.data.field.EmailAddress'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageBody",
+        "coon.core.data.field.EmailAddress"
     ],
 
 
-    fields : [{
-        name : 'subject',
-        type : 'string'
+    fields: [{
+        name: "subject",
+        type: "string"
     }, {
-        name           : 'date',
-        type           : 'date',
-        dateReadFormat : "Y-m-d H:i:s O"
+        name: "date",
+        type: "date",
+        dateReadFormat: "Y-m-d H:i:s O"
     }, {
-        name : 'from',
-        type : 'cn_core-datafieldemailaddress'
+        name: "from",
+        type: "cn_core-datafieldemailaddress"
     }, {
-        persist     : false,
-        name        : 'messageBodyId',
-        type        : 'string',
-        reference   : {
-            child : 'MessageBody'
+        persist: false,
+        name: "messageBodyId",
+        type: "string",
+        reference: {
+            child: "MessageBody"
         },
-        unique : true,
-        validators : 'presence'
+        unique: true,
+        validators: "presence"
     }, {
-        name : 'seen',
-        type : 'bool'
+        name: "seen",
+        type: "bool"
     }, {
-        name : 'answered',
-        type : 'bool'
+        name: "answered",
+        type: "bool"
     }, {
-        name : 'flagged',
-        type : 'bool'
+        name: "flagged",
+        type: "bool"
     }, {
-        name : 'draft',
-        type : 'bool'
+        name: "draft",
+        type: "bool"
     }, {
-        name    : 'recent',
-        type    : 'bool',
-        persist : false
+        name: "recent",
+        type: "bool",
+        persist: false
     }],
 
 
@@ -95,21 +95,21 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
      *
      * @return {Ext.data.Store}
      */
-    loadAttachments : function(options) {
+    loadAttachments: function (options) {
 
         const me = this;
 
         me.attachments().clearFilter(true);
 
         me.attachments().addFilter([{
-            property : 'mailAccountId',
-            value    : me.get('mailAccountId')
+            property: "mailAccountId",
+            value: me.get("mailAccountId")
         }, {
-            property : 'mailFolderId',
-            value    : me.get('mailFolderId')
+            property: "mailFolderId",
+            value: me.get("mailFolderId")
         }, {
-            property : 'parentMessageItemId',
-            value    : me.get('id')
+            property: "parentMessageItemId",
+            value: me.get("id")
         }], true);
 
         return  me.attachments().load(options);
@@ -124,7 +124,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
      *
      * @returns {conjoon.cn_mail.model.mail.message.MessageBody}
      */
-    loadMessageBody : function(options) {
+    loadMessageBody: function (options) {
 
         const me = this;
 
@@ -132,17 +132,17 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
 
         options.params = options.params || {};
 
-        if (!me.get('mailFolderId') || !me.get('mailAccountId') || !me.get('id')) {
+        if (!me.get("mailFolderId") || !me.get("mailAccountId") || !me.get("id")) {
             Ext.raise({
-                msg : "Cannot load MessageBody, compound keys missing",
-                data : me.data
+                msg: "Cannot load MessageBody, compound keys missing",
+                data: me.data
             });
         }
 
         Ext.applyIf(options.params, {
-            mailFolderId        : me.get('mailFolderId'),
-            mailAccountId       : me.get('mailAccountId'),
-            id                  : me.get('id')
+            mailFolderId: me.get("mailFolderId"),
+            mailAccountId: me.get("mailAccountId"),
+            id: me.get("id")
         });
 
         return me.getMessageBody(options);
@@ -152,7 +152,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     /**
      * @inheritdoc
      */
-    getAssociatedCompoundKeyedData : function() {
+    getAssociatedCompoundKeyedData: function () {
         const me = this;
 
         let data = me._messageBody ? [me._messageBody] : [];
@@ -161,7 +161,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * Overridden to make sure message items are aware of MessageBodys being set
@@ -171,7 +171,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
          *
          * @see processRecordAssociation
          */
-        onAssociatedRecordSet : function(record, role) {
+        onAssociatedRecordSet: function (record, role) {
             const me = this;
 
             me.processRecordAssociation(record);
@@ -184,11 +184,11 @@ Ext.define('conjoon.cn_mail.model.mail.message.AbstractMessageItem', {
     /**
      * @inheritdoc
      */
-    processRecordAssociation : function(record) {
+    processRecordAssociation: function (record) {
 
         const me = this;
 
-        if (record.entityName === 'MessageBody') {
+        if (record.entityName === "MessageBody") {
             me.compareAndApplyCompoundKeys(record, true);
         }
     }

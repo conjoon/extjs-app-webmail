@@ -28,48 +28,48 @@
  * {@link conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn} is used to provide
  * extra visual information for the nodes found within the tree.
  */
-Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
+Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTree", {
 
-    extend : 'Ext.tree.Panel',
+    extend: "Ext.tree.Panel",
 
-    requires : [
-        'conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn'
+    requires: [
+        "conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn"
     ],
 
-    alias : 'widget.cn_mail-mailfoldertree',
+    alias: "widget.cn_mail-mailfoldertree",
 
-    width  : 240,
+    width: 240,
 
-    cls    : 'cn_mail-mailfoldertree',
+    cls: "cn_mail-mailfoldertree",
 
-    useArrows   : true,
-    rootVisible : false,
+    useArrows: true,
+    rootVisible: false,
 
-    hideHeaders : true,
+    hideHeaders: true,
 
-    selModel : {
-        toggleOnClick : false
+    selModel: {
+        toggleOnClick: false
     },
 
     viewConfig: {
         outerRowTpl: [
-            '<table id="{rowId}" role="presentation" ',
-            'data-boundView="{view.id}" ',
-            'data-recordId="{record.internalId}" ',
-            'data-recordIndex="{recordIndex}" ',
-            'class="{[values.itemClasses.join(" ")]} {[this.getOuterRowClass(values.record, values.view.dataSource)]}" cellpadding="0" cellspacing="0" style="{itemStyle};width:0;">',
+            "<table id=\"{rowId}\" role=\"presentation\" ",
+            "data-boundView=\"{view.id}\" ",
+            "data-recordId=\"{record.internalId}\" ",
+            "data-recordIndex=\"{recordIndex}\" ",
+            "class=\"{[values.itemClasses.join(\" \")]} {[this.getOuterRowClass(values.record, values.view.dataSource)]}\" cellpadding=\"0\" cellspacing=\"0\" style=\"{itemStyle};width:0;\">",
 
             // Do NOT emit a <TBODY> tag in case the nextTpl has to emit a <COLGROUP> column sizer element.
             // Browser will create a tbody tag when it encounters the first <TR>
-            '{%',
-            'this.nextTpl.applyOut(values, out, parent)',
-            '%}',
-            '</table>',
+            "{%",
+            "this.nextTpl.applyOut(values, out, parent)",
+            "%}",
+            "</table>",
             {
-                getOuterRowClass : function(record, store) {
+                getOuterRowClass: function (record, store) {
 
-                    let type  = record.get('folderType').toLowerCase(),
-                        cls   = 'cn_' + (type === "folder" ? "generic" : type),
+                    let type  = record.get("folderType").toLowerCase(),
+                        cls   = "cn_" + (type === "folder" ? "generic" : type),
                         pn    = record.parentNode,
                         root  = store.getRoot(),
                         isSub = pn &&
@@ -77,13 +77,13 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
                             pn.parentNode !== root;
 
                     if (!isSub && type !== "account") {
-                        cls += ' cn_folder';
+                        cls += " cn_folder";
                     }
 
                     if (type === "account" && !record.previousSibling) {
-                        cls += ' first';
+                        cls += " first";
                     } else if (isSub) {
-                        cls += ' cn_subfolder';
+                        cls += " cn_subfolder";
                     }
 
                     return cls;
@@ -94,21 +94,20 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTree', {
     },
 
 
-    columns : [{
-        xtype     : 'cn_mail-mailfoldertreecolumn',
-        dataIndex : 'name',
-        flex      : 1,
-        renderer  : function(value, metaData, record) {
-            var unreadCount = record.get('unreadCount');
+    columns: [{
+        xtype: "cn_mail-mailfoldertreecolumn",
+        dataIndex: "name",
+        flex: 1,
+        renderer: function (value, metaData, record) {
+            var unreadCount = record.get("unreadCount");
 
             if (unreadCount > 0) {
-                return value  + '<span class="badge-unreadcount">' + unreadCount + '</span>';
+                return value  + "<span class=\"badge-unreadcount\">" + unreadCount + "</span>";
             }
             return value;
 
         }
     }]
-
 
 
 });

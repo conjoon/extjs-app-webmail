@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,23 +27,23 @@
  * The default AttachmentList implementation for a
  * {@link coon.core.view.mail.message.reader.MessageView}.
  */
-Ext.define('conjoon.cn_mail.view.mail.message.reader.AttachmentList', {
+Ext.define("conjoon.cn_mail.view.mail.message.reader.AttachmentList", {
 
-    extend : 'conjoon.cn_mail.view.mail.message.AbstractAttachmentList',
+    extend: "conjoon.cn_mail.view.mail.message.AbstractAttachmentList",
 
-    requires : [
-        'conjoon.cn_mail.view.mail.message.reader.AttachmentListController'
+    requires: [
+        "conjoon.cn_mail.view.mail.message.reader.AttachmentListController"
     ],
 
-    alias : 'widget.cn_mail-mailmessagereaderattachmentlist',
+    alias: "widget.cn_mail-mailmessagereaderattachmentlist",
 
-    controller : 'cn_mail-mailmessagereaderattachmentlistcontroller',
+    controller: "cn_mail-mailmessagereaderattachmentlistcontroller",
 
     /**
      * @inheritdoc
      */
-    displayButtonType : function(type) {
-        return type === 'DOWNLOAD';
+    displayButtonType: function (type) {
+        return type === "DOWNLOAD";
     }
 
 });

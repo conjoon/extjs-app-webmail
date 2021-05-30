@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,13 +32,13 @@
  */
 Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
 
-    extend : 'Ext.app.ViewModel',
+    extend: "Ext.app.ViewModel",
 
-    requires : [
+    requires: [
         "conjoon.cn_mail.model.mail.account.MailAccount"
     ],
 
-    alias : 'viewmodel.cn_mail-mailaccountviewmodel',
+    alias: "viewmodel.cn_mail-mailaccountviewmodel",
 
     /**
      * Caches the references to the original mail accounts that were
@@ -47,36 +47,36 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      *
      * @type {Object|conjoon.cn_mail.model.mail.acount.MailAccount}
      */
-    sourceMailAccounts : null,
+    sourceMailAccounts: null,
 
-    data : {
+    data: {
         /**
          * Should be set by the #setMailAccount method.
          * @private
          */
-        mailAccount : null
+        mailAccount: null
     },
 
-    formulas : {
+    formulas: {
 
         /**
          * Makes sure getter and setter properly process the replyTo-field
          * of the MailAccount.
          */
-        processReplyTo : {
+        processReplyTo: {
 
-            get : function(get) {
-                let replyTo = get('mailAccount.replyTo');
+            get: function (get) {
+                let replyTo = get("mailAccount.replyTo");
                 return replyTo.address;
             },
 
-            set : function(value) {
+            set: function (value) {
                 const me      = this,
-                      replyTo = Ext.clone(me.get('mailAccount.replyTo')),
-                      ma      = me.get('mailAccount');
+                    replyTo = Ext.clone(me.get("mailAccount.replyTo")),
+                    ma      = me.get("mailAccount");
 
                 replyTo.address = value;
-                ma.set('replyTo', replyTo);
+                ma.set("replyTo", replyTo);
             }
 
         },
@@ -86,19 +86,19 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
          * Makes sure getter and setter properly process the from-field
          * of the MailAccount.
          */
-        processFrom : {
-            get : function(get) {
-                let from = get('mailAccount.from');
+        processFrom: {
+            get: function (get) {
+                let from = get("mailAccount.from");
                 return from.address;
             },
 
-            set : function(value) {
+            set: function (value) {
                 const me   = this,
-                      from = Ext.clone(me.get('mailAccount.from')),
-                      ma   = me.get('mailAccount');
+                    from = Ext.clone(me.get("mailAccount.from")),
+                    ma   = me.get("mailAccount");
 
                 from.address = value;
-                ma.set('from', from);
+                ma.set("from", from);
             }
         },
 
@@ -107,30 +107,30 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
          * Makes sure that the userName specified for this account is both
          * applied to the from and the replyTo address.
          */
-        processUserName : {
+        processUserName: {
 
-            get : function(get) {
-                let from = get('mailAccount.from');
+            get: function (get) {
+                let from = get("mailAccount.from");
                 return from.name;
             },
 
-            set : function(value) {
+            set: function (value) {
                 const me      = this,
-                      from    = Ext.clone(me.get('mailAccount.from')),
-                      replyTo = Ext.clone(me.get('mailAccount.replyTo')),
-                      ma      = me.get('mailAccount');
+                    from    = Ext.clone(me.get("mailAccount.from")),
+                    replyTo = Ext.clone(me.get("mailAccount.replyTo")),
+                    ma      = me.get("mailAccount");
 
                 from.name    = value;
                 replyTo.name = value;
 
-                ma.set('from', from);
-                ma.set('replyTo', replyTo);
-           }
+                ma.set("from", from);
+                ma.set("replyTo", replyTo);
+            }
 
         }
     },
 
-    constructor : function() {
+    constructor: function () {
         const me = this;
 
         me.callParent(arguments);
@@ -151,30 +151,30 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      *
      * @throws if mailAccount is not an instance of conjoon.cn_mail.model.mail.account.MailAccount
      */
-    setMailAccount : function(mailAccount) {
+    setMailAccount: function (mailAccount) {
 
         if (!(mailAccount instanceof conjoon.cn_mail.model.mail.account.MailAccount)) {
             Ext.raise({
-                msg : "\"mailAccount\" must be an instance of conjoon.cn_mail.model.mail.account.MailAccount",
-                mailAccount : mailAccount
+                msg: "\"mailAccount\" must be an instance of conjoon.cn_mail.model.mail.account.MailAccount",
+                mailAccount: mailAccount
             });
         }
 
         const me  = this,
-              id  = mailAccount.getId(),
-              rec = me.saveOperations[id] ? me.saveOperations[id].getRecords()[0] : null;
+            id  = mailAccount.getId(),
+            rec = me.saveOperations[id] ? me.saveOperations[id].getRecords()[0] : null;
 
         me.cleanup();
 
         if (me.saveOperations[id]) {
-            me.set('mailAccount', rec);
+            me.set("mailAccount", rec);
             return rec;
         }
 
         let cln = mailAccount.clone();
 
         me.sourceMailAccounts[id] = mailAccount;
-        me.set('mailAccount', cln);
+        me.set("mailAccount", cln);
 
         return cln;
     },
@@ -186,10 +186,10 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      *
      * @private
      */
-    cleanup : function() {
+    cleanup: function () {
 
         const me    = this,
-              oldId = me.get('mailAccount.id');
+            oldId = me.get("mailAccount.id");
 
         // unload any completed operation first as soon as this ViewModel
         // should manage a new MailAccount
@@ -211,22 +211,22 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      * @return {Ext.data.Operation|null}null if no change was found, otherwise the
      * return value of the MailAccount's save() method
      */
-    savePendingChanges : function() {
+    savePendingChanges: function () {
 
         const me          = this,
-              view        = me.getView(),
-              mailAccount = me.get('mailAccount');
+            view        = me.getView(),
+            mailAccount = me.get("mailAccount");
 
         if (!mailAccount || !mailAccount.modified) {
             return null;
         }
 
-        view.fireEvent('cn_mail-mailaccountbeforesave', view, mailAccount);
+        view.fireEvent("cn_mail-mailaccountbeforesave", view, mailAccount);
 
         let op = mailAccount.save({
-            success : me.onSaveSuccess,
-            failure : me.onSaveFailure,
-            scope : me
+            success: me.onSaveSuccess,
+            failure: me.onSaveFailure,
+            scope: me
         });
 
         me.saveOperations[mailAccount.getId()] = op;
@@ -245,38 +245,38 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      *
      * @param {conjoon.cn_mail.model.mail.account.MailAccount} record
      */
-    onSaveSuccess : function(record) {
+    onSaveSuccess: function (record) {
 
         const me           = this,
-              view         = me.getView(),
-              sourceRecord = me.sourceMailAccounts[record.getId()];
+            view         = me.getView(),
+            sourceRecord = me.sourceMailAccounts[record.getId()];
 
         let data = Ext.copy(
             {},
             record.data,
-            ['name',
-            'from',
-            'replyTo',
+            ["name",
+                "from",
+                "replyTo",
 
-            'inbox_type',
-            'inbox_address',
-            'inbox_port',
-            'inbox_ssl',
-            'inbox_user',
-            'inbox_password',
+                "inbox_type",
+                "inbox_address",
+                "inbox_port",
+                "inbox_ssl",
+                "inbox_user",
+                "inbox_password",
 
-            'outbox_type',
-            'outbox_address',
-            'outbox_port',
-            'outbox_ssl',
-            'outbox_user',
-            'outbox_password'].join(',')
-            );
+                "outbox_type",
+                "outbox_address",
+                "outbox_port",
+                "outbox_ssl",
+                "outbox_user",
+                "outbox_password"].join(",")
+        );
 
         sourceRecord.set(data);
         sourceRecord.commit();
 
-        view.fireEvent('cn_mail-mailaccountsave', view, record);
+        view.fireEvent("cn_mail-mailaccountsave", view, record);
     },
 
 
@@ -289,12 +289,12 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
      *
      * @private
      */
-    onSaveFailure : function(record) {
+    onSaveFailure: function (record) {
 
         const me   = this,
-              view = me.getView();
+            view = me.getView();
 
-        view.fireEvent('cn_mail-mailaccountsavefailure', view, record);
+        view.fireEvent("cn_mail-mailaccountsavefailure", view, record);
     }
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,59 +28,59 @@
  * It mainly provides and delegates event handling between the embedded views.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
+Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
 
-    extend : 'Ext.app.ViewController',
+    extend: "Ext.app.ViewController",
 
-    alias : 'controller.cn_mail-mailinboxviewcontroller',
+    alias: "controller.cn_mail-mailinboxviewcontroller",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.service.MailboxService',
-        'conjoon.cn_mail.data.mail.service.mailbox.Operation',
-        'conjoon.cn_mail.data.mail.service.MailFolderHelper',
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes',
-        'conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater',
-        'conjoon.cn_mail.model.mail.message.MessageDraft'
+    requires: [
+        "conjoon.cn_mail.data.mail.service.MailboxService",
+        "conjoon.cn_mail.data.mail.service.mailbox.Operation",
+        "conjoon.cn_mail.data.mail.service.MailFolderHelper",
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater",
+        "conjoon.cn_mail.model.mail.message.MessageDraft"
     ],
 
-    control : {
-        'cn_mail-mailmessagereadermessageview' : {
-            'cn_mail-mailmessageitemread' : 'onMessageItemRead'
+    control: {
+        "cn_mail-mailmessagereadermessageview": {
+            "cn_mail-mailmessageitemread": "onMessageItemRead"
         },
 
-        'cn_mail-mailmessagereadermessageview #btn-deletedraft' : {
-            'click' : 'onDeleteClick'
+        "cn_mail-mailmessagereadermessageview #btn-deletedraft": {
+            "click": "onDeleteClick"
         },
 
-        'cn_mail-mailmessagereadermessageview #btn-delete' : {
-            'click' : 'onDeleteClick'
+        "cn_mail-mailmessagereadermessageview #btn-delete": {
+            "click": "onDeleteClick"
         },
 
-        'cn_mail-mailfoldertree' : {
-            'beforeselect' : 'onMailFolderTreeBeforeSelect',
-            'select'       : 'onMailFolderTreeSelect'
+        "cn_mail-mailfoldertree": {
+            "beforeselect": "onMailFolderTreeBeforeSelect",
+            "select": "onMailFolderTreeSelect"
         },
 
-        'cn_mail-mailmessagegrid' : {
-            'cn_comp-rowflymenu-itemclick'      : 'onRowFlyMenuItemClick',
-            'cn_comp-rowflymenu-beforemenushow' : 'onRowFlyMenuBeforeShow'
+        "cn_mail-mailmessagegrid": {
+            "cn_comp-rowflymenu-itemclick": "onRowFlyMenuItemClick",
+            "cn_comp-rowflymenu-beforemenushow": "onRowFlyMenuBeforeShow"
         }
     },
 
     /**
      * @private
      */
-    mailboxService : null,
+    mailboxService: null,
 
     /**
      * @private
      */
-    messageGrid : null,
+    messageGrid: null,
 
     /**
      * @private
      */
-    mailFolderTree : null,
+    mailFolderTree: null,
 
     /**
      * Delegates to the mailmessagegrid's #updateRowFlyMenu method.
@@ -93,11 +93,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @see conjoon.cn_mail.view.mail.message.MessageGrid#updateRowFlyMenu
      */
-    onRowFlyMenuBeforeShow : function(feature, row, record) {
+    onRowFlyMenuBeforeShow: function (feature, row, record) {
 
         const me = this;
 
-        if (record.get('cn_deleted') || record.get('cn_moved')) {
+        if (record.get("cn_deleted") || record.get("cn_moved")) {
             return false;
         }
 
@@ -117,25 +117,25 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * @param {Strng} action
      * @param {Ext.data.Model} record
      */
-    onRowFlyMenuItemClick : function(feature, item, action, record) {
+    onRowFlyMenuItemClick: function (feature, item, action, record) {
 
         const me = this;
 
         switch (action) {
-            case 'markunread':
-                record.set('seen', !record.get('seen'));
-                record.save({
-                    callback : me.onMessageItemRead,
-                    scope    : me
-                });
-                break;
-            case 'flag':
-                record.set('flagged', !record.get('flagged'));
-                record.save();
-                break;
-            case 'delete':
-                me.moveOrDeleteMessage(record);
-                break;
+        case "markunread":
+            record.set("seen", !record.get("seen"));
+            record.save({
+                callback: me.onMessageItemRead,
+                scope: me
+            });
+            break;
+        case "flag":
+            record.set("flagged", !record.get("flagged"));
+            record.save();
+            break;
+        case "delete":
+            me.moveOrDeleteMessage(record);
+            break;
         }
 
     },
@@ -149,11 +149,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @see moveOrDeleteMessage
      */
-    onDeleteClick : function(btn) {
+    onDeleteClick: function (btn) {
 
-        const me          = this;
-              messageView = me.getMessageView(),
-              messageItem = messageView.getViewModel().get('messageItem');
+        const
+            me    = this,
+            messageView = me.getMessageView(),
+            messageItem = messageView.getViewModel().get("messageItem");
 
         me.moveOrDeleteMessage(messageItem);
     },
@@ -169,12 +170,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @see {conjoon.cn_mail.view.mail.inbox.InboxViewModel#updateUnreadMessageCount}
      */
-    onMessageItemRead : function(messageItemRecords) {
+    onMessageItemRead: function (messageItemRecords) {
 
         var me          = this,
             view        = me.getView(),
             mailFolders = {},
-            tmpId,
             rec,
             tmpMailAccountId,
             tmpMailFolderId,
@@ -184,9 +184,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         for (var i = 0, len = messageItemRecords.length; i <len; i++) {
             rec    = messageItemRecords[i];
-            tmpMailAccountId = rec.get('mailAccountId');
-            tmpMailFolderId  = rec.get('mailFolderId');
-            seen = rec.get('seen');
+            tmpMailAccountId = rec.get("mailAccountId");
+            tmpMailFolderId  = rec.get("mailFolderId");
+            seen = rec.get("seen");
 
             if (!mailFolders[tmpMailAccountId]) {
                 mailFolders[tmpMailAccountId] = {};
@@ -206,17 +206,17 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
             for (var mailFolderId in mfObj) {
 
-                if (!mfObj.hasOwnProperty(mailFolderId)) {
+                if (!Object.prototype.hasOwnProperty.call(mfObj, mailFolderId)) {
                     continue;
                 }
 
-                if (mfObj[mailFolderId] == 0) {
+                if (!mfObj[mailFolderId]) {
                     continue;
                 }
 
                 view.getViewModel().updateUnreadMessageCount(
                     mailAccountId, mailFolderId, mfObj[mailFolderId]
-                )
+                );
 
             }
         }
@@ -232,7 +232,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * @param {Ext.selection.Model } selModel
      * @param [Ext.data.TreeModel} node
      */
-    onMailFolderTreeSelect : function(selModel, node) {
+    onMailFolderTreeSelect: function (selModel, node) {
 
         const me = this;
 
@@ -250,11 +250,11 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @param {Boolean} true if the event can pass, otherwise false
      */
-    onMailFolderTreeBeforeSelect : function(selModel, node) {
+    onMailFolderTreeBeforeSelect: function (selModel, node) {
 
         const me              = this,
-              view            = me.getView(),
-              mailAccountView = view.down('cn_mail-mailaccountview');
+            view            = me.getView(),
+            mailAccountView = view.down("cn_mail-mailaccountview");
 
         if (mailAccountView.hasPendingChanges()) {
 
@@ -272,13 +272,13 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @return {conjoon.cn_mail.data.mail.service.MailboxService}
      */
-    getMailboxService : function() {
+    getMailboxService: function () {
         const me = this;
 
         if (!me.mailboxService) {
-            me.mailboxService = Ext.create('conjoon.cn_mail.data.mail.service.MailboxService', {
-                mailFolderHelper : Ext.create('conjoon.cn_mail.data.mail.service.MailFolderHelper', {
-                    store : me.getMailFolderTree().getStore()
+            me.mailboxService = Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
+                mailFolderHelper: Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
+                    store: me.getMailFolderTree().getStore()
                 })
             });
         }
@@ -306,7 +306,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * @see onMessageMovedOrDeleted
      * @see onMessageMovedOrDeletedFailure
      */
-    moveOrDeleteMessage : function(messageItem, hideConfirmWindow = false, requestingView = null) {
+    moveOrDeleteMessage: function (messageItem, hideConfirmWindow = false, requestingView = null) {
 
         const me   = this;
 
@@ -316,10 +316,10 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
 
         return me.getMailboxService().moveToTrashOrDeleteMessage(messageItem, {
-            before  : Ext.Function.bind(me.onBeforeMessageMoveOrDelete, me, [hideConfirmWindow, requestingView], true),
-            success : Ext.Function.bind(me.onMessageMovedOrDeleted, me, [requestingView], true),
-            failure : me.onMessageMovedOrDeletedFailure,
-            scope   : me
+            before: Ext.Function.bind(me.onBeforeMessageMoveOrDelete, me, [hideConfirmWindow, requestingView], true),
+            success: Ext.Function.bind(me.onMessageMovedOrDeleted, me, [requestingView], true),
+            failure: me.onMessageMovedOrDeletedFailure,
+            scope: me
         });
     },
 
@@ -341,53 +341,53 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
      */
-    onBeforeMessageMoveOrDelete : function(operation, hideConfirmWindow, requestingView) {
+    onBeforeMessageMoveOrDelete: function (operation, hideConfirmWindow, requestingView) {
 
         const me           = this,
-              view         = me.getView(),
-              messageItem  = operation.getRequest().record,
-              type         = operation.getRequest().type,
-              Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
-              messageGrid  = me.getMessageGrid(),
-              isDraftClass = messageItem.entityName === 'MessageDraft',
-              gridReady    = me.getLivegrid().isConfigured();
+            view         = me.getView(),
+            messageItem  = operation.getRequest().record,
+            type         = operation.getRequest().type,
+            Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+            messageGrid  = me.getMessageGrid(),
+            isDraftClass = messageItem.entityName === "MessageDraft",
+            gridReady    = me.getLivegrid().isConfigured();
 
         let field, gridItem;
 
         switch (type) {
-            case Operation.MOVE:
-                field = "cn_moved";
-                break;
+        case Operation.MOVE:
+            field = "cn_moved";
+            break;
 
-            case Operation.DELETE:
+        case Operation.DELETE:
 
-                // fire global event and let other components veto
-                if (view.fireEvent('cn_mail-beforemessageitemdelete', view, messageItem, requestingView) === false) {
-                    return false;
-                }
+            // fire global event and let other components veto
+            if (view.fireEvent("cn_mail-beforemessageitemdelete", view, messageItem, requestingView) === false) {
+                return false;
+            }
 
-                // if no veto, confirm by InboxView
-                if (hideConfirmWindow !== true) {
-                    requestingView.showMessageDeleteConfirmDialog(messageItem,
-                        function(btnAction, value) {
-                            const me = this;
-                            if (btnAction == 'yesButton') {
-                                me.moveOrDeleteMessage(messageItem, true, requestingView);
-                            }
-                        },
+            // if no veto, confirm by InboxView
+            if (hideConfirmWindow !== true) {
+                requestingView.showMessageDeleteConfirmDialog(messageItem,
+                    function (btnAction, value) {
+                        const me = this;
+                        if (btnAction === "yesButton") {
+                            me.moveOrDeleteMessage(messageItem, true, requestingView);
+                        }
+                    },
                     me);
 
-                    return false;
-                }
+                return false;
+            }
 
-                field = "cn_deleted";
-                break;
-            default:
-                Ext.raise({
-                    msg  : "Unexpected operation type for before-callback",
-                    type : type
-                });
-                break;
+            field = "cn_deleted";
+            break;
+        default:
+            Ext.raise({
+                msg: "Unexpected operation type for before-callback",
+                type: type
+            });
+            break;
         }
 
         if (gridReady) {
@@ -399,7 +399,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
             if (gridItem) {
                 // set the field property
-                gridItem.set(field, true, {dirty : false});
+                gridItem.set(field, true, {dirty: false});
             }
 
         }
@@ -439,32 +439,32 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
      */
-    onMessageMovedOrDeletedFailure : function(operation) {
+    onMessageMovedOrDeletedFailure: function (operation) {
 
         const me           = this,
-              request      = operation.getRequest(),
-              messageItem  = request.record,
-              type         = request.type,
-              Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
-              owningStore  = request.owningStore,
-              isDraftClass = messageItem.entityName === 'MessageDraft';
+            request      = operation.getRequest(),
+            messageItem  = request.record,
+            type         = request.type,
+            Operation    = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+            owningStore  = request.owningStore,
+            isDraftClass = messageItem.entityName === "MessageDraft";
 
         let field;
 
         switch (type) {
-            case Operation.MOVE:
-                field = "cn_moved";
-                break;
+        case Operation.MOVE:
+            field = "cn_moved";
+            break;
 
-            case Operation.DELETE:
-                field = "cn_deleted";
-                break;
-            default:
-                Ext.raise({
-                    msg  : "Unexpected operation type for failure-callback",
-                    type : type
-                });
-                break;
+        case Operation.DELETE:
+            field = "cn_deleted";
+            break;
+        default:
+            Ext.raise({
+                msg: "Unexpected operation type for failure-callback",
+                type: type
+            });
+            break;
         }
 
         messageItem.reject();
@@ -474,7 +474,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
 
         // set the field property
         if (!isDraftClass && owningStore === me.getMessageGrid().getStore()) {
-            messageItem.set(field, false, {dirty : false});
+            messageItem.set(field, false, {dirty: false});
         }
 
         return operation;
@@ -492,54 +492,54 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation}
      */
-    onMessageMovedOrDeleted : function(operation, requestingView) {
+    onMessageMovedOrDeleted: function (operation, requestingView) {
 
         const me               = this,
-              request          = operation.getRequest(),
-              view             = me.getView(),
-              messageItem      = request.record,
-              type             = request.type,
-              Operation        = conjoon.cn_mail.data.mail.service.mailbox.Operation,
-              messageGrid      = me.getMessageGrid(),
-              owningStore      = request.owningStore,
-              gridReady        = me.getLivegrid().isConfigured(),
-              isDraftClass     = messageItem.entityName === 'MessageDraft',
-              mailFolderHelper = me.getMailboxService().getMailFolderHelper();
+            request          = operation.getRequest(),
+            view             = me.getView(),
+            messageItem      = request.record,
+            type             = request.type,
+            Operation        = conjoon.cn_mail.data.mail.service.mailbox.Operation,
+            messageGrid      = me.getMessageGrid(),
+            owningStore      = request.owningStore,
+            gridReady        = me.getLivegrid().isConfigured(),
+            isDraftClass     = messageItem.entityName === "MessageDraft",
+            mailFolderHelper = me.getMailboxService().getMailFolderHelper();
 
         let field;
 
         switch (type) {
-            case Operation.MOVE:
-                field = "cn_moved";
-                break;
+        case Operation.MOVE:
+            field = "cn_moved";
+            break;
 
-            case Operation.DELETE:
-                field = "cn_deleted";
-                break;
-            default:
-                // there is an edge case where drafts are part of the send-folder.
-                // sending them will create a NOOP since they are NOT moved to
-                // the send-folder, they already belong to it. This will throw
-                // an exception. This will be accepted for now
-                Ext.raise({
-                    msg  : "Unexpected operation type for failure-callback",
-                    type : type
-                });
-                break;
+        case Operation.DELETE:
+            field = "cn_deleted";
+            break;
+        default:
+            // there is an edge case where drafts are part of the send-folder.
+            // sending them will create a NOOP since they are NOT moved to
+            // the send-folder, they already belong to it. This will throw
+            // an exception. This will be accepted for now
+            Ext.raise({
+                msg: "Unexpected operation type for failure-callback",
+                type: type
+            });
+            break;
         }
 
         if (!isDraftClass && owningStore === me.getMessageGrid().getStore()) {
-            messageItem.set(field, false, {dirty : false});
+            messageItem.set(field, false, {dirty: false});
         }
 
         let selectedFolder      = me.getSelectedMailFolder(),
             targetFolderId      = type === Operation.MOVE
-                                  ? request.targetFolderId
-                                  : messageItem.get('mailFolderId'),
+                ? request.targetFolderId
+                : messageItem.get("mailFolderId"),
             isNotTargetSelected = targetFolderId && selectedFolder &&
-                                  selectedFolder.get('id') !== targetFolderId,
+                                  selectedFolder.get("id") !== targetFolderId,
             isTargetSelected    = targetFolderId && selectedFolder &&
-                                  selectedFolder.get('id') === targetFolderId;
+                                  selectedFolder.get("id") === targetFolderId;
 
         // remove the item if possible out of the grid
         if (messageItem.isCompoundKeyConfigured() && gridReady &&
@@ -557,8 +557,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                 CK = messageItem.getCompoundKey();
             } else {
                 CK = isDraftClass
-                     ? messageItem.getPreviousCompoundKey()
-                     : messageItem.getCompoundKey();
+                    ? messageItem.getPreviousCompoundKey()
+                    : messageItem.getCompoundKey();
             }
 
             gridItem = me.getLivegrid().getRecordByCompoundKey(CK);
@@ -567,50 +567,52 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
             }
         }
 
+        let accountId;
+
         switch (type) {
-            case (Operation.MOVE):
+        case (Operation.MOVE):
 
-                if (gridReady && isTargetSelected) {
-                    if (isDraftClass) {
-                        let gridItem = conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.createItemFromDraft(
-                            messageItem
-                        );
-                        gridItem.join(messageGrid.getStore());
-                        me.getLivegrid().add(gridItem);
+            if (gridReady && isTargetSelected) {
+                if (isDraftClass) {
+                    let gridItem = conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater.createItemFromDraft(
+                        messageItem
+                    );
+                    gridItem.join(messageGrid.getStore());
+                    me.getLivegrid().add(gridItem);
+                } else {
+                    if (owningStore) {
+                        messageItem.join(owningStore);
                     } else {
-                        if (owningStore) {
-                            messageItem.join(owningStore);
-                        } else {
-                            // make sure rcord is registered with MessageGrid Store since
-                            // it gets added here
-                            // owning store was unoined, but in this case it
-                            // is not available, so we make sure we do not add the store
-                            // twice by unjoining beforehand
-                            messageItem.unjoin(messageGrid.getStore());
-                            messageItem.join(messageGrid.getStore());
-                        }
-                        me.getLivegrid().add(messageItem);
+                        // make sure rcord is registered with MessageGrid Store since
+                        // it gets added here
+                        // owning store was unoined, but in this case it
+                        // is not available, so we make sure we do not add the store
+                        // twice by unjoining beforehand
+                        messageItem.unjoin(messageGrid.getStore());
+                        messageItem.join(messageGrid.getStore());
                     }
-                } else if (!isDraftClass) {
-                    owningStore && messageItem.join(owningStore);
+                    me.getLivegrid().add(messageItem);
                 }
+            } else if (!isDraftClass) {
+                owningStore && messageItem.join(owningStore);
+            }
 
-                let accountId = messageItem.get('mailAccountId');
+            accountId = messageItem.get("mailAccountId");
 
-                view.fireEvent(
-                    'cn_mail-messageitemmove', view, messageItem, requestingView,
-                    mailFolderHelper.getMailFolder(accountId, request.sourceFolderId),
-                    mailFolderHelper.getMailFolder(accountId, request.targetFolderId)
-                );
+            view.fireEvent(
+                "cn_mail-messageitemmove", view, messageItem, requestingView,
+                mailFolderHelper.getMailFolder(accountId, request.sourceFolderId),
+                mailFolderHelper.getMailFolder(accountId, request.targetFolderId)
+            );
 
-                break;
+            break;
 
-            case (Operation.DELETE):
-                if (requestingView) {
-                     requestingView.closeAfterDelete();
-                 }
-                 break;
-         }
+        case (Operation.DELETE):
+            if (requestingView) {
+                requestingView.closeAfterDelete();
+            }
+            break;
+        }
 
         return operation;
     },
@@ -624,14 +626,14 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @return
      */
-    updateViewForCreatedDraft : function(messageDraft) {
+    updateViewForCreatedDraft: function (messageDraft) {
 
         const me       = this,
-              selected = me.getSelectedMailFolder();
+            selected = me.getSelectedMailFolder();
 
         if (!selected ||
-            selected.get('folderType') !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
-            selected.get('mailAccountId') !== messageDraft.get('mailAccountId')) {
+            selected.get("folderType") !== conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT ||
+            selected.get("mailAccountId") !== messageDraft.get("mailAccountId")) {
             return;
         }
 
@@ -656,25 +658,25 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      * move operation could be triggered
      *
      */
-    updateViewForSentDraft : function(messageDraft) {
+    updateViewForSentDraft: function (messageDraft) {
 
         const me        = this,
-              selected  = me.getSelectedMailFolder(),
-              ck        = messageDraft.getCompoundKey(),
-              livegrid  = me.getLivegrid();
+            selected  = me.getSelectedMailFolder(),
+            ck        = messageDraft.getCompoundKey(),
+            livegrid  = me.getLivegrid();
 
         let mailFolderId = me.getMailboxService()
-            .getMailFolderHelper().getMailFolderIdForType(
-                messageDraft.get('mailAccountId'),
-                conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT
-            ),
+                .getMailFolderHelper().getMailFolderIdForType(
+                    messageDraft.get("mailAccountId"),
+                    conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT
+                ),
             newRec;
 
         // mailfolder selected, livegrid should be available
         if (selected) {
 
             // check if we get the references message and update its answered flag
-            let draftInfo = messageDraft.get('xCnDraftInfo');
+            let draftInfo = messageDraft.get("xCnDraftInfo");
             if (draftInfo) {
                 let [sendAccountId, sendFolderId, sendId] = Ext.decode(atob(draftInfo)),
                     referencedRec = livegrid.getRecordByCompoundKey(
@@ -684,17 +686,16 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
                     );
 
                 if (referencedRec) {
-                    referencedRec.set('answered', true, {dirty : false})
+                    referencedRec.set("answered", true, {dirty: false});
                 }
             }
 
 
-
-            let selectedId = selected.get('id');
+            let selectedId = selected.get("id");
 
             // check if the selected folder shows the grid where the original
             // messageDraft is represented as a MessageItem
-            if (selectedId === messageDraft.get('mailFolderId')) {
+            if (selectedId === messageDraft.get("mailFolderId")) {
                 // remove the record, return. Nothing more to do here
                 newRec = livegrid.getRecordByCompoundKey(ck);
             }
@@ -707,12 +708,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
         }
 
         // make sure we set "draft" to false. Will be rejected if moving fails
-        newRec.set('draft', false);
+        newRec.set("draft", false);
         return me.getMailboxService().moveMessage(newRec, mailFolderId, {
-            before  : me.onBeforeMessageMoveOrDelete,
-            success : me.onMessageMovedOrDeleted,
-            failure : me.onMessageMovedOrDeletedFailure,
-            scope   : me
+            before: me.onBeforeMessageMoveOrDelete,
+            success: me.onMessageMovedOrDeleted,
+            failure: me.onMessageMovedOrDeletedFailure,
+            scope: me
         });
 
     },
@@ -721,8 +722,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     /**
      * @private
      */
-    getMessageView : function() {
-        return this.getView().down('cn_mail-mailmessagereadermessageview');
+    getMessageView: function () {
+        return this.getView().down("cn_mail-mailmessagereadermessageview");
     },
 
 
@@ -731,25 +732,25 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
      *
      * @return {coon.comp.grid.feature.Livegrid}
      */
-    getLivegrid : function() {
+    getLivegrid: function () {
         return this.getMessageGrid().view
-            .getFeature('cn_mail-mailMessageFeature-livegrid');
+            .getFeature("cn_mail-mailMessageFeature-livegrid");
     },
 
 
     /**
      * @private
      */
-    getRowFlyMenu : function() {
+    getRowFlyMenu: function () {
         return this.getMessageGrid().view
-                   .getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
+            .getFeature("cn_mail-mailMessageFeature-rowFlyMenu");
     },
 
 
     /**
      * @private
      */
-    getSelectedMailFolder : function() {
+    getSelectedMailFolder: function () {
         let sel = this.getMailFolderTree().getSelection();
 
         if (sel && sel.length) {
@@ -763,12 +764,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     /**
      * @private
      */
-    getMessageGrid : function() {
+    getMessageGrid: function () {
 
         const me = this;
 
         if (!me.messageGrid) {
-            me.messageGrid = me.getView().down('cn_mail-mailmessagegrid');
+            me.messageGrid = me.getView().down("cn_mail-mailmessagegrid");
         }
         return me.messageGrid;
     },
@@ -777,12 +778,12 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewController', {
     /**
      * @private
      */
-    getMailFolderTree : function() {
+    getMailFolderTree: function () {
 
         const me = this;
 
         if (!me.mailFolderTree) {
-            me.mailFolderTree = me.getView().down('cn_mail-mailfoldertree');
+            me.mailFolderTree = me.getView().down("cn_mail-mailfoldertree");
         }
         return me.mailFolderTree;
     }

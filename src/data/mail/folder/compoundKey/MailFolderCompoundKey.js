@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +27,7 @@
  * CompoundKey for MailFolder.
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey', {
+Ext.define("conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey", {
 
-    extend : 'conjoon.cn_mail.data.mail.AbstractCompoundKey'
+    extend: "conjoon.cn_mail.data.mail.AbstractCompoundKey"
 });

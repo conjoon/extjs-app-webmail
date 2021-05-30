@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,139 +28,139 @@
  *
  * @see {conjoon.cn_mail.model.mail.message.EmailAddress}
  */
-Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
+Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.AbstractMessageItem',
+    extend: "conjoon.cn_mail.model.mail.message.AbstractMessageItem",
 
-    requires : [
-        'coon.core.data.field.EmailAddressCollection',
-        'coon.core.data.validator.EmailAddressCollection',
-        'conjoon.cn_mail.model.mail.message.DraftAttachment',
-        'coon.core.data.field.EmailAddress',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "coon.core.data.field.EmailAddressCollection",
+        "coon.core.data.validator.EmailAddressCollection",
+        "conjoon.cn_mail.model.mail.message.DraftAttachment",
+        "coon.core.data.field.EmailAddress",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
-    entityName : 'MessageDraft',
+    entityName: "MessageDraft",
 
     /**
      * Before a MessageDraft gets saved in a batch operation, this
      * will store the compound key before the batch operations proceed and change
      * the id of the related message.
      */
-    preBatchCompoundKey : undefined,
+    preBatchCompoundKey: undefined,
 
 
     /**
      * @private
      */
-    compoundKeyFields : {
-        MessageBody : ['mailAccountId', 'mailFolderId', 'id'],
-        DraftAttachment : {
-            'mailAccountId' : 'mailAccountId',
-            'mailFolderId'  : 'mailFolderId',
-            'id'            : 'parentMessageItemId'
+    compoundKeyFields: {
+        MessageBody: ["mailAccountId", "mailFolderId", "id"],
+        DraftAttachment: {
+            "mailAccountId": "mailAccountId",
+            "mailFolderId": "mailFolderId",
+            "id": "parentMessageItemId"
         }
     },
 
 
-    fields : [{
-        name      : 'replyTo',
-        type      : 'cn_core-datafieldemailaddress'
+    fields: [{
+        name: "replyTo",
+        type: "cn_core-datafieldemailaddress"
     }, {
-        name       : 'to',
-        type       : 'cn_core-datafieldemailaddresscollection',
-        validators : [{
-            type       : 'cn_core-datavalidatoremailaddresscollection',
-            allowEmpty : true
+        name: "to",
+        type: "cn_core-datafieldemailaddresscollection",
+        validators: [{
+            type: "cn_core-datavalidatoremailaddresscollection",
+            allowEmpty: true
         }]
     }, {
-        name       : 'cc',
-        type       : 'cn_core-datafieldemailaddresscollection',
-        validators : [{
-            type       : 'cn_core-datavalidatoremailaddresscollection',
-            allowEmpty : true
+        name: "cc",
+        type: "cn_core-datafieldemailaddresscollection",
+        validators: [{
+            type: "cn_core-datavalidatoremailaddresscollection",
+            allowEmpty: true
         }]
     }, {
-        name       : 'bcc',
-        type       : 'cn_core-datafieldemailaddresscollection',
-        validators : [{
-            type       : 'cn_core-datavalidatoremailaddresscollection',
-            allowEmpty : true
+        name: "bcc",
+        type: "cn_core-datafieldemailaddresscollection",
+        validators: [{
+            type: "cn_core-datavalidatoremailaddresscollection",
+            allowEmpty: true
         }]
     }, {
         /**
          * This is by default always true for MessageDrafts
          */
-        name         : 'draft',
-        type         : 'bool',
-        defaultValue :  true
+        name: "draft",
+        type: "bool",
+        defaultValue: true
     }, {
         /**
          * This is by default always true for MessageDrafts
          */
-        name         : 'seen',
-        type         : 'bool',
-        defaultValue :  true
+        name: "seen",
+        type: "bool",
+        defaultValue: true
     }, {
         /**
          * This is by default always false for MessageDrafts
          */
-        name         : 'flagged',
-        type         : 'bool',
-        defaultValue :  false
+        name: "flagged",
+        type: "bool",
+        defaultValue: false
     }, {
         /**
          * This is by default always false for MessageDrafts
          */
-        name         : 'answered',
-        type         : 'bool',
-        defaultValue :  false
+        name: "answered",
+        type: "bool",
+        defaultValue: false
     }, {
         /**
          * This is by default always false for MessageDrafts
          */
-        name         : 'recent',
-        type         : 'bool',
-        defaultValue :  false
+        name: "recent",
+        type: "bool",
+        defaultValue: false
     }, {
         // only required by drafts for now
         // persist=false since value is set by BE
         // and not changed across FE
-        name    : 'messageId',
-        type    : 'string',
-        persist : false
+        name: "messageId",
+        type: "string",
+        persist: false
     }, {
         // only required by drafts for now
-        name : 'references',
-        type : 'string',
-        defaultValue :  null
+        name: "references",
+        type: "string",
+        defaultValue: null
     }, {
         // only required by drafts for now
-        name : 'inReplyTo',
-        type : 'string',
-        defaultValue :  null
+        name: "inReplyTo",
+        type: "string",
+        defaultValue: null
     }, {
         // only required by drafts for now x-cn-draft-info
-        name : 'xCnDraftInfo',
-        type : 'string',
-        defaultValue :  null
+        name: "xCnDraftInfo",
+        type: "string",
+        defaultValue: null
     }, {
-        name    : 'savedAt',
-        type    : 'date',
-        persist : false
+        name: "savedAt",
+        type: "date",
+        persist: false
     }],
 
 
     /**
      *@inheritdoc
      */
-    processRecordAssociation : function(record) {
+    processRecordAssociation: function (record) {
 
         const me = this;
 
         me.callParent(arguments);
 
-        if (record.entityName === 'DraftAttachment') {
+        if (record.entityName === "DraftAttachment") {
             me.compareAndApplyCompoundKeys(record, false);
         }
     },
@@ -175,7 +175,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
      * if the compound key is not configured for this instance (record is a phantom) or the compound
      * key instance to which the preBatchCompoundKey was set
      */
-    storePreBatchCompoundKey : function() {
+    storePreBatchCompoundKey: function () {
         const me = this;
 
         let key = undefined ;
@@ -196,7 +196,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
      * @return {undefined|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} undefined,
      * if there is no preBatchCompoundKey available, or the compoundKey.
      */
-    getPreBatchCompoundKey : function() {
+    getPreBatchCompoundKey: function () {
         const me = this;
 
         return me.preBatchCompoundKey;
@@ -208,7 +208,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
      *
      * @inheritdoc
      */
-    loadMessageBody : function(options) {
+    loadMessageBody: function (options) {
 
         const me = this;
 
@@ -217,12 +217,11 @@ Ext.define('conjoon.cn_mail.model.mail.message.MessageDraft', {
         options.params = options.params || {};
 
         Ext.applyIf(options.params, {
-            target : "MessageBodyDraft"
+            target: "MessageBodyDraft"
         });
 
         return me.callParent([options]);
-    },
-
+    }
 
 
 });

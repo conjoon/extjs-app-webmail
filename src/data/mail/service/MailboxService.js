@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -86,9 +86,9 @@
 Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.AbstractMessageItem',
-        'conjoon.cn_mail.data.mail.service.mailbox.Operation'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.AbstractMessageItem",
+        "conjoon.cn_mail.data.mail.service.mailbox.Operation"
     ],
 
 
@@ -105,7 +105,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @throws if cfg.mailFolderHelper is not set or not an instance of
      * conjoon.cn_mail.data.mail.service.MailFolderHelper
      */
-    constructor : function(cfg) {
+    constructor: function (cfg) {
 
         cfg = cfg || {};
 
@@ -113,9 +113,9 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         if (!cfg.mailFolderHelper || !(cfg.mailFolderHelper instanceof conjoon.cn_mail.data.mail.service.MailFolderHelper)) {
             Ext.raise({
-                msg              : "'mailFolderHelper' must be an instance of conjoon.cn_mail.data.mail.service.MailFolderHelper",
-                mailFolderHelper : cfg.mailFolderHelper
-            })
+                msg: "'mailFolderHelper' must be an instance of conjoon.cn_mail.data.mail.service.MailFolderHelper",
+                mailFolderHelper: cfg.mailFolderHelper
+            });
         }
 
         me.initConfig(cfg);
@@ -144,27 +144,26 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @throws any exception thrown by #filterMessageItemValue
      */
-    moveToTrashOrDeleteMessage : function(messageItem, options) {
+    moveToTrashOrDeleteMessage: function (messageItem, options) {
 
         const me = this;
 
         messageItem = me.filterMessageItemValue(messageItem);
 
         const mailFolderHelper = me.getMailFolderHelper(),
-              trashFolderId    = mailFolderHelper.getMailFolderIdForType(
-                messageItem.get('mailAccountId'),
+            trashFolderId    = mailFolderHelper.getMailFolderIdForType(
+                messageItem.get("mailAccountId"),
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH
-              );
-
+            );
 
 
         if (trashFolderId === null) {
             let op = me.createOperation({
-                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE,
-                record : messageItem
+                type: conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE,
+                record: messageItem
             }, {
-                success : false,
-                reason  : "Could not find TRASH folder."
+                success: false,
+                reason: "Could not find TRASH folder."
             });
 
             if (options && options.failure) {
@@ -175,7 +174,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         }
 
         // check whether we are already in the trashbin
-        let sourceMailFolderId = messageItem.get('mailFolderId');
+        let sourceMailFolderId = messageItem.get("mailFolderId");
         if (messageItem.phantom === true || trashFolderId === sourceMailFolderId) {
             return me.deleteMessage(messageItem, options);
         }
@@ -202,21 +201,21 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @return {conjoon.cn_mail.data.mail.service.mailbox.Operation} the operation
      * triggered by this action
      */
-    deleteMessage : function(messageItem, options) {
+    deleteMessage: function (messageItem, options) {
 
         const me = this;
 
         messageItem = me.filterMessageItemValue(messageItem);
 
         let op = me.createOperation({
-            type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
-            record : messageItem
+            type: conjoon.cn_mail.data.mail.service.mailbox.Operation.DELETE,
+            record: messageItem
         });
 
         if (me.callBefore(op, options) === false) {
             op.setResult({
-                success : false,
-                code    : conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED
+                success: false,
+                code: conjoon.cn_mail.data.mail.service.mailbox.Operation.CANCELED
             });
             return op;
         }
@@ -252,10 +251,10 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @throws if mailFolderId is not a string, or if mailFolderId does not represent
      * a folder belonging to the same account the messageItem belongs to
      */
-    moveMessage : function(messageItem, mailFolderId, options) {
+    moveMessage: function (messageItem, mailFolderId, options) {
 
         const me               = this,
-              mailFolderHelper = me.getMailFolderHelper();
+            mailFolderHelper = me.getMailFolderHelper();
 
         let op;
 
@@ -263,17 +262,17 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         if (!Ext.isString(mailFolderId)) {
             Ext.raise({
-                msg          : "'mailFolderId' must be a string",
-                mailFolderId : mailFolderId
+                msg: "'mailFolderId' must be a string",
+                mailFolderId: mailFolderId
             });
         }
 
 
-        if (messageItem.get('mailFolderId') === mailFolderId) {
+        if (messageItem.get("mailFolderId") === mailFolderId) {
             op =  me.createOperation({
-                type   : conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
-                record : messageItem
-            }, {success : true});
+                type: conjoon.cn_mail.data.mail.service.mailbox.Operation.NOOP,
+                record: messageItem
+            }, {success: true});
 
             if (options && options.success) {
                 options.success.apply(options.scope, [op]);
@@ -283,23 +282,23 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         }
 
         op = me.createOperation({
-            type           : conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
-            record         : messageItem,
-            sourceFolderId : messageItem.get('mailFolderId'),
-            targetFolderId : mailFolderId
+            type: conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE,
+            record: messageItem,
+            sourceFolderId: messageItem.get("mailFolderId"),
+            targetFolderId: mailFolderId
         });
 
-        if (!mailFolderHelper.doesFolderBelongToAccount(mailFolderId, messageItem.get('mailAccountId'))) {
+        if (!mailFolderHelper.doesFolderBelongToAccount(mailFolderId, messageItem.get("mailAccountId"))) {
             op.setResult({
-                success : false,
-                code    : conjoon.cn_mail.data.mail.service.mailbox.Operation.INVALID_TARGET
+                success: false,
+                code: conjoon.cn_mail.data.mail.service.mailbox.Operation.INVALID_TARGET
             });
 
             return op;
         }
 
         me.callBefore(op, options);
-        messageItem.set('mailFolderId', mailFolderId);
+        messageItem.set("mailFolderId", mailFolderId);
         messageItem.save(me.configureOperationCallbacks(op, options));
 
         return op;
@@ -314,7 +313,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @see #mailFolderHelper
      */
-    getMailFolderHelper : function() {
+    getMailFolderHelper: function () {
         const me = this;
 
         return me.mailFolderHelper;
@@ -334,19 +333,19 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * conjoon.cn_mail.model.mail.message.AbstractMessageItem, or if the mailAccountId
      * is missing
      */
-    filterMessageItemValue : function(messageItem) {
+    filterMessageItemValue: function (messageItem) {
 
         if (!(messageItem instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem)) {
             Ext.raise({
-                msg         : "\"messageItem\" must be an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem",
-                messageItem : messageItem
+                msg: "\"messageItem\" must be an instance of conjoon.cn_mail.model.mail.message.AbstractMessageItem",
+                messageItem: messageItem
             });
         }
 
-        if (!messageItem.get('mailAccountId')) {
+        if (!messageItem.get("mailAccountId")) {
             Ext.raise({
-                msg          : "\"mailAccountId\" missing in messageItem",
-                messageItem : messageItem
+                msg: "\"mailAccountId\" missing in messageItem",
+                messageItem: messageItem
             });
         }
 
@@ -373,16 +372,16 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * @see moveCallback
      * @see deleteCallback
      */
-    configureOperationCallbacks : function(op, options) {
+    configureOperationCallbacks: function (op, options) {
 
         const me        = this,
-              Operation = conjoon.cn_mail.data.mail.service.mailbox.Operation;
+            Operation = conjoon.cn_mail.data.mail.service.mailbox.Operation;
 
         options = options || {};
 
         return {
-            success : function() {
-                op.setResult({success : true});
+            success: function () {
+                op.setResult({success: true});
 
                 if (op.getRequest().type === Operation.MOVE) {
                     me.moveCallback(op);
@@ -394,8 +393,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
                     options.success.apply(options.scope, [op]);
                 }
             },
-            failure : function() {
-                op.setResult({success : false});
+            failure: function () {
+                op.setResult({success: false});
 
                 if (op.getRequest().type === Operation.MOVE) {
                     me.moveCallback(op);
@@ -407,7 +406,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
                     options.failure.apply(options.scope, [op]);
                 }
             },
-            scope : this
+            scope: this
         };
     },
 
@@ -422,7 +421,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @private
      */
-    createOperation : function(request, result) {
+    createOperation: function (request, result) {
 
         let cfg = request || result ? {} : undefined;
 
@@ -434,7 +433,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             cfg.result = result;
         }
 
-        return Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', cfg);
+        return Ext.create("conjoon.cn_mail.data.mail.service.mailbox.Operation", cfg);
     },
 
 
@@ -450,7 +449,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @private
      */
-    callBefore : function(op, options) {
+    callBefore: function (op, options) {
 
         if (options && options.before) {
             return options.before.apply(options.scope, [op]);
@@ -467,26 +466,26 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * @return {Boolean} the property of the operations result success property.
      */
-    moveCallback : function(op) {
+    moveCallback: function (op) {
 
         const me               = this,
-              request          = op.getRequest(),
-              sourceFolderId   = request.sourceFolderId,
-              targetFolderId   = request.targetFolderId,
-              record           = request.record,
-              mailAccountId    = record.get('mailAccountId'),
-              mailFolderHelper = me.getMailFolderHelper();
+            request          = op.getRequest(),
+            sourceFolderId   = request.sourceFolderId,
+            targetFolderId   = request.targetFolderId,
+            record           = request.record,
+            mailAccountId    = record.get("mailAccountId"),
+            mailFolderHelper = me.getMailFolderHelper();
 
         // just like MessageItemUpdater#updateItemWithDraft, we're setting the
         // messageBodyId here
         // @see conjoon/app-cn_mail#116
-        record.set('messageBodyId', record.getId());
+        record.set("messageBodyId", record.getId());
 
         if (op.getResult().success !== true) {
             return false;
         }
 
-        if (record.get('seen')) {
+        if (record.get("seen")) {
             return;
         }
 
@@ -495,12 +494,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // most likely not loaded yet if null
         if (sourceFolder) {
-            sourceFolder.set('unreadCount', Math.max(0, sourceFolder.get('unreadCount') - 1), {dirty : false});
+            sourceFolder.set("unreadCount", Math.max(0, sourceFolder.get("unreadCount") - 1), {dirty: false});
         }
 
         // most likely not loaded yet if null
         if (targetFolder) {
-            targetFolder.set('unreadCount', targetFolder.get('unreadCount') + 1, {dirty : false});
+            targetFolder.set("unreadCount", targetFolder.get("unreadCount") + 1, {dirty: false});
         }
 
 
@@ -515,20 +514,20 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      *
      * {conjoon.cn_mail.data.mail.service.mailbox.Operation} op
      */
-    deleteCallback : function(op) {
+    deleteCallback: function (op) {
 
         const me             = this,
             request          = op.getRequest(),
             record           = request.record,
-            mailFolderId     = record.get('mailFolderId'),
-            mailAccountId    = record.get('mailAccountId'),
+            mailFolderId     = record.get("mailFolderId"),
+            mailAccountId    = record.get("mailAccountId"),
             mailFolderHelper = me.getMailFolderHelper();
 
         if (op.getResult().success !== true) {
             return false;
         }
 
-        if (record.get('seen')) {
+        if (record.get("seen")) {
             return;
         }
 
@@ -536,13 +535,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // most likely not loaded if not available
         if (mailFolder) {
-            mailFolder.set('unreadCount', Math.max(0, mailFolder.get('unreadCount') - 1), {dirty : false});
+            mailFolder.set("unreadCount", Math.max(0, mailFolder.get("unreadCount") - 1), {dirty: false});
         }
 
 
         return true;
     }
-
 
 
 });

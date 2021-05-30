@@ -28,20 +28,20 @@
  * CSS string is prepended before each message.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
+Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewIframe", {
 
-    extend: 'coon.comp.component.Iframe',
+    extend: "coon.comp.component.Iframe",
 
-    alias : 'widget.cn_mail-mailmessagereadermessageviewiframe',
+    alias: "widget.cn_mail-mailmessagereadermessageviewiframe",
 
-    requires : [
+    requires: [
         "coon.core.Template",
         "coon.core.ThemeManager",
         "coon.core.Environment",
         "coon.core.ConfigManager"
     ],
 
-    publishes : [
+    publishes: [
         /**
          * Property to indicate whether this Iframe allows loading of
          * External images.
@@ -64,7 +64,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
      *
      * @see setSrcDoc
      */
-    imagesAllowed : false,
+    imagesAllowed: false,
 
 
     /**
@@ -105,7 +105,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
             ),
             tpl = await coon.core.Template.load(tplPath);
 
-        value = tpl.render({theme : themeConfig ? themeConfig : {}, reader : {body : value, imagesAllowed : me.imagesAllowed}});
+        value = tpl.render({theme: themeConfig ? themeConfig : {}, reader: {body: value, imagesAllowed: me.imagesAllowed}});
 
         return me.callParent([value]);
     },
@@ -116,7 +116,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
      *
      * @param {Boolen} value
      */
-    getImagesAllowed : function() {
+    getImagesAllowed: function () {
         return this.imagesAllowed;
     }
 

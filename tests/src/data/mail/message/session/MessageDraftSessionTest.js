@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,21 +23,21 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest', function(t) {
+describe("conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest", function (t) {
 
 
-    t.it("test instance", function(t) {
+    t.it("test instance", function (t) {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
-        t.isInstanceOf(session, 'coon.core.data.Session');
+        t.isInstanceOf(session, "coon.core.data.Session");
         t.expect(session.getSchema() instanceof conjoon.cn_mail.data.mail.BaseSchema).toBe(true);
         t.expect(session.getMessageDraft()).toBeUndefined();
 
     });
 
 
-    t.it('Test setMessageDraft()', function(t) {
+    t.it("Test setMessageDraft()", function (t) {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -52,7 +52,7 @@ describe('conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest', fu
         }
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg).toContain('must be an instance of');
+        t.expect(exc.msg).toContain("must be an instance of");
 
         // okay
         t.expect(session.getMessageDraft()).toBeUndefined();
@@ -70,11 +70,11 @@ describe('conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest', fu
         }
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg).toContain('already set');
+        t.expect(exc.msg).toContain("already set");
     });
 
 
-    t.it('Test createVisitor() with no messageDraft set', function(t) {
+    t.it("Test createVisitor() with no messageDraft set", function (t) {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -87,25 +87,25 @@ describe('conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest', fu
 
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg).toContain('must be set');
+        t.expect(exc.msg).toContain("must be set");
     });
 
 
-    t.it('Test createVisitor() with messageDraft set', function(t) {
+    t.it("Test createVisitor() with messageDraft set", function (t) {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession"),
-              draft   = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
+            draft   = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
         session.setMessageDraft(draft);
 
         const visitor  = session.createVisitor();
 
-        t.isInstanceOf(visitor, 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor');
+        t.isInstanceOf(visitor, "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor");
         t.expect(visitor.getMessageDraft()).toBe(session.getMessageDraft());
 
     });
 
 
-})
+});
 
 

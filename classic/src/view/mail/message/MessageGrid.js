@@ -30,20 +30,20 @@
  * A MessageGrid can either be configured with an EmptyStore or a
  * conjoon.cn_mail.store.mail.message.MessageItemStore.
  */
-Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
+Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
 
-    extend : 'Ext.grid.Panel',
+    extend: "Ext.grid.Panel",
 
-    requires : [
-        'coon.comp.grid.feature.RowBodySwitch',
-        'conjoon.cn_mail.view.mail.message.grid.feature.Livegrid',
-        'conjoon.cn_mail.store.mail.message.MessageItemStore',
-        'coon.comp.grid.feature.RowFlyMenu',
-        'coon.core.util.Date'
+    requires: [
+        "coon.comp.grid.feature.RowBodySwitch",
+        "conjoon.cn_mail.view.mail.message.grid.feature.Livegrid",
+        "conjoon.cn_mail.store.mail.message.MessageItemStore",
+        "coon.comp.grid.feature.RowFlyMenu",
+        "coon.core.util.Date"
 
     ],
 
-    alias : 'widget.cn_mail-mailmessagegrid',
+    alias: "widget.cn_mail-mailmessagegrid",
 
     /**
      * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
@@ -65,195 +65,196 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      * "storeRelayers" was already taken
      * @private
      */
-    myStoreRelayers : null,
+    myStoreRelayers: null,
 
-    cls : 'cn_mail-mailmessagegrid',
+    cls: "cn_mail-mailmessagegrid",
 
-    flex : 1,
+    flex: 1,
 
-    headerBorders : false,
-    rowLines      : false,
+    headerBorders: false,
+    rowLines: false,
 
-    selModel : {
-        toggleOnClick : false,
-        pruneRemoved : false
+    selModel: {
+        toggleOnClick: false,
+        pruneRemoved: false
     },
 
     tools: [{
-        itemId : 'cn_mail-mailmessagegrid-refresh',
-        type   : 'refresh'
+        itemId: "cn_mail-mailmessagegrid-refresh",
+        type: "refresh"
     }],
 
     /**
      * @i18n
      */
-    emptyText : 'This folder is empty.',
+    emptyText: "This folder is empty.",
 
     /**
      * @type {String}
      * @private
      */
-    representedFolderType : null,
+    representedFolderType: null,
 
-    features : [{
-        ftype : 'cn_mail-mailmessagegridfeature-livegrid',
-        id    : 'cn_mail-mailMessageFeature-livegrid'
+    features: [{
+        ftype: "cn_mail-mailmessagegridfeature-livegrid",
+        id: "cn_mail-mailMessageFeature-livegrid"
     }, {
-        ftype              : 'cn_comp-gridfeature-rowbodyswitch',
-        variableRowHeight  : false,
-        enableCls          : 'previewEnabled',
-        disableCls         : 'previewDisabled',
-        id                 : 'cn_mail-mailMessageFeature-messagePreview',
+        ftype: "cn_comp-gridfeature-rowbodyswitch",
+        variableRowHeight: false,
+        enableCls: "previewEnabled",
+        disableCls: "previewDisabled",
+        id: "cn_mail-mailMessageFeature-messagePreview",
         /**
          * Default empty subject text for MessageItems.
          * @i18n
          * @private
          */
-        emptySubjectText    :"(No subject)",
-        getAdditionalData  : function (data, idx, record, orig) {
+        emptySubjectText: "(No subject)",
+        getAdditionalData: function (data, idx, record, orig) {
 
-            const me     = this,
-                  CnDate = coon.core.util.Date;
-                  Format = Ext.util.Format;
+            const
+                me     = this,
+                CnDate = coon.core.util.Date,
+                Format = Ext.util.Format;
 
             if (me.disabled) {
                 return undefined;
             }
 
             return {
-                rowBody :
-                          '<div class="head' + (!record.get('seen') ? ' unread' : '')+'">' +
-                          '<div class="subject'+ (!record.get('seen') ? ' unread' : '')+'">' +
-                             (record.get('answered') ? '<span class="fa fa-mail-reply"></span>' : '')+
-                             (record.get('flagged') ? '<span class="fa fa-flag"></span>' : '')+
-                             (record.get('draft') ? '<span class="draft">[Draft]</span>' : '') +
+                rowBody:
+                          "<div class=\"head" + (!record.get("seen") ? " unread" : "")+"\">" +
+                          "<div class=\"subject"+ (!record.get("seen") ? " unread" : "")+"\">" +
+                             (record.get("answered") ? "<span class=\"fa fa-mail-reply\"></span>" : "")+
+                             (record.get("flagged") ? "<span class=\"fa fa-flag\"></span>" : "")+
+                             (record.get("draft") ? "<span class=\"draft\">[Draft]</span>" : "") +
 
                           (record.get("subject") === "" ? me.emptySubjectText : record.get("subject")) +
-                          '</div>' +
-                          '<div class="date">' + CnDate.getHumanReadableDate(record.get('date')) + '</div>' +
-                          '</div>' +
-                           '<div class="previewText">' + Format.nbsp(record.get("previewText")) + '</div>',
-                rowBodyCls : 'cn_mail-mailmessagepreviewfeature'
+                          "</div>" +
+                          "<div class=\"date\">" + CnDate.getHumanReadableDate(record.get("date")) + "</div>" +
+                          "</div>" +
+                           "<div class=\"previewText\">" + Format.nbsp(record.get("previewText")) + "</div>",
+                rowBodyCls: "cn_mail-mailmessagepreviewfeature"
             };
         },
-        previewColumnConfig : {
-            'seen'                : {hidden : true},
-            'subject'             : {hidden : true},
-            'to'                  : {hidden : true},
-            'from'                : {hidden : true},
-            'draftDisplayAddress' : {flex : 1},
-            'date'                : {hidden : true},
-            'hasAttachments'      : {},
-            'size'                : {hidden : true}
+        previewColumnConfig: {
+            "seen": {hidden: true},
+            "subject": {hidden: true},
+            "to": {hidden: true},
+            "from": {hidden: true},
+            "draftDisplayAddress": {flex: 1},
+            "date": {hidden: true},
+            "hasAttachments": {},
+            "size": {hidden: true}
         }
     }, {
-        ftype : 'cn_comp-gridfeature-rowflymenu',
-        id    : 'cn_mail-mailMessageFeature-rowFlyMenu',
-        items  : [{
-            cls         : 'fa fa-trash',
-            "data-qtip" : 'Delete Message',
-            action      : 'delete',
-            id          : 'cn_mail-mailMessageFeature-rowFlyMenu-delete'
+        ftype: "cn_comp-gridfeature-rowflymenu",
+        id: "cn_mail-mailMessageFeature-rowFlyMenu",
+        items: [{
+            cls: "fa fa-trash",
+            "data-qtip": "Delete Message",
+            action: "delete",
+            id: "cn_mail-mailMessageFeature-rowFlyMenu-delete"
         }, {
-            cls    : 'fa fa-envelope',
-            "data-qtip" : 'Mark as Unread',
-            action      : 'markunread',
-            id          : 'cn_mail-mailMessageFeature-rowFlyMenu-markUnread'
+            cls: "fa fa-envelope",
+            "data-qtip": "Mark as Unread",
+            action: "markunread",
+            id: "cn_mail-mailMessageFeature-rowFlyMenu-markUnread"
         }, {
-            cls         : 'fa fa-flag',
-            "data-qtip" : 'Add Flag',
-            action      : 'flag',
-            id          : 'cn_mail-mailMessageFeature-rowFlyMenu-flag'
-        },],
-        alignTo : ['tr-tr', [-12, 4]]
+            cls: "fa fa-flag",
+            "data-qtip": "Add Flag",
+            action: "flag",
+            id: "cn_mail-mailMessageFeature-rowFlyMenu-flag"
+        }],
+        alignTo: ["tr-tr", [-12, 4]]
     }],
 
-    viewConfig : {
-        markDirty   : false,
-        getRowClass : function(record, rowIndex, rowParams, store){
+    viewConfig: {
+        markDirty: false,
+        getRowClass: function (record, rowIndex, rowParams, store){
             let cls = record.get("seen")
-                      ? ""
-                      : "boldFont";
+                ? ""
+                : "boldFont";
 
-            if (record.get('cn_deleted')) {
-                cls += ' cn-deleted';
-            } else if (record.get('cn_moved')) {
-                cls += ' cn-moved';
+            if (record.get("cn_deleted")) {
+                cls += " cn-deleted";
+            } else if (record.get("cn_moved")) {
+                cls += " cn-moved";
             }
 
             return cls;
         }
     },
 
-    columns : [{
-        dataIndex : 'seen',
-        hideable  : false,
-        text      : '<span class="x-fa fa-circle"></span>',
+    columns: [{
+        dataIndex: "seen",
+        hideable: false,
+        text: "<span class=\"x-fa fa-circle\"></span>",
         /**
          * @bug
          * BufferedStore omly triggeres update of cell if at least metaData and
          * record are specified in its arguments. might be an issue with the
          * needsUpdate computing and considering argument values?
          */
-        renderer  : function(value, metaData, record) {
-            return '<span class="' + (!value ? 'fas' : 'far')+ ' fa-circle"></span>';
+        renderer: function (value, metaData, record) {
+            return "<span class=\"" + (!value ? "fas" : "far")+ " fa-circle\"></span>";
         },
-        menuDisabled : true,
-        width        : 40
+        menuDisabled: true,
+        width: 40
     }, {
-        dataIndex : 'hasAttachments',
-        hideable  : false,
-        text      : '<span class="x-fa fa-paperclip"></span>',
-        renderer  : function(value) {
-            return value ? '<span class="x-fa fa-paperclip"></span>' : '';
+        dataIndex: "hasAttachments",
+        hideable: false,
+        text: "<span class=\"x-fa fa-paperclip\"></span>",
+        renderer: function (value) {
+            return value ? "<span class=\"x-fa fa-paperclip\"></span>" : "";
         },
-        menuDisabled : true,
-        width        : 40
+        menuDisabled: true,
+        width: 40
     }, {
-        dataIndex : 'subject',
-        text      : 'Subject',
-        width     : 150
+        dataIndex: "subject",
+        text: "Subject",
+        width: 150
     }, {
-        dataIndex : 'to',
-        text      : 'To',
-        width     : 240,
-        renderer  : function(value, meta, record, rowIndex, colIndex, store, view) {
+        dataIndex: "to",
+        text: "To",
+        width: 240,
+        renderer: function (value, meta, record, rowIndex, colIndex, store, view) {
             return view.grid.stringifyTo(value);
 
         }
     }, {
-        dataIndex : 'from',
-        text      : 'From',
-        width     : 140,
-        renderer  : function(value, meta, record, rowIndex, colIndex, store, view) {
+        dataIndex: "from",
+        text: "From",
+        width: 140,
+        renderer: function (value, meta, record, rowIndex, colIndex, store, view) {
 
-            var feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+            var feature = view.getFeature("cn_mail-mailMessageFeature-messagePreview");
 
             if (!feature.disabled) {
-                meta.tdCls += 'previewLarge';
+                meta.tdCls += "previewLarge";
             }
 
             return value ? value.name : "";
         }
     }, {
-        dataIndex    : 'draftDisplayAddress',
-        hidden       : true,
-        hideable     : false,
-        text         : 'Draft Display Address',
-        menuDisabled : true
+        dataIndex: "draftDisplayAddress",
+        hidden: true,
+        hideable: false,
+        text: "Draft Display Address",
+        menuDisabled: true
     }, {
-        dataIndex : 'date',
-        xtype     : 'datecolumn',
-        format    : 'd.m.Y H:i',
-        align     : 'right',
-        text      : 'Date',
-        width     : 140
+        dataIndex: "date",
+        xtype: "datecolumn",
+        format: "d.m.Y H:i",
+        align: "right",
+        text: "Date",
+        width: 140
     }, {
-        dataIndex : 'size',
-        align     : 'right',
-        text      : 'Size',
-        width     : 80,
-        renderer  : Ext.util.Format.fileSize
+        dataIndex: "size",
+        align: "right",
+        text: "Size",
+        width: 80,
+        renderer: Ext.util.Format.fileSize
     }],
 
 
@@ -267,7 +268,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      *
      * @protected
      */
-    setRepresentedFolderType : function(representedFolderType) {
+    setRepresentedFolderType: function (representedFolderType) {
 
         const me = this;
 
@@ -278,7 +279,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
     /**
      * @inheritdoc
      */
-    initComponent : function() {
+    initComponent: function () {
 
         const me = this;
 
@@ -292,9 +293,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
         me.callParent(arguments);
 
         me.relayEvents(
-            me.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
-            ['itemclick', 'beforemenushow'],
-            'cn_comp-rowflymenu-'
+            me.view.getFeature("cn_mail-mailMessageFeature-rowFlyMenu"),
+            ["itemclick", "beforemenushow"],
+            "cn_comp-rowflymenu-"
         );
     },
 
@@ -313,18 +314,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      *
      * @private
      */
-    renderDraftDisplayAddress : function(value, meta, record, rowIndex, colIndex, store, view) {
+    renderDraftDisplayAddress: function (value, meta, record, rowIndex, colIndex, store, view) {
         const me      = this,
-              feature = view.getFeature('cn_mail-mailMessageFeature-messagePreview');
+            feature = view.getFeature("cn_mail-mailMessageFeature-messagePreview");
 
         if (!feature.disabled) {
-            meta.tdCls += 'previewLarge';
-            if (record.get('draft') || me.representedFolderType === 'SENT') {
-                return view.grid.stringifyTo(record.get('to'));
+            meta.tdCls += "previewLarge";
+            if (record.get("draft") || me.representedFolderType === "SENT") {
+                return view.grid.stringifyTo(record.get("to"));
             }
         }
 
-        return record.get('from') ?  record.get('from').name : "";
+        return record.get("from") ?  record.get("from").name : "";
     },
 
 
@@ -338,25 +339,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      * @param {Boolean} enable true to switch to the grid view, falsy to
      * switch to preview mode.
      */
-    enableRowPreview : function(enable) {
+    enableRowPreview: function (enable) {
 
         const me         = this,
-              view       = me.getView(),
-              feature    = view.getFeature('cn_mail-mailMessageFeature-messagePreview'),
-              rowFlyMenu = view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu');
+            view       = me.getView(),
+            feature    = view.getFeature("cn_mail-mailMessageFeature-messagePreview"),
+            rowFlyMenu = view.getFeature("cn_mail-mailMessageFeature-rowFlyMenu");
 
         enable = enable === undefined ? true : !!enable;
 
         if (me.getStore().isLoading()) {
             Ext.raise({
-                msg       : 'cannot call enableRowPreview during store\'s load-operation',
-                isLoading : me.getStore().isLoading()
+                msg: "cannot call enableRowPreview during store's load-operation",
+                isLoading: me.getStore().isLoading()
             });
         }
 
         let reqs =  me.getStore().pageRequests;
         for (let page in reqs) {
-            if (!reqs.hasOwnProperty(page)) {
+            if (!Object.prototype.hasOwnProperty.call(reqs, page)) {
                 continue;
             }
             reqs[page].getOperation().abort();
@@ -379,20 +380,20 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      *
      * @inheritdoc
      */
-    bindStore : function(store, initial) {
+    bindStore: function (store, initial) {
 
         const me  = this;
 
         if (store && !store.isEmptyStore &&
             !(store instanceof conjoon.cn_mail.store.mail.message.MessageItemStore)) {
             Ext.raise({
-                msg   : 'store must be an instance of "conjoon.cn_mail.store.message.MessageItemStore"',
-                store : store
+                msg: "store must be an instance of \"conjoon.cn_mail.store.message.MessageItemStore\"",
+                store: store
             });
         }
 
         if (store && me.getStore() !== store) {
-            me.myStoreRelayers = me.relayEvents(store, ['beforeload', 'load'], 'cn_mail-mailmessagegrid');
+            me.myStoreRelayers = me.relayEvents(store, ["beforeload", "load"], "cn_mail-mailmessagegrid");
         }
 
         return me.callParent(arguments);
@@ -404,7 +405,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      *
      * @inheritdoc
      */
-    unbindStore : function(store) {
+    unbindStore: function (store) {
 
         const me = this;
 
@@ -425,30 +426,30 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      *
      * @param {conjoon.cn_mail.model.mail.message.reader.MessageItem} record
      */
-    updateRowFlyMenu : function(record) {
+    updateRowFlyMenu: function (record) {
 
         const me       = this,
-              feature  = me.view.getFeature('cn_mail-mailMessageFeature-rowFlyMenu'),
-              menu     = feature.menu,
-              readItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]', true),
-              flagItem = menu.query('div[id=cn_mail-mailMessageFeature-rowFlyMenu-flag]', true);
+            feature  = me.view.getFeature("cn_mail-mailMessageFeature-rowFlyMenu"),
+            menu     = feature.menu,
+            readItem = menu.query("div[id=cn_mail-mailMessageFeature-rowFlyMenu-markUnread]", true),
+            flagItem = menu.query("div[id=cn_mail-mailMessageFeature-rowFlyMenu-flag]", true);
 
-        switch (record.get('seen')) {
-            case (true):
-                readItem[0].setAttribute("data-qtip",  "Mark as Unread");
-                break;
+        switch (record.get("seen")) {
+        case (true):
+            readItem[0].setAttribute("data-qtip",  "Mark as Unread");
+            break;
 
-            default:
-                readItem[0].setAttribute("data-qtip",  "Mark as Read");
+        default:
+            readItem[0].setAttribute("data-qtip",  "Mark as Read");
         }
 
-        switch (record.get('flagged')) {
-            case (true):
-                flagItem[0].setAttribute("data-qtip",  "Remove Flag");
-                break;
+        switch (record.get("flagged")) {
+        case (true):
+            flagItem[0].setAttribute("data-qtip",  "Remove Flag");
+            break;
 
-            default:
-                flagItem[0].setAttribute("data-qtip",  "Add Flag");
+        default:
+            flagItem[0].setAttribute("data-qtip",  "Add Flag");
         }
     },
 
@@ -461,15 +462,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.MessageGrid', {
      *
      * @return {String}
      */
-    stringifyTo :  function(toAddresses) {
+    stringifyTo: function (toAddresses) {
         const names = [];
 
         for (var i = 0, len = toAddresses.length; i < len; i++) {
             names.push(toAddresses[i].name);
         }
-        return names.join(', ');
+        return names.join(", ");
     }
-
 
 
 });

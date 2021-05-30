@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,23 +37,23 @@
  * selected message in the MessageGrid for the MessageView.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
+Ext.define("conjoon.cn_mail.view.mail.inbox.InboxView", {
 
-    extend : 'Ext.Panel',
+    extend: "Ext.Panel",
 
-    alias : 'widget.cn_mail-mailinboxview',
+    alias: "widget.cn_mail-mailinboxview",
 
-    mixins : [
-        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+    mixins: [
+        "conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"
     ],
 
-    requires : [
-        'conjoon.cn_mail.view.mail.inbox.InboxViewModel',
-        'conjoon.cn_mail.view.mail.inbox.InboxViewController',
-        'conjoon.cn_mail.view.mail.folder.MailFolderTree',
-        'conjoon.cn_mail.view.mail.message.MessageGrid',
-        'conjoon.cn_mail.view.mail.message.reader.MessageView',
-        'conjoon.cn_mail.view.mail.account.MailAccountView'
+    requires: [
+        "conjoon.cn_mail.view.mail.inbox.InboxViewModel",
+        "conjoon.cn_mail.view.mail.inbox.InboxViewController",
+        "conjoon.cn_mail.view.mail.folder.MailFolderTree",
+        "conjoon.cn_mail.view.mail.message.MessageGrid",
+        "conjoon.cn_mail.view.mail.message.reader.MessageView",
+        "conjoon.cn_mail.view.mail.account.MailAccountView"
     ],
 
     /**
@@ -79,113 +79,113 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      * @param {conjoon.cn_mail.modelw.mail.folder.MailFolder} targetFolder
      */
 
-    layout  : {
-        type  : 'hbox',
-        align : 'stretch'
+    layout: {
+        type: "hbox",
+        align: "stretch"
     },
 
-    viewModel : 'cn_mail-mailinboxviewmodel',
+    viewModel: "cn_mail-mailinboxviewmodel",
 
-    controller : 'cn_mail-mailinboxviewcontroller',
+    controller: "cn_mail-mailinboxviewcontroller",
 
-    bodyCls : 'cn_mail-panel-body',
+    bodyCls: "cn_mail-panel-body",
 
-    iconCls : 'fa fa-paper-plane',
+    iconCls: "fa fa-paper-plane",
 
-    title   : 'Emails',
+    title: "Emails",
 
 
     /**
      * @private
      */
-    canCloseAfterDelete : false,
+    canCloseAfterDelete: false,
 
 
     /**
      * @type {coon.comp.component.MessageMask}
      * @private
      */
-    deleteMask : null,
+    deleteMask: null,
 
     items: [{
-        xtype     : 'cn_mail-mailfoldertree',
-        margin    : '0 0 5 0',
-        reference : 'cn_mail_ref_mailfoldertree',
-        bind      : {
-            store : '{cn_mail_mailfoldertreestore}'
+        xtype: "cn_mail-mailfoldertree",
+        margin: "0 0 5 0",
+        reference: "cn_mail_ref_mailfoldertree",
+        bind: {
+            store: "{cn_mail_mailfoldertreestore}"
         }
     },{
-        split   : true,
-        xtype   : 'panel',
-        itemId  : 'cn_mail-mailInboxViewPanelBody',
-        flex    : 1,
-        bodyCls : 'cn_mail-panel-body',
-        layout  : {
-            type            : 'hbox',
-            enableSplitters : true,
-            align           : 'stretch'
+        split: true,
+        xtype: "panel",
+        itemId: "cn_mail-mailInboxViewPanelBody",
+        flex: 1,
+        bodyCls: "cn_mail-panel-body",
+        layout: {
+            type: "hbox",
+            enableSplitters: true,
+            align: "stretch"
         },
-        items : [{
-            xtype  : 'container',
-            itemId : 'cn_mail-mailmessagegridcontainer',
-            cls    : 'messageGridContainer shadow-panel',
-            bind   : {
-                margin : '{computeMessageGridMargin}'
+        items: [{
+            xtype: "container",
+            itemId: "cn_mail-mailmessagegridcontainer",
+            cls: "messageGridContainer shadow-panel",
+            bind: {
+                margin: "{computeMessageGridMargin}"
             },
-            layout : {
-                type  : 'vbox',
-                align : 'stretch'
+            layout: {
+                type: "vbox",
+                align: "stretch"
             },
-            flex   : 1,
-            items : [{
-                flex   : 1,
-                xtype  : 'box',
-                margin : '0 5 5 0',
-                hidden : false,
-                cls    : 'cn-lightestBox shadow-panel',
-                bind      : {
-                    hidden : '{cn_mail_ref_mailfoldertree.selection}'
+            flex: 1,
+            items: [{
+                flex: 1,
+                xtype: "box",
+                margin: "0 5 5 0",
+                hidden: false,
+                cls: "cn-lightestBox shadow-panel",
+                bind: {
+                    hidden: "{cn_mail_ref_mailfoldertree.selection}"
                 },
-                data   : {
-                    indicatorIcon : 'fa-folder',
-                    indicatorText : 'Select a folder to view its contents.'
+                data: {
+                    indicatorIcon: "fa-folder",
+                    indicatorText: "Select a folder to view its contents."
                 },
-                itemId : 'msgIndicatorBox',
+                itemId: "msgIndicatorBox",
                 tpl: [
-                    '<div class="messageIndicator">',
-                    '<div class="far {indicatorIcon} icon"></div>',
-                    '<div>{indicatorText}</div>',
-                    '</div>'
+                    "<div class=\"messageIndicator\">",
+                    "<div class=\"far {indicatorIcon} icon\"></div>",
+                    "<div>{indicatorText}</div>",
+                    "</div>"
                 ]
             }, {
-                flex      : 1,
-                hidden    : true,
-                xtype     : 'cn_mail-mailaccountview',
-                bind      : {
-                    mailAccount : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT" && cn_mail_ref_mailfoldertree.selection}',
-                    hidden : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType !== "ACCOUNT"}'
+                flex: 1,
+                hidden: true,
+                xtype: "cn_mail-mailaccountview",
+                bind: {
+                    mailAccount: "{cn_mail_ref_mailfoldertree.selection.folderType === \"ACCOUNT\" && cn_mail_ref_mailfoldertree.selection}",
+                    hidden: "{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType !== \"ACCOUNT\"}"
                 }
             }, {
-                flex      : 1,
-                hidden    : true,
-                xtype     : 'cn_mail-mailmessagegrid',
-                reference : 'cn_mail_ref_mailmessagegrid',
-                bind      : {
-                    representedFolderType : '{cn_mail_ref_mailfoldertree.selection.folderType}',
-                    title                 : '{cn_mail_ref_mailfoldertree.selection.name}',
-                    hidden                : '{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
-                    store                 : '{cn_mail_mailmessageitemstore}'
+                flex: 1,
+                hidden: true,
+                xtype: "cn_mail-mailmessagegrid",
+                reference: "cn_mail_ref_mailmessagegrid",
+                bind: {
+                    representedFolderType: "{cn_mail_ref_mailfoldertree.selection.folderType}",
+                    title: "{cn_mail_ref_mailfoldertree.selection.name}",
+                    hidden: "{!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType === \"ACCOUNT\"}",
+                    store: "{cn_mail_mailmessageitemstore}"
                 }
-        }]}, {
-            flex      : 1,
-            xtype     : 'cn_mail-mailmessagereadermessageview',
-            margin    : '0 5 5 0',
-            header    : false,
-            hidden    : true,
-            bind      : {
-                contextButtonsEnabled : '{cn_mail_ref_mailmessagegrid.selection}',
-                hidden      : '{messageViewHidden || (!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT")}',
-                messageItem : '{cn_mail_ref_mailmessagegrid.selection}'
+            }]}, {
+            flex: 1,
+            xtype: "cn_mail-mailmessagereadermessageview",
+            margin: "0 5 5 0",
+            header: false,
+            hidden: true,
+            bind: {
+                contextButtonsEnabled: "{cn_mail_ref_mailmessagegrid.selection}",
+                hidden: "{messageViewHidden || (!cn_mail_ref_mailfoldertree.selection || cn_mail_ref_mailfoldertree.selection.folderType === \"ACCOUNT\")}",
+                messageItem: "{cn_mail_ref_mailmessagegrid.selection}"
             }
 
         }]
@@ -199,41 +199,40 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      * @param {String|Boolean} position right to display the reading pane on the
      * right, bottom for bottom position and falsy for hiding the reading pane.
      */
-    toggleReadingPane : function(position) {
+    toggleReadingPane: function (position) {
+
+        position = (position === "right" || position === "bottom") ? position : false;
 
         var me            = this,
-            position      = position === 'right' || position === 'bottom'
-                            ? position
-                            : false,
-            orientation   = position === 'right' ? 'vertical' : 'horizontal',
-            collapseDir   = position === 'right' ? 'left'     : 'bottom',
-            panelBody     = me.down('#cn_mail-mailInboxViewPanelBody'),
-            readingPane   = panelBody.down('cn_mail-mailmessagereadermessageview'),
-            gridContainer = panelBody.down('#cn_mail-mailmessagegridcontainer');
+            orientation   = position === "right" ? "vertical" : "horizontal",
+            collapseDir   = position === "right" ? "left"     : "bottom",
+            panelBody     = me.down("#cn_mail-mailInboxViewPanelBody"),
+            readingPane   = panelBody.down("cn_mail-mailmessagereadermessageview"),
+            gridContainer = panelBody.down("#cn_mail-mailmessagegridcontainer");
 
         if (!position) {
-            me.getViewModel().set('messageViewHidden', true);
+            me.getViewModel().set("messageViewHidden", true);
             return;
         }
 
-        me.getViewModel().set('messageViewHidden', false);
-        me.getViewModel().notify()
+        me.getViewModel().set("messageViewHidden", false);
+        me.getViewModel().notify();
 
         readingPane.splitter.destroy();
         readingPane.splitter          = null;
         readingPane.collapseDirection = collapseDir;
 
-        panelBody.getLayout().setVertical(position !== 'right');
+        panelBody.getLayout().setVertical(position !== "right");
         panelBody.getLayout().insertSplitter(
-            readingPane, 1, false, {collapseTarget : 'next'}
+            readingPane, 1, false, {collapseTarget: "next"}
         );
         readingPane.splitter.setOrientation(orientation);
 
 
-        if (position === 'right') {
-            gridContainer.setMargin('0 0 5 0');
+        if (position === "right") {
+            gridContainer.setMargin("0 0 5 0");
         } else {
-            gridContainer.setMargin('0 5 0 0');
+            gridContainer.setMargin("0 5 0 0");
         }
     },
 
@@ -246,8 +245,8 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      *
      * @see conjoon.cn_mail.view.mail.inbox.InboxViewController#updateViewForCreatedDraft
      */
-    updateViewForCreatedDraft : function(messageDraft) {
-        const me = this
+    updateViewForCreatedDraft: function (messageDraft) {
+        const me = this;
 
         me.getController().updateViewForCreatedDraft(messageDraft);
     },
@@ -261,9 +260,9 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      *
      * @see conjoon.cn_mail.view.mail.inbox.InboxViewController#updateViewForSentDraft
      */
-    updateViewForSentDraft : function(messageDraft) {
+    updateViewForSentDraft: function (messageDraft) {
 
-        const me = this
+        const me = this;
 
         me.getController().updateViewForSentDraft(messageDraft);
     },
@@ -280,44 +279,44 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxView', {
      *
      * @return {coon.comp.component.MessageMask}
      */
-    showMailAccountIsBeingEditedNotice : function(node) {
+    showMailAccountIsBeingEditedNotice: function (node) {
         /**
          * @i18n
          */
         var me              = this,
             iconCls         = me.getIconCls(),
-            tree            = me.down('cn_mail-mailfoldertree'),
-            mailAccountView = me.down('cn_mail-mailaccountview'),
+            tree            = me.down("cn_mail-mailfoldertree"),
+            mailAccountView = me.down("cn_mail-mailaccountview"),
             myMask;
 
-        myMask = Ext.create('coon.comp.component.MessageMask', {
-            title    : "Pending Changes",
-            message  : "The changes to the Email-Account have not been saved yet. Do you want to discard the changes?",
-            target   : me,
-            buttons  : coon.comp.component.MessageMask.YESNO,
-            icon     : coon.comp.component.MessageMask.QUESTION,
-            callback : function(btnAction) {
+        myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Pending Changes",
+            message: "The changes to the Email-Account have not been saved yet. Do you want to discard the changes?",
+            target: me,
+            buttons: coon.comp.component.MessageMask.YESNO,
+            icon: coon.comp.component.MessageMask.QUESTION,
+            callback: function (btnAction) {
 
                 const me = this;
 
                 me.setIconCls(iconCls);
 
-                if (btnAction === 'yesButton') {
+                if (btnAction === "yesButton") {
                     mailAccountView.rejectPendingChanges();
                     tree.getSelectionModel().select(node);
                     return;
                 }
 
             },
-            scope : me
+            scope: me
         });
 
-        me.setIconCls('fa fa-question-circle');
+        me.setIconCls("fa fa-question-circle");
         me.setClosable(false);
 
         myMask.show();
 
         return myMask;
-    },
+    }
 
 });

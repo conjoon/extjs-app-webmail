@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,24 +23,24 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.proxy.UtilityMixinTest', function(t) {
+describe("conjoon.cn_mail.view.mail.message.proxy.UtilityMixinTest", function (t) {
 
 
-    t.it("purgeFilter()", function(t) {
+    t.it("purgeFilter()", function (t) {
 
-        let mixin = Ext.create('conjoon.cn_mail.data.mail.message.proxy.UtilityMixin');
+        let mixin = Ext.create("conjoon.cn_mail.data.mail.message.proxy.UtilityMixin");
 
-        let params = {snafu:"a",filter:"[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"};
-
-        mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
-
-        t.expect(params).toEqual({snafu:"a",mailAccountId:1,filter:"[{\"property\":\"foo\",\"value\":\"bar\"}]"});
-
-        params = {filter:"[{\"property\":\"mailAccountId\",\"value\":1}]"};
+        let params = {snafu: "a",filter: "[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"};
 
         mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
 
-        t.expect(params).toEqual({mailAccountId:1});
+        t.expect(params).toEqual({snafu: "a",mailAccountId: 1,filter: "[{\"property\":\"foo\",\"value\":\"bar\"}]"});
+
+        params = {filter: "[{\"property\":\"mailAccountId\",\"value\":1}]"};
+
+        mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
+
+        t.expect(params).toEqual({mailAccountId: 1});
     });
 
 

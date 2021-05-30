@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,52 +23,52 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.MailDesktopViewModelTest', function(t) {
+describe("conjoon.cn_mail.view.mail.MailDesktopViewModelTest", function (t) {
 
-    t.it("Should create the ViewModel", function(t) {
+    t.it("Should create the ViewModel", function (t) {
 
-        let c = Ext.create('Ext.app.ViewController', {
-            onMailFolderTreeStoreLoad : Ext.emptyFn
+        let c = Ext.create("Ext.app.ViewController", {
+            onMailFolderTreeStoreLoad: Ext.emptyFn
         });
 
-        let p = Ext.create('Ext.Panel', {
+        let p = Ext.create("Ext.Panel", {
 
-            viewModel : Ext.create('conjoon.cn_mail.view.mail.MailDesktopViewModel'),
+            viewModel: Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel"),
 
-            controller : c
+            controller: c
 
         });
 
-        viewModel = p.getViewModel();
+        let viewModel = p.getViewModel();
         t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
 
-        t.expect(viewModel.alias).toContain('viewmodel.cn_mail-maildesktopviewmodel');
+        t.expect(viewModel.alias).toContain("viewmodel.cn_mail-maildesktopviewmodel");
 
     });
 
-    t.it("Should properly define the stores", function(t) {
+    t.it("Should properly define the stores", function (t) {
 
-        let c = Ext.create('Ext.app.ViewController', {
-            onMailFolderTreeStoreLoad : Ext.emptyFn
+        let c = Ext.create("Ext.app.ViewController", {
+            onMailFolderTreeStoreLoad: Ext.emptyFn
         });
 
-        let p = Ext.create('Ext.Panel', {
+        let p = Ext.create("Ext.Panel", {
 
-            viewModel : Ext.create('conjoon.cn_mail.view.mail.MailDesktopViewModel'),
+            viewModel: Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel"),
 
-            controller : c
+            controller: c
 
         });
 
-        viewModel = p.getViewModel();
+        let viewModel = p.getViewModel();
 
 
         t.expect(viewModel.defaultConfig.stores).toEqual({
-            'cn_mail_mailfoldertreestore' : {
-                type     : 'cn_mail-mailfoldertreestore',
-                autoLoad : true,
-                listeners : {
-                    load : 'onMailFolderTreeStoreLoad'
+            "cn_mail_mailfoldertreestore": {
+                type: "cn_mail-mailfoldertreestore",
+                autoLoad: true,
+                listeners: {
+                    load: "onMailFolderTreeStoreLoad"
                 }
             }
         });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -53,19 +53,19 @@
  *
  * @see
  */
-Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
+Ext.define("conjoon.cn_mail.text.mail.message.CopyDecorator", {
 
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageDraft',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageDraft",
+        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"
     ],
 
     /**
      * @type {conjoon.cn_mail.model.mail.message.MessageDraft}
      * @private messageDraft
      */
-    messageDraft : null,
+    messageDraft: null,
 
     /**
      * Creates a new instance of this class.
@@ -75,32 +75,32 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      * @throws if MessageDraft is not of the proper type, or if MessageBody or
      * Attachments are not available
      */
-    constructor : function(messageDraft) {
+    constructor: function (messageDraft) {
 
         var me = this;
 
         if (!(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
             Ext.raise({
-                messageDraft : messageDraft,
-                msg          : "\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft",
-                cls          : Ext.getClassName(me)
+                messageDraft: messageDraft,
+                msg: "\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft",
+                cls: Ext.getClassName(me)
             });
         }
 
         if (!messageDraft.getMessageBody() || messageDraft.getMessageBody().loadOperation) {
             Ext.raise({
-                messageDraft : messageDraft,
-                msg          : "\"MessageBody\" of messageDraft is not available",
-                cls          : Ext.getClassName(me)
+                messageDraft: messageDraft,
+                msg: "\"MessageBody\" of messageDraft is not available",
+                cls: Ext.getClassName(me)
             });
         }
 
         if (messageDraft.attachments().getRange().length === 0 &&
             !messageDraft.attachments().isLoaded()) {
             Ext.raise({
-                messageDraft : messageDraft,
-                msg          : "\"Attachments\" of messageDraft are not available",
-                cls          : Ext.getClassName(me)
+                messageDraft: messageDraft,
+                msg: "\"Attachments\" of messageDraft are not available",
+                cls: Ext.getClassName(me)
             });
         }
 
@@ -113,10 +113,10 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {String}
      */
-    getTextPlain : function() {
+    getTextPlain: function () {
         var me = this;
 
-        return me.messageDraft.getMessageBody().get('textPlain');
+        return me.messageDraft.getMessageBody().get("textPlain");
     },
 
 
@@ -125,11 +125,11 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {String}
      */
-    getTextHtml : function() {
+    getTextHtml: function () {
 
         var me = this;
 
-        return me.messageDraft.getMessageBody().get('textHtml');
+        return me.messageDraft.getMessageBody().get("textHtml");
 
     },
 
@@ -139,11 +139,11 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {String}
      */
-    getSubject : function() {
+    getSubject: function () {
 
         var me = this;
 
-        return me.messageDraft.get('subject')
+        return me.messageDraft.get("subject");
 
     },
 
@@ -153,7 +153,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Boolean}
      */
-    getSeen : function() {
+    getSeen: function () {
 
         return true;
     },
@@ -164,7 +164,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Boolean}
      */
-    getDraft : function() {
+    getDraft: function () {
         return true;
     },
 
@@ -174,7 +174,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Boolean}
      */
-    getAnswered : function() {
+    getAnswered: function () {
 
         return false;
     },
@@ -185,7 +185,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Boolean}
      */
-    getRecent : function() {
+    getRecent: function () {
 
         return false;
     },
@@ -196,9 +196,9 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Boolean}
      */
-    getFlagged : function() {
+    getFlagged: function () {
 
-       return false;
+        return false;
     },
 
 
@@ -207,14 +207,14 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Object|null} returns null if the from address is not available
      */
-    getFrom : function() {
+    getFrom: function () {
 
         var me = this,
-            from = me.messageDraft.get('from');
+            from = me.messageDraft.get("from");
 
         return from
-               ? Ext.copy({}, from, 'name,address')
-               : null;
+            ? Ext.copy({}, from, "name,address")
+            : null;
     },
 
 
@@ -226,14 +226,14 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @see getFrom()
      */
-    getReplyTo : function() {
+    getReplyTo: function () {
 
         var me      = this,
-            replyTo = me.messageDraft.get('replyTo');
+            replyTo = me.messageDraft.get("replyTo");
 
         return replyTo
-               ? Ext.copy({}, replyTo, 'name,address')
-               : me.getFrom()
+            ? Ext.copy({}, replyTo, "name,address")
+            : me.getFrom();
     },
 
 
@@ -244,8 +244,8 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @see copyAddresses
      */
-    getTo : function() {
-        return this.copyAddresses('to');
+    getTo: function () {
+        return this.copyAddresses("to");
     },
 
 
@@ -256,8 +256,8 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @see copyAddresses
      */
-    getCc : function() {
-        return this.copyAddresses('cc');
+    getCc: function () {
+        return this.copyAddresses("cc");
     },
 
 
@@ -268,8 +268,8 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @see copyAddresses
      */
-    getBcc : function() {
-        return this.copyAddresses('bcc');
+    getBcc: function () {
+        return this.copyAddresses("bcc");
     },
 
 
@@ -286,7 +286,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      *
      * @return {Object[]}
      */
-    getAttachments : function() {
+    getAttachments: function () {
 
         var me             = this,
             attachments    = me.messageDraft.attachments().getRange(),
@@ -298,7 +298,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
                 Ext.copy(
                     {},
                     attachments[i].data,
-                    'type,text,size,previewImgSrc,downloadImgUrl,sourceId'
+                    "type,text,size,previewImgSrc,downloadImgUrl,sourceId"
                 )
             );
         }
@@ -319,33 +319,33 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
      * @return {conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig}
      *
      */
-    toMessageDraftConfig : function(options = {}) {
+    toMessageDraftConfig: function (options = {}) {
 
         const me = this;
 
         let config = Ext.applyIf({
-            to          : me.getTo(),
-            cc          : me.getCc(),
-            bcc         : me.getBcc(),
-            subject     : me.getSubject(),
-            textPlain   : me.getTextPlain(),
-            textHtml    : me.getTextHtml(),
-            attachments : me.getAttachments(),
-            seen        : me.getSeen(),
-            flagged     : me.getFlagged(),
-            answered    : me.getAnswered(),
-            draft       : me.getDraft(),
-            recent      : me.getRecent()
+            to: me.getTo(),
+            cc: me.getCc(),
+            bcc: me.getBcc(),
+            subject: me.getSubject(),
+            textPlain: me.getTextPlain(),
+            textHtml: me.getTextHtml(),
+            attachments: me.getAttachments(),
+            seen: me.getSeen(),
+            flagged: me.getFlagged(),
+            answered: me.getAnswered(),
+            draft: me.getDraft(),
+            recent: me.getRecent()
         }, options);
 
-        return Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+        return Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
             config
         );
 
     },
 
 
-    privates : {
+    privates: {
 
 
         /**
@@ -359,23 +359,23 @@ Ext.define('conjoon.cn_mail.text.mail.message.CopyDecorator', {
          *
          * @private
          */
-        copyAddresses : function(type) {
+        copyAddresses: function (type) {
 
             var me         = this,
-                types      = ['to', 'cc', 'bcc'],
+                types      = ["to", "cc", "bcc"],
                 recipients = me.messageDraft.get(type),
                 addresses  = [];
 
             if (types.indexOf(type) === -1) {
                 Ext.raise({
-                    type : type,
-                    msg  : Ext.String.format("\"type\" is not in list of {0}", types.join(", ")),
-                    cls  : Ext.getClassName(me)
-                })
+                    type: type,
+                    msg: Ext.String.format("\"type\" is not in list of {0}", types.join(", ")),
+                    cls: Ext.getClassName(me)
+                });
             }
 
             for (var i = 0, len = recipients.length; i < len; i++) {
-                addresses.push(Ext.copy({}, recipients[i], 'name,address'))
+                addresses.push(Ext.copy({}, recipients[i], "name,address"));
             }
 
             return addresses;

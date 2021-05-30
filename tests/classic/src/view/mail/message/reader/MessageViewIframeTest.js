@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,27 +23,29 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', function(t) {
+StartTest(async t => {
 
-    createTemplateSpies(t, function (t) {
+    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    await helper.mockUpMailTemplates().andRun((t) => {
 
-        const HTML_TPL = " - ${reader.body} - ",
-            META = {
-                noimg : "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; connect-src 'self'; img-src data: 'self'; style-src * 'unsafe-inline';\">",
-                img : "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; connect-src 'self'; img-src data: *; style-src * 'unsafe-inline';\">"
+        let iframe;
+
+        const  META = {
+                noimg: "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; connect-src 'self'; img-src data: 'self'; style-src * 'unsafe-inline';\">",
+                img: "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; connect-src 'self'; img-src data: *; style-src * 'unsafe-inline';\">"
             },
-            buildIframe = function() {
-                iframe = Ext.create('conjoon.cn_mail.view.mail.message.reader.MessageViewIframe', {
-                    renderTo : document.body
+            buildIframe = function () {
+                iframe = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewIframe", {
+                    renderTo: document.body
                 });
             };
 
-        t.afterEach(function() {
+        t.afterEach(function () {
             if (iframe) {
                 iframe.destroy();
                 iframe = null;
             }
-       });
+        });
 
 
         t.it("config / default checks / setSrcDoc()", async function (t)  {
@@ -51,9 +53,9 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', funct
 
             buildIframe();
 
-            t.isInstanceOf(iframe, 'coon.comp.component.Iframe');
+            t.isInstanceOf(iframe, "coon.comp.component.Iframe");
 
-            t.expect(iframe.alias).toContain('widget.cn_mail-mailmessagereadermessageviewiframe');
+            t.expect(iframe.alias).toContain("widget.cn_mail-mailmessagereadermessageviewiframe");
 
             let val = "test";
 
@@ -63,7 +65,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', funct
             t.expect(iframe.getSrcDoc()).not.toContain(META.img);
 
             t.expect(t.TPL_SPY.calls.mostRecent().args[0].theme).toBe(coon.core.ThemeManager.getTheme().get());
-            t.expect(t.TPL_SPY.calls.mostRecent().args[0].reader).toEqual({imagesAllowed : false, body : "test"});
+            t.expect(t.TPL_SPY.calls.mostRecent().args[0].reader).toEqual({imagesAllowed: false, body: "test"});
 
             iframe.setSrcDoc(null);
 
@@ -73,14 +75,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', funct
             t.expect(iframe.getPublishes().imagesAllowed).toBe(true);
 
             await iframe.setSrcDoc(val, true);
-            t.expect(t.TPL_SPY.calls.mostRecent().args[0].reader).toEqual({imagesAllowed : true, body : "test"});
+            t.expect(t.TPL_SPY.calls.mostRecent().args[0].reader).toEqual({imagesAllowed: true, body: "test"});
             t.expect(iframe.getSrcDoc()).not.toContain(META.noimg);
             t.expect(iframe.getSrcDoc()).toContain(META.img);
             t.expect(iframe.getImagesAllowed()).toBe(true);
         });
 
 
-        t.it("getImagesAllowed", function(t) {
+        t.it("getImagesAllowed", function (t) {
 
             buildIframe();
 
@@ -97,13 +99,11 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', funct
 
             let IMAGESALLOWED = null;
 
-            let NOEXTERNALMETA = null;
-
-            iframe.publishState = function(key, val) {
+            iframe.publishState = function (key, val) {
                 if (key === "imagesAllowed") {
                     IMAGESALLOWED = val;
                 }
-            }
+            };
 
             await iframe.setSrcDoc("foo");
             t.expect(iframe.getImagesAllowed()).toBe(false);
@@ -111,7 +111,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageViewIframeTest', funct
 
             await iframe.setSrcDoc("foo", true);
             t.expect(iframe.getImagesAllowed()).toBe(true);
-            t.expect(IMAGESALLOWED).toBe(true)
+            t.expect(IMAGESALLOWED).toBe(true);
 
         });
 

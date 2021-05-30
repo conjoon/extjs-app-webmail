@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,30 +28,30 @@
  *
  *
  */
-Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
+Ext.define("conjoon.cn_mail.store.mail.message.MessageItemStore", {
 
-    extend : 'Ext.data.BufferedStore',
+    extend: "Ext.data.BufferedStore",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageItem',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageItem",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
-    alias : 'store.cn_mail-mailmessageitemstore',
+    alias: "store.cn_mail-mailmessageitemstore",
 
-    model : 'conjoon.cn_mail.model.mail.message.MessageItem',
+    model: "conjoon.cn_mail.model.mail.message.MessageItem",
 
-    remoteSort : true,
+    remoteSort: true,
 
-    remoteFilter : true,
+    remoteFilter: true,
 
-    pageSize : 100,
+    pageSize: 50,
 
-    autoLoad : false,
+    autoLoad: false,
 
-    sorters : [{
-        property  : 'date',
-        direction : 'DESC'
+    sorters: [{
+        property: "date",
+        direction: "DESC"
     }],
 
 
@@ -59,7 +59,7 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
      * @inheritdoc
      * Overriden to make sure that this store instance allows only one sorter
      */
-    applySorters : function(sorters) {
+    applySorters: function (sorters) {
 
         var me = this;
 
@@ -67,8 +67,8 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
             ((me.getSorters(false) && me.getSorters(false).length !== 0) ||
             sorters.length !== 1)) {
             Ext.raise({
-                sorters : sorters,
-                msg     : "Only one sorter allowed for MessageItem store"
+                sorters: sorters,
+                msg: "Only one sorter allowed for MessageItem store"
             });
         }
 
@@ -90,18 +90,18 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
      *
      * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
-    findByCompoundKey : function(compoundKey) {
+    findByCompoundKey: function (compoundKey) {
 
         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
             Ext.raise({
-                msg : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-                compoundKey : compoundKey
+                msg: "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey: compoundKey
             });
         }
 
         const me = this;
 
-        return me.findExact('localId', compoundKey.toLocalId());
+        return me.findExact("localId", compoundKey.toLocalId());
     },
 
 
@@ -117,20 +117,20 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageItemStore', {
      *
      * @see app-cn_mail#81
      */
-    afterEdit : function (record, modifiedFieldNames) {
+    afterEdit: function (record, modifiedFieldNames) {
 
         if (!modifiedFieldNames ||
-             (modifiedFieldNames.indexOf('cn_moved') === -1 &&
-              modifiedFieldNames.indexOf('cn_deleted') === -1 &&
-              modifiedFieldNames.indexOf('answered') === -1
-            )) {
+             (modifiedFieldNames.indexOf("cn_moved") === -1 &&
+              modifiedFieldNames.indexOf("cn_deleted") === -1 &&
+              modifiedFieldNames.indexOf("answered") === -1
+             )) {
             return;
         }
 
         const me = this;
 
         if (me.contains(record)) {
-            me.fireEvent('update', me, record, "edit", modifiedFieldNames);
+            me.fireEvent("update", me, record, "edit", modifiedFieldNames);
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,34 +23,34 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.folder.MailFolderTreeTest', function(t) {
+describe("conjoon.cn_mail.view.mail.folder.MailFolderTreeTest", function (t) {
 
     var tree,
         treeConfig;
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         if (tree) {
             tree.destroy();
             tree = null;
         }
     });
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
         treeConfig = {
-            renderTo : document.body
-        }
+            renderTo: document.body
+        };
     });
 
 
-    t.it("Should create and show the tree along with default config checks", function(t) {
+    t.it("Should create and show the tree along with default config checks", function (t) {
         tree = Ext.create(
-            'conjoon.cn_mail.view.mail.folder.MailFolderTree', treeConfig);
+            "conjoon.cn_mail.view.mail.folder.MailFolderTree", treeConfig);
 
         t.expect(tree instanceof Ext.tree.Panel).toBeTruthy();
 
         t.expect(tree.getSelectionModel().toggleOnClick).toBe(false);
 
-        t.expect(tree.alias).toContain('widget.cn_mail-mailfoldertree');
+        t.expect(tree.alias).toContain("widget.cn_mail-mailfoldertree");
 
         var columns = tree.getColumns();
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,11 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.editor.AddressFieldTest', function(t) {
+describe("conjoon.cn_mail.view.mail.message.editor.AddressFieldTest", function (t) {
 
-    var view;
+    var view, viewConfig;
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         if (view) {
             view.destroy();
             view = null;
@@ -35,20 +35,20 @@ describe('conjoon.cn_mail.view.mail.message.editor.AddressFieldTest', function(t
 
     });
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
         viewConfig = {
-            renderTo : document.body
-        }
+            renderTo: document.body
+        };
     });
 
 
-    t.it("Should create and show the AddressField along with default config checks", function(t) {
+    t.it("Should create and show the AddressField along with default config checks", function (t) {
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AddressField', viewConfig);
+            "conjoon.cn_mail.view.mail.message.editor.AddressField", viewConfig);
 
         t.expect(view instanceof Ext.form.field.Tag).toBeTruthy();
 
-        t.expect(view.alias).toContain('widget.cn_mail-mailmessageeditoraddressfield');
+        t.expect(view.alias).toContain("widget.cn_mail-mailmessageeditoraddressfield");
 
         t.expect(view.forceSelection).toBe(false);
         t.expect(view.triggerOnClick).toBe(false);

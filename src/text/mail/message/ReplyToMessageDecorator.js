@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,18 +27,18 @@
  * Text Decorator for Email Messages which are used in "reply to" context.
  * Instances of this class will return an empty set of attachments.
  */
-Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
+Ext.define("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", {
 
-    extend : 'conjoon.cn_mail.text.mail.message.CopyDecorator',
+    extend: "conjoon.cn_mail.text.mail.message.CopyDecorator",
 
-    requires : [
-        'conjoon.cn_mail.text.mail.message.DecoratorFormat'
+    requires: [
+        "conjoon.cn_mail.text.mail.message.DecoratorFormat"
     ],
 
     /**
      * @inheritdoc
      */
-    getTo : function() {
+    getTo: function () {
 
         var me = this;
 
@@ -51,7 +51,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getCc : function() {
+    getCc: function () {
         return [];
     },
 
@@ -59,7 +59,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getBcc : function() {
+    getBcc: function () {
         return [];
     },
 
@@ -67,7 +67,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getTextHtml : function() {
+    getTextHtml: function () {
 
         var me           = this,
             messageDraft = me.messageDraft;
@@ -77,7 +77,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
             "<blockquote style=\"margin-left:4px;padding-left:10px;border-left:4px solid #bee9fc\">",
             me.getMessageBodyIntroHeaderFields(messageDraft),
             "<br /><br />",
-            messageDraft.getMessageBody().get('textHtml'),
+            messageDraft.getMessageBody().get("textHtml"),
             "</blockquote>"
         ].join("");
 
@@ -87,17 +87,16 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
     /**
      * @private
      */
-    getMessageBodyIntroHeaderFields : function(messageDraft) {
+    getMessageBodyIntroHeaderFields: function (messageDraft) {
 
-        var me              = this,
-            from            = messageDraft.get('from'),
+        var from            = messageDraft.get("from"),
             DecoratorFormat = conjoon.cn_mail.text.mail.message.DecoratorFormat,
             result;
 
         result = [
             Ext.String.format("<b>On {0} at {1}, {2} wrote:</b>",
-                Ext.util.Format.date(messageDraft.get('date'), "d.m.Y"),
-                Ext.util.Format.date(messageDraft.get('date'), "H:i"),
+                Ext.util.Format.date(messageDraft.get("date"), "d.m.Y"),
+                Ext.util.Format.date(messageDraft.get("date"), "H:i"),
                 DecoratorFormat.stringifyEmailAddress(from)
             )
         ].join("<br />");
@@ -108,7 +107,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getAttachments : function() {
+    getAttachments: function () {
         return [];
     },
 
@@ -122,17 +121,17 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
      *
      * @private
      */
-    getReferences : function() {
+    getReferences: function () {
 
         const me           = this,
-              messageDraft = me.messageDraft,
-              messageId    = messageDraft.get('messageId');
+            messageDraft = me.messageDraft,
+            messageId    = messageDraft.get("messageId");
 
-        let references = me.messageDraft.get('references');
+        let references = me.messageDraft.get("references");
 
         return references
-               ? references + " " + messageId
-               : messageId;
+            ? references + " " + messageId
+            : messageId;
     },
 
 
@@ -144,11 +143,11 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
      *
      * @private
      */
-    getInReplyTo : function() {
+    getInReplyTo: function () {
 
         const me           = this,
-              messageDraft = me.messageDraft,
-              messageId    = messageDraft.get('messageId');
+            messageDraft = me.messageDraft,
+            messageId    = messageDraft.get("messageId");
 
         return messageId;
     },
@@ -161,16 +160,16 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
      *
      * @returns {string}
      */
-    getXCnDraftInfo : function() {
+    getXCnDraftInfo: function () {
 
         const me           = this,
-              messageDraft = me.messageDraft;
+            messageDraft = me.messageDraft;
 
         return btoa(
             Ext.encode([
-                messageDraft.get('mailAccountId'),
-                messageDraft.get('mailFolderId'),
-                messageDraft.get('id')
+                messageDraft.get("mailAccountId"),
+                messageDraft.get("mailFolderId"),
+                messageDraft.get("id")
             ])
         );
 
@@ -182,15 +181,15 @@ Ext.define('conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', {
      *
      * @inheritdoc
      */
-    toMessageDraftConfig : function(options = {}) {
+    toMessageDraftConfig: function (options = {}) {
 
         const me = this;
 
-        options['references']  = me.getReferences();
-        options['inReplyTo'] = me.getInReplyTo();
-        options['xCnDraftInfo'] = me.getXCnDraftInfo();
+        options["references"]  = me.getReferences();
+        options["inReplyTo"] = me.getInReplyTo();
+        options["xCnDraftInfo"] = me.getXCnDraftInfo();
 
         return me.callParent([options]);
-    },
+    }
 
 });
