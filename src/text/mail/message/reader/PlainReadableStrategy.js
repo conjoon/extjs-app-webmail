@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -46,9 +46,9 @@
  *      //
  *
  */
-Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
+Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
 
-    requires : [
+    requires: [
         "coon.core.text.transformer.html.BlockquoteTransformer",
         "coon.core.text.transformer.html.HyperlinkTransformer",
         "coon.core.text.transformer.html.EmailAddressTransformer",
@@ -59,25 +59,25 @@ Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
      * @type coon.core.text.transformer.html.BlockquoteTransformer
      * @private
      */
-    blockquoteTransformer : null,
+    blockquoteTransformer: null,
 
     /**
      * @type coon.core.text.transformer.html.HyperlinkTransformer
      * @private
      */
-    hyperlinkTransformer : null,
+    hyperlinkTransformer: null,
 
     /**
      * @type coon.core.text.transformer.html.EmailAddressTransformer
      * @private
      */
-    emailAddressTransformer : null,
+    emailAddressTransformer: null,
 
     /**
      * @type coon.core.text.transformer.html.LineBreakTransformer
      * @private
      */
-    lineBreakTransformer : null,
+    lineBreakTransformer: null,
 
 
     /**
@@ -90,7 +90,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
      *
      * @see #setupTransformers()
      */
-    process : function (text) {
+    process: function (text) {
 
         const me = this;
 
@@ -112,7 +112,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
      *
      * @return {coon.core.text.transformer.html.BlockquoteTransformer}
      */
-    getBlockquoteTransformer : function() {
+    getBlockquoteTransformer: function () {
         const me = this;
 
         if (!me.blockquoteTransformer) {
@@ -128,7 +128,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
      *
      * @return {coon.core.text.transformer.html.EmailAddressTransformer}
      */
-    getEmailAddressTransformer : function() {
+    getEmailAddressTransformer: function () {
         const me = this;
 
         if (!me.emailAddressTransformer) {
@@ -144,7 +144,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
      *
      * @return {coon.core.text.transformer.html.HyperlinkTransformer}
      */
-    getHyperlinkTransformer : function() {
+    getHyperlinkTransformer: function () {
         const me = this;
 
         if (!me.hyperlinkTransformer) {
@@ -160,7 +160,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', {
      *
      * @return {coon.core.text.transformer.html.LineBreakTransformer}
      */
-    getLineBreakTransformer : function() {
+    getLineBreakTransformer: function () {
         const me = this;
 
         if (!me.lineBreakTransformer) {

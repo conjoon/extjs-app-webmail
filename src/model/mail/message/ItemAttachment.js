@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,30 +28,29 @@
  * MessageDraft.
  *
  */
-Ext.define('conjoon.cn_mail.model.mail.message.ItemAttachment', {
+Ext.define("conjoon.cn_mail.model.mail.message.ItemAttachment", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.AbstractAttachment',
+    extend: "conjoon.cn_mail.model.mail.message.AbstractAttachment",
 
-    requires : [
-        'conjoon.cn_mail.store.mail.message.MessageAttachmentStore'
+    requires: [
+        "conjoon.cn_mail.store.mail.message.MessageAttachmentStore"
     ],
 
-    entityName : 'ItemAttachment',
+    entityName: "ItemAttachment",
 
-    fields : [{
-        name      : 'messageItemId',
-        type      : 'string',
-        reference : {
-            type    : 'MessageItem',
-            inverse : {
-                role        : 'attachments',
-                storeConfig : {
-                    type : 'cn_mail-mailmessageattachmentstore'
+    fields: [{
+        name: "messageItemId",
+        type: "string",
+        reference: {
+            type: "MessageItem",
+            inverse: {
+                role: "attachments",
+                storeConfig: {
+                    type: "cn_mail-mailmessageattachmentstore"
                 }
             }
         }
     }]
-
 
 
 });

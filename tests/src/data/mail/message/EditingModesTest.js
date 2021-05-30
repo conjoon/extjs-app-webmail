@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,35 +23,34 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.message.EditingModesTest', function(t) {
+describe("conjoon.cn_mail.data.mail.message.EditingModesTest", function (t) {
 
-        t.it("Should properly check variables", function(t) {
+    t.it("Should properly check variables", function (t) {
 
-            Ext.require('conjoon.cn_mail.data.mail.message.EditingModes');
+        Ext.require("conjoon.cn_mail.data.mail.message.EditingModes");
 
-            t.waitForMs(500, function() {
-                var EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
+        t.waitForMs(500, function () {
+            var EditingModes = conjoon.cn_mail.data.mail.message.EditingModes;
 
-                t.expect(EditingModes.REPLY_TO).toBeTruthy();
-                t.expect(EditingModes.REPLY_ALL).toBeTruthy();
-                t.expect(EditingModes.FORWARD).toBeTruthy();
-                t.expect(EditingModes.EDIT).toBeTruthy();
-                t.expect(EditingModes.CREATE).toBeTruthy();
+            t.expect(EditingModes.REPLY_TO).toBeTruthy();
+            t.expect(EditingModes.REPLY_ALL).toBeTruthy();
+            t.expect(EditingModes.FORWARD).toBeTruthy();
+            t.expect(EditingModes.EDIT).toBeTruthy();
+            t.expect(EditingModes.CREATE).toBeTruthy();
 
-                var values = [
-                    EditingModes.REPLY_TO,
-                    EditingModes.REPLY_All,
-                    EditingModes.FORWARD,
-                    EditingModes.EDIT,
-                    EditingModes.CREATE
-                ];
+            var values = [
+                EditingModes.REPLY_TO,
+                EditingModes.REPLY_All,
+                EditingModes.FORWARD,
+                EditingModes.EDIT,
+                EditingModes.CREATE
+            ];
 
-                t.expect(Array.from(new Set(values))).toEqual(values);
-
-            });
+            t.expect(Array.from(new Set(values))).toEqual(values);
 
         });
 
+    });
 
 
 });

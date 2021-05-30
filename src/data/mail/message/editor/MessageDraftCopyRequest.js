@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -54,38 +54,38 @@
  *
  * @private
  */
-Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
+Ext.define("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest", {
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.EditingModes",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
-    config : {
+    config: {
         /**
          * The compound key of the MessageDraft to copy.
          * @type {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
          */
-        compoundKey : undefined,
+        compoundKey: undefined,
 
         /**
          * The edit mode of the copy request.
          * @type {String}
          * @see applyEditMode
          */
-        editMode : undefined,
+        editMode: undefined,
 
         /**
          * The mailAccountId the requestor wants any resulting copy to be using
          * @type {String}
          */
-        defaultMailAccountId : undefined,
+        defaultMailAccountId: undefined,
 
         /**
          * The mailFolderId the requestor wants any resulting copy to be using
          * @type {String}
          */
-        defaultMailFolderId : undefined
+        defaultMailFolderId: undefined
 
     },
 
@@ -99,28 +99,27 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      *
      * @see applyId(), applyEditMode()
      */
-    constructor : function(config) {
+    constructor: function (config) {
 
         var me = this;
 
         config = config || {};
 
-        if (!config.hasOwnProperty('compoundKey')) {
+        if (!Object.prototype.hasOwnProperty.call(config,"compoundKey")) {
             Ext.raise({
-                config : config,
-                msg    : "Property \"compoundKey\" must be specified."
+                config: config,
+                msg: "Property \"compoundKey\" must be specified."
             });
         }
 
-        if (!config.hasOwnProperty('editMode')) {
+        if (!Object.prototype.hasOwnProperty.call(config, "editMode")) {
             Ext.raise({
-                config : config,
-                msg    : "Property \"editMode\" must be specified."
+                config: config,
+                msg: "Property \"editMode\" must be specified."
             });
         }
 
-
-        me.initConfig(config)
+        me.initConfig(config);
     },
 
 
@@ -130,7 +129,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      *
      * @returns {boolean}
      */
-    isConfigured : function() {
+    isConfigured: function () {
 
         const me = this;
 
@@ -143,13 +142,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      * @throws if defaultMailFolderId was already set
      * @private
      */
-    applyDefaultMailFolderId : function(defaultMailFolderId) {
+    applyDefaultMailFolderId: function (defaultMailFolderId) {
         var me = this;
 
         if (me.getDefaultMailFolderId() !== undefined) {
             Ext.raise({
-                compoundKey  : me.getDefaultMailFolderId(),
-                msg : "Property \"defaultMailFolderId\" was already set."
+                compoundKey: me.getDefaultMailFolderId(),
+                msg: "Property \"defaultMailFolderId\" was already set."
             });
         }
 
@@ -162,13 +161,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      * @throws if defaultMailAccountId was already set
      * @private
      */
-    applyDefaultMailAccountId : function(defaultMailAccountId) {
+    applyDefaultMailAccountId: function (defaultMailAccountId) {
         var me = this;
 
         if (me.getDefaultMailAccountId() !== undefined) {
             Ext.raise({
-                compoundKey  : me.getDefaultMailAccountId(),
-                msg : "Property \"defaultMailAccountId\" was already set."
+                compoundKey: me.getDefaultMailAccountId(),
+                msg: "Property \"defaultMailAccountId\" was already set."
             });
         }
 
@@ -182,21 +181,21 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      * conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      * @private
      */
-    applyCompoundKey : function(compoundKey) {
+    applyCompoundKey: function (compoundKey) {
 
         var me = this;
 
         if (me.getCompoundKey() !== undefined) {
             Ext.raise({
-                compoundKey  : me.getCompoundKey(),
-                msg : "Property \"compoundKey\" was already set."
+                compoundKey: me.getCompoundKey(),
+                msg: "Property \"compoundKey\" was already set."
             });
         }
 
         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
             Ext.raise({
-                msg : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-                compoundKey  : compoundKey
+                msg: "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey: compoundKey
             });
         }
 
@@ -211,15 +210,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
      * -FORWARD.
      * @private
      */
-    applyEditMode : function(editMode) {
+    applyEditMode: function (editMode) {
 
         var me = this,
             modes, EditingModes;
 
         if (me.getEditMode() !== undefined) {
             Ext.raise({
-                editMode : me.getEditMode(),
-                msg      : "Property \"editMode\" was already set."
+                editMode: me.getEditMode(),
+                msg: "Property \"editMode\" was already set."
             });
         }
 
@@ -232,8 +231,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest', {
 
         if (modes.indexOf(editMode) === -1) {
             Ext.raise({
-                editMode : editMode,
-                msg      : Ext.String.format(
+                editMode: editMode,
+                msg: Ext.String.format(
                     "Property \"editMode\" must be one of {0}.",
                     modes.join(", ")
                 )

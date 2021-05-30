@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,57 +23,56 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTest', function(t) {
+describe("conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTest", function (t) {
 
-    const CLASSNAME = 'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader';
+    const CLASSNAME = "conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader";
 
-    t.it("Should successfully create and test instance", function(t) {
+    t.it("Should successfully create and test instance", function (t) {
 
         let reader = Ext.create(CLASSNAME, {
 
         });
 
-        t.isInstanceOf(reader, 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+        t.isInstanceOf(reader, "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader");
 
-        t.expect(reader.alias).toContain('reader.cn_mail-mailmessageitemchildjsonreader');
+        t.expect(reader.alias).toContain("reader.cn_mail-mailmessageitemchildjsonreader");
 
     });
 
 
-
-    t.it("applyCompoundKey()", function(t) {
+    t.it("applyCompoundKey()", function (t) {
 
         const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey,
-              MessageItemChildCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey;
+            MessageItemChildCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey;
 
         let reader = Ext.create(CLASSNAME),
             ret,
-            dataKeys = function() {
+            dataKeys = function () {
                 return {
-                    mailAccountId : 'a',
-                    mailFolderId : 'b',
-                    parentMessageItemId : 'c',
-                    id : 'd'
+                    mailAccountId: "a",
+                    mailFolderId: "b",
+                    parentMessageItemId: "c",
+                    id: "d"
                 };
             },
-            data = function() {
+            data = function () {
                 return {
-                    data : [dataKeys()]
+                    data: [dataKeys()]
                 };
             },
             result = {
-                data : [{
-                    mailAccountId : 'a',
-                    mailFolderId : 'b',
-                    parentMessageItemId : 'c',
-                    id : 'd',
-                    localId : MessageItemChildCompoundKey.createFor(
+                data: [{
+                    mailAccountId: "a",
+                    mailFolderId: "b",
+                    parentMessageItemId: "c",
+                    id: "d",
+                    localId: MessageItemChildCompoundKey.createFor(
                         dataKeys().mailAccountId,
                         dataKeys().mailFolderId,
                         dataKeys().parentMessageItemId,
                         dataKeys().id
                     ).toLocalId(),
-                    messageItemId : MessageEntityCompoundKey.createFor(
+                    messageItemId: MessageEntityCompoundKey.createFor(
                         dataKeys().mailAccountId,
                         dataKeys().mailFolderId,
                         dataKeys().parentMessageItemId
@@ -92,7 +91,7 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTes
         let chkKeys = ["read", "update", "destroy", "create"];
         for (let i = 0, len = chkKeys.length; i < len; i++) {
             let pData = data(),
-            ret = reader.applyCompoundKey(pData, chkKeys[i]);
+                ret = reader.applyCompoundKey(pData, chkKeys[i]);
             if (chkKeys[i] !== "read") {
                 t.expect(ret.data[0].messageItemId).toBeUndefined();
             } else {
@@ -106,28 +105,28 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemChildJsonReaderTes
         t.expect(ret.data[0].localId).toBe(result.data[0].localId);
 
 
-        pData = {data : data().data[0]};
+        pData = {data: data().data[0]};
         ret = reader.applyCompoundKey(pData, "read");
-        result = {data : result.data[0]};
+        result = {data: result.data[0]};
         t.expect(ret.data.messageItemId).toBe(result.data.messageItemId);
         t.expect(ret.data.localId).toBe(result.data.localId);
 
     });
 
 
-    t.it("applyCompoundKey() - success false", function(t) {
+    t.it("applyCompoundKey() - success false", function (t) {
 
-        let reader = Ext.create(CLASSNAME);
-        ret = reader.applyCompoundKey({success : false}, "update");
-        t.expect(ret).toEqual({success : false})
+        let reader = Ext.create(CLASSNAME),
+            ret = reader.applyCompoundKey({success: false}, "update");
+        t.expect(ret).toEqual({success: false});
     });
 
 
-    t.it("app-cn_mail#67", function(t) {
+    t.it("app-cn_mail#67", function (t) {
 
-        let reader = Ext.create(CLASSNAME);
-        ret = reader.applyCompoundKey({success : true}, "update");
-        t.expect(ret).toEqual({success : true})
+        let reader = Ext.create(CLASSNAME),
+            ret = reader.applyCompoundKey({success: true}, "update");
+        t.expect(ret).toEqual({success: true});
     });
 
 });

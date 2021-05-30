@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,36 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.text.ForwardMessageDecorator', function(t) {
+describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
 
-    var createMessageDraft = function(andBodyToo, skipReplyTo, andAttachmentsTo) {
-        var draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-            subject : 'SUBJECT',
-            from    : 'from@domain.tld',
-            to      : 'to@domain.tld',
-            cc      : 'cc@domain.tld',
-            bcc     : 'bcc@domain.tld'
+    var createMessageDraft = function (andBodyToo, skipReplyTo, andAttachmentsTo) {
+        var draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+            subject: "SUBJECT",
+            from: "from@domain.tld",
+            to: "to@domain.tld",
+            cc: "cc@domain.tld",
+            bcc: "bcc@domain.tld"
         });
 
         if (skipReplyTo !== true) {
-            draft.set('replyTo', 'replyTo@domain.tld');
+            draft.set("replyTo", "replyTo@domain.tld");
         }
 
         if (andBodyToo === true) {
-            draft.setMessageBody(Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-                textPlain : 'TEXTPLAIN',
-                textHtml  : 'TEXTHTML'
+            draft.setMessageBody(Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+                textPlain: "TEXTPLAIN",
+                textHtml: "TEXTHTML"
             }));
         }
 
         if (andAttachmentsTo === true) {
-            draft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                type           : 'TYPE',
-                text           : 'foo',
-                size           : 1,
-                previewImgSrc  : 'PREVIEWIMGSRC',
-                downloadImgUrl : 'DOWNLOADIMGURL',
-                sourceId       : 'SOURCEID'
+            draft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                type: "TYPE",
+                text: "foo",
+                size: 1,
+                previewImgSrc: "PREVIEWIMGSRC",
+                downloadImgUrl: "DOWNLOADIMGURL",
+                sourceId: "SOURCEID"
             }));
         }
 
@@ -60,47 +60,47 @@ describe('conjoon.cn_mail.text.ForwardMessageDecorator', function(t) {
     };
 
 
-    t.it("constructor()", function(t) {
+    t.it("constructor()", function (t) {
         var messageDraft = createMessageDraft(true, false, true),
-            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', messageDraft);
+            decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
         t.isInstanceOf(decorator, conjoon.cn_mail.text.mail.message.CopyDecorator);
     });
 
 
-    t.it("getTo()", function(t) {
+    t.it("getTo()", function (t) {
         var messageDraft = createMessageDraft(true, false, true),
-            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', messageDraft);
+            decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
-        t.expect(messageDraft.get('to').length).toBeGreaterThan(0);
+        t.expect(messageDraft.get("to").length).toBeGreaterThan(0);
         t.expect(decorator.getTo()).toEqual([]);
     });
 
 
-    t.it("getCc()", function(t) {
+    t.it("getCc()", function (t) {
         var messageDraft = createMessageDraft(true, false, true),
-            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', messageDraft);
+            decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
-        t.expect(messageDraft.get('cc').length).toBeGreaterThan(0);
+        t.expect(messageDraft.get("cc").length).toBeGreaterThan(0);
         t.expect(decorator.getCc()).toEqual([]);
     });
 
 
-    t.it("getBcc()", function(t) {
+    t.it("getBcc()", function (t) {
         var messageDraft = createMessageDraft(true, false, true),
-            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', messageDraft);
+            decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
-        t.expect(messageDraft.get('bcc').length).toBeGreaterThan(0);
+        t.expect(messageDraft.get("bcc").length).toBeGreaterThan(0);
         t.expect(decorator.getBcc()).toEqual([]);
     });
 
 
-    t.it("getTextHtml()", function(t) {
+    t.it("getTextHtml()", function (t) {
         var messageDraft = createMessageDraft(true, false, true),
-            decorator    = Ext.create('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', messageDraft);
+            decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
         t.expect(typeof decorator.getTextHtml()).toBe("string");
-        t.expect(decorator.getTextHtml()).not.toBe(messageDraft.getMessageBody().get('textHtml'));
+        t.expect(decorator.getTextHtml()).not.toBe(messageDraft.getMessageBody().get("textHtml"));
         t.expect(decorator.getTextHtml()).toBeTruthy();
     });
 

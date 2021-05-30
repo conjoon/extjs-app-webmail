@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,43 +28,43 @@
  *
 
  */
-Ext.define('conjoon.cn_mail.data.mail.folder.MailFolderTypes', {
+Ext.define("conjoon.cn_mail.data.mail.folder.MailFolderTypes", {
 
-    statics : {
+    statics: {
         /**
          * @type {String} INBOX
          */
-        INBOX : 'INBOX',
+        INBOX: "INBOX",
 
         /**
          * @type {String} JUNK
          */
-        JUNK : 'JUNK',
+        JUNK: "JUNK",
 
         /**
          * @type {String} TRASH
          */
-        TRASH  : 'TRASH',
+        TRASH: "TRASH",
 
         /**
          * @type {String} SENT
          */
-        SENT : 'SENT',
+        SENT: "SENT",
 
         /**
          * @type {String} FOLDER
          */
-        FOLDER : 'FOLDER',
+        FOLDER: "FOLDER",
 
         /**
          * @type {String} DRAFT
          */
-        DRAFT : 'DRAFT',
+        DRAFT: "DRAFT",
 
         /**
          * @type {String} ACCOUNT
          */
-        ACCOUNT : 'ACCOUNT'
+        ACCOUNT: "ACCOUNT"
     }
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,75 +23,50 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest', function(t) {
+describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", function (t) {
 
     let VIEW_ISBUSY = false,
         VIEW_ISVISIBLE = true;
 
-    let createCtrlMock = function() {
-        let ctrl = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountViewController');
+    let createCtrlMock = function () {
+        let ctrl = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewController");
 
         let viewModel = {
-            savePendingChanges : function() {
+            savePendingChanges: function () {
 
             },
-            cleanup : function() {
+            cleanup: function () {
 
             }
         };
 
         let view =  {
-            rejectPendingChanges : function() {
+            rejectPendingChanges: function () {
 
             },
-            getViewModel : function() {
+            getViewModel: function () {
                 return viewModel;
             },
-            setBusy : function(isBusy = true) {
+            setBusy: function (isBusy = true) {
                 VIEW_ISBUSY = isBusy;
             },
-            isVisible : function() {
+            isVisible: function () {
                 return VIEW_ISVISIBLE;
             }
         };
 
-        ctrl.getView = function() {
+        ctrl.getView = function () {
             return view;
-        }
+        };
 
         return ctrl;
-    }
-
-
-
-    let createModel = function() {
-
-        return Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
-            name     : 'name',
-            from     : 'from',
-            replyTo  : 'replyTo',
-
-            inbox_type     : 'inbox_type',
-            inbox_address  : 'inbox_address',
-            inbox_port     : 'inbox_port',
-            inbox_ssl      : true,
-            inbox_user     : 'inbox_user',
-            inbox_password : 'inbox_password',
-
-            outbox_type     : 'outbox_type',
-            outbox_address  : 'outbox_address',
-            outbox_port     : 'outbox_port',
-            outbox_ssl      : true,
-            outbox_user     : 'outbox_user',
-            outbox_password : 'outbox_password'
-        });
-
     };
+
 
     let ctrl;
 
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         if (ctrl) {
             ctrl.destroy();
             ctrl = null;
@@ -100,53 +75,52 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest', func
 
     });
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
 
     });
 
 
-
-    t.it("Should create and show the MailAccountViewController along with default config checks", function(t) {
-        ctrl = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountViewController');
+    t.it("Should create and show the MailAccountViewController along with default config checks", function (t) {
+        ctrl = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewController");
 
         t.expect(ctrl instanceof Ext.app.ViewController).toBeTruthy();
 
-        t.expect(ctrl.alias).toContain('controller.cn_mail-mailaccountviewcontroller');
+        t.expect(ctrl.alias).toContain("controller.cn_mail-mailaccountviewcontroller");
 
 
     });
 
 
-    t.it("onCancelButtonClick()", function(t) {
+    t.it("onCancelButtonClick()", function (t) {
 
         ctrl = createCtrlMock();
 
-        t.isCalled('rejectPendingChanges', ctrl.getView());
+        t.isCalled("rejectPendingChanges", ctrl.getView());
 
         ctrl.onCancelButtonClick();
 
     });
 
 
-    t.it("onSaveButtonClick()", function(t) {
+    t.it("onSaveButtonClick()", function (t) {
 
         ctrl = createCtrlMock();
 
 
-        t.isCalled('savePendingChanges', ctrl.getView().getViewModel());
+        t.isCalled("savePendingChanges", ctrl.getView().getViewModel());
 
         ctrl.onSaveButtonClick();
 
     });
 
 
-    t.it("onBeforeMailAccountSave()", function(t) {
+    t.it("onBeforeMailAccountSave()", function (t) {
 
         ctrl = createCtrlMock();
 
 
-        t.isCalled('setBusy', ctrl.getView());
+        t.isCalled("setBusy", ctrl.getView());
 
         t.expect(VIEW_ISBUSY).toBe(false);
 
@@ -156,16 +130,16 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest', func
     });
 
 
-    t.it("onMailAccountSaveCallback() - visible view", function(t) {
+    t.it("onMailAccountSaveCallback() - visible view", function (t) {
 
         ctrl = createCtrlMock();
 
         VIEW_ISBUSY    = true;
         VIEW_ISVISIBLE = true;
 
-        t.isCalled('setBusy', ctrl.getView());
+        t.isCalled("setBusy", ctrl.getView());
 
-        t.isntCalled('cleanup', ctrl.getView().getViewModel());
+        t.isntCalled("cleanup", ctrl.getView().getViewModel());
 
         ctrl.onMailAccountSaveCallback(ctrl.getView());
 
@@ -173,16 +147,16 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest', func
     });
 
 
-    t.it("onMailAccountSaveCallback() - hidden view", function(t) {
+    t.it("onMailAccountSaveCallback() - hidden view", function (t) {
 
         ctrl = createCtrlMock();
 
         VIEW_ISBUSY    = true;
         VIEW_ISVISIBLE = false;
 
-        t.isCalled('setBusy', ctrl.getView());
+        t.isCalled("setBusy", ctrl.getView());
 
-        t.isCalled('cleanup', ctrl.getView().getViewModel());
+        t.isCalled("cleanup", ctrl.getView().getViewModel());
 
         ctrl.onMailAccountSaveCallback(ctrl.getView());
 
@@ -190,11 +164,11 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest', func
     });
 
 
-    t.it("onMailAccountViewHide()", function(t) {
+    t.it("onMailAccountViewHide()", function (t) {
 
         ctrl = createCtrlMock();
 
-        t.isCalled('cleanup', ctrl.getView().getViewModel());
+        t.isCalled("cleanup", ctrl.getView().getViewModel());
 
         ctrl.onMailAccountViewHide(ctrl.getView());
     });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,33 +26,33 @@
 /**
  * Text Decorator for Email Messages which are used in "reply all" context.
  */
-Ext.define('conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator', {
+Ext.define("conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator", {
 
-    extend : 'conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator',
+    extend: "conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator",
 
-    requires : [
-        'conjoon.cn_mail.text.mail.message.DecoratorFormat'
+    requires: [
+        "conjoon.cn_mail.text.mail.message.DecoratorFormat"
     ],
 
     /**
      * @inheritdoc
      */
-    getTo : function() {
+    getTo: function () {
 
         var me = this;
 
-        return me.callParent().concat(me.copyAddresses('to'));
+        return me.callParent().concat(me.copyAddresses("to"));
     },
 
 
     /**
      * @inheritdoc
      */
-    getCc : function() {
+    getCc: function () {
         var me = this;
 
 
-        return me.copyAddresses('cc');
+        return me.copyAddresses("cc");
     }
 
 });

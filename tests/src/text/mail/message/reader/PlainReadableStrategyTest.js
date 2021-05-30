@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', function(t) {
+describe("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", function (t) {
 
     
     t.it("constructor()", function (t) {
@@ -74,7 +74,6 @@ describe('conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy', funct
         );
 
 
-
-    })
+    });
 
 });

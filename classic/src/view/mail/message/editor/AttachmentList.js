@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,21 +27,21 @@
  * The default AttachmentList implementation for to be used with a
  * {@link conjoon.cn_mail.view.mail.message.editor.MessageEditor}
  */
-Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
+Ext.define("conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
 
-    extend : 'conjoon.cn_mail.view.mail.message.AbstractAttachmentList',
+    extend: "conjoon.cn_mail.view.mail.message.AbstractAttachmentList",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.AbstractAttachment',
-        'conjoon.cn_mail.view.mail.message.editor.AttachmentListController',
-        'coon.core.util.Mime'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.AbstractAttachment",
+        "conjoon.cn_mail.view.mail.message.editor.AttachmentListController",
+        "coon.core.util.Mime"
     ],
 
-    alias : 'widget.cn_mail-mailmessageeditorattachmentlist',
+    alias: "widget.cn_mail-mailmessageeditorattachmentlist",
 
-    controller : 'cn_mail-mailmessageeditorattachmentlistcontroller',
+    controller: "cn_mail-mailmessageeditorattachmentlistcontroller",
 
-    config : {
+    config: {
         /**
          * @cfg {String="CREATE"} [editMode=null]
          * The editMode for this attachmentList. Either shows or hides additional
@@ -49,7 +49,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
          * list provides a view on existing attachments of a message.
          * This property cannot be changed during runtime.
          */
-        editMode : undefined
+        editMode: undefined
     },
 
 
@@ -62,14 +62,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
      * @throws exception if the editMode is changed during runtime, or if the
      * editMode equals to anything but EDIT or CREATE.
      */
-    applyEditMode : function(value) {
-        var me    = this,
-            value = value === undefined ? 'CREATE' : value;
+    applyEditMode: function (value) {
+        var me = this;
 
-        if (Ext.Array.indexOf(['CREATE', 'EDIT'], value) === -1) {
+        value = value === undefined ? "CREATE" : value;
+
+        if (Ext.Array.indexOf(["CREATE", "EDIT"], value) === -1) {
             Ext.raise({
-                source : Ext.getClassName(me),
-                msg    : "editMode must be one of EDIT or CREATE"
+                source: Ext.getClassName(me),
+                msg: "editMode must be one of EDIT or CREATE"
             });
             return;
         }
@@ -78,8 +79,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
             return value;
         } else {
             Ext.raise({
-                source : Ext.getClassName(me),
-                msg    : "Property editMode cannot be changed during runtime"
+                source: Ext.getClassName(me),
+                msg: "Property editMode cannot be changed during runtime"
             });
         }
     },
@@ -100,9 +101,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
      *
      * @throws if file is not a native File-Object
      */
-    addAttachment : function(file) {
-        var me = this;
-
+    addAttachment: function (file) {
         return this.getController().addAttachment(file);
     },
 
@@ -110,7 +109,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
     /**
      * @inheritdoc
      */
-    displayButtonType : function(type) {
+    displayButtonType: function (type) {
         return true;
     }
 

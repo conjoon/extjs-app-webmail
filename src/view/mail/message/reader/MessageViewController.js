@@ -31,29 +31,29 @@
  *
  */
 
-Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
+Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
 
-    extend : 'Ext.app.ViewController',
+    extend: "Ext.app.ViewController",
 
-    alias : 'controller.cn_mail-mailmessagereadermessageviewcontroller',
+    alias: "controller.cn_mail-mailmessagereadermessageviewcontroller",
 
-    requires : [
+    requires: [
         "coon.core.Environment"
     ],
 
-    control : {
+    control: {
 
-        'cn_mail-mailmessagereadermessageviewiframe' : {
-            load: 'onIframeLoad',
-            beforesrcdoc : 'onBeforeSrcDoc'
+        "cn_mail-mailmessagereadermessageviewiframe": {
+            load: "onIframeLoad",
+            beforesrcdoc: "onBeforeSrcDoc"
         },
 
-        '#remoteImageWarning' : {
-            afterrender : 'onRemoteImageWarningAfterrender'
+        "#remoteImageWarning": {
+            afterrender: "onRemoteImageWarningAfterrender"
         },
 
-        'cn_mail-mailmessagereadermessageview' : {
-            resize : 'onViewResize'
+        "cn_mail-mailmessagereadermessageview": {
+            resize: "onViewResize"
         }
 
     },
@@ -68,14 +68,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      * @param {Number} oldWidth
      * @param {Number} oldHeight
      */
-    onViewResize : function(comp, width, height, oldWidth, oldHeight) {
+    onViewResize: function (comp, width, height, oldWidth, oldHeight) {
 
         const me = this,
             iframe = me.getIframe(),
             body = iframe.getBody(),
             bars = Ext.getScrollbarSize();
 
-        iframe.setSize(width - bars.width, height - bars.height)
+        iframe.setSize(width - bars.width, height - bars.height);
         iframe.setSize(body.scrollWidth, body.scrollHeight);
     },
 
@@ -86,9 +86,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      *
      * @param {Ext.Component}  comp
      */
-    onRemoteImageWarningAfterrender : function(comp) {
+    onRemoteImageWarningAfterrender: function (comp) {
         const me = this;
-        comp.getEl().on('click', me.reloadWithImages, me);
+        comp.getEl().on("click", me.reloadWithImages, me);
     },
 
 
@@ -100,7 +100,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      * @param {conjoon.cn_mail.view.mail.message.reader.MessageViewIframe} iframe
      * @param {String} src
      */
-    onBeforeSrcDoc : function(iframe, src) {
+    onBeforeSrcDoc: function (iframe, src) {
         const me = this;
 
         me.getView().getViewModel().set("iframeLoaded", false);
@@ -120,19 +120,19 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      * @see #sanitizeLinks
      * @see #sanitizeImages
      */
-    onIframeLoad : function(iframe) {
+    onIframeLoad: function (iframe) {
 
         const me = this,
-              view = me.getView(),
-              vm   = view.getViewModel(),
-              body = iframe.getBody(),
-              cnt  = view.down('#msgBodyContainer'),
-              bars = Ext.getScrollbarSize();;
+            view = me.getView(),
+            vm   = view.getViewModel(),
+            body = iframe.getBody(),
+            cnt  = view.down("#msgBodyContainer"),
+            bars = Ext.getScrollbarSize();
 
-        me.sanitizeLinks(iframe.cn_iframeEl.dom.contentWindow.document.getElementsByTagName('a'));
+        me.sanitizeLinks(iframe.cn_iframeEl.dom.contentWindow.document.getElementsByTagName("a"));
 
-        let imgs = iframe.cn_iframeEl.dom.contentWindow.document.getElementsByTagName('img');
-        vm.set('hasImages', imgs.length > 0);
+        let imgs = iframe.cn_iframeEl.dom.contentWindow.document.getElementsByTagName("img");
+        vm.set("hasImages", imgs.length > 0);
 
         if (!iframe.getImagesAllowed()) {
             me.sanitizeImages(imgs);
@@ -165,29 +165,27 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      *
      * @private
      */
-    sanitizeLinks : function(elements) {
-
-        const me = this;
+    sanitizeLinks: function (elements) {
 
         let a, href;
 
         for (let i = 0, len = elements.length; i < len; i++) {
             a = elements[i];
-            href = a.getAttribute('href');
+            href = a.getAttribute("href");
 
-            if (!href || href.indexOf('#') === 0) {
-                a.removeAttribute('target');
+            if (!href || href.indexOf("#") === 0) {
+                a.removeAttribute("target");
                 continue;
             }
 
-            if (href.indexOf('mailto:') === 0) {
+            if (href.indexOf("mailto:") === 0) {
 
-                a.setAttribute('href', '#cn_mail/message/compose/' + encodeURIComponent(href));
-                a.setAttribute('target', '_top');
+                a.setAttribute("href", "#cn_mail/message/compose/" + encodeURIComponent(href));
+                a.setAttribute("target", "_top");
                 continue;
             }
 
-            a.setAttribute('target', '_blank');
+            a.setAttribute("target", "_blank");
         }
 
 
@@ -199,12 +197,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      * that the iframe may load remote images.
      *
      */
-    reloadWithImages : function() {
+    reloadWithImages: function () {
 
         const me = this,
-              iframe = me.getIframe();
+            iframe = me.getIframe();
 
-        iframe.setSrcDoc(me.getViewModel().get('messageBody.textHtml'), true);
+        iframe.setSrcDoc(me.getViewModel().get("messageBody.textHtml"), true);
     },
 
 
@@ -218,7 +216,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
      *
      * @private
      */
-    sanitizeImages : function(elements) {
+    sanitizeImages: function (elements) {
 
         let img, i, len = elements.length;
 
@@ -228,8 +226,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
 
             // isolated tests will not have resources property set
             img.setAttribute(
-                'src',
-                coon.core.Environment.getPathForResource("resources/images/img_block.png",'app-cn_mail')
+                "src",
+                coon.core.Environment.getPathForResource("resources/images/img_block.png","app-cn_mail")
             );
 
         }
@@ -239,10 +237,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageViewController', {
     /**
      * @private
      */
-    getIframe : function() {
+    getIframe: function () {
         const me = this,
-              view = me.getView();
+            view = me.getView();
 
-        return view.down('cn_mail-mailmessagereadermessageviewiframe');
+        return view.down("cn_mail-mailmessagereadermessageviewiframe");
     }
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,169 +23,168 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.message.MessageItemTest', function(t) {
+describe("conjoon.cn_mail.model.mail.message.MessageItemTest", function (t) {
 
     var model,
         messageBody,
         attachments,
         longString = "";
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
         for (var i = 0, len = 4000; i < len; i++) {
-            longString += '0';
+            longString += "0";
         }
 
         let mid = Ext.id();
 
-        messageBody = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-            localId       : mid,
-            mailAccountId : 4,
-            mailFolderId  : 5
+        messageBody = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+            localId: mid,
+            mailAccountId: 4,
+            mailFolderId: 5
         });
 
-        model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            localId       : '4-5-1',
-            messageBodyId : mid,
-            id            : 1,
-            mailAccountId : 4,
-            mailFolderId  : 5
+        model = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+            localId: "4-5-1",
+            messageBodyId: mid,
+            id: 1,
+            mailAccountId: 4,
+            mailFolderId: 5
         });
 
-        attachments = [Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
-            id            : 1
-        }), Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
-            id            : 2
-        }), Ext.create('conjoon.cn_mail.model.mail.message.ItemAttachment', {
-            id            : 3
+        attachments = [Ext.create("conjoon.cn_mail.model.mail.message.ItemAttachment", {
+            id: 1
+        }), Ext.create("conjoon.cn_mail.model.mail.message.ItemAttachment", {
+            id: 2
+        }), Ext.create("conjoon.cn_mail.model.mail.message.ItemAttachment", {
+            id: 3
         })];
 
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         longString  = "";
         model       = null;
         messageBody = null;
-        atachments  = null;
+        attachments  = null;
     });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function(t) {
+    t.it("Should create instance", function (t) {
         t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
     });
 
-    t.it("Test for proper proxy and urls", function(t) {
+    t.it("Test for proper proxy and urls", function (t) {
         t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
 
         // READ
         let op,
             m = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(
-            conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
-                'a', 'b', 'c'
-            )
-        );
-        t.expect(m.loadOperation.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a/MailFolders/b/MessageItems/c?');
+                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
+                    "a", "b", "c"
+                )
+            );
+        t.expect(m.loadOperation.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a/MailFolders/b/MessageItems/c?");
 
-        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            mailFolderId : 'b1',
-            mailAccountId : 'a1',
-            id : 'c1',
-            localId : 'foo'
+        m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+            mailFolderId: "b1",
+            mailAccountId: "a1",
+            id: "c1",
+            localId: "foo"
         });
 
 
         // ERASE
         op = m.erase();
-        t.expect(op.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a1/MailFolders/b1/MessageItems/c1?');
+        t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a1/MailFolders/b1/MessageItems/c1?");
 
 
         // UPDATE
-        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            mailFolderId : 'b2',
-            mailAccountId : 'a2',
-            id : 'c2',
-            localId : 'foo'
+        m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+            mailFolderId: "b2",
+            mailAccountId: "a2",
+            id: "c2",
+            localId: "foo"
         });
 
-        m.set('foo', 'bar');
+        m.set("foo", "bar");
         op = m.save();
-        t.expect(op.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a2/MailFolders/b2/MessageItems/c2?');
+        t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a2/MailFolders/b2/MessageItems/c2?");
 
         // CREATE
-        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            mailFolderId : 'b3',
-            mailAccountId : 'a3'
+        m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+            mailFolderId: "b3",
+            mailAccountId: "a3"
         });
 
-        m.set('foo', 'bar');
+        m.set("foo", "bar");
         op = m.save();
-        t.expect(op.getRequest().getUrl()).toContain('cn_mail/MailAccounts/a3/MailFolders/b3/MessageItems?');
+        t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a3/MailFolders/b3/MessageItems?");
 
     });
 
-    t.it("Test Entity Name", function(t) {
+    t.it("Test Entity Name", function (t) {
         t.expect(
             model.entityName
-        ).toBe('MessageItem');
+        ).toBe("MessageItem");
     });
 
-    t.it("Test Record Validity", function(t) {
+    t.it("Test Record Validity", function (t) {
         t.expect(model.isValid()).toBe(true);
     });
 
-    t.it("Test getMessageBody", function(t) {
+    t.it("Test getMessageBody", function (t) {
         model.setMessageBody(messageBody);
         t.expect(model.getMessageBody()).toBeTruthy();
     });
 
-    t.it("Test attachments", function(t) {
-        t.isInstanceOf(model.attachments(), 'conjoon.cn_mail.store.mail.message.MessageAttachmentStore');
+    t.it("Test attachments", function (t) {
+        t.isInstanceOf(model.attachments(), "conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
         model.attachments().add(attachments);
-        t.expect(model.attachments().getAt(1).get('id')).toBe('2');
+        t.expect(model.attachments().getAt(1).get("id")).toBe("2");
         t.expect(model.attachments().getAt(1).getMessageItem()).toBe(model);
     });
 
-    t.it("Test previewText", function(t) {
+    t.it("Test previewText", function (t) {
 
         t.expect(longString.length).toBe(4000);
 
-        model.set('previewText', longString);
+        model.set("previewText", longString);
         t.expect(model.data.previewText.length).toBe(200);
-        t.expect(model.get('previewText').length).toBe(200);
+        t.expect(model.get("previewText").length).toBe(200);
 
-        model.set('previewText', 'u' + longString);
+        model.set("previewText", "u" + longString);
         t.expect(model.previousValues.previewText.length).toBe(200);
-        t.expect(model.data.previewText[0]).toBe('u');
+        t.expect(model.data.previewText[0]).toBe("u");
         t.expect(model.data.previewText.length).toBe(200);
-        t.expect(model.get('previewText').length).toBe(200);
+        t.expect(model.get("previewText").length).toBe(200);
 
-        model.set('previewText', 0);
-        t.expect(model.get('previewText')).toBe('');
-        model.set('previewText', undefined);
-        t.expect(model.get('previewText')).toBe('');
-        model.set('previewText', null);
-        t.expect(model.get('previewText')).toBe('');
-        model.set('previewText', true);
-        t.expect(model.get('previewText')).toBe('');
-
+        model.set("previewText", 0);
+        t.expect(model.get("previewText")).toBe("");
+        model.set("previewText", undefined);
+        t.expect(model.get("previewText")).toBe("");
+        model.set("previewText", null);
+        t.expect(model.get("previewText")).toBe("");
+        model.set("previewText", true);
+        t.expect(model.get("previewText")).toBe("");
 
 
     });
 
-    t.it("cn_deleted / cn_moved", function(t) {
+    t.it("cn_deleted / cn_moved", function (t) {
 
-        t.expect(model.get('cn_deleted')).toBe(false);
-        t.expect(model.get('cn_moved')).toBe(false);
+        t.expect(model.get("cn_deleted")).toBe(false);
+        t.expect(model.get("cn_moved")).toBe(false);
 
-        model.set('cn_deleted', 1);
-        t.expect(model.get('cn_deleted')).toBe(true);
+        model.set("cn_deleted", 1);
+        t.expect(model.get("cn_deleted")).toBe(true);
 
-        model.set('cn_moved', true);
-        t.expect(model.get('cn_moved')).toBe(true);
+        model.set("cn_moved", true);
+        t.expect(model.get("cn_moved")).toBe(true);
     });
 
 

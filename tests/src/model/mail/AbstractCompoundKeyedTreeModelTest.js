@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,44 +23,43 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest', function(t) {
+describe("conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest", function (t) {
 
-    let model;
+    let model, TMPFUNC;
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
-        model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel', {
+        model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel", {
         });
 
         TMPFUNC = conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel.prototype.getRepresentingCompoundKeyClass;
 
-        conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel.prototype.getRepresentingCompoundKeyClass = function() {
+        conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel.prototype.getRepresentingCompoundKeyClass = function () {
             return conjoon.cn_mail.data.mail.AbstractCompoundKey;
         };
 
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         model       = null;
 
         conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel.prototype.getRepresentingCompoundKeyClass = TMPFUNC;
     });
 
 
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
-
-    t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseTreeModel');
+    t.it("Should create instance", function (t) {
+        t.isInstanceOf(model, "conjoon.cn_mail.model.mail.BaseTreeModel");
     });
 
-    t.it("idProperty", function(t) {
+    t.it("idProperty", function (t) {
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-    t.it("Test fields", function(t) {
+    t.it("Test fields", function (t) {
 
         let fields = ["mailAccountId", "id"],
             field;
@@ -69,7 +68,7 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest', functi
 
             field = fields[i];
 
-            t.isInstanceOf(model.getField(field), 'coon.core.data.field.CompoundKeyField');
+            t.isInstanceOf(model.getField(field), "coon.core.data.field.CompoundKeyField");
 
             t.expect(model.getField(field)).toBeTruthy();
 
@@ -85,7 +84,7 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest', functi
             t.expect(model.get(field)).toBe("0");
         }
 
-        t.expect(model.getField('__id__')).toBeFalsy();
+        t.expect(model.getField("__id__")).toBeFalsy();
 
     });
 

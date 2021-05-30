@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,25 +23,16 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.AttachmentListControllerTest', function(t) {
+describe("conjoon.cn_mail.view.mail.message.reader.AttachmentListControllerTest", function (t) {
 
-
-    t.beforeEach(function() {
-
-        viewConfig = {
-
-        }
-    });
-
-
-    t.it("Should make sure setting up controller works", function(t) {
+    t.it("Should make sure setting up controller works", function (t) {
 
         var controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.reader.AttachmentListController', {
+            "conjoon.cn_mail.view.mail.message.reader.AttachmentListController", {
             });
 
         t.expect(controller instanceof conjoon.cn_mail.view.mail.message.AbstractAttachmentListController).toBe(true);
     });
 
-
+e
 });

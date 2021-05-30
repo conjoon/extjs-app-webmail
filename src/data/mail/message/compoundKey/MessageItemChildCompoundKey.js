@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,11 +28,11 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey', {
+Ext.define("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey", {
 
-    extend : 'conjoon.cn_mail.data.mail.message.CompoundKey',
+    extend: "conjoon.cn_mail.data.mail.message.CompoundKey",
 
-    statics : {
+    statics: {
 
         /**
          * Creates a new CompoundKey based on the data found in fromRecord.
@@ -43,20 +43,20 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
          *
          * @throws if rec is not an instance of Ext.data.Model.
          */
-        fromRecord : function(rec) {
+        fromRecord: function (rec) {
 
             if (!(rec instanceof Ext.data.Model)) {
                 Ext.raise({
-                    msg : "\"rec\" must be an instance of Ext.data.Model",
-                    rec : rec
+                    msg: "\"rec\" must be an instance of Ext.data.Model",
+                    rec: rec
                 });
             }
 
             return new this({
-                mailAccountId       : rec.get('mailAccountId'),
-                mailFolderId        : rec.get('mailFolderId'),
-                parentMessageItemId : rec.get('parentMessageItemId'),
-                id                  : rec.get('id')
+                mailAccountId: rec.get("mailAccountId"),
+                mailFolderId: rec.get("mailFolderId"),
+                parentMessageItemId: rec.get("parentMessageItemId"),
+                id: rec.get("id")
             });
 
         },
@@ -72,24 +72,24 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
          *
          * @returns {conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey}
          */
-        createFor : function(mailAccountId, mailFolderId, parentMessageItemId, id) {
+        createFor: function (mailAccountId, mailFolderId, parentMessageItemId, id) {
 
             return new this({
-                mailAccountId       : mailAccountId,
-                mailFolderId        : mailFolderId,
-                parentMessageItemId : parentMessageItemId,
-                id                  : id
+                mailAccountId: mailAccountId,
+                mailFolderId: mailFolderId,
+                parentMessageItemId: parentMessageItemId,
+                id: id
             });
 
         }
 
     },
 
-    config : {
+    config: {
         /**
          * @type {String}
          */
-        parentMessageItemId : undefined
+        parentMessageItemId: undefined
 
     },
 
@@ -101,16 +101,16 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
      *
      * @throws if parentMessageItemId is not set
      */
-    constructor : function(cfg) {
+    constructor: function (cfg) {
 
         const me = this;
 
 
         if (!cfg || !cfg.parentMessageItemId) {
             Ext.raise({
-                msg : "\"cfg\" must be an object containing the property parentMessageItemId",
-                cfg : cfg
-            })
+                msg: "\"cfg\" must be an object containing the property parentMessageItemId",
+                cfg: cfg
+            });
         }
 
         me.callParent(arguments);
@@ -120,7 +120,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
     /**
      * @inheritdoc
      */
-    toArray : function() {
+    toArray: function () {
 
         const me = this;
 
@@ -136,7 +136,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
     /**
      * @inheritdoc
      */
-    toObject : function() {
+    toObject: function () {
 
         const me = this;
 
@@ -152,12 +152,12 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
     /**
      * @inheritdoc
      */
-    toLocalId : function() {
+    toLocalId: function () {
         const me = this;
 
-        return me.getMailAccountId()       + '-' +
-               me.getMailFolderId()        + '-' +
-               me.getParentMessageItemId() + '-' +
+        return me.getMailAccountId()       + "-" +
+               me.getMailFolderId()        + "-" +
+               me.getParentMessageItemId() + "-" +
                me.getId();
     },
 
@@ -171,14 +171,14 @@ Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompou
      *
      * @throws exception if parentMessageItemId was already set
      */
-    applyParentMessageItemId : function(parentMessageItemId) {
+    applyParentMessageItemId: function (parentMessageItemId) {
 
         const me = this;
 
         if (me.getParentMessageItemId() !== undefined) {
             Ext.raise({
-                msg                 : "\"parentMessageItemId\" was already set",
-                parentMessageItemId : me.getParentMessageItemId()
+                msg: "\"parentMessageItemId\" was already set",
+                parentMessageItemId: me.getParentMessageItemId()
             });
         }
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,16 +28,16 @@
  * attachments.
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader', {
+Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader", {
 
-    extend : 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader',
+    extend: "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey"
     ],
 
-    alias : 'reader.cn_mail-mailmessageitemchildjsonreader',
+    alias: "reader.cn_mail-mailmessageitemchildjsonreader",
 
     /**
      * Computes the localId and the associated messageItemId with the appropriate
@@ -52,13 +52,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
      *
      * @throws if action is not set to "read", "destroy", "update" or "create"
      */
-    applyCompoundKey : function(data, action) {
+    applyCompoundKey: function (data, action) {
 
-        const me = this,
-              ck = conjoon.cn_mail.data.mail.message.compoundKey,
-              MessageEntityCompoundKey    = ck.MessageEntityCompoundKey,
-              MessageItemChildCompoundKey = ck.MessageItemChildCompoundKey,
-              valChk                      = ["create", "update", "read", "destroy"];
+        const
+            ck = conjoon.cn_mail.data.mail.message.compoundKey,
+            MessageEntityCompoundKey    = ck.MessageEntityCompoundKey,
+            MessageItemChildCompoundKey = ck.MessageItemChildCompoundKey,
+            valChk                      = ["create", "update", "read", "destroy"];
 
 
         if (valChk.indexOf(action) === -1) {
@@ -81,7 +81,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
                         rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId, rec.id
                     ).toLocalId();
 
-                    if (action === 'read') {
+                    if (action === "read") {
                         rec.messageItemId = MessageEntityCompoundKey.createFor(
                             rec.mailAccountId, rec.mailFolderId, rec.parentMessageItemId
                         ).toLocalId();
@@ -99,7 +99,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
                     dt.mailAccountId, dt.mailFolderId, dt.parentMessageItemId, dt.id
                 ).toLocalId();
 
-                if (action === 'read') {
+                if (action === "read") {
                     dt.messageItemId = MessageEntityCompoundKey.createFor(
                         dt.mailAccountId, dt.mailFolderId, dt.parentMessageItemId
                     ).toLocalId();
@@ -113,8 +113,8 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader'
         }
 
         Ext.raise({
-            msg  : "The \"data\" property was malformed and could not be processed by this Reader",
-            data : data
+            msg: "The \"data\" property was malformed and could not be processed by this Reader",
+            data: data
         });
     }
 

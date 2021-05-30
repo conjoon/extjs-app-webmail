@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,25 +23,25 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.service.mailbox.OperationTest', function(t) {
+describe("conjoon.cn_mail.data.mail.service.mailbox.OperationTest", function (t) {
 
-    const createOperation = function(request) {
+    const createOperation = function (request) {
 
-        return Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
-            request : request === false ? undefined : {type : 'foo'}
+        return Ext.create("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
+            request: request === false ? undefined : {type: "foo"}
         });
     };
 
 
-// -----------------------------------------------------------------------------
-// |   Tests
-// -----------------------------------------------------------------------------
-    t.it("constructor()", function(t) {
+    // -----------------------------------------------------------------------------
+    // |   Tests
+    // -----------------------------------------------------------------------------
+    t.it("constructor()", function (t) {
 
-        let exc, e,
+        let exc,
             op = createOperation();
-        t.isInstanceOf(op, 'conjoon.cn_mail.data.mail.service.mailbox.Operation');
-        t.expect(op.getRequest()).toEqual({type : 'foo'});
+        t.isInstanceOf(op, "conjoon.cn_mail.data.mail.service.mailbox.Operation");
+        t.expect(op.getRequest()).toEqual({type: "foo"});
 
         let coll = [
             conjoon.cn_mail.data.mail.service.mailbox.Operation.MOVE_OR_DELETE,
@@ -56,8 +56,8 @@ describe('conjoon.cn_mail.data.mail.service.mailbox.OperationTest', function(t) 
             t.expect(coll[i]).toBeTruthy();
         }
 
-        let fin = coll.filter(function(item, pos, self) {
-            return self.indexOf(item) == pos;
+        let fin = coll.filter(function (item, pos, self) {
+            return self.indexOf(item) === pos;
         });
 
         t.expect(fin).toEqual(coll);
@@ -70,29 +70,27 @@ describe('conjoon.cn_mail.data.mail.service.mailbox.OperationTest', function(t) 
         t.expect(exc.msg.toLowerCase()).toContain("request");
         exc = undefined;
 
-        op.setResult({id : 'foo'});
-        t.expect(op.getResult()).toEqual({id : 'foo'});
-        try{op.setResult({foo : 'bar'});}catch(e){exc = e;}
+        op.setResult({id: "foo"});
+        t.expect(op.getResult()).toEqual({id: "foo"});
+        try{op.setResult({foo: "bar"});}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("already set");
         exc = undefined;
 
-        try{op.setRequest({foo : 'bar'});}catch(e){exc = e;}
+        try{op.setRequest({foo: "bar"});}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("already set");
         exc = undefined;
 
-        op = Ext.create('conjoon.cn_mail.data.mail.service.mailbox.Operation', {
-            request : {type : 'foo'},
-            result  : {foo : 'bar'}
+        op = Ext.create("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
+            request: {type: "foo"},
+            result: {foo: "bar"}
         });
 
-        t.expect(op.getResult()).toEqual({foo : 'bar'});
+        t.expect(op.getResult()).toEqual({foo: "bar"});
     });
-
-
 
 
 });

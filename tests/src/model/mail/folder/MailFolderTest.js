@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,105 +23,105 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
+describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
 
     var model;
 
-    t.beforeEach(function() {
-        model = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
-            id : 1
+    t.beforeEach(function () {
+        model = Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
+            id: 1
         });
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         model = null;
     });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it("Should create instance and check basic configuration", function(t) {
+    t.it("Should create instance and check basic configuration", function (t) {
         t.expect(model instanceof conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel).toBe(true);
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
-        t.expect(model.getIdProperty()).toBe('localId');
-        t.expect(model.getField('unreadCount').getPersist()).toBe(false);
-        t.expect(model.getField('mailAccountId').critical).toBe(true);
+        t.expect(model.getIdProperty()).toBe("localId");
+        t.expect(model.getField("unreadCount").getPersist()).toBe(false);
+        t.expect(model.getField("mailAccountId").critical).toBe(true);
     });
 
-    t.it("Test Entity Name", function(t) {
+    t.it("Test Entity Name", function (t) {
         t.expect(
             model.entityName
-        ).toBe('MailFolder');
+        ).toBe("MailFolder");
     });
 
-    t.it("Test Record Validity", function(t) {
+    t.it("Test Record Validity", function (t) {
         t.expect(model.isValid()).toBe(false);
-        model.set('name', 'Posteingang');
-        t.expect(model.isValid()).toBe(false);
-
-        model.set('folderType', 'Posteingang');
+        model.set("name", "Posteingang");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('mailAccountId', 'foo');
-        model.set('folderType', 'INBOX');
+        model.set("folderType", "Posteingang");
+        t.expect(model.isValid()).toBe(false);
+
+        model.set("mailAccountId", "foo");
+        model.set("folderType", "INBOX");
         t.expect(model.isValid()).toBe(true);
-        model.set('folderType', '');
+        model.set("folderType", "");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'DRAFT');
+        model.set("folderType", "DRAFT");
         t.expect(model.isValid()).toBe(true);
-        model.set('folderType', '');
+        model.set("folderType", "");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'JUNK');
+        model.set("folderType", "JUNK");
         t.expect(model.isValid()).toBe(true);
-        model.set('folderType', '');
+        model.set("folderType", "");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'TRASH');
+        model.set("folderType", "TRASH");
         t.expect(model.isValid()).toBe(true);
-        model.set('folderType', '');
+        model.set("folderType", "");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'SENT');
+        model.set("folderType", "SENT");
         t.expect(model.isValid()).toBe(true);
-        model.set('folderType', '');
+        model.set("folderType", "");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'FOLDER');
+        model.set("folderType", "FOLDER");
         t.expect(model.isValid()).toBe(true);
-        model.set('folderType', '');
+        model.set("folderType", "");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', null);
+        model.set("folderType", null);
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'foo');
+        model.set("folderType", "foo");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('mailAccountId', null);
+        model.set("mailAccountId", null);
         t.expect(model.isValid()).toBe(false);
     });
 
 
-    t.it("toUrl()", function(t) {
+    t.it("toUrl()", function (t) {
 
-        let accountNode =  Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
-            localId       : 'meh',
-            id            : 1,
-            mailAccountId : 'foo@account'
+        let accountNode =  Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
+            localId: "meh",
+            id: 1,
+            mailAccountId: "foo@account"
         });
 
-        t.expect(accountNode.toUrl()).toBe('cn_mail/folder/foo@account/1');
+        t.expect(accountNode.toUrl()).toBe("cn_mail/folder/foo@account/1");
     });
 
 
-    t.it("getRepresentingCompoundKeyClass()", function(t) {
+    t.it("getRepresentingCompoundKeyClass()", function (t) {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+        let model = Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
 
         });
 
@@ -132,14 +132,14 @@ describe('conjoon.cn_mail.model.mailfolder..MailFolderTest', function(t) {
     });
 
 
-    t.it("foreignKeyFields", function(t) {
+    t.it("foreignKeyFields", function (t) {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.folder.MailFolder', {
+        let model = Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
 
         });
 
         t.expect(model.foreignKeyFields).toEqual(
-            ['mailAccountId', 'id']
+            ["mailAccountId", "id"]
         );
 
     });

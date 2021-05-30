@@ -80,40 +80,40 @@
  *
  * @see conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel
  */
-Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
+Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
 
-    extend : 'Ext.form.Panel',
+    extend: "Ext.form.Panel",
 
-    mixins : {
-        deleteConfirmDialog : 'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog',
-        loadingFailedDialog : 'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
+    mixins: {
+        deleteConfirmDialog: "conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog",
+        loadingFailedDialog: "conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog"
     },
 
-    requires : [
-        'coon.comp.component.LoadMask',
-        'conjoon.cn_mail.view.mail.message.editor.AttachmentList',
-        'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController',
-        'conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel',
-        'conjoon.cn_mail.view.mail.message.editor.HtmlEditor',
-        'conjoon.cn_mail.view.mail.message.editor.AddressField',
-        'conjoon.cn_mail.model.mail.message.EmailAddress',
-        'conjoon.cn_mail.data.mail.message.session.MessageDraftSession',
-        'coon.comp.component.MessageMask',
-        'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "coon.comp.component.LoadMask",
+        "conjoon.cn_mail.view.mail.message.editor.AttachmentList",
+        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController",
+        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel",
+        "conjoon.cn_mail.view.mail.message.editor.HtmlEditor",
+        "conjoon.cn_mail.view.mail.message.editor.AddressField",
+        "conjoon.cn_mail.model.mail.message.EmailAddress",
+        "conjoon.cn_mail.data.mail.message.session.MessageDraftSession",
+        "coon.comp.component.MessageMask",
+        "conjoon.cn_mail.data.mail.message.EditingModes",
+        "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
-    alias : 'widget.cn_mail-mailmessageeditor',
+    alias: "widget.cn_mail-mailmessageeditor",
 
-    controller : 'cn_mail-mailmessageeditorviewcontroller',
+    controller: "cn_mail-mailmessageeditorviewcontroller",
 
-    viewModel : 'cn_mail-mailmessageeditorviewmodel',
+    viewModel: "cn_mail-mailmessageeditorviewmodel",
 
     /**
      * @private
      */
-    isCnMessageEditor : true,
+    isCnMessageEditor: true,
 
     /**
      * Gets fired when a save of the MessageDraft was initiated and the associated
@@ -202,40 +202,40 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft}
      */
 
-    layout : {
-        type  : 'vbox',
-        align : 'stretch'
+    layout: {
+        type: "vbox",
+        align: "stretch"
     },
 
-    margin : '0 5 14 0',
+    margin: "0 5 14 0",
 
-    bodyPadding : '8 8 8 8',
+    bodyPadding: "8 8 8 8",
 
-    cls    : 'cn_mail-mailmessageeditor shadow-panel',
+    cls: "cn_mail-mailmessageeditor shadow-panel",
 
     /**
      * @i18n
      */
-    title : 'Loading...',
+    title: "Loading...",
 
-    iconCls : "fa fa-spin fa-spinner",
+    iconCls: "fa fa-spin fa-spinner",
 
-    bind : {
-        closable : '{!isMessageBodyLoading && !isSaving && !isSending}',
-        title    : '{!isMessageBodyLoading ? getSubject : "Loading..."}',
-        iconCls  : '{getSubject && !isSaving && !isSending && !isMessageBodyLoading ? "fa fa-edit" : "fa fa-spin fa-spinner"}'
+    bind: {
+        closable: "{!isMessageBodyLoading && !isSaving && !isSending}",
+        title: "{!isMessageBodyLoading ? getSubject : \"Loading...\"}",
+        iconCls: "{getSubject && !isSaving && !isSending && !isMessageBodyLoading ? \"fa fa-edit\" : \"fa fa-spin fa-spinner\"}"
     },
 
-    closable : false,
+    closable: false,
 
-    buttonAlign : 'right',
+    buttonAlign: "right",
 
     /**
      * @private {String="CREATE"} editMode any of CREATE or EDIT
      * The editMode will be passed to the embedded
      * {@link conjoon.cn_mail.view.mail.message.AttachmentList}
      */
-    editMode : 'CREATE',
+    editMode: "CREATE",
 
     /**
      * Mask to indicate that the oomponent's input is currently blocked due to
@@ -243,158 +243,158 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @private {coon.comp.component.LoadMask} busyMask
      * @see setBusy
      */
-    busyMask : null,
+    busyMask: null,
 
     /**
      * @private
      * @see showMessageDraftLoadingNotice
      */
-    loadingMask : null,
+    loadingMask: null,
 
-    dockedItems : [{
-        xtype : 'toolbar',
-        dock  : 'bottom',
-        items : [{
-            xtype : 'combobox',
-            itemId : 'accountCombo',
-            flex : 1,
-            cls : 'accountCombo',
-            matchFieldWidth : false,
-            hideTrigger : true,
-            editable : false,
-            forceSelection : true,
-            queryMode : 'local',
-            bind  : {
-                disabled : '{!isPhantom}',
-                store    : '{mailAccountStore}',
-                value    : '{messageDraft.mailAccountId}'
+    dockedItems: [{
+        xtype: "toolbar",
+        dock: "bottom",
+        items: [{
+            xtype: "combobox",
+            itemId: "accountCombo",
+            flex: 1,
+            cls: "accountCombo",
+            matchFieldWidth: false,
+            hideTrigger: true,
+            editable: false,
+            forceSelection: true,
+            queryMode: "local",
+            bind: {
+                disabled: "{!isPhantom}",
+                store: "{mailAccountStore}",
+                value: "{messageDraft.mailAccountId}"
             },
             /**
              * @i18n
              */
-            labelWidth : 50,
-            fieldLabel : 'Account',
-            displayField : 'name',
-            valueField   : 'id',
-            listConfig : {
-                getInnerTpl: function() {
-                    return '{from.name} &lt;{from.address}&gt;';
+            labelWidth: 50,
+            fieldLabel: "Account",
+            displayField: "name",
+            valueField: "id",
+            listConfig: {
+                getInnerTpl: function () {
+                    return "{from.name} &lt;{from.address}&gt;";
                 }
             },
-            displayTpl : '<tpl for=".">{name}</tpl>'
-        }, '->', {
-            width : 213,
-            xtype : 'displayfield',
-            cls  : 'lastSavedDateField',
-            bind : {
-                hidden : '{!messageDraft.savedAt}',
-                value : 'Last saved at {messageDraft.savedAt:date("d.m.Y H:i:s")}'
+            displayTpl: "<tpl for=\".\">{name}</tpl>"
+        }, "->", {
+            width: 213,
+            xtype: "displayfield",
+            cls: "lastSavedDateField",
+            bind: {
+                hidden: "{!messageDraft.savedAt}",
+                value: "Last saved at {messageDraft.savedAt:date(\"d.m.Y H:i:s\")}"
             }
         }, {
-            scale  : 'small',
-            text   : 'Save',
-            width  : 108,
-            itemId : 'saveButton'
+            scale: "small",
+            text: "Save",
+            width: 108,
+            itemId: "saveButton"
         }, {
-            scale  : 'small',
-            text   : 'Send',
-            itemId : 'sendButton',
-            width  : 108
+            scale: "small",
+            text: "Send",
+            itemId: "sendButton",
+            width: 108
         }]
     }],
 
-    items : [{
-        xtype  : 'container',
-        margin : '0 0 12 0',
-        layout : 'hbox',
-        items : [{
-            flex      : 1,
-            xtype     : 'cn_mail-mailmessageeditoraddressfield',
-            emptyText : 'To',
-            itemId    : 'toField',
-            bind : {
-                value : '{getTo}',
-                store : '{addressStore}'
+    items: [{
+        xtype: "container",
+        margin: "0 0 12 0",
+        layout: "hbox",
+        items: [{
+            flex: 1,
+            xtype: "cn_mail-mailmessageeditoraddressfield",
+            emptyText: "To",
+            itemId: "toField",
+            bind: {
+                value: "{getTo}",
+                store: "{addressStore}"
             }
         }, {
-            xtype  : 'button',
-            itemId : 'showCcBccButton',
-            cls    : 'showCcBccButton',
-            text   : 'CC / BCC',
-            bind   : {
-                hidden : '{isCcOrBccValueSet}'
+            xtype: "button",
+            itemId: "showCcBccButton",
+            cls: "showCcBccButton",
+            text: "CC / BCC",
+            bind: {
+                hidden: "{isCcOrBccValueSet}"
             }
         }]}, {
-        xtype       : 'cn_mail-mailmessageeditoraddressfield',
-        emptyText   : 'Cc',
-        itemId      : 'ccField',
-        addressType : 'cc',
-        bind        : {
-            hidden : {
-                bindTo : '{!isCcOrBccValueSet}',
-                single : true
+        xtype: "cn_mail-mailmessageeditoraddressfield",
+        emptyText: "Cc",
+        itemId: "ccField",
+        addressType: "cc",
+        bind: {
+            hidden: {
+                bindTo: "{!isCcOrBccValueSet}",
+                single: true
             },
-            value : '{getCc}',
-            store : '{addressStore}'
+            value: "{getCc}",
+            store: "{addressStore}"
         }
     }, {
-        xtype       : 'cn_mail-mailmessageeditoraddressfield',
-        emptyText   : 'Bcc',
-        addressType : 'bcc',
-        itemId      : 'bccField',
-        bind        : {
-            hidden : {
-                bindTo : '{!isCcOrBccValueSet}',
-                single : true
+        xtype: "cn_mail-mailmessageeditoraddressfield",
+        emptyText: "Bcc",
+        addressType: "bcc",
+        itemId: "bccField",
+        bind: {
+            hidden: {
+                bindTo: "{!isCcOrBccValueSet}",
+                single: true
             },
-            value : '{getBcc}',
-            store : '{addressStore}'
+            value: "{getBcc}",
+            store: "{addressStore}"
         }
     }, {
-        xtype      : 'textfield',
-        emptyText  : 'Subject',
-        cls        : 'subjectField',
-        itemId     : 'subjectField',
-        bind       : {
-            value : '{messageDraft.subject}'
+        xtype: "textfield",
+        emptyText: "Subject",
+        cls: "subjectField",
+        itemId: "subjectField",
+        bind: {
+            value: "{messageDraft.subject}"
         }
     }, {
-        xtype  : 'container',
-        flex   : 1,
-        margin : '12 0 0 0',
-        layout : {
-            type : 'hbox',
-            align : 'stretch'
+        xtype: "container",
+        flex: 1,
+        margin: "12 0 0 0",
+        layout: {
+            type: "hbox",
+            align: "stretch"
         },
-        items : [{
-            flex  : 1,
-            xtype : 'cn_mail-mailmessageeditorhtmleditor',
-            bind  : {
-                value : '{messageDraft.messageBody.textHtml}'
+        items: [{
+            flex: 1,
+            xtype: "cn_mail-mailmessageeditorhtmleditor",
+            bind: {
+                value: "{messageDraft.messageBody.textHtml}"
             }
         }, {
-            xtype      : 'container',
-            itemId     : 'attachmentListWrap',
-            cls        : 'attachmentlist-wrap',
-            layout     : 'fit',
-            width      : 230,
-            margin     : '0 0 0 10',
-            items      : [{
-                xtype  : 'box',
-                autoEl : {
-                    tag  : 'div',
-                    cls  : 'dropzone-text',
-                    html : 'Attach files by dragging and dropping them here.'
+            xtype: "container",
+            itemId: "attachmentListWrap",
+            cls: "attachmentlist-wrap",
+            layout: "fit",
+            width: 230,
+            margin: "0 0 0 10",
+            items: [{
+                xtype: "box",
+                autoEl: {
+                    tag: "div",
+                    cls: "dropzone-text",
+                    html: "Attach files by dragging and dropping them here."
                 }
             }, {
-                flex : 1,
-                xtype      : 'cn_mail-mailmessageeditorattachmentlist',
-                reference  : 'cn_mail_ref_mailmessageeditorattachmentlist',
-                margin     : '10 0 10 0',
-                width      : 228,
-                scrollable : 'y',
-                bind       : {
-                    store  : '{messageDraft.attachments}'
+                flex: 1,
+                xtype: "cn_mail-mailmessageeditorattachmentlist",
+                reference: "cn_mail_ref_mailmessageeditorattachmentlist",
+                margin: "10 0 10 0",
+                width: 228,
+                scrollable: "y",
+                bind: {
+                    store: "{messageDraft.attachments}"
                 }
             }]
         }]
@@ -410,7 +410,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @throws if config is empty, or if viewModel is being applied using the
      * config argument.
      */
-    constructor : function(config) {
+    constructor: function (config) {
 
         var me           = this,
             EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
@@ -419,8 +419,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         if (!config || !config.messageDraft) {
             Ext.raise({
-                source : Ext.getClassName(this),
-                msg    : 'argument "config" and "config.messageDraft" must be set.'
+                source: Ext.getClassName(this),
+                msg: "argument \"config\" and \"config.messageDraft\" must be set."
             });
         }
 
@@ -428,16 +428,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         if (config.viewModel) {
             Ext.raise({
-                source : Ext.getClassName(this),
-                msg    : 'Cannot set ViewModel for MessageEditor without overriding constructor.'
-            })
+                source: Ext.getClassName(this),
+                msg: "Cannot set ViewModel for MessageEditor without overriding constructor."
+            });
         }
 
         Ext.apply(config, {
-            session   : Ext.create('conjoon.cn_mail.data.mail.message.session.MessageDraftSession'),
-            viewModel : {
-                type         : 'cn_mail-mailmessageeditorviewmodel',
-                messageDraft : messageDraft
+            session: Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession"),
+            viewModel: {
+                type: "cn_mail-mailmessageeditorviewmodel",
+                messageDraft: messageDraft
             }
         });
 
@@ -461,7 +461,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @throws if no {@link conjoon.cn_mail.view.mail.message.AttachmentList}
      * was found.
      */
-    initComponent : function() {
+    initComponent: function () {
 
         var me           = this,
             item         = null,
@@ -472,9 +472,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                 EditingModes.REPLY_ALL,
                 EditingModes.FORWARD
             ],
-            query = function(items) {
-                Ext.each(items, function(value) {
-                    if (value.xtype == 'cn_mail-mailmessageeditorattachmentlist') {
+            query = function (items) {
+                Ext.each(items, function (value) {
+                    if (value.xtype === "cn_mail-mailmessageeditorattachmentlist") {
                         item = value;
                         return false;
                     }
@@ -482,18 +482,18 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                         return query(value.items);
                     }
 
-                })
+                });
             };
 
         query(me.items);
         if (item) {
             item.editMode = modes.indexOf(me.editMode) !== -1
-                            ? EditingModes.CREATE
-                            : EditingModes.EDIT;
+                ? EditingModes.CREATE
+                : EditingModes.EDIT;
         } else {
             Ext.raise({
-                sourceClass : Ext.getClassName(me),
-                msg         : "MessageEditor needs to have conjoon.cn_mail.view.mail.message.AttachmentList"
+                sourceClass: Ext.getClassName(me),
+                msg: "MessageEditor needs to have conjoon.cn_mail.view.mail.message.AttachmentList"
             });
         }
 
@@ -509,12 +509,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @return this
      */
-    showCcBccFields : function(show) {
-        var me   = this,
-            show = show === undefined ? true : show;
+    showCcBccFields: function (show) {
+        var me   = this;
 
-        me.down('#ccField').setHidden(!show);
-        me.down('#bccField').setHidden(!show);
+        show = show === undefined ? true : show;
+
+        me.down("#ccField").setHidden(!show);
+        me.down("#bccField").setHidden(!show);
 
         return this;
     },
@@ -534,7 +535,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @throws if conf is neither boolean nor an Object
      */
-    setBusy : function(conf) {
+    setBusy: function (conf) {
 
         var me        = this,
             mask      = me.busyMask,
@@ -545,11 +546,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         if (conf !== false && !Ext.isObject(conf)) {
             Ext.raise({
-                conf : conf,
-                cls  : Ext.getClassName(me),
-                msg  : 'Argument "conf" must either be boolean=false or an ' +
-                       'object suiting configuration options for ' +
-                       'coon.comp.component.LoadMask'
+                conf: conf,
+                cls: Ext.getClassName(me),
+                msg: "Argument \"conf\" must either be boolean=false or an " +
+                       "object suiting configuration options for " +
+                       "coon.comp.component.LoadMask"
             });
         }
 
@@ -558,11 +559,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
         }
 
         if (!mask && !hide) {
-            mask = Ext.create('coon.comp.component.LoadMask', {
-                msg       : msg,
-                msgAction : msgAction,
-                glyphCls  : 'fa fa-envelope',
-                target    : me
+            mask = Ext.create("coon.comp.component.LoadMask", {
+                msg: msg,
+                msgAction: msgAction,
+                glyphCls: "fa fa-envelope",
+                target: me
             });
             me.busyMask = mask;
         }
@@ -601,7 +602,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      */
-    showAddressMissingNotice : function(messageDraft) {
+    showAddressMissingNotice: function (messageDraft) {
 
         /**
          * @i18n
@@ -615,22 +616,22 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         iconCls = me.getIconCls();
 
-        myMask = Ext.create('coon.comp.component.MessageMask', {
-            title    : "Address Missing",
-            message  : "Could not send the message. Please specify one or more recipients.",
-            target   : me,
-            buttons  : coon.comp.component.MessageMask.OK,
-            icon     : coon.comp.component.MessageMask.ERROR,
-            callback : function(btnAction) {
+        myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Address Missing",
+            message: "Could not send the message. Please specify one or more recipients.",
+            target: me,
+            buttons: coon.comp.component.MessageMask.OK,
+            icon: coon.comp.component.MessageMask.ERROR,
+            callback: function (btnAction) {
                 var me = this;
-                me.down('#toField').focus();
+                me.down("#toField").focus();
                 me.setClosable(true);
                 me.setIconCls(iconCls);
             },
-            scope : me
+            scope: me
         });
 
-        me.setIconCls('fa fa-exclamation-circle');
+        me.setIconCls("fa fa-exclamation-circle");
         me.setClosable(false);
 
         myMask.show();
@@ -649,13 +650,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * the subject of the editor has been set to the specified value. The
      * callback gets called in the scope of the MessageEditor.
      */
-    showSubjectMissingNotice : function(messageDraft, callback) {
+    showSubjectMissingNotice: function (messageDraft, callback) {
 
         /**
          * @i18n
          */
-        var me        = this,
-            viewModel = me.getViewModel(),
+        var me = this,
             myMask, iconCls;
 
         // notify any pending states here to flush so we can change the
@@ -664,17 +664,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         iconCls = me.getIconCls();
 
-        myMask = Ext.create('coon.comp.component.MessageMask', {
-            title    : "Subject Missing",
-            message  : "If you wish, you can specify a subject here before leaving it empty.",
-            target   : me,
-            buttons  : coon.comp.component.MessageMask.OKCANCEL,
-            icon     : coon.comp.component.MessageMask.QUESTION,
-            input    : {emptyText : 'Subject'},
-            callback : function(btnAction, value) {
+        myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Subject Missing",
+            message: "If you wish, you can specify a subject here before leaving it empty.",
+            target: me,
+            buttons: coon.comp.component.MessageMask.OKCANCEL,
+            icon: coon.comp.component.MessageMask.QUESTION,
+            input: {emptyText: "Subject"},
+            callback: function (btnAction, value) {
                 var me = this;
-                if (btnAction == 'okButton') {
-                    messageDraft.set('subject', value);
+                if (btnAction === "okButton") {
+                    messageDraft.set("subject", value);
                 }
                 me.setClosable(true);
                 me.setIconCls(iconCls);
@@ -682,10 +682,10 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
                     callback.apply(me, [btnAction, value]);
                 }
             },
-            scope : me
+            scope: me
         });
 
-        me.setIconCls('fa fa-question-circle');
+        me.setIconCls("fa fa-question-circle");
         me.setClosable(false);
 
         myMask.show();
@@ -701,12 +701,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * scope of this view. Allows further user interaction by specifying logic
      * to handle the failed process
      */
-    showMailMessageSaveFailedNotice : function(messageDraft, operation, callback) {
+    showMailMessageSaveFailedNotice: function (messageDraft, operation, callback) {
         /**
          * @i18n
          */
-        var me        = this,
-            viewModel = me.getViewModel(),
+        var me = this,
             myMask, iconCls;
 
         // notify any pending states here to flush so we can change the
@@ -715,25 +714,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
 
         iconCls = me.getIconCls();
 
-        myMask = Ext.create('coon.comp.component.MessageMask', {
-            title    : "Saving Failed",
-            message  : "Saving the message failed. Do you want to retry to save the message?",
-            target   : me,
-            buttons  : coon.comp.component.MessageMask.YESNO,
-            icon     : coon.comp.component.MessageMask.QUESTION,
-            callback : function(btnAction, value) {
+        myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Saving Failed",
+            message: "Saving the message failed. Do you want to retry to save the message?",
+            target: me,
+            buttons: coon.comp.component.MessageMask.YESNO,
+            icon: coon.comp.component.MessageMask.QUESTION,
+            callback: function (btnAction, value) {
                 var me = this;
-                    me.setClosable(true);
-                    me.setIconCls(iconCls);
+                me.setClosable(true);
+                me.setIconCls(iconCls);
 
                 if (callback) {
                     callback.apply(me, arguments);
                 }
             },
-            scope : me
+            scope: me
         });
 
-        me.setIconCls('fa fa-question-circle');
+        me.setIconCls("fa fa-question-circle");
         me.setClosable(false);
 
         myMask.show();
@@ -753,24 +752,24 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @private
      */
-    showMessageDraftLoadingNotice : function(isComposed) {
+    showMessageDraftLoadingNotice: function (isComposed) {
 
         var me = this;
 
-        me.loadingMask = Ext.create('Ext.LoadMask', {
-            target : me,
-            bind   : {
-                hidden : isComposed
-                        ? '{isAccountAndFolderSet}'
-                        : '{!isMessageBodyLoading}'
+        me.loadingMask = Ext.create("Ext.LoadMask", {
+            target: me,
+            bind: {
+                hidden: isComposed
+                    ? "{isAccountAndFolderSet}"
+                    : "{!isMessageBodyLoading}"
             },
-            listeners : {
-                hide : function(mask) {
+            listeners: {
+                hide: function (mask) {
                     var me = this;
                     me.loadingMask = null;
                     mask.destroy();
                 },
-                scope : this
+                scope: this
             }
         });
 
@@ -783,8 +782,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @returns {conjoon.cn_mail.model.mail.message.MessageDraft}
      */
-    getMessageDraft : function() {
-        return this.getViewModel().get('messageDraft');
+    getMessageDraft: function () {
+        return this.getViewModel().get("messageDraft");
     },
 
 
@@ -794,11 +793,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @return  {Boolean}
      */
-    isDraftLoading : function() {
+    isDraftLoading: function () {
         const me = this,
-              vm = me.getViewModel();
+            vm = me.getViewModel();
 
-        return !!(vm.get('isMessageBodyLoading') ||
+        return !!(vm.get("isMessageBodyLoading") ||
                vm.hasPendingCopyRequest() ||
                vm.loadingDraft);
     },
@@ -810,7 +809,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      * @return {Boolean} if the requested draft for this editor could not be
      * loaded, otherwise false
      */
-    hasLoadingFailed : function() {
+    hasLoadingFailed: function () {
         const me = this,
             vm = me.getViewModel();
 
@@ -823,7 +822,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditor', {
      *
      * @inheritdoc
      */
-    showLoadingFailedDialog : function() {
+    showLoadingFailedDialog: function () {
 
         const me = this;
 

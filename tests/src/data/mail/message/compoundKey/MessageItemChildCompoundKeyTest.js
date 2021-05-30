@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKeyTest', function(t) {
+describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKeyTest", function (t) {
 
-    const create = function(cfg) {
-            return Ext.create('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey', cfg);
+    const create = function (cfg) {
+            return Ext.create("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey", cfg);
         },
         MAILACCOUNTID       = "foo",
         MAILFOLDERID        = "bar",
@@ -34,26 +34,26 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
         ID                  = "foobar";
 
 
-    t.it("constructor() / apply*()", function(t) {
+    t.it("constructor() / apply*()", function (t) {
 
-        let exc, e;
+        let exc;
 
-        try{create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID})}catch(e){exc=e;}
+        try{create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an object containing the property");
         exc = undefined;
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID, parentMessageItemId : PARENTMESSAGEITEMID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
         t.expect(key.getMailAccountId()).toBe(MAILACCOUNTID);
         t.expect(key.getMailFolderId()).toBe(MAILFOLDERID);
         t.expect(key.getParentMessageItemId()).toBe(PARENTMESSAGEITEMID);
         t.expect(key.getId()).toBe(ID);
 
-        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.CompoundKey');
+        t.isInstanceOf(key, "conjoon.cn_mail.data.mail.message.CompoundKey");
 
-        try{key.setParentMessageItemId('bar')}catch(e){exc=e;}
+        try{key.setParentMessageItemId("bar");}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("already set");
@@ -64,22 +64,22 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("toObject()", function(t) {
+    t.it("toObject()", function (t) {
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID, parentMessageItemId : PARENTMESSAGEITEMID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
         t.expect(key.toObject()).toEqual({
-            mailAccountId       : MAILACCOUNTID,
-            mailFolderId        : MAILFOLDERID,
-            parentMessageItemId : PARENTMESSAGEITEMID,
-            id                  : ID
+            mailAccountId: MAILACCOUNTID,
+            mailFolderId: MAILFOLDERID,
+            parentMessageItemId: PARENTMESSAGEITEMID,
+            id: ID
         });
     });
 
 
-    t.it("toArray()", function(t) {
+    t.it("toArray()", function (t) {
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID, parentMessageItemId : PARENTMESSAGEITEMID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
         t.expect(key.toArray()).toEqual([
             MAILACCOUNTID, MAILFOLDERID, PARENTMESSAGEITEMID, ID
@@ -88,28 +88,30 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("toLocalId()", function(t) {
+    t.it("toLocalId()", function (t) {
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID, parentMessageItemId : PARENTMESSAGEITEMID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
         t.expect(key.toLocalId()).toBe(
-            MAILACCOUNTID + "-" + MAILFOLDERID + '-' + PARENTMESSAGEITEMID + '-' + ID
+            MAILACCOUNTID + "-" + MAILFOLDERID + "-" + PARENTMESSAGEITEMID + "-" + ID
         );
 
     });
 
 
-    t.it("fromRecord()", function(t) {
+    t.it("fromRecord()", function (t) {
 
-        try{conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord({})}catch(e){exc=e;}
+        let exc = undefined;
+
+        try{conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord({});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
         exc = undefined;
 
 
-        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.fromRecord(Ext.create('Ext.data.Model', {
-            mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID, parentMessageItemId : PARENTMESSAGEITEMID
+        let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.fromRecord(Ext.create("Ext.data.Model", {
+            mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID
         }));
 
         t.expect(key.getMailAccountId()).toBe(MAILACCOUNTID);
@@ -120,7 +122,7 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("createFor()", function(t) {
+    t.it("createFor()", function (t) {
 
         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID, PARENTMESSAGEITEMID, ID
@@ -131,7 +133,6 @@ describe('conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
         t.expect(key.getParentMessageItemId()).toBe(PARENTMESSAGEITEMID);
         t.expect(key.getId()).toBe(ID);
     });
-
 
 
 });

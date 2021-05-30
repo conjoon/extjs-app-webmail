@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,16 +27,16 @@
  *  Extends livegrid by adding getRecordByCompoundKey() to the feature.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid', {
+Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.Livegrid", {
 
-    extend : 'coon.comp.grid.feature.Livegrid',
+    extend: "coon.comp.grid.feature.Livegrid",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.CompoundKey',
-        'coon.core.data.pageMap.PageMapUtil'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.CompoundKey",
+        "coon.core.data.pageMap.PageMapUtil"
     ],
 
-    alias : 'feature.cn_mail-mailmessagegridfeature-livegrid',
+    alias: "feature.cn_mail-mailmessagegridfeature-livegrid",
 
     /**
      * Helper function to find and return the record specified by the id.
@@ -50,19 +50,19 @@ Ext.define('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid', {
      *
      * @throws if compoudnKey is not an instance of conjoon.cn_mail.data.mail.message.CompoundKey
      */
-    getRecordByCompoundKey : function(compoundKey) {
+    getRecordByCompoundKey: function (compoundKey) {
 
         const me = this;
 
         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.CompoundKey)) {
             Ext.raise({
-                msg         : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.CompoundKey",
-                compoundKey : compoundKey
+                msg: "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.CompoundKey",
+                compoundKey: compoundKey
             });
         }
 
         return coon.core.data.pageMap.PageMapUtil.getRecordBy(
-            function(rec) {
+            function (rec) {
                 return rec.getCompoundKey().equalTo(compoundKey) === true;
             }, me.pageMapFeeder
         );

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,47 +43,47 @@
  * FOLDER
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
+Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
 
-    extend : 'Ext.tree.Column',
+    extend: "Ext.tree.Column",
 
-    alias : 'widget.cn_mail-mailfoldertreecolumn',
+    alias: "widget.cn_mail-mailfoldertreecolumn",
 
 
     cellTpl: [
-        '<tpl for="lines">',
-        '<div class="{parent.childCls} {parent.elbowCls}-img ',
-        '{parent.elbowCls}-<tpl if=".">line<tpl else>empty</tpl>" role="presentation"></div>',
-        '</tpl>',
+        "<tpl for=\"lines\">",
+        "<div class=\"{parent.childCls} {parent.elbowCls}-img ",
+        "{parent.elbowCls}-<tpl if=\".\">line<tpl else>empty</tpl>\" role=\"presentation\"></div>",
+        "</tpl>",
 
-        '<tpl if="glyph">',
-        '<span class="{baseIconCls}" ',
-        '<tpl if="glyphFontFamily">',
-        'style="font-family:{glyphFontFamily}"',
-        '</tpl>',
-        '>{glyph}</span>',
-        '<tpl else>',
-        '<tpl if="icon">',
-        '<img src="{blankUrl}"',
-        '<tpl else>',
-        '<div',
-        '</tpl>',
-        ' role="presentation" class="{childCls} {baseIconCls} {customIconCls} ',
-        '{baseIconCls}-<tpl if="leaf">leaf<tpl else><tpl if="expanded">parent-expanded<tpl else>parent</tpl></tpl> {iconCls}" ',
-        '<tpl if="icon">style="background-image:url({icon})"/>' +
-        '<tpl else>' +
-        '></div>' +
-        '</tpl>',
-        '</tpl>',
-        '<tpl if="href">',
-        '<a href="{href}" role="link" target="{hrefTarget}" class="{textCls} {childCls}">{value}</a>',
-        '<tpl else>',
-        '<span class="{textCls} {childCls}">{value}</span>',
-        '</tpl>',
+        "<tpl if=\"glyph\">",
+        "<span class=\"{baseIconCls}\" ",
+        "<tpl if=\"glyphFontFamily\">",
+        "style=\"font-family:{glyphFontFamily}\"",
+        "</tpl>",
+        ">{glyph}</span>",
+        "<tpl else>",
+        "<tpl if=\"icon\">",
+        "<img src=\"{blankUrl}\"",
+        "<tpl else>",
+        "<div",
+        "</tpl>",
+        " role=\"presentation\" class=\"{childCls} {baseIconCls} {customIconCls} ",
+        "{baseIconCls}-<tpl if=\"leaf\">leaf<tpl else><tpl if=\"expanded\">parent-expanded<tpl else>parent</tpl></tpl> {iconCls}\" ",
+        "<tpl if=\"icon\">style=\"background-image:url({icon})\"/>" +
+        "<tpl else>" +
+        "></div>" +
+        "</tpl>",
+        "</tpl>",
+        "<tpl if=\"href\">",
+        "<a href=\"{href}\" role=\"link\" target=\"{hrefTarget}\" class=\"{textCls} {childCls}\">{value}</a>",
+        "<tpl else>",
+        "<span class=\"{textCls} {childCls}\">{value}</span>",
+        "</tpl>",
 
-        '<div class="{childCls} {elbowCls}-img {elbowCls}',
-        '<tpl if="isLast">-end</tpl>' +
-        '<tpl if="expandable">-plus {expanderCls}</tpl>" role="presentation"></div>',
+        "<div class=\"{childCls} {elbowCls}-img {elbowCls}",
+        "<tpl if=\"isLast\">-end</tpl>" +
+        "<tpl if=\"expandable\">-plus {expanderCls}</tpl>\" role=\"presentation\"></div>"
 
     ],
 
@@ -93,10 +93,10 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
      *
      * @see #getIconClsForMailFolderType
      */
-    initTemplateRendererData : function(value, metaData, record, rowIdx, colIdx, store, view) {
+    initTemplateRendererData: function (value, metaData, record, rowIdx, colIdx, store, view) {
 
         const me   = this,
-              type = record.get('folderType');
+            type = record.get("folderType");
 
         let ret;
 
@@ -132,26 +132,26 @@ Ext.define('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn', {
      *
      * @protected
      */
-    getIconClsForMailFolderType : function(type) {
+    getIconClsForMailFolderType: function (type) {
 
-        var iconCls = 'fas fa-folder';
+        var iconCls = "fas fa-folder";
 
         switch (type) {
-            case 'INBOX':
-                iconCls = 'fas fa-inbox';
-                break;
-            case 'DRAFT':
-                iconCls = 'fas fa-edit';
-                break;
-            case 'JUNK':
-                iconCls = 'fas fa-recycle';
-                break;
-            case 'TRASH':
-                iconCls = 'fas fa-trash';
-                break;
-            case 'SENT':
-                iconCls = 'fas fa-paper-plane';
-                break;
+        case "INBOX":
+            iconCls = "fas fa-inbox";
+            break;
+        case "DRAFT":
+            iconCls = "fas fa-edit";
+            break;
+        case "JUNK":
+            iconCls = "fas fa-recycle";
+            break;
+        case "TRASH":
+            iconCls = "fas fa-trash";
+            break;
+        case "SENT":
+            iconCls = "fas fa-paper-plane";
+            break;
         }
 
         return iconCls;

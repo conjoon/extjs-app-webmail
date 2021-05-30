@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,59 +26,59 @@
 /**
  *
  */
-Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
+Ext.define("conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator", {
 
-    requires : [
-        'coon.core.data.field.CompoundKeyField',
-        'conjoon.cn_mail.data.mail.AbstractCompoundKey'
+    requires: [
+        "coon.core.data.field.CompoundKeyField",
+        "conjoon.cn_mail.data.mail.AbstractCompoundKey"
     ],
 
 
-    statics : {
+    statics: {
 
-        decorate : function(modelClass) {
+        decorate: function (modelClass) {
 
             let model = Ext.data.schema.Schema.lookupEntity(modelClass);
 
             model.override(this.getPrototypeBody());
 
             model.addFields([{
-                name : 'localId',
-                type : 'string'
+                name: "localId",
+                type: "string"
             }, {
-                name : 'id',
-                type : 'cn_core-datafieldcompoundkey'
+                name: "id",
+                type: "cn_core-datafieldcompoundkey"
             }, {
-                name : 'mailAccountId',
-                type : 'cn_core-datafieldcompoundkey'
+                name: "mailAccountId",
+                type: "cn_core-datafieldcompoundkey"
             }]);
 
             model.removeFields(["__id__"]);
         },
 
 
-        getPrototypeBody: function() {
+        getPrototypeBody: function () {
 
             return {
 
-                idProperty : 'localId',
+                idProperty: "localId",
 
                 /**
                  * @private
                  */
-                callerEntityName : "",
+                callerEntityName: "",
 
 
                 /**
                  * @private
                  */
-                compoundKeyFields : [],
+                compoundKeyFields: [],
 
                 /**
                  * In the order of the actual, e.g. parent-entities to child entities.
                  * @private
                  */
-                foreignKeyFields : ['mailAccountId', 'id'],
+                foreignKeyFields: ["mailAccountId", "id"],
 
                 /**
                  * Saves previously compoundKey before the compound key might get changed by
@@ -86,9 +86,9 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  * @private
                  * @see #save
                  */
-                previousCompoundKey : null,
+                previousCompoundKey: null,
 
-                inheritableStatics : {
+                inheritableStatics: {
 
                     /**
                      * Replacement for "load" which will make sure that it is possible to
@@ -103,12 +103,12 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                      *
                      * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.AbstractCompoundKey
                      */
-                    loadEntity : function(compoundKey, options, session) {
+                    loadEntity: function (compoundKey, options, session) {
 
                         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.AbstractCompoundKey)) {
                             Ext.raise({
-                                msg         : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.AbstractCompoundKey",
-                                compoundKey : compoundKey
+                                msg: "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.AbstractCompoundKey",
+                                compoundKey: compoundKey
                             });
                         }
 
@@ -137,7 +137,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @see checkForeignKeys
                  */
-                save : function(options) {
+                save: function (options) {
 
                     const me = this;
 
@@ -155,7 +155,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                         source = Ext.applyIf(Ext.apply({}, me.modified), me.data);
                     }
 
-                    me.checkForeignKeysForAction(source, 'save');
+                    me.checkForeignKeysForAction(source, "save");
 
                     return me.callParent(arguments);
                 },
@@ -169,7 +169,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @see getRepresentingCompoundKeyClass
                  */
-                commit : function() {
+                commit: function () {
 
                     const me = this,
                         representingCompoundKeyClass = me.getRepresentingCompoundKeyClass();
@@ -179,7 +179,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                     if (!me.phantom && me.modified) {
 
                         for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
-                            if (me.modified.hasOwnProperty(me.foreignKeyFields[i])) {
+                            if (Object.prototype.hasOwnProperty.call(me.modified, me.foreignKeyFields[i])) {
                                 recompute = true;
                                 break;
                             }
@@ -210,8 +210,8 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @abstract
                  */
-                getRepresentingCompoundKeyClass : function() {
-                    Ext.raise("abstract method must be overwritten.")
+                getRepresentingCompoundKeyClass: function () {
+                    Ext.raise("abstract method must be overwritten.");
                 },
 
 
@@ -221,7 +221,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @param {Object}  options
                  */
-                load : function(options) {
+                load: function (options) {
 
                     const me = this;
 
@@ -229,7 +229,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
 
                     params = params || {};
 
-                    me.checkForeignKeysForAction(params, 'read');
+                    me.checkForeignKeysForAction(params, "read");
 
                     return me.callParent(arguments);
                 },
@@ -246,34 +246,28 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  * @throws if any foreign key except id is not set, or if id is not set and
                  * record is not phantom or action is read.
                  */
-                checkForeignKeysForAction : function(source, action) {
+                checkForeignKeysForAction: function (source, action) {
 
                     const me = this,
                         phantom = me.phantom;
 
-                    let fData = [];
-
                     source = source || {};
 
-
                     for (let i = 0, len = me.foreignKeyFields.length; i < len;  i++) {
-                        if (me.foreignKeyFields[i] !== 'id') {
+                        if (me.foreignKeyFields[i] !== "id") {
                             if (!source[me.foreignKeyFields[i]]) {
                                 Ext.raise({
-                                    msg            : "\"" + me.foreignKeyFields[i] + "\" must be set",
-                                    action         : action,
-                                    foreignKeField : source[me.foreignKeyFields[i]]
+                                    msg: "\"" + me.foreignKeyFields[i] + "\" must be set",
+                                    action: action,
+                                    foreignKeField: source[me.foreignKeyFields[i]]
                                 });
                             }
-                        } else {
-                            if ((action === 'read' || !phantom) && !source.id) {
-                                Ext.raise({
-                                    msg    : "\"id\" must be set before",
-                                    action : action,
-                                    id     : source.id
-                                });
-                            }
-
+                        } else if ((action === "read" || !phantom) && !source.id) {
+                            Ext.raise({
+                                msg: "\"id\" must be set before",
+                                action: action,
+                                id: source.id
+                            });
                         }
 
                     }
@@ -289,7 +283,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @return {Array}
                  */
-                getAssociatedCompoundKeyedData : function() {
+                getAssociatedCompoundKeyedData: function () {
                     return [];
                 },
 
@@ -316,7 +310,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  * @see getAssociatedCompoundKeyedData
                  * @see updateLocalId
                  */
-                set : function(key, value) {
+                set: function (key, value) {
 
                     const me = this;
 
@@ -363,7 +357,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
 
                             val = keys[curr];
 
-                            assoc.set(target, val, {dirty : false});
+                            assoc.set(target, val, {dirty: false});
                         }
 
                         assoc.callerEntityName = "";
@@ -371,7 +365,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
 
                     let updateLocal = false;
                     for (let i = 0, len = me.foreignKeyFields.length; i < len; i++) {
-                        if (keys.hasOwnProperty(me.foreignKeyFields[i])) {
+                        if (Object.prototype.hasOwnProperty.call(keys, me.foreignKeyFields[i])) {
                             updateLocal = true;
                             break;
                         }
@@ -405,14 +399,14 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  * @throws if any of the compound keys are set and differe from in between
                  * the models.
                  */
-                compareAndApplyCompoundKeys : function(addedRecord, givePresedence = true) {
+                compareAndApplyCompoundKeys: function (addedRecord, givePresedence = true) {
 
                     const me = this;
 
                     let fields = Ext.isArray(me.compoundKeyFields)
-                        ? me.compoundKeyFields
-                        : me.compoundKeyFields[addedRecord.entityName],
-                        field, i, len, myVal, addedVal, values, targetField, tmp = {};
+                            ? me.compoundKeyFields
+                            : me.compoundKeyFields[addedRecord.entityName],
+                        field, targetField, tmp = {};
 
                     if (Ext.isArray(fields)) {
                         for (let i = 0, len = fields.length; i < len; i++) {
@@ -425,11 +419,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                     for (let i in fields) {
                         field  = i;
                         targetField = fields[i];
-
-                        myVal = me.get(field);
-                        addedVal = addedRecord.get(targetField);
                     }
-
 
                     let left = 0, right = 0, target, source;
 
@@ -444,7 +434,6 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                             right++;
                         }
                     }
-
 
 
                     // give right record presedence if more info is available than in left
@@ -469,7 +458,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                             continue;
                         }
                         if (source.get(field)) {
-                            target.set(targetField, source.get(field), {dirty : false});
+                            target.set(targetField, source.get(field), {dirty: false});
                         }
                     }
 
@@ -488,7 +477,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @private
                  */
-                updateLocalId : function() {
+                updateLocalId: function () {
                     const me = this,
                         representingCompoundKeyClass = me.getRepresentingCompoundKeyClass();
 
@@ -510,7 +499,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                         return key;
                     }
 
-                    me.setId(key, {dirty : false});
+                    me.setId(key, {dirty: false});
 
                     return key;
                 },
@@ -524,11 +513,9 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @deprecated use isCompoundKeyConfigured
                  */
-                isCompoundKeySet : function() {
+                isCompoundKeySet: function () {
 
                     const me = this;
-
-                    let fData = [], key;
 
                     for (let i = 0, len = me.foreignKeyFields.length; i < len;  i++) {
                         if (!me.get(me.foreignKeyFields[i])) {
@@ -548,7 +535,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @see compareAndApplyCompoundKeys
                  */
-                processRecordAssociation : Ext.emptyFn,
+                processRecordAssociation: Ext.emptyFn,
 
 
                 /**
@@ -559,7 +546,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @return conjoon.cn_mail.data.mail.message.AbstractCompoundKey
                  */
-                getCompoundKey : function() {
+                getCompoundKey: function () {
                     const me = this,
                         representingCompoundKeyClass = me.getRepresentingCompoundKeyClass();
 
@@ -571,7 +558,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                 /**
                  * @private
                  */
-                checkForeignKeysModified : function() {
+                checkForeignKeysModified: function () {
                     const me = this,
                         modified = me.modified;
 
@@ -579,7 +566,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                         return;
                     }
                     for (let i = 0, len = me.foreignKeyFields.length; i < len ; i++) {
-                        if (modified.hasOwnProperty(me.foreignKeyFields[i]) && modified[me.foreignKeyFields[i]] !== undefined) {
+                        if (Object.prototype.hasOwnProperty.call(modified, me.foreignKeyFields[i]) && modified[me.foreignKeyFields[i]] !== undefined) {
                             Ext.raise("Field was modified, can not use current information.");
                         }
                     }
@@ -594,7 +581,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @see #previousCompoundKey
                  */
-                getPreviousCompoundKey : function() {
+                getPreviousCompoundKey: function () {
 
                     const me = this;
 
@@ -612,7 +599,7 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                  *
                  * @return {Boolean}
                  */
-                isCompoundKeyConfigured : function() {
+                isCompoundKeyConfigured: function () {
 
                     const me   = this,
                         data = me.data;
@@ -627,14 +614,10 @@ Ext.define('conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator', {
                     return true;
                 }
 
-            }
+            };
         }
 
     }
-
-
-
-
 
 
 });

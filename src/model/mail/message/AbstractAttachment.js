@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,39 +28,38 @@
  * The schema used by this model is {@link conjoon.cn_mail.data.mail.BaseSchema}
  *
  */
-Ext.define('conjoon.cn_mail.model.mail.message.AbstractAttachment', {
+Ext.define("conjoon.cn_mail.model.mail.message.AbstractAttachment", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.MessageItemChildModel',
+    extend: "conjoon.cn_mail.model.mail.message.MessageItemChildModel",
 
-    requires : [
-        'coon.core.data.field.FileSize',
-        'coon.core.data.field.CompoundKeyField'
+    requires: [
+        "coon.core.data.field.FileSize",
+        "coon.core.data.field.CompoundKeyField"
     ],
 
-    fields : [{
-        name : 'type',
-        type : 'string'
+    fields: [{
+        name: "type",
+        type: "string"
     }, {
-        name : 'text',
-        type : 'string'
+        name: "text",
+        type: "string"
     }, {
-        name    : 'size',
-        type    : 'int',
-        persist : false
+        name: "size",
+        type: "int",
+        persist: false
     }, {
         /**
          * previewImgSrc property for base64 strings to preview attachments on the client
          * (FileReader).
          */
-        name    : 'previewImgSrc',
-        type    : 'string',
-        persist : false
+        name: "previewImgSrc",
+        type: "string",
+        persist: false
     }, {
-        name    : 'downloadUrl',
-        type    : 'string',
-        persist : false
+        name: "downloadUrl",
+        type: "string",
+        persist: false
     }]
-
 
 
 });

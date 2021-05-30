@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,10 +37,10 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
+Ext.define("conjoon.cn_mail.data.mail.AbstractCompoundKey", {
 
 
-    inheritableStatics : {
+    inheritableStatics: {
 
         /**
          * Creates a new CompoundKey based on the data found in fromRecord.
@@ -51,18 +51,18 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
          *
          * @throws if rec is not an instance of Ext.data.Model.
          */
-        fromRecord : function(rec) {
+        fromRecord: function (rec) {
 
             if (!(rec instanceof Ext.data.Model)) {
                 Ext.raise({
-                    msg : "\"rec\" must be an instance of Ext.data.Model",
-                    rec : rec
+                    msg: "\"rec\" must be an instance of Ext.data.Model",
+                    rec: rec
                 });
             }
 
             return new this({
-                mailAccountId : rec.get('mailAccountId'),
-                id            : rec.get('id')
+                mailAccountId: rec.get("mailAccountId"),
+                id: rec.get("id")
             });
 
         },
@@ -76,11 +76,11 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
          *
          * @returns {conjoon.cn_mail.data.mail.message.CompoundKey}
          */
-        createFor : function(mailAccountId, id) {
+        createFor: function (mailAccountId, id) {
 
             return new this({
-                mailAccountId : mailAccountId,
-                id            : id
+                mailAccountId: mailAccountId,
+                id: id
             });
 
         }
@@ -88,16 +88,16 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
     },
 
 
-    config : {
+    config: {
         /**
          * @type {String}
          */
-        mailAccountId : undefined,
+        mailAccountId: undefined,
 
         /**
          * @type {String}
          */
-        id    : undefined
+        id: undefined
     },
 
 
@@ -108,16 +108,16 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @throws if mailAccountId, mailFolderId or id are not set
      */
-    constructor : function(cfg) {
+    constructor: function (cfg) {
 
         const me = this;
 
         if (!cfg || !cfg.mailAccountId || !cfg.id) {
             Ext.raise({
-                msg : "\"cfg\" must be an object containing the properties " +
+                msg: "\"cfg\" must be an object containing the properties " +
                 "mailAccountId and id",
-                cfg : cfg
-            })
+                cfg: cfg
+            });
         }
 
         me.initConfig(cfg);
@@ -131,7 +131,7 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @returns {Array}
      */
-    toArray : function() {
+    toArray: function () {
 
         const me = this;
 
@@ -148,13 +148,13 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @returns {{mailAccountId, id}}
      */
-    toObject : function() {
+    toObject: function () {
 
         const me = this;
 
         return {
-            mailAccountId : me.getMailAccountId(),
-            id            : me.getId()
+            mailAccountId: me.getMailAccountId(),
+            id: me.getId()
         };
 
     },
@@ -166,10 +166,10 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @returns {string}
      */
-    toLocalId : function() {
+    toLocalId: function () {
         const me = this;
 
-        return me.getMailAccountId() + '-' +  me.getId();
+        return me.getMailAccountId() + "-" +  me.getId();
     },
 
 
@@ -182,14 +182,14 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @throws exception if mailAccountId was already set
      */
-    applyMailAccountId : function(mailAccountId) {
+    applyMailAccountId: function (mailAccountId) {
 
         const me = this;
 
         if (me.getMailAccountId() !== undefined) {
             Ext.raise({
-                msg           : "\"mailAccountId\" was already set",
-                mailAccountId : me.getMailAccountId()
+                msg: "\"mailAccountId\" was already set",
+                mailAccountId: me.getMailAccountId()
             });
         }
 
@@ -206,14 +206,14 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @throws exception if id was already set
      */
-    applyId : function(id) {
+    applyId: function (id) {
 
         const me = this;
 
         if (me.getId() !== undefined) {
             Ext.raise({
-                msg : "\"id\" was already set",
-                id  : me.getId()
+                msg: "\"id\" was already set",
+                id: me.getId()
             });
         }
 
@@ -229,7 +229,7 @@ Ext.define('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
      *
      * @return {Boolean}
      */
-    equalTo : function(cmp) {
+    equalTo: function (cmp) {
 
         const me = this;
 

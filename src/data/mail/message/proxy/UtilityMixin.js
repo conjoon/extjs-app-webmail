@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +27,7 @@
  * Mixin for proxies providing utility methods.
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.proxy.UtilityMixin', {
+Ext.define("conjoon.cn_mail.data.mail.message.proxy.UtilityMixin", {
 
 
     /**
@@ -48,24 +48,24 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.UtilityMixin', {
      * @param {Object} source
      * @param {Array} keys
      */
-    purgeFilter : function(source, keys) {
+    purgeFilter: function (source, keys) {
 
         let fl = Ext.decode(source.filter),
             np = {}, nfl = [];
         for (let i = 0, len = fl.length; i < len; i++) {
-           if (keys.indexOf(fl[i].property) === -1) {
-               nfl.push(fl[i]);
-           } else {
-               np[fl[i].property] = fl[i].value;
-           }
+            if (keys.indexOf(fl[i].property) === -1) {
+                nfl.push(fl[i]);
+            } else {
+                np[fl[i].property] = fl[i].value;
+            }
         }
         source = Ext.apply(source, np);
         if (!nfl.length) {
-           delete source.filter;
+            delete source.filter;
         } else {
-           source.filter = Ext.encode(nfl);
+            source.filter = Ext.encode(nfl);
         }
-   }
+    }
 
 
 });

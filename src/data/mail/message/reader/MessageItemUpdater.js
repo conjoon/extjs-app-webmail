@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,14 +39,14 @@
  *
  * @singleton
  */
-Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
+Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater", {
 
 
-    singleton : true,
+    singleton: true,
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageItem',
-        'conjoon.cn_mail.model.mail.message.MessageDraft'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageItem",
+        "conjoon.cn_mail.model.mail.message.MessageDraft"
     ],
 
 
@@ -78,55 +78,55 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
      * @throws if messageDraft is not an instance of {conjoon.cn_mail.model.mail.message.MessageDraft},
      * or if if messageItem is not an instance of {conjoon.cn_mail.model.mail.message.MessageItem}
      */
-    updateItemWithDraft : function(messageItem, messageDraft) {
+    updateItemWithDraft: function (messageItem, messageDraft) {
 
         var me = this, size = 0, attachments, messageBody;
 
         if (!(messageItem instanceof conjoon.cn_mail.model.mail.message.MessageItem)) {
             Ext.raise({
-                msg         : 'messageItem must be an instance of \'conjoon.cn_mail.model.mail.message.MessageItem\'',
-                cls         : Ext.getClassName(me),
-                messageItem : messageItem
+                msg: "messageItem must be an instance of 'conjoon.cn_mail.model.mail.message.MessageItem'",
+                cls: Ext.getClassName(me),
+                messageItem: messageItem
             });
         }
 
         if (!(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
             Ext.raise({
-                msg          : 'messageDraft must be an instance of \'conjoon.cn_mail.model.mail.message.MessageDraft\'',
-                cls          : Ext.getClassName(me),
-                messageDraft : messageDraft
+                msg: "messageDraft must be an instance of 'conjoon.cn_mail.model.mail.message.MessageDraft'",
+                cls: Ext.getClassName(me),
+                messageDraft: messageDraft
             });
         }
 
         attachments = messageDraft.attachments().getRange();
         messageBody = messageDraft.getMessageBody();
 
-        size += messageBody.get('textPlain').length;
-        size += messageBody.get('textHtml').length;
+        size += messageBody.get("textPlain").length;
+        size += messageBody.get("textHtml").length;
 
         for (var i = 0, len = attachments.length; i < len; i++) {
-            size += attachments[i].get('size');
+            size += attachments[i].get("size");
         }
 
         // from/to fields are COPYING the values so we do not
         // need to take care of cloning them
         let copiedData = {
-            date           : messageDraft.get('date'),
-            to             : messageDraft.get('to'),
-            subject        : messageDraft.get('subject'),
-            hasAttachments : attachments.length > 0,
-            previewText    : messageBody.get('textPlain'),
-            size           : size,
-            from           : messageDraft.get('from'),
-            seen           : messageDraft.get('seen'),
-            flagged        : messageDraft.get('flagged'),
-            recent         : messageDraft.get('recent'),
-            answered       : messageDraft.get('answered'),
-            draft          : messageDraft.get('draft'),
+            date: messageDraft.get("date"),
+            to: messageDraft.get("to"),
+            subject: messageDraft.get("subject"),
+            hasAttachments: attachments.length > 0,
+            previewText: messageBody.get("textPlain"),
+            size: size,
+            from: messageDraft.get("from"),
+            seen: messageDraft.get("seen"),
+            flagged: messageDraft.get("flagged"),
+            recent: messageDraft.get("recent"),
+            answered: messageDraft.get("answered"),
+            draft: messageDraft.get("draft"),
             // most likely changed if dealing with IMAP
             // standards
-            id             : messageDraft.get('id'),
-            messageBodyId : messageDraft.get('messageBodyId')
+            id: messageDraft.get("id"),
+            messageBodyId: messageDraft.get("messageBodyId")
         };
 
         messageItem.set(copiedData);
@@ -147,24 +147,24 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', {
      *
      * @see updateItemWithDraft
      */
-    createItemFromDraft : function(messageDraft) {
+    createItemFromDraft: function (messageDraft) {
 
         const me = this;
 
         if (!(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
             Ext.raise({
-                msg          : 'messageDraft must be an instance of \'conjoon.cn_mail.model.mail.message.MessageDraft\'',
-                cls          : Ext.getClassName(me),
-                messageDraft : messageDraft
+                msg: "messageDraft must be an instance of 'conjoon.cn_mail.model.mail.message.MessageDraft'",
+                cls: Ext.getClassName(me),
+                messageDraft: messageDraft
             });
         }
 
-        let messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-            localId       : messageDraft.getId(),
-            id            : messageDraft.get('id'),
-            mailAccountId : messageDraft.get('mailAccountId'),
-            mailFolderId  : messageDraft.get('mailFolderId'),
-            messageBodyId : messageDraft.getMessageBody().getId()
+        let messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+            localId: messageDraft.getId(),
+            id: messageDraft.get("id"),
+            mailAccountId: messageDraft.get("mailAccountId"),
+            mailFolderId: messageDraft.get("mailFolderId"),
+            messageBodyId: messageDraft.getMessageBody().getId()
         });
 
         return me.updateItemWithDraft(messageItem, messageDraft);

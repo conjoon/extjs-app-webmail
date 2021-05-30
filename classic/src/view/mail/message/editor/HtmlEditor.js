@@ -30,9 +30,9 @@
  */
 Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
 
-    extend : "Ext.form.field.HtmlEditor",
+    extend: "Ext.form.field.HtmlEditor",
 
-    requires : [
+    requires: [
         "coon.comp.form.field.FileButton",
         "coon.core.ThemeManager",
         "coon.core.Environment",
@@ -41,7 +41,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
         "coon.core.Template"
     ],
 
-    alias : "widget.cn_mail-mailmessageeditorhtmleditor",
+    alias: "widget.cn_mail-mailmessageeditorhtmleditor",
 
     /**
      * @private
@@ -52,19 +52,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
     /**
      * @inheritdoc
      */
-    createToolbar: function(){
+    createToolbar: function (){
 
         var me   = this,
             tbar = me.callParent(arguments);
 
         tbar.add("-");
         tbar.add({
-            xtype   : "cn_comp-formfieldfilebutton",
-            iconCls : "fas fa-paperclip",
-            tooltip : {
-                title : "Add Attachment(s)...",
-                text  : "Add one or more attachments to this message.",
-                cls   : Ext.baseCSSPrefix + "html-editor-tip"
+            xtype: "cn_comp-formfieldfilebutton",
+            iconCls: "fas fa-paperclip",
+            tooltip: {
+                title: "Add Attachment(s)...",
+                text: "Add one or more attachments to this message.",
+                cls: Ext.baseCSSPrefix + "html-editor-tip"
             }
         });
 
@@ -76,11 +76,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
      * @see conjoon/app-cn_mail#68
      * @inheritdoc
      */
-    getToolbarCfg: function(){
+    getToolbarCfg: function (){
         const me  = this,
-              cfg = me.callParent(arguments);
+            cfg = me.callParent(arguments);
 
-        cfg.listeners.click = function(evt, source) {
+        cfg.listeners.click = function (evt, source) {
             if (source.className.indexOf("x-form-file-input") !== -1) {
                 // if we prevent default when file button is clicked (see below),
                 // no file dialog is shown. We have to exit here.
@@ -106,7 +106,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
             return me.callParent(arguments);
         }
 
-        me.editorHtmlTemplateTxt = await me.loadMarkup()
+        me.editorHtmlTemplateTxt = await me.loadMarkup();
 
         return me.callParent(arguments);
     },
@@ -127,7 +127,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
             ),
             tpl = await coon.core.Template.load(tplPath);
 
-        let html = tpl.render({theme : themeConfig ? themeConfig : {}});
+        let html = tpl.render({theme: themeConfig ? themeConfig : {}});
 
         return html;
     } ,

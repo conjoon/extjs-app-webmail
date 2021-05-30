@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,55 +23,55 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.AttachmentListTest', function(t) {
+describe("conjoon.cn_mail.view.mail.message.reader.AttachmentListTest", function (t) {
 
     var view,
         viewConfig;
 
-    t.afterEach(function() {
-       if (view) {
+    t.afterEach(function () {
+        if (view) {
             view.destroy();
             view = null;
         }
 
     });
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
         viewConfig = {
 
-        }
+        };
     });
 
 
-    t.it("Should create and show the attachment list along with default config checks", function(t) {
+    t.it("Should create and show the attachment list along with default config checks", function (t) {
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.reader.AttachmentList', viewConfig);
+            "conjoon.cn_mail.view.mail.message.reader.AttachmentList", viewConfig);
 
         t.expect(view instanceof conjoon.cn_mail.view.mail.message.AbstractAttachmentList).toBeTruthy();
 
-        t.expect(view.alias).toContain('widget.cn_mail-mailmessagereaderattachmentlist');
+        t.expect(view.alias).toContain("widget.cn_mail-mailmessagereaderattachmentlist");
 
         t.expect(view.getController() instanceof conjoon.cn_mail.view.mail.message.reader.AttachmentListController).toBe(true);
     });
 
-    t.it("Should test displayButtonType properly", function(t) {
+    t.it("Should test displayButtonType properly", function (t) {
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.reader.AttachmentList', viewConfig);
+            "conjoon.cn_mail.view.mail.message.reader.AttachmentList", viewConfig);
 
         var tests = [{
-            expectREMOVE   : false,
-            expectDOWNLOAD : true
+            expectREMOVE: false,
+            expectDOWNLOAD: true
         }];
 
         for (var i = 0, len = tests.length; i < len; i++) {
             t.expect(
-                view.displayButtonType('REMOVE')
-            ).toBe(tests[i]['expectREMOVE']);
+                view.displayButtonType("REMOVE")
+            ).toBe(tests[i]["expectREMOVE"]);
 
             t.expect(
-                view.displayButtonType('DOWNLOAD')
-            ).toBe(tests[i]['expectDOWNLOAD']);
+                view.displayButtonType("DOWNLOAD")
+            ).toBe(tests[i]["expectDOWNLOAD"]);
         }
     });
 

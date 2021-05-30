@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,31 +29,31 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
+Ext.define("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
 
 
-    extend : 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel',
+    extend: "conjoon.cn_mail.model.mail.message.CompoundKeyedModel",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey"
     ],
 
-    fields : [{
-        name : 'parentMessageItemId',
-        type : 'cn_core-datafieldcompoundkey'
+    fields: [{
+        name: "parentMessageItemId",
+        type: "cn_core-datafieldcompoundkey"
     }],
 
     /**
      * @private
      */
-    foreignKeyFields : ['mailAccountId', 'mailFolderId', 'parentMessageItemId', 'id'],
+    foreignKeyFields: ["mailAccountId", "mailFolderId", "parentMessageItemId", "id"],
 
 
     /**
      * @inheritdoc
      * @returns {conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey}
      */
-    getRepresentingCompoundKeyClass : function() {
+    getRepresentingCompoundKeyClass: function () {
         return conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey;
     }
 

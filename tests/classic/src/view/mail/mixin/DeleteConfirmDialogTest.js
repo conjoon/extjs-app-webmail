@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,43 +23,43 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialogTest', function(t) {
+describe("conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialogTest", function (t) {
 
     t.diag("defining mock and waiting until complete...");
 
-    Ext.define('mocked.TestPanel', {
+    Ext.define("mocked.TestPanel", {
 
-        extend : 'Ext.Panel',
+        extend: "Ext.Panel",
 
-        mixins : [
-            'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog'
+        mixins: [
+            "conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog"
         ]
 
     });
 
-    const funcview = function(t, canCloseAfterDelete) {
+    const funcview = function (t, canCloseAfterDelete) {
 
 
-        let view = Ext.create('mocked.TestPanel', {
-            width               : 800,
-            height              : 600,
-            renderTo            : document.body,
-            canCloseAfterDelete : canCloseAfterDelete
+        let view = Ext.create("mocked.TestPanel", {
+            width: 800,
+            height: 600,
+            renderTo: document.body,
+            canCloseAfterDelete: canCloseAfterDelete
         });
 
-        let obj = { CALLED : 0},
-            fn = function() {
+        let obj = { CALLED: 0},
+            fn = function () {
                 this.CALLED++;
             };
 
         t.expect(obj.CALLED).toBe(0);
         let mask = view.showMessageDeleteConfirmDialog(null, fn, obj);
-        t.isInstanceOf(mask, 'coon.comp.component.MessageMask');
+        t.isInstanceOf(mask, "coon.comp.component.MessageMask");
         t.expect(mask).toBe(view.deleteMask);
         t.expect(view.showMessageDeleteConfirmDialog(null, fn, obj)).toBe(mask);
 
         let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
-        t.click(yesButton[0], function() {
+        t.click(yesButton[0], function () {
             t.expect(obj.CALLED).toBe(1);
             t.expect(view.deleteMask).toBe(null);
 
@@ -74,22 +74,21 @@ describe('conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialogTest', function(t) 
 
     };
 
-t.waitForMs(1000, function() {
+    t.waitForMs(1000, function () {
 
-    t.diag("Starting tests.");
+        t.diag("Starting tests.");
 
-    t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete true", function(t) {
-        funcview(t, true);
+        t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete true", function (t) {
+            funcview(t, true);
+        });
+
+
+        t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete false", function (t) {
+            funcview(t, false);
+        });
+
+
     });
-
-
-    t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete false", function(t) {
-        funcview(t, false);
-    });
-
-
-
-});
 
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,11 +30,11 @@
  *
  * @private
  */
-Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
+Ext.define("conjoon.cn_mail.store.mail.message.MessageAttachmentStore", {
 
-    extend : 'Ext.data.Store',
+    extend: "Ext.data.Store",
 
-    alias : 'store.cn_mail-mailmessageattachmentstore',
+    alias: "store.cn_mail-mailmessageattachmentstore",
 
 
     /**
@@ -48,7 +48,7 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
      *
      * @see checkAndBuildCompoundKeyFilters
      */
-    load : function() {
+    load: function () {
 
         const me = this;
 
@@ -68,7 +68,7 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
      *
      * @returns {*|Object}
      */
-    add : function(record) {
+    add: function (record) {
 
         const me = this;
 
@@ -90,7 +90,7 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
 
         let assoc = me.getAssociatedEntity();
 
-        if (assoc && assoc.entityName === 'MessageDraft') {
+        if (assoc && assoc.entityName === "MessageDraft") {
             for (let i = 0, len = recs.length; i < len; i++) {
                 assoc.processRecordAssociation(recs[i]);
             }
@@ -111,19 +111,19 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
      *
      * @throws if any compound key information is missing
      */
-    checkAndBuildCompoundKeyFilters : function() {
+    checkAndBuildCompoundKeyFilters: function () {
 
-        const me            = this,
-            filters         = me.getFilters(),
-            obsoleteFilters = [],
-            propertySet     = {
-                mailFolderId        : false,
-                mailAccountId       : false,
-                parentMessageItemId : false
+        const
+            me          = this,
+            filters     = me.getFilters(),
+            propertySet = {
+                mailFolderId: false,
+                mailAccountId: false,
+                parentMessageItemId: false
             },
-            assocEntity = me.getAssociatedEntity() && me.getAssociatedEntity().entityName === 'MessageDraft'
-                          ? me.getAssociatedEntity()
-                          : null;
+            assocEntity = me.getAssociatedEntity() && me.getAssociatedEntity().entityName === "MessageDraft"
+                ? me.getAssociatedEntity()
+                : null;
 
         let filter, property, currProp, newValue;
 
@@ -139,20 +139,20 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
 
                     if (!assocEntity && !filter.getValue()) {
                         Ext.raise({
-                            msg          : "no valid value set for filter \"" + property + "\"",
-                            mailFolderId : filter.getValue()
+                            msg: "no valid value set for filter \"" + property + "\"",
+                            mailFolderId: filter.getValue()
                         });
                     }
 
                     if (assocEntity) {
-                        newValue = property === 'parentMessageItemId'
-                                   ? assocEntity.get('id')
-                                   : assocEntity.get(property);
+                        newValue = property === "parentMessageItemId"
+                            ? assocEntity.get("id")
+                            : assocEntity.get(property);
 
                         filter.setValue(newValue);
                     }
 
-                } else if (currProp === 'messageItemId') {
+                } else if (currProp === "messageItemId") {
                     me.removeFilter(filters.getAt(i), true);
                 }
             }
@@ -172,16 +172,16 @@ Ext.define('conjoon.cn_mail.store.mail.message.MessageAttachmentStore', {
 
                 for (let i in propertySet) {
 
-                    newValue = i === 'parentMessageItemId'
-                               ? assocEntity.get('id')
-                               : assocEntity.get(i);
+                    newValue = i === "parentMessageItemId"
+                        ? assocEntity.get("id")
+                        : assocEntity.get(i);
 
-                    me.addFilter({property : i, value : newValue}, true);
+                    me.addFilter({property: i, value: newValue}, true);
                 }
 
             } else {
                 Ext.raise({
-                    msg : "filters for properties \"[" + properties.join(', ') + "]\" not set"
+                    msg: "filters for properties \"[" + properties.join(", ") + "]\" not set"
                 });
             }
         }

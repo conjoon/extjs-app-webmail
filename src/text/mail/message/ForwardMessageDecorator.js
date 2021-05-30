@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,18 +26,18 @@
 /**
  * Text Decorator for Email Messages that get forwarded.
  */
-Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
+Ext.define("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", {
 
-    extend : 'conjoon.cn_mail.text.mail.message.CopyDecorator',
+    extend: "conjoon.cn_mail.text.mail.message.CopyDecorator",
 
-    requires : [
-        'conjoon.cn_mail.text.mail.message.DecoratorFormat'
+    requires: [
+        "conjoon.cn_mail.text.mail.message.DecoratorFormat"
     ],
 
     /**
      * @inheritdoc
      */
-    getTo : function() {
+    getTo: function () {
         return [];
     },
 
@@ -45,7 +45,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getCc : function() {
+    getCc: function () {
         return [];
     },
 
@@ -53,7 +53,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getBcc : function() {
+    getBcc: function () {
         return [];
     },
 
@@ -61,7 +61,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
     /**
      * @inheritdoc
      */
-    getTextHtml : function() {
+    getTextHtml: function () {
 
         var me           = this,
             messageDraft = me.messageDraft;
@@ -73,7 +73,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
             "<blockquote style=\"margin-left:4px;padding-left:10px;border-left:4px solid #bee9fc\">",
             me.getMessageBodyIntroHeaderFields(messageDraft),
             "<br /><br />",
-            messageDraft.getMessageBody().get('textHtml'),
+            messageDraft.getMessageBody().get("textHtml"),
             "</blockquote>"
         ].join("");
 
@@ -83,7 +83,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
     /**
      *@private
      */
-    getMessageBodyIntroText : function(messageDraft) {
+    getMessageBodyIntroText: function (messageDraft) {
         /**
          * @i18n
          */
@@ -94,20 +94,19 @@ Ext.define('conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', {
     /**
      * @private
      */
-    getMessageBodyIntroHeaderFields : function(messageDraft) {
+    getMessageBodyIntroHeaderFields: function (messageDraft) {
 
-        var me              = this,
-            from            = messageDraft.get('from'),
+        var from            = messageDraft.get("from"),
             DecoratorFormat = conjoon.cn_mail.text.mail.message.DecoratorFormat,
             result;
 
         result = [
             Ext.String.format("<b>From:</b> {0}", DecoratorFormat.stringifyEmailAddress(from)),
-            Ext.String.format("<b>Date:</b> {0}", Ext.util.Format.date(messageDraft.get('date'), "d.m.Y H:i")),
-            Ext.String.format("<b>To:</b> {0}", DecoratorFormat.stringifyEmailAddress(messageDraft.get('to'))),
-            Ext.String.format("<b>Subject:</b> {0}", messageDraft.get('subject')),
-            Ext.String.format("<b>Reply to:</b> {0}", messageDraft.get('replyTo')
-                ? DecoratorFormat.stringifyEmailAddress(messageDraft.get('replyTo'))
+            Ext.String.format("<b>Date:</b> {0}", Ext.util.Format.date(messageDraft.get("date"), "d.m.Y H:i")),
+            Ext.String.format("<b>To:</b> {0}", DecoratorFormat.stringifyEmailAddress(messageDraft.get("to"))),
+            Ext.String.format("<b>Subject:</b> {0}", messageDraft.get("subject")),
+            Ext.String.format("<b>Reply to:</b> {0}", messageDraft.get("replyTo")
+                ? DecoratorFormat.stringifyEmailAddress(messageDraft.get("replyTo"))
                 : DecoratorFormat.stringifyEmailAddress(from))
         ].join("<br />");
 

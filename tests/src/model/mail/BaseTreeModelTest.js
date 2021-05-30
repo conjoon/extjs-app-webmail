@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,54 +23,54 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.BaseTreeModelTest', function(t) {
+describe("conjoon.cn_mail.model.mail.BaseTreeModelTest", function (t) {
 
-    t.requireOk('conjoon.cn_mail.model.mail.BaseTreeModel', function() {
+    t.requireOk("conjoon.cn_mail.model.mail.BaseTreeModel", function () {
 
-        Ext.define('conjoon.cn_mail.model.mail.BaseTreeModelExtended', {
-            extend     : 'conjoon.cn_mail.model.mail.BaseTreeModel',
-            idProperty : 'foo'
+        Ext.define("conjoon.cn_mail.model.mail.BaseTreeModelExtended", {
+            extend: "conjoon.cn_mail.model.mail.BaseTreeModel",
+            idProperty: "foo"
         });
 
-        Ext.define('conjoon.cn_mail.model.mail.BaseTreeModelExtendedNoId', {
-            extend : 'conjoon.cn_mail.model.mail.BaseTreeModel'
+        Ext.define("conjoon.cn_mail.model.mail.BaseTreeModelExtendedNoId", {
+            extend: "conjoon.cn_mail.model.mail.BaseTreeModel"
         });
 
         var model;
 
 
-        t.afterEach(function() {
+        t.afterEach(function () {
             model = null;
         });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+        // +----------------------------------------------------------------------------
+        // |                    =~. Unit Tests .~=
+        // +----------------------------------------------------------------------------
 
-        t.it("Should not work without setting idProperty in subclass", function(t) {
+        t.it("Should not work without setting idProperty in subclass", function (t) {
 
-            let exc, e;
-            try{Ext.create('conjoon.cn_mail.model.mail.BaseTreeModel');}catch(e){exc=e;}
+            let exc;
+            try{Ext.create("conjoon.cn_mail.model.mail.BaseTreeModel");}catch(e){exc=e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
             exc = undefined;
 
-            try{Ext.create('conjoon.cn_mail.model.mail.BaseTreeModel', {idProperty : 'foo'});}catch(e){exc=e;}
+            try{Ext.create("conjoon.cn_mail.model.mail.BaseTreeModel", {idProperty: "foo"});}catch(e){exc=e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
             exc = undefined;
 
 
-            try{Ext.create('conjoon.cn_mail.model.mail.BaseTreeModelExtendedNoId');}catch(e){exc=e;}
+            try{Ext.create("conjoon.cn_mail.model.mail.BaseTreeModelExtendedNoId");}catch(e){exc=e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
             exc = undefined;
 
-            try{Ext.create('conjoon.cn_mail.model.mail.BaseTreeModelExtendedNoId', {idProperty : 'foo'});}catch(e){exc=e;}
+            try{Ext.create("conjoon.cn_mail.model.mail.BaseTreeModelExtendedNoId", {idProperty: "foo"});}catch(e){exc=e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("needs to be explicitly set");
@@ -79,10 +79,10 @@ describe('conjoon.cn_mail.model.mail.BaseTreeModelTest', function(t) {
         });
 
 
-        t.it("constructor", function(t) {
+        t.it("constructor", function (t) {
 
-            model = Ext.create('conjoon.cn_mail.model.mail.BaseTreeModelExtended', {
-                id : 1
+            model = Ext.create("conjoon.cn_mail.model.mail.BaseTreeModelExtended", {
+                id: 1
             });
 
             t.expect(model instanceof coon.core.data.BaseTreeModel).toBe(true);
@@ -92,9 +92,9 @@ describe('conjoon.cn_mail.model.mail.BaseTreeModelTest', function(t) {
         });
 
 
-        t.it("Test Schema", function(t) {
-            model = Ext.create('conjoon.cn_mail.model.mail.BaseTreeModelExtended', {
-                id : 1
+        t.it("Test Schema", function (t) {
+            model = Ext.create("conjoon.cn_mail.model.mail.BaseTreeModelExtended", {
+                id: 1
             });
 
             t.expect(
@@ -103,12 +103,10 @@ describe('conjoon.cn_mail.model.mail.BaseTreeModelTest', function(t) {
         });
 
 
-
-        t.it("Test Proxy", function(t) {
+        t.it("Test Proxy", function (t) {
 
             t.expect(conjoon.cn_mail.model.mail.BaseTreeModel.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
         });
-
 
 
     });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,58 +23,54 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', function(t) {
+describe("conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest", function (t) {
 
-    var viewModel;
+    var createMessageItem = function () {
 
-    var view,
-        viewConfig,
-        createMessageItem = function() {
-
-            var messageItem = Ext.create('conjoon.cn_mail.model.mail.message.MessageItem', {
-                id             : 1,
-                messageBodyId  : "1",
-                size           : 400,
-                subject        : 'SUBJECT',
-                from           : {name : 'foo', address : 'bar'},
-                date           : 'DATE',
-                to             : [{name : 'foo', address : 'bar'}],
-                hasAttachments : true,
-                seen           : Math.random() >= 0.5 === true,
-                recent         : Math.random() >= 0.5 === true,
-                flagged        : Math.random() >= 0.5 === true,
-                answered       : Math.random() >= 0.5 === true,
-                draft          : Math.random() >= 0.5 === true,
+            var messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                id: 1,
+                messageBodyId: "1",
+                size: 400,
+                subject: "SUBJECT",
+                from: {name: "foo", address: "bar"},
+                date: "DATE",
+                to: [{name: "foo", address: "bar"}],
+                hasAttachments: true,
+                seen: Math.random() >= 0.5 === true,
+                recent: Math.random() >= 0.5 === true,
+                flagged: Math.random() >= 0.5 === true,
+                answered: Math.random() >= 0.5 === true,
+                draft: Math.random() >= 0.5 === true
             });
 
             return messageItem;
         },
-        createMessageDraft = function() {
-            var messageDraft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                id            : 3,
-                subject : 'subject',
-                from    : {name : 'foo', address : 'bar'},
-                date    : '2017-07-30 23:45:00',
-                to      : [{name : 'foo', address : 'bar'}],
-                seen    : Math.random() >= 0.5 === true
+        createMessageDraft = function () {
+            var messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                id: 3,
+                subject: "subject",
+                from: {name: "foo", address: "bar"},
+                date: "2017-07-30 23:45:00",
+                to: [{name: "foo", address: "bar"}],
+                seen: Math.random() >= 0.5 === true
             });
 
-            messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                text : 'myAttachment',
-                size : 20
+            messageDraft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                text: "myAttachment",
+                size: 20
             }));
 
-            messageDraft.attachments().add(Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                text : 'myAttachment2',
-                size : 40
+            messageDraft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                text: "myAttachment2",
+                size: 40
             }));
 
-            let mb = Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-                id            : "3",
-                mailFolderId  : "INBOX",
-                mailAccountId : "dev_sys_conjoon_org",
-                textHtml      : 'Html text',
-                textPlain     : 'Plain Text'
+            let mb = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+                id: "3",
+                mailFolderId: "INBOX",
+                mailAccountId: "dev_sys_conjoon_org",
+                textHtml: "Html text",
+                textPlain: "Plain Text"
             });
 
             mb.setId(mb.getCompoundKey().toLocalId());
@@ -84,128 +80,124 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest', func
         };
 
 
+    t.requireOk("conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater", function () {
 
-    t.requireOk('conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater', function() {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
 
-        t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
+            t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", function () {
 
-        t.requireOk('conjoon.cn_mail.model.mail.message.MessageBody', function () {
+                t.it("Should make sure MessageItemUpdater exist", function (t) {
 
-            t.it("Should make sure MessageItemUpdater exist", function(t) {
+                    t.expect(conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater).toBeDefined();
 
-                t.expect(conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater).toBeDefined();
+                });
 
-            });
+                t.it("updateItemWithDraft()", function (t) {
 
-            t.it("updateItemWithDraft()", function(t) {
-
-                var messageItem = createMessageItem(),
-                    UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
-                    messageDraft, exc, e, oldSize = messageItem.get('size'),
-                    messageDraft = createMessageDraft(),
-                    expectedSize, ret;
-
+                    var messageItem = createMessageItem(),
+                        UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
+                        exc, oldSize = messageItem.get("size"),
+                        messageDraft = createMessageDraft(),
+                        expectedSize, ret;
 
 
-                try {UPDATER.updateItemWithDraft(messageItem);} catch (e) {exc = e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain('messagedraft must be an instance of');
+                    try {UPDATER.updateItemWithDraft(messageItem);} catch (e) {exc = e;}
+                    t.expect(exc).toBeDefined();
+                    t.expect(exc.msg.toLowerCase()).toContain("messagedraft must be an instance of");
 
-                exc = null;
+                    exc = null;
 
-                try {UPDATER.updateItemWithDraft(null, messageDraft);} catch (e) {exc = e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain('messageitem must be an instance of');
-
-
-                t.expect(messageItem.get('messageBodyId')).toBe("1");
-                t.expect(messageDraft.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
-                ret = UPDATER.updateItemWithDraft(messageItem, messageDraft);
-
-                t.expect(ret).toBe(messageItem);
-
-                // messageBodyId
-                t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
-                t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.get('messageBodyId'));
-
-                t.expect(messageItem.get('subject')).toBe(messageDraft.get('subject'));
-                t.expect(messageItem.get('date')).toBe(messageDraft.get('date'));
-                t.expect(messageItem.get('previewText')).toContain(messageDraft.getMessageBody().get('textPlain'));
-                t.expect(messageItem.get('hasAttachments')).toBe(true);
-
-                t.expect(messageItem.get('seen')).toBe(messageDraft.get('seen'));
-                t.expect(messageItem.get('recent')).toBe(messageDraft.get('recent'));
-                t.expect(messageItem.get('flagged')).toBe(messageDraft.get('flagged'));
-                t.expect(messageItem.get('answered')).toBe(messageDraft.get('answered'));
-                t.expect(messageItem.get('draft')).toBe(messageDraft.get('draft'));
-
-                expectedSize = 0;
-                expectedSize += messageDraft.getMessageBody().get('textPlain').length;
-                expectedSize += messageDraft.getMessageBody().get('textHtml').length;
-
-                for (var i = 0, len = messageDraft.attachments().getRange().length; i < len; i++) {
-                    expectedSize += messageDraft.attachments().getRange()[i].get('size');
-                }
-
-                t.expect(messageItem.get('size')).toBeGreaterThan(0);
-                t.expect(messageItem.get('size')).not.toBe(oldSize);
-                t.expect(messageItem.get('size')).toBe(expectedSize);
-
-                t.expect(messageItem.get('from')).not.toBe(messageDraft.get('from'));
-                t.expect(messageItem.get('from')).toEqual(messageDraft.get('from'));
-
-                t.expect(messageItem.get('to')).not.toBe(messageDraft.get('to'));
-                t.expect(messageItem.get('to')).toEqual(messageDraft.get('to'));
-
-                var attachments = messageItem.get('attachments');
-
-                // was committed
-                t.expect(messageItem.dirty).toBe(false);
-
-            });
+                    try {UPDATER.updateItemWithDraft(null, messageDraft);} catch (e) {exc = e;}
+                    t.expect(exc).toBeDefined();
+                    t.expect(exc.msg.toLowerCase()).toContain("messageitem must be an instance of");
 
 
-            t.it("createItemFromDraft()", function(t) {
+                    t.expect(messageItem.get("messageBodyId")).toBe("1");
+                    t.expect(messageDraft.get("messageBodyId")).toBe(messageDraft.getMessageBody().getId());
+                    ret = UPDATER.updateItemWithDraft(messageItem, messageDraft);
 
-                let UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
-                    exc, e,
-                    messageDraft = createMessageDraft(),
-                    messageItem;
+                    t.expect(ret).toBe(messageItem);
 
-                try {UPDATER.createItemFromDraft();} catch (e) {exc = e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-                t.expect(exc.msg.toLowerCase()).toContain('messagedraft');
-                exc = undefined;
+                    // messageBodyId
+                    t.expect(messageItem.get("id")).toBe(messageDraft.get("id"));
+                    t.expect(messageItem.get("messageBodyId")).toBe(messageDraft.get("messageBodyId"));
 
-                t.isCalled('updateItemWithDraft', UPDATER);
+                    t.expect(messageItem.get("subject")).toBe(messageDraft.get("subject"));
+                    t.expect(messageItem.get("date")).toBe(messageDraft.get("date"));
+                    t.expect(messageItem.get("previewText")).toContain(messageDraft.getMessageBody().get("textPlain"));
+                    t.expect(messageItem.get("hasAttachments")).toBe(true);
 
-                messageItem = UPDATER.createItemFromDraft(messageDraft);
+                    t.expect(messageItem.get("seen")).toBe(messageDraft.get("seen"));
+                    t.expect(messageItem.get("recent")).toBe(messageDraft.get("recent"));
+                    t.expect(messageItem.get("flagged")).toBe(messageDraft.get("flagged"));
+                    t.expect(messageItem.get("answered")).toBe(messageDraft.get("answered"));
+                    t.expect(messageItem.get("draft")).toBe(messageDraft.get("draft"));
 
-                t.isInstanceOf(messageItem, 'conjoon.cn_mail.model.mail.message.MessageItem');
+                    expectedSize = 0;
+                    expectedSize += messageDraft.getMessageBody().get("textPlain").length;
+                    expectedSize += messageDraft.getMessageBody().get("textHtml").length;
 
-                t.expect(messageItem.get('id')).toBe(messageDraft.get('id'));
+                    for (var i = 0, len = messageDraft.attachments().getRange().length; i < len; i++) {
+                        expectedSize += messageDraft.attachments().getRange()[i].get("size");
+                    }
 
-                t.expect(messageItem.get('mailFolderId')).toBe(messageDraft.get('mailFolderId'));
-                t.expect(messageItem.get('mailAccountId')).toBe(messageDraft.get('mailAccountId'));
+                    t.expect(messageItem.get("size")).toBeGreaterThan(0);
+                    t.expect(messageItem.get("size")).not.toBe(oldSize);
+                    t.expect(messageItem.get("size")).toBe(expectedSize);
 
-                t.expect(messageItem.get('seen')).toBe(messageDraft.get('seen'));
-                t.expect(messageItem.get('recent')).toBe(messageDraft.get('recent'));
-                t.expect(messageItem.get('flagged')).toBe(messageDraft.get('flagged'));
-                t.expect(messageItem.get('answered')).toBe(messageDraft.get('answered'));
-                t.expect(messageItem.get('draft')).toBe(messageDraft.get('draft'));
+                    t.expect(messageItem.get("from")).not.toBe(messageDraft.get("from"));
+                    t.expect(messageItem.get("from")).toEqual(messageDraft.get("from"));
 
+                    t.expect(messageItem.get("to")).not.toBe(messageDraft.get("to"));
+                    t.expect(messageItem.get("to")).toEqual(messageDraft.get("to"));
 
-                t.expect(messageItem.get('messageBodyId')).toBe(messageDraft.getMessageBody().getId());
+                    // was committed
+                    t.expect(messageItem.dirty).toBe(false);
 
-
-                // was committed
-                t.expect(messageItem.dirty).toBe(false);
-
-            });
+                });
 
 
-        })});
+                t.it("createItemFromDraft()", function (t) {
 
-})});
+                    let UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
+                        exc,
+                        messageDraft = createMessageDraft(),
+                        messageItem;
+
+                    try {UPDATER.createItemFromDraft();} catch (e) {exc = e;}
+                    t.expect(exc).toBeDefined();
+                    t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+                    t.expect(exc.msg.toLowerCase()).toContain("messagedraft");
+                    exc = undefined;
+
+                    t.isCalled("updateItemWithDraft", UPDATER);
+
+                    messageItem = UPDATER.createItemFromDraft(messageDraft);
+
+                    t.isInstanceOf(messageItem, "conjoon.cn_mail.model.mail.message.MessageItem");
+
+                    t.expect(messageItem.get("id")).toBe(messageDraft.get("id"));
+
+                    t.expect(messageItem.get("mailFolderId")).toBe(messageDraft.get("mailFolderId"));
+                    t.expect(messageItem.get("mailAccountId")).toBe(messageDraft.get("mailAccountId"));
+
+                    t.expect(messageItem.get("seen")).toBe(messageDraft.get("seen"));
+                    t.expect(messageItem.get("recent")).toBe(messageDraft.get("recent"));
+                    t.expect(messageItem.get("flagged")).toBe(messageDraft.get("flagged"));
+                    t.expect(messageItem.get("answered")).toBe(messageDraft.get("answered"));
+                    t.expect(messageItem.get("draft")).toBe(messageDraft.get("draft"));
+
+
+                    t.expect(messageItem.get("messageBodyId")).toBe(messageDraft.getMessageBody().getId());
+
+
+                    // was committed
+                    t.expect(messageItem.dirty).toBe(false);
+
+                });
+
+
+            });});
+
+    });});
 

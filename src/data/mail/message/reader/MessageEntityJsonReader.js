@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,17 +26,17 @@
 /**
  * Specialized version of a JSON Reader used by MessageEntityProxy.
  */
-Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
+Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
 
-    extend : 'Ext.data.reader.Json',
+    extend: "Ext.data.reader.Json",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
-    alias : 'reader.cn_mail-mailmessageentityjsonreader',
+    alias: "reader.cn_mail-mailmessageentityjsonreader",
 
-    rootProperty : 'data',
+    rootProperty: "data",
 
 
     /**
@@ -48,11 +48,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
      *
      * @retrurn {Object}
      */
-    getResponseData : function(response) {
+    getResponseData: function (response) {
 
         const me     = this,
-              action = response.request.action,
-              result = me.callParent(arguments);
+            action = response.request.action,
+            result = me.callParent(arguments);
 
         if (!result.metaData) {
             result.metaData = {};
@@ -74,10 +74,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
      *
      * @see applyCompoundKey
      */
-    readRecords : function(data, readOptions, internalReadOptions) {
+    readRecords: function (data, readOptions, internalReadOptions) {
 
         const me     = this,
-              action = data && data.metaData ? data.metaData.cn_action : "";
+            action = data && data.metaData ? data.metaData.cn_action : "";
 
         if (action !== "destroy") {
             data = me.applyCompoundKey(data, action);
@@ -98,11 +98,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
      *
      * @throws if action is not set to "read", "destroy", "update" or "create"
      */
-    applyCompoundKey : function(data, action) {
+    applyCompoundKey: function (data, action) {
 
-        const me                       = this,
-              MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey,
-              valChk                   = ["create", "update", "read", "destroy"];
+        const
+            MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey,
+            valChk                   = ["create", "update", "read", "destroy"];
 
         if (valChk.indexOf(action) === -1) {
             let exp = valChk.join(", ");
@@ -140,12 +140,11 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
         }
 
         Ext.raise({
-            msg  : "The \"data\" property was malformed and could not be processed by this Reader",
-            data : data
+            msg: "The \"data\" property was malformed and could not be processed by this Reader",
+            data: data
         });
 
     }
-
 
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,9 +31,9 @@
 Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
 
-    requires : [
-        'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore',
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+    requires: [
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
 
 
@@ -41,7 +41,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      * @cfg {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
      * @private
      */
-    store : null,
+    store: null,
 
     /**
      * Constructor
@@ -50,7 +50,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      *
      * @throws if cfg.store is not set or not an instance of conjoon.cn_mail.store.mail.folder.MailFolderTreeStore
      */
-    constructor : function(cfg) {
+    constructor: function (cfg) {
 
         cfg = cfg || {};
 
@@ -58,9 +58,9 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
         if (!cfg.store || !(cfg.store instanceof conjoon.cn_mail.store.mail.folder.MailFolderTreeStore)) {
             Ext.raise({
-                msg   : "'store' must be an instance of conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
-                store : cfg.store
-            })
+                msg: "'store' must be an instance of conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
+                store: cfg.store
+            });
         }
 
         me.initConfig(cfg);
@@ -78,10 +78,10 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      *
      * @return {null|conjoon.cn_mail.model.mail.folder.MailFolder}
      */
-    getMailFolder : function(mailAccountId, mailFolderId) {
+    getMailFolder: function (mailAccountId, mailFolderId) {
 
         const me = this,
-              accountNode = me.getAccountNode(mailAccountId);
+            accountNode = me.getAccountNode(mailAccountId);
 
         if (!accountNode) {
             return null;
@@ -102,7 +102,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      * @return {String|null} The id of the MailFolder if a folder with the type
      * could be found, otherwise null.
      */
-    getMailFolderIdForType : function(mailAccountId, type) {
+    getMailFolderIdForType: function (mailAccountId, type) {
 
         const me = this,
             accountNode = me.getAccountNode(mailAccountId);
@@ -117,7 +117,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
             return null;
         }
 
-        return node.get('id');
+        return node.get("id");
     },
 
 
@@ -128,7 +128,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      *
      * @private
      */
-    getStore : function() {
+    getStore: function () {
 
         const me = this;
 
@@ -145,12 +145,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      *
      * @return {null|conjoon.cn_mail.model.mail.folder.MailFolder}
      */
-    getAccountNode : function(mailAccountId) {
+    getAccountNode: function (mailAccountId) {
 
         const me    = this,
             store   = me.getStore(),
-            nodeInd = store.findBy(function(node) {
-                if (node.get('id') === mailAccountId && node.get('folderType') ===
+            nodeInd = store.findBy(function (node) {
+                if (node.get("id") === mailAccountId && node.get("folderType") ===
                     conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT) {
                     return true;
                 }
@@ -174,7 +174,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
      *
      * @return {Boolean}
      */
-    doesFolderBelongToAccount : function(mailFolderId, mailAccountId) {
+    doesFolderBelongToAccount: function (mailFolderId, mailAccountId) {
 
         const me = this;
 
