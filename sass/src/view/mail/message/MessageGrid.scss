@@ -176,11 +176,15 @@
         }
 
         .previewText {
-            padding       : 10px 0px 0px 0px;
+            margin-top: 6px;
+            line-height: 20px;
+            height: 18px;
+            padding: 0;
             white-space   : nowrap;
             text-overflow : ellipsis;
             overflow      : hidden;
             color         : var(--highlight-color);
+        }
         }
     }
 
