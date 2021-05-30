@@ -1,17 +1,15 @@
 {
-
     "name": "app-cn_mail",
-
     "sencha": {
-        "coon-js" : {
-            "package" : {
-                "controller" :  true,
-                "config" :  {
-                    "resources" : {
-                        "templates" : {
-                            "html" : {
-                                "editor" : "resources/templates/html/editor.html.tpl",
-                                "reader" : "resources/templates/html/reader.html.tpl"
+        "coon-js": {
+            "package": {
+                "controller": true,
+                "config": {
+                    "resources": {
+                        "templates": {
+                            "html": {
+                                "editor": "resources/templates/html/editor.html.tpl",
+                                "reader": "resources/templates/html/reader.html.tpl"
                             }
                         }
                     }
@@ -36,9 +34,9 @@
             ]
         },
         "output": {
-            "base" : "${package.dir}/build",
-            "js" : {
-                "version" : "ES8"
+            "base": "${package.dir}/build",
+            "js": {
+                "version": "ES8"
             }
         },
         "language": {
@@ -48,21 +46,19 @@
             }
         },
         "compressor": {
-            "type" : "closure",
+            "type": "closure",
             "polyfills": "none"
         },
         "local": true,
         "theme": "theme-cn_material",
-        "sass" : {
+        "sass": {
             "namespace": "conjoon.cn_mail",
             "etc": [
                 "${package.dir}/sass/etc/all.scss"
             ],
-
             "var": [
                 "${package.dir}/sass/var/"
             ],
-
             "src": [
                 "${package.dir}/sass/src/"
             ]
@@ -76,6 +72,19 @@
         "framework": "ext",
         "requires": [
             "lib-cn_comp"
+        ]
+    },
+    "devDependencies": {
+        "eslint": "^7.27.0",
+        "git-hooks": "^1.1.10"
+    },
+    "gitHooks": {
+        "pre-commit": "lint-staged"
+    },
+    "lint-staged": {
+        "*.js": [
+            "eslint",
+            "git add"
         ]
     }
 }
