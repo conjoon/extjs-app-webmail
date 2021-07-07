@@ -75,17 +75,17 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.27.0",
-    "git-hooks": "^1.1.10"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint",
-      "git add"
-    ]
+    "@conjoon/extjs-dev-webmailsim": "file:../extjs-dev-webmailsim",
+    "@coon-js/extjs-comp-navport": "file:../../@coon-js/extjs-comp-navport",
+    "@coon-js/extjs-lib-comp": "file:../../@coon-js/extjs-lib-comp",
+    "@coon-js/extjs-lib-core": "file:../../@coon-js/extjs-lib-core",
+    "@coon-js/extjs-link": "file:../../@coon-js/extjs-link",
+    "@coon-js/siesta-lib-helper": "file:../../@coon-js/siesta-lib-helper",
+    "@l8js/l8": "file:../../@l8js/l8",
+    "eslint": "^7.28.0",
+    "local-web-server": "^4.2.1",
+    "node-git-hooks": "^1.0.6",
+    "siesta-lite": "^5.5.2"
   },
   "description": "This Sencha ExtJS NPM package provides a webmail client.",
   "version": "0.0.1",
@@ -95,7 +95,7 @@
   },
   "scripts": {
     "test": "npx ws --port 8093 --static.index tests.redirect.html --open",
-    "postinstall": "npm run setup:tests",
+    "postinstall": "npm run setup:tests && node-git-hooks",
     "setup:tests": "npx extjs-link && siesta-lib-helper"
   },
   "repository": {
@@ -118,17 +118,5 @@
   "bugs": {
     "url": "https://github.com/conjoon/extjs-extjs-app-webmail/issues"
   },
-  "homepage": "https://github.com/conjoon/extjs-extjs-app-webmail#readme",
-  "devDependencies": {
-    "@coon-js/extjs-lib-core": "file:../../@coon-js/extjs-lib-core",
-    "@coon-js/extjs-lib-comp": "file:../../@coon-js/extjs-lib-comp",
-    "@coon-js/extjs-comp-navport": "file:../../@coon-js/extjs-comp-navport",
-    "@conjoon/extjs-dev-webmailsim": "file:../extjs-dev-webmailsim",
-    "@coon-js/siesta-lib-helper": "file:../../@coon-js/siesta-lib-helper",
-    "@coon-js/extjs-link": "file:../../@coon-js/extjs-link",
-    "@l8js/l8": "file:../../@l8js/l8",
-    "local-web-server": "^4.2.1",
-    "siesta-lite": "^5.5.2",
-    "eslint": "^7.28.0"
-  }
+  "homepage": "https://github.com/conjoon/extjs-extjs-app-webmail#readme"
 }
