@@ -61,7 +61,7 @@ export default [{
                         "src/data/mail/folder/reader/MailFolderJsonReaderTest.js"
                     ]
                 },
-                    "src/data/mail/folder/MailFolderTypesTest.js"
+                "src/data/mail/folder/MailFolderTypesTest.js"
                 ]
             }, {
                 group: "message",
@@ -87,25 +87,25 @@ export default [{
                         "src/data/mail/message/proxy/UtilityMixinTest.js"
                     ]
                 },
-                    {
-                        group: "reader",
-                        items: [
-                            "src/data/mail/message/reader/MessageItemJsonReaderTest.js",
-                            "src/data/mail/message/reader/MessageBodyJsonReaderTest.js",
-                            "src/data/mail/message/reader/MessageItemChildJsonReaderTest.js",
-                            "src/data/mail/message/reader/MessageEntityJsonReaderTest.js",
-                            "src/data/mail/message/reader/MessageItemUpdaterTest.js"
-                        ]
-                    },
-                    {
-                        group: "session",
-                        items: [
-                            "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",
-                            "src/data/mail/message/session/MessageDraftSessionTest.js"
-                        ]
-                    },
-                    "src/data/mail/message/CompoundKeyTest.js",
-                    "src/data/mail/message/EditingModesTest.js"
+                {
+                    group: "reader",
+                    items: [
+                        "src/data/mail/message/reader/MessageItemJsonReaderTest.js",
+                        "src/data/mail/message/reader/MessageBodyJsonReaderTest.js",
+                        "src/data/mail/message/reader/MessageItemChildJsonReaderTest.js",
+                        "src/data/mail/message/reader/MessageEntityJsonReaderTest.js",
+                        "src/data/mail/message/reader/MessageItemUpdaterTest.js"
+                    ]
+                },
+                {
+                    group: "session",
+                    items: [
+                        "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",
+                        "src/data/mail/message/session/MessageDraftSessionTest.js"
+                    ]
+                },
+                "src/data/mail/message/CompoundKeyTest.js",
+                "src/data/mail/message/EditingModesTest.js"
                 ]
             }, {
                 group: "service",
@@ -115,11 +115,11 @@ export default [{
                         "src/data/mail/service/mailbox/OperationTest.js"
                     ]
                 },
-                    "src/data/mail/service/MailFolderHelperTest.js",
-                    "src/data/mail/service/MailboxServiceTest.js"
+                "src/data/mail/service/MailFolderHelperTest.js",
+                "src/data/mail/service/MailboxServiceTest.js"
                 ]
             },
-                "src/data/mail/BaseSchemaTest.js"
+            "src/data/mail/BaseSchemaTest.js"
             ]
         }]
     }, {
@@ -183,15 +183,15 @@ export default [{
                     group: "reader",
                     items: ["src/text/mail/message/reader/PlainReadableStrategyTest.js"]
                 },
-                    "src/text/mail/message/CopyDecoratorTest.js",
-                    "src/text/mail/message/DecoratorFormatTest.js",
-                    "src/text/mail/message/ForwardMessageDecoratorTest.js",
-                    "src/text/mail/message/ReplyToMessageDecoratorTest.js",
-                    "src/text/mail/message/ReplyAllMessageDecoratorTest.js"
+                "src/text/mail/message/CopyDecoratorTest.js",
+                "src/text/mail/message/DecoratorFormatTest.js",
+                "src/text/mail/message/ForwardMessageDecoratorTest.js",
+                "src/text/mail/message/ReplyToMessageDecoratorTest.js",
+                "src/text/mail/message/ReplyAllMessageDecoratorTest.js"
                 ]
             }]
         },
-            "src/text/QueryStringParserTest.js"
+        "src/text/QueryStringParserTest.js"
         ]
     }, {
         group: "view",
@@ -296,7 +296,7 @@ export default [{
                     "classic/src/view/mail/mixin/LoadingFailedDialogTest.js"
                 ]
             },
-                "classic/src/view/mail/MailDesktopViewTest.js"
+            "classic/src/view/mail/MailDesktopViewTest.js"
             ]
         }]
     }]

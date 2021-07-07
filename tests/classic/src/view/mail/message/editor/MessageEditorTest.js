@@ -32,7 +32,7 @@ StartTest(async t => {
         
         t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
-           var viewConfig,
+            var viewConfig,
                 view,
                 createKey = function (id1, id2, id3) {
                     return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);

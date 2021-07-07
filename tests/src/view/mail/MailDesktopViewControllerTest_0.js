@@ -1150,7 +1150,7 @@ StartTest(async t => {
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
                     Ext.ux.ajax.SimManager.init({
-                        delay : Math.max(1, t.parent.TIMEOUT - 1000)
+                        delay: Math.max(1, t.parent.TIMEOUT - 1000)
                     });
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,

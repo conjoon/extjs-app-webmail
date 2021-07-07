@@ -96,7 +96,6 @@ StartTest(async t => {
                     });
 
 
-
                     viewConfig = {
                         viewModel: {
                             type: "cn_mail-mailinboxviewmodel",

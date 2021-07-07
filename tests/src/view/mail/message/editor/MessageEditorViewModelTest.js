@@ -40,8 +40,6 @@ StartTest(async t => {
 
         var viewModel;
 
-        const SMALLEST_DELAY = 1;
-
         var view,
             createKey = function (id1, id2, id3) {
                 return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
