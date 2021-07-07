@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
+StartTest(t => {
 
-    t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+    t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
         var packageCtrl;
 
@@ -81,14 +81,14 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
 
         const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        t.it("Should create the Controller", function (t) {
+        t.it("Should create the Controller", t => {
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
             t.expect(packageCtrl instanceof coon.core.app.PackageController).toBe(true);
 
         });
 
 
-        t.it("postLaunchHook should return valid object", function (t) {
+        t.it("postLaunchHook should return valid object", t => {
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
             var ret = packageCtrl.postLaunchHook();
@@ -99,7 +99,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("showMailEditor()", function (t) {
+        t.it("showMailEditor()", t => {
 
             let CN_HREF = "foo";
             
@@ -130,7 +130,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("message routes", function (t) {
+        t.it("message routes", t => {
 
             var CN_HREF = "foo";
 
@@ -167,7 +167,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("message edit buttons", function (t) {
+        t.it("message edit buttons", t => {
 
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -216,7 +216,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("message delete button", function (t) {
+        t.it("message delete button", t => {
 
             let CALLED = 0;
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
@@ -261,7 +261,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailFolderTreeSelectionChange()", function (t) {
+        t.it("onMailFolderTreeSelectionChange()", t => {
 
             var ITEMS = [], DESELECTED = 0, exc, READINGPANEDISABLED, TOGGLEGRIDDISABLED,
                 FORWARDDISABLED,
@@ -365,7 +365,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
             t.expect(DELETEDISABLED).toBe(true);
             t.expect(EDITDISABLED).toBe(true);
 
-            //app-cn_mail#83
+            //extjs-app-webmail#83
             packageCtrl.onMailFolderTreeSelectionChange(null, [rec2]);
             t.expect(READINGPANEDISABLED).toBe(true);
             t.expect(TOGGLEGRIDDISABLED).toBe(true);
@@ -388,7 +388,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailMessageGridDeselect()", function (t) {
+        t.it("onMailMessageGridDeselect()", t => {
             var DISABLED = {
                 "#cn_mail-nodeNavEditMessage": 0,
                 "#cn_mail-nodeNavReplyTo": 0,
@@ -467,7 +467,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
 
         });
 
-        t.it("onMailMessageGridSelect()", function (t) {
+        t.it("onMailMessageGridSelect()", t => {
             var ENABLED = {
                     "#cn_mail-nodeNavEditMessage": 0,
                     "#cn_mail-nodeNavReplyTo": 0,
@@ -553,7 +553,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onReadingPaneCheckChange()", function (t) {
+        t.it("onReadingPaneCheckChange()", t => {
             var DIRECTION = null,
                 menuItem1 = {getItemId: function () {return "right";}},
                 menuItem2 = {getItemId: function () {return "bottom";}},
@@ -581,7 +581,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onToggleListViewButtonClick()", function (t) {
+        t.it("onToggleListViewButtonClick()", t => {
 
             var ENABLED;
 
@@ -602,7 +602,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onToggleFolderViewButtonClick()", function (t) {
+        t.it("onToggleFolderViewButtonClick()", t => {
 
             var HIDDEN;
 
@@ -627,7 +627,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailMessageGridBeforeLoad() / onMailMessageGridLoad()", function (t) {
+        t.it("onMailMessageGridBeforeLoad() / onMailMessageGridLoad()", t => {
 
             var TOGGLEGRIDDISABLED, ISSAME_LEFT = false, ISSAME_RIGHT = false;
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
@@ -679,7 +679,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailInboxViewActivate() / onMailInboxViewDeactivate()", function (t) {
+        t.it("onMailInboxViewActivate() / onMailInboxViewDeactivate()", t => {
 
             var TOGGLEGRIDDISABLED, SWITCHREADINGPANEDISABLED,
                 TOGGLEMAILFOLDERDISABLED, ISLOADING, FOLDERTYPE = "INBOX",
@@ -811,7 +811,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("mailfolder route", function (t) {
+        t.it("mailfolder route", t => {
 
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
             let pv = {
@@ -896,7 +896,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("activateButtonsForMessageItem()", function (t) {
+        t.it("activateButtonsForMessageItem()", t => {
 
             let ENABLED = configureButtonMockCaller();
 
@@ -931,7 +931,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - panel is MessageView", function (t) {
+        t.it("onMailDesktopViewTabChange() - panel is MessageView", t => {
 
             let ISDRAFT,
                 ENABLED = configureButtonMockCaller(),
@@ -967,7 +967,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item", function (t) {
+        t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item", t => {
 
             let ISDRAFT,
                 ENABLED = configureButtonMockCaller(),
@@ -1003,7 +1003,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", function (t) {
+        t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", t => {
 
             let ISDRAFT,
                 ENABLED = configureButtonMockCaller(),
@@ -1045,7 +1045,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - panel is MailInboxView with selection", function (t) {
+        t.it("onMailDesktopViewTabChange() - panel is MailInboxView with selection", t => {
 
             let activatedPanel = {
 
@@ -1062,7 +1062,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - panel is MailInboxView with no selection", function (t) {
+        t.it("onMailDesktopViewTabChange() - panel is MailInboxView with no selection", t => {
 
             let ENABLED = configureButtonMockCaller(),
                 activatedPanel = {
@@ -1094,7 +1094,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - panel is MessageEditor", function (t) {
+        t.it("onMailDesktopViewTabChange() - panel is MessageEditor", t => {
 
             let ENABLED = configureButtonMockCaller(),
                 activatedPanel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
@@ -1115,7 +1115,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onMailDesktopViewTabChange() - no familiar panel", function (t) {
+        t.it("onMailDesktopViewTabChange() - no familiar panel", t => {
 
             let ENABLED = configureButtonMockCaller(),
                 activatedPanel = Ext.create("Ext.Panel");
@@ -1133,9 +1133,9 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onEditMessageButtonClick() - active tab is MessageView", function (t) {
+        t.it("onEditMessageButtonClick() - active tab is MessageView", t => {
 
-            t.it("message edit buttons", function (t) {
+            t.it("message edit buttons", t => {
 
                 packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -1181,9 +1181,9 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onReplyToButtonClick() - active tab is MessageView", function (t) {
+        t.it("onReplyToButtonClick() - active tab is MessageView", t => {
 
-            t.it("message edit buttons", function (t) {
+            t.it("message edit buttons", t => {
 
                 packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -1228,9 +1228,9 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onReplyAllButtonClick() - active tab is MessageView", function (t) {
+        t.it("onReplyAllButtonClick() - active tab is MessageView", t => {
 
-            t.it("message edit buttons", function (t) {
+            t.it("message edit buttons", t => {
 
                 packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -1275,9 +1275,9 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("onForwardButtonClick() - active tab is MessageView", function (t) {
+        t.it("onForwardButtonClick() - active tab is MessageView", t => {
 
-            t.it("message edit buttons", function (t) {
+            t.it("message edit buttons", t => {
 
                 packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -1322,7 +1322,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("getItemOrDraftFromActiveView()", function (t) {
+        t.it("getItemOrDraftFromActiveView()", t => {
 
             let ACTIVETAB = "";
 
@@ -1366,7 +1366,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("app-cn_mail#69", function (t) {
+        t.it("extjs-app-webmail#69", t => {
 
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -1385,7 +1385,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
             t.expect(REPLYALLROUTE).toBe(0);
             Ext.util.History.add("cn_mail/message/replyAll/foo/test/bar");
 
-            t.waitForMs(750, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(REPLYALLROUTE).toBe(1);
 
@@ -1394,7 +1394,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("app-cn_mail#79", function (t) {
+        t.it("extjs-app-webmail#79", t => {
 
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
@@ -1414,7 +1414,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("app-cn_mail#66 - messageEditorIsActivatedTab()", function (t) {
+        t.it("extjs-app-webmail#66 - messageEditorIsActivatedTab()", t => {
 
             let ENABLED = configureButtonMockCaller();
 
@@ -1474,30 +1474,30 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         };
 
 
-        t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel has loadingDraft", function (t) {
+        t.it("extjs-app-webmail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel has loadingDraft", t => {
 
             testForEditorLoading(t, "LOADINGDRAFT");
         });
 
 
-        t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel has isMessageBodyLoading ", function (t) {
+        t.it("extjs-app-webmail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel has isMessageBodyLoading ", t => {
 
             testForEditorLoading(t, "MESSAGEBODYLOADING");
         });
 
 
-        t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel hasPendingCopyRequest ", function (t) {
+        t.it("extjs-app-webmail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel hasPendingCopyRequest ", t => {
 
             testForEditorLoading(t, "HASPENDINGCOPYREQUEST");
         });
 
-        t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel loadingFailed ", function (t) {
+        t.it("extjs-app-webmail#66 - onMailDesktopViewTabChange() - panel is MessageEditor, ViewModel loadingFailed ", t => {
 
             testForEditorLoading(t, "LOADINGFAILED");
         });
 
 
-        t.it("app-cn_mail#66 - onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", function (t) {
+        t.it("extjs-app-webmail#66 - onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", t => {
 
             let ENABLED = configureButtonMockCaller(),
                 activatedPanel, otherPanel;
@@ -1551,7 +1551,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
     
 
-        t.it("app-cn_mail#83 - mailaccount route", function (t) {
+        t.it("extjs-app-webmail#83 - mailaccount route", t => {
 
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
             let pv = {
@@ -1567,7 +1567,7 @@ describe("conjoon.cn_mail.app.PackageControllerTest", function (t) {
         });
 
 
-        t.it("Route configs - app-cn_mail#111", function (t) {
+        t.it("Route configs - extjs-app-webmail#111", t => {
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
             let routes = packageCtrl.config.routes,

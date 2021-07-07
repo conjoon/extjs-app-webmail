@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest", function (t) {
+StartTest(t => {
 
 
-    t.it("Should successfully create and test instance", function (t) {
+    t.it("Should successfully create and test instance", t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy");
 
@@ -46,7 +46,7 @@ describe("conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest", functio
     });
 
 
-    t.it("buildUrl() - action \"read\"", function (t) {
+    t.it("buildUrl() - action \"read\"", t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),
             request = Ext.create("Ext.data.Request", {
@@ -66,7 +66,7 @@ describe("conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest", functio
     });
 
 
-    t.it("buildUrl() - params trigger url for MailFolder", function (t) {
+    t.it("buildUrl() - params trigger url for MailFolder", t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),
             request = Ext.create("Ext.data.Request", {
@@ -86,7 +86,7 @@ describe("conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest", functio
     });
 
 
-    t.it("buildUrl() - action \"update\"", function (t) {
+    t.it("buildUrl() - action \"update\"", t => {
 
         let recs = [Ext.create("Ext.data.Model", {
                 id: "foo"

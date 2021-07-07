@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -42,7 +42,7 @@ describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance and check basic configuration", function (t) {
+    t.it("Should create instance and check basic configuration", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel).toBe(true);
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
@@ -51,13 +51,13 @@ describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
         t.expect(model.getField("mailAccountId").critical).toBe(true);
     });
 
-    t.it("Test Entity Name", function (t) {
+    t.it("Test Entity Name", t => {
         t.expect(
             model.entityName
         ).toBe("MailFolder");
     });
 
-    t.it("Test Record Validity", function (t) {
+    t.it("Test Record Validity", t => {
         t.expect(model.isValid()).toBe(false);
         model.set("name", "Posteingang");
         t.expect(model.isValid()).toBe(false);
@@ -107,7 +107,7 @@ describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
     });
 
 
-    t.it("toUrl()", function (t) {
+    t.it("toUrl()", t => {
 
         let accountNode =  Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
             localId: "meh",
@@ -119,7 +119,7 @@ describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
     });
 
 
-    t.it("getRepresentingCompoundKeyClass()", function (t) {
+    t.it("getRepresentingCompoundKeyClass()", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
 
@@ -132,7 +132,7 @@ describe("conjoon.cn_mail.model.mailfolder..MailFolderTest", function (t) {
     });
 
 
-    t.it("foreignKeyFields", function (t) {
+    t.it("foreignKeyFields", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {
 

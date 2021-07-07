@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
         t.requireOk(
@@ -33,9 +35,7 @@ StartTest(async t => {
 
                 let viewConfig;
 
-                const TIMEOUT = 1250,
-
-                    getChildAt = function (panel, rootId, index, shouldBe, t) {
+                const getChildAt = function (panel, rootId, index, shouldBe, t) {
 
                         let root = panel.down("cn_mail-mailfoldertree").getStore().getRoot().findChild("id", rootId),
                             c    = root.getChildAt(index);
@@ -69,7 +69,7 @@ StartTest(async t => {
                         return folder;
 
                     },
-                    discardView = function (t) {
+                    discardView = t => {
 
                         t.waitForMs(1, function () {
                             if (view) {
@@ -90,6 +90,13 @@ StartTest(async t => {
 
 
                 t.beforeEach(function () {
+
+                    Ext.ux.ajax.SimManager.init({
+                        delay: 1
+                    });
+
+
+
                     viewConfig = {
                         viewModel: {
                             type: "cn_mail-mailinboxviewmodel",
@@ -110,12 +117,8 @@ StartTest(async t => {
 
                 conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
 
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
 
-
-                t.it("Should create and show the inbox view along with default config checks", function (t) {
+                t.it("Should create and show the inbox view along with default config checks", t => {
                     view = Ext.create(
                         "conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
 
@@ -144,7 +147,7 @@ StartTest(async t => {
 
                 });
 
-                t.it("Should select folder and messageItem properly create and show the inbox view along with default config checks", function (t) {
+                t.it("Should select folder and messageItem properly create and show the inbox view along with default config checks", t => {
 
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
@@ -158,12 +161,12 @@ StartTest(async t => {
                     t.expect(grid.getStore().getRange().length).toBe(0);
                     t.expect(messageView.getViewModel().get("messageItem")).toBeFalsy();
 
-                    t.waitForMs(TIMEOUT, function (){
+                    t.waitForMs(t.parent.TIMEOUT, function (){
                         t.expect(messageView.isVisible()).toBe(false);
                         t.expect(gridMessageBox.isVisible()).toBe(true);
                         t.expect(grid.isVisible()).toBe(false);
 
-                        t.waitForMs(TIMEOUT, function (){
+                        t.waitForMs(t.parent.TIMEOUT, function (){
                             var mailFolder = getChildAt(view, "dev_sys_conjoon_org", 0, "INBOX", t),
                                 unreadCount =  mailFolder.get("unreadCount");
 
@@ -172,7 +175,7 @@ StartTest(async t => {
 
                             t.expect(grid.representedFolderType).toBeFalsy();
 
-                            t.waitForMs(TIMEOUT, function (){
+                            t.waitForMs(t.parent.TIMEOUT, function (){
 
                                 t.expect(grid.representedFolderType).toBe("INBOX");
 
@@ -186,7 +189,7 @@ StartTest(async t => {
                                 t.expect(messageItem.get("seen")).toBe(false);
                                 grid.getSelectionModel().select(messageItem);
 
-                                t.waitForMs(TIMEOUT, function (){
+                                t.waitForMs(t.parent.TIMEOUT, function (){
                                     t.expect(messageView.getViewModel().get("messageItem")).toBe(messageItem);
 
                                     t.expect(mailFolder.get("unreadCount")).toBe(unreadCount - 1);
@@ -202,7 +205,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("toggleReadingPane()", function (t) {
+                t.it("toggleReadingPane()", t => {
                     view = Ext.create(
                         "conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
 
@@ -211,13 +214,13 @@ StartTest(async t => {
                         tree        = view.down("cn_mail-mailfoldertree");
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         var mailFolder = getChildAt(view, "dev_sys_conjoon_org", 0, "INBOX", t);
 
                         tree.getSelectionModel().select(mailFolder);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(messageView.isVisible()).toBe(true);
                             t.expect(bodyLayout.getVertical()).toBe(false);
@@ -250,7 +253,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("Selection after switching between folders in grid is still available", function (t) {
+                t.it("Selection after switching between folders in grid is still available", t => {
 
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
@@ -259,14 +262,14 @@ StartTest(async t => {
                         tree           = view.down("cn_mail-mailfoldertree");
 
 
-                    t.waitForMs(TIMEOUT, function (){
+                    t.waitForMs(t.parent.TIMEOUT, function (){
 
                         var mailFolder1 = getChildAt(view, "dev_sys_conjoon_org", 0, "INBOX", t),
                             mailFolder2 = getChildAt(view, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t);
 
                         tree.getSelectionModel().select(mailFolder1);
 
-                        t.waitForMs(TIMEOUT, function (){
+                        t.waitForMs(t.parent.TIMEOUT, function (){
 
                             var messageItem = grid.getStore().getAt(0);
 
@@ -276,7 +279,7 @@ StartTest(async t => {
 
                             grid.view.getScrollable().scrollTo(0, 100000);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // need at least 1000 items in the mock message Tabe
                                 t.expect(conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
                                 grid.getStore().getData().removeAtKey(1);
@@ -285,7 +288,7 @@ StartTest(async t => {
                                 t.expect(grid.getSelection()[0]).toBe(messageItem);
                                 tree.getSelectionModel().select(mailFolder2);
 
-                                t.waitForMs(TIMEOUT, function (){
+                                t.waitForMs(t.parent.TIMEOUT, function (){
 
                                     t.expect(grid.getSelection()[0]).toBe(messageItem);
 
@@ -297,7 +300,7 @@ StartTest(async t => {
 
                                     tree.getSelectionModel().select(mailFolder2);
 
-                                    t.waitForMs(TIMEOUT, function (){
+                                    t.waitForMs(t.parent.TIMEOUT, function (){
                                         t.expect(grid.getSelection()[0]).toBe(messageItem2);
 
                                         discardView(t);
@@ -314,7 +317,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("should trigger onRowFlyMenuItemClick()", function (t) {
+                t.it("should trigger onRowFlyMenuItemClick()", t => {
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
 
@@ -328,7 +331,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("should trigger onRowFlyMenuBeforeShow()", function (t) {
+                t.it("should trigger onRowFlyMenuBeforeShow()", t => {
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
 
@@ -341,7 +344,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("reply all / edit draft / delete draft button is there", function (t) {
+                t.it("reply all / edit draft / delete draft button is there", t => {
 
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
@@ -359,20 +362,20 @@ StartTest(async t => {
                     t.expect(messageView.down("#btn-replyall").getMenu().down("#btn-reply")).toBeTruthy();
 
 
-                    t.waitForMs(TIMEOUT, function (){
+                    t.waitForMs(t.parent.TIMEOUT, function (){
 
-                        t.waitForMs(TIMEOUT, function (){
+                        t.waitForMs(t.parent.TIMEOUT, function (){
 
                             var mailFolder = getChildAt(view, "dev_sys_conjoon_org", 0, "INBOX", t);
                             tree.getSelectionModel().select(mailFolder);
 
-                            t.waitForMs(TIMEOUT, function (){
+                            t.waitForMs(t.parent.TIMEOUT, function (){
 
                                 var messageItem = grid.getStore().getAt(0);
                                 messageItem.set("draft", false);
                                 grid.getSelectionModel().select(messageItem);
 
-                                t.waitForMs(TIMEOUT, function (){
+                                t.waitForMs(t.parent.TIMEOUT, function (){
 
                                     t.expect(messageView.down("#btn-replyall").isVisible()).toBe(true);
                                     t.expect(messageView.down("#btn-editdraft").isVisible()).toBe(false);
@@ -382,7 +385,7 @@ StartTest(async t => {
                                     messageItem.set("draft", true);
                                     grid.getSelectionModel().select(messageItem);
 
-                                    t.waitForMs(TIMEOUT, function (){
+                                    t.waitForMs(t.parent.TIMEOUT, function (){
                                         t.expect(messageView.down("#btn-replyall").isVisible()).toBe(false);
                                         t.expect(messageView.down("#btn-editdraft").isVisible()).toBe(true);
                                         t.expect(messageView.down("#btn-deletedraft").isVisible()).toBe(true);
@@ -399,7 +402,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMessageDeleteConfirmDialog()", function (t) {
+                t.it("showMessageDeleteConfirmDialog()", t => {
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
 
@@ -449,13 +452,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#83 - MailAccountView should be shown when folder representing MailAccount is selected", function (t) {
+                t.it("extjs-app-webmail#83 - MailAccountView should be shown when folder representing MailAccount is selected", t => {
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
 
                     let vm = view.getViewModel();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let mailAccountView = view.down("cn_mail-mailaccountview"),
                             accountNode1    = function () {selectMailFolder(view, 0, "dev_sys_conjoon_org", t);vm.notify();},
@@ -483,7 +486,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#83 - showMailAccountIsBeingEditedNotice()", function (t) {
+                t.it("extjs-app-webmail#83 - showMailAccountIsBeingEditedNotice()", t => {
 
 
                     view = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
@@ -492,7 +495,7 @@ StartTest(async t => {
                         mailFolderTree = view.down("cn_mail-mailfoldertree"),
                         REJECTED = 0;
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.down("cn_mail-mailaccountview").rejectPendingChanges = function () {
                             REJECTED++;
@@ -545,7 +548,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#98", function (t) {
+                t.it("extjs-app-webmail#98", t => {
 
                     view = Ext.create(
                         "conjoon.cn_mail.view.mail.inbox.InboxView", viewConfig);
@@ -554,7 +557,7 @@ StartTest(async t => {
                         tree        = view.down("cn_mail-mailfoldertree");
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         var accountFolder = selectMailFolder(view, "0", "dev_sys_conjoon_org", t);
                         var inboxFolder   = getChildAt(view, "dev_sys_conjoon_org", 0, "INBOX", t);
@@ -562,7 +565,7 @@ StartTest(async t => {
                         tree.getSelectionModel().select(inboxFolder);
 
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             view.toggleReadingPane();
                             view.getViewModel().notify();
@@ -570,11 +573,11 @@ StartTest(async t => {
 
                             tree.getSelectionModel().select(accountFolder);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 tree.getSelectionModel().select(inboxFolder);
 
-                                t.waitForMs(TIMEOUT, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     t.expect(messageView.isVisible()).toBe(false);
 

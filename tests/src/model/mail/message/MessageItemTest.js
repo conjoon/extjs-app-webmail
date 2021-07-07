@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.MessageItemTest", function (t) {
+StartTest(t => {
 
     var model,
         messageBody,
@@ -74,11 +74,11 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
     });
 
-    t.it("Test for proper proxy and urls", function (t) {
+    t.it("Test for proper proxy and urls", t => {
         t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
 
         // READ
@@ -127,29 +127,29 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemTest", function (t) {
 
     });
 
-    t.it("Test Entity Name", function (t) {
+    t.it("Test Entity Name", t => {
         t.expect(
             model.entityName
         ).toBe("MessageItem");
     });
 
-    t.it("Test Record Validity", function (t) {
+    t.it("Test Record Validity", t => {
         t.expect(model.isValid()).toBe(true);
     });
 
-    t.it("Test getMessageBody", function (t) {
+    t.it("Test getMessageBody", t => {
         model.setMessageBody(messageBody);
         t.expect(model.getMessageBody()).toBeTruthy();
     });
 
-    t.it("Test attachments", function (t) {
+    t.it("Test attachments", t => {
         t.isInstanceOf(model.attachments(), "conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
         model.attachments().add(attachments);
         t.expect(model.attachments().getAt(1).get("id")).toBe("2");
         t.expect(model.attachments().getAt(1).getMessageItem()).toBe(model);
     });
 
-    t.it("Test previewText", function (t) {
+    t.it("Test previewText", t => {
 
         t.expect(longString.length).toBe(4000);
 
@@ -175,7 +175,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemTest", function (t) {
 
     });
 
-    t.it("cn_deleted / cn_moved", function (t) {
+    t.it("cn_deleted / cn_moved", t => {
 
         t.expect(model.get("cn_deleted")).toBe(false);
         t.expect(model.get("cn_moved")).toBe(false);

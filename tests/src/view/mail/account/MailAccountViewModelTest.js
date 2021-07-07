@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function (t) {
+StartTest(t => {
 
     let createModel = function (id) {
 
@@ -112,9 +112,9 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
 
     });
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
-        t.it("Should create and show the MailAccountViewModel along with default config checks", function (t) {
+        t.it("Should create and show the MailAccountViewModel along with default config checks", t => {
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
 
             t.expect(viewModel instanceof Ext.app.ViewModel).toBeTruthy();
@@ -128,7 +128,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("setMailAccount()", function (t) {
+        t.it("setMailAccount()", t => {
 
             let exc;
 
@@ -157,7 +157,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("setMailAccount() with existing saveOperation", function (t) {
+        t.it("setMailAccount() with existing saveOperation", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
 
@@ -178,7 +178,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("cleanup()", function (t) {
+        t.it("cleanup()", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
 
@@ -211,10 +211,10 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("savePendingChanges()", function (t) {
+        t.it("savePendingChanges()", t => {
 
             Ext.ux.ajax.SimManager.init({
-                delay: 500
+                delay: Math.max(1, t.parent.TIMEOUT - 1000)
             });
 
 
@@ -248,19 +248,19 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
             t.expect(CALLED).toBe(1);
             t.expect(viewModel.saveOperations[ma.getId()], op);
 
-            t.waitForMs(1250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 Ext.ux.ajax.SimManager.init({
-                    delay: 1
+                    delay: Math.max(1, t.parent.TIMEOUT - 1000)
                 });
             });
 
         });
 
 
-        t.it("savePendingChanges() - failure", function (t) {
+        t.it("savePendingChanges() - failure", t => {
 
             Ext.ux.ajax.SimManager.init({
-                delay: 500
+                delay: Math.max(1, t.parent.TIMEOUT - 1000)
             });
 
 
@@ -282,16 +282,16 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
 
             viewModel.savePendingChanges();
 
-            t.waitForMs(1250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 Ext.ux.ajax.SimManager.init({
-                    delay: 1
+                    delay: Math.max(1, t.parent.TIMEOUT - 1000)
                 });
             });
 
         });
 
 
-        t.it("onSaveSuccess()", function (t) {
+        t.it("onSaveSuccess()", t => {
 
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
@@ -383,7 +383,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("onSaveFailure", function (t) {
+        t.it("onSaveFailure", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
 
@@ -405,7 +405,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("formulas - processReplyTo/processFrom", function (t) {
+        t.it("formulas - processReplyTo/processFrom", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
             decorateViewModel(viewModel);
@@ -432,7 +432,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewModelTest", function 
         });
 
 
-        t.it("formulas - processUserName", function (t) {
+        t.it("formulas - processUserName", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
             decorateViewModel(viewModel);

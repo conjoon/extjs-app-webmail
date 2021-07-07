@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,12 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
-
-        const TIMEOUT = 1250;
 
         var view,
             controller,
@@ -103,25 +103,23 @@ StartTest(async t => {
                 controller = null;
             }
 
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
 
         });
 
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
-
-
-                t.it("onMailMessageBeforeSave() - cancelled", function (t) {
+                t.it("onMailMessageBeforeSave() - cancelled", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -129,7 +127,7 @@ StartTest(async t => {
 
                         controller.onMailMessageBeforeSave(
                             view, view.getViewModel().get("messageDraft"), false, false);
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.getViewModel().get("isSaving")).toBe(false);
                         });
                     });
@@ -138,13 +136,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave() - isSubjectRequired == false", function (t) {
+                t.it("onMailMessageBeforeSave() - isSubjectRequired == false", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -156,7 +154,7 @@ StartTest(async t => {
 
                         controller.onMailMessageBeforeSave(
                             view, view.getViewModel().get("messageDraft"), false, false);
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.getViewModel().get("isSaving")).toBe(true);
                         });
                     });
@@ -165,13 +163,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave() - cancelled - cancelButton click", function (t) {
+                t.it("onMailMessageBeforeSave() - cancelled - cancelButton click", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -181,7 +179,7 @@ StartTest(async t => {
                         var cancelButton = Ext.dom.Query.select("span[data-ref=cancelButton]", view.el.dom);
 
                         t.click(cancelButton[0], function () {
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(view.getViewModel().get("subject")).toBeFalsy();
                                 t.expect(view.getViewModel().get("isSubjectRequired")).toBe(true);
                                 t.expect(view.getViewModel().get("isSaving")).toBe(false);
@@ -195,13 +193,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave() - cancelled - okButton click / empty subject", function (t) {
+                t.it("onMailMessageBeforeSave() - cancelled - okButton click / empty subject", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -224,14 +222,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave() - cancelled - okButton click / subject specified", function (t) {
+                t.it("onMailMessageBeforeSave() - cancelled - okButton click / subject specified", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -255,14 +253,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave() - exception", function (t) {
+                t.it("onMailMessageBeforeSave() - exception", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -282,13 +280,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSaveComplete()", function (t) {
+                t.it("onMailMessageSaveComplete()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -296,7 +294,7 @@ StartTest(async t => {
                         t.isCalledNTimes("endBusyState", controller, 1);
                         controller.onMailMessageSaveComplete(
                             view, view.getViewModel().get("messageDraft"), createOperation(), false, false);
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             // 1500 for delay for endBusyState
                             t.expect(view.getViewModel().get("isSaving")).toBe(false);
                         });
@@ -307,14 +305,14 @@ StartTest(async t => {
                 // +----------------------------------------------------------------------------
                 // | SENDING
                 // +----------------------------------------------------------------------------
-                t.it("Should make sure that onSendButtonClick works properly", function (t) {
+                t.it("Should make sure that onSendButtonClick works properly", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -334,21 +332,21 @@ StartTest(async t => {
 
                         // send / save both add defers with each appr. 750 ms
                         // wait long enough here
-                        t.waitForMs(TIMEOUT + 1000, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             // give enough time for the tests to finish
                         });
                     });
                 });
 
 
-                t.it("Should make sure that onSendButtonClick works properly with exception", function (t) {
+                t.it("Should make sure that onSendButtonClick works properly with exception", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -368,26 +366,26 @@ StartTest(async t => {
 
                         // send / save both add defers with each appr. 750 ms
                         // wait long enough here
-                        t.waitForMs(TIMEOUT + 1000, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.getViewModel()).toBeDefined();
                         });
                     });
                 });
 
 
-                t.it("onMailMessageSendException()", function (t) {
+                t.it("onMailMessageSendException()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
                         controller.onMailMessageSendException();
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.busyMask.isHidden()).toBe(true);
                             t.expect(view.getViewModel().get("isSending")).toBe(false);
                         });
@@ -397,20 +395,20 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSend()", function (t) {
+                t.it("onMailMessageBeforeSend()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
                         view.getViewModel().get("messageDraft").set("to", "address@domain.tld");
                         controller.onMailMessageBeforeSend(view, view.getViewModel().get("messageDraft"));
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.busyMask).toBeDefined();
                             t.expect(view.busyMask.isHidden()).toBe(false);
                             t.expect(view.getViewModel().get("isSending")).toBe(true);
@@ -419,31 +417,31 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSend() - cancelled", function (t) {
+                t.it("onMailMessageBeforeSend() - cancelled", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         view.render(document.body);
                         t.isCalledOnce("showAddressMissingNotice", view);
                         t.expect(controller.onMailMessageBeforeSend(view, view.getViewModel().get("messageDraft"))).toBe(false);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                         });});
                 });
 
 
-                t.it("Should make sure that onSendButtonClick works properly when no recipients are specified", function (t) {
+                t.it("Should make sure that onSendButtonClick works properly when no recipients are specified", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         view.render(document.body);
                         view.down("#subjectField").setValue("SEND");
                         view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
@@ -460,25 +458,25 @@ StartTest(async t => {
 
                         // send / save both add defers with each appr. 750 ms
                         // wait long enough here
-                        t.waitForMs(TIMEOUT + 1000, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             // give enough time for the tests to finish
                         });});
                 });
 
 
-                t.it("onMailMessageSendComplete()", function (t) {
+                t.it("onMailMessageSendComplete()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         view.render(document.body);
 
                         t.isCalledNTimes("close", view, 1);
                         controller.onMailMessageSendComplete();
 
-                        t.waitForMs(TIMEOUT + 500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             // intentionally left blank
                         });
                     });
@@ -486,7 +484,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageEditorAfterrender() - editMode: CREATE", function (t) {
+                t.it("onMessageEditorAfterrender() - editMode: CREATE", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -494,7 +492,7 @@ StartTest(async t => {
                     view = createEditorForController(controller, null, Ext.create(
                         "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"));
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let COMPOSED;
                         view.showMessageDraftLoadingNotice = function (isComposed) {
@@ -505,7 +503,7 @@ StartTest(async t => {
                         view.render(document.body);
                         t.expect(COMPOSED).toBe(true);
 
-                        t.waitForMs(TIMEOUT, function (){
+                        t.waitForMs(t.parent.TIMEOUT, function (){
                             // intentionally left blank
                         });
                     });
@@ -514,7 +512,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageEditorAfterrender() - editMode: EDIT", function (t) {
+                t.it("onMessageEditorAfterrender() - editMode: EDIT", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -522,7 +520,7 @@ StartTest(async t => {
 
                     view = createEditorForController(controller, null, createKeyForExistingMessage(1));
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         let COMPOSED;
@@ -534,7 +532,7 @@ StartTest(async t => {
                         view.render(document.body);
                         t.expect(COMPOSED).toBe(false);
 
-                        t.waitForMs(TIMEOUT, function (){
+                        t.waitForMs(t.parent.TIMEOUT, function (){
                             // intentionally left blank
                         });
 
@@ -544,14 +542,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("message editor isCreated argument - message created", function (t) {
+                t.it("message editor isCreated argument - message created", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -573,13 +571,13 @@ StartTest(async t => {
 
                         t.isCalledOnce("applyAccountInformation", controller);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(CALLED).toBe(0);
                             view.down("#subjectField").setValue("test");
                             view.down("#saveButton").fireEvent("click");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(CALLED).toBe(2);
                             });
                         });
@@ -589,7 +587,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("message editor isCreated argument - message edited", function (t) {
+                t.it("message editor isCreated argument - message edited", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -597,7 +595,7 @@ StartTest(async t => {
 
                     view = createEditorForController(controller, null, createKeyForExistingMessage(1));
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -616,11 +614,11 @@ StartTest(async t => {
                         });
 
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(CALLED).toBe(0);
                             view.down("#saveButton").fireEvent("click");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.expect(CALLED).toBe(2);
 
@@ -632,14 +630,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("message editor isCreated argument - message edited exception", function (t) {
+                t.it("message editor isCreated argument - message edited exception", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller, null, createKeyForExistingMessage(1));
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -658,21 +656,21 @@ StartTest(async t => {
                         });
 
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(CALLED).toBe(0);
 
                             view.down("#subjectField").setValue("TESTFAIL");
 
                             view.down("#saveButton").fireEvent("click");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.expect(CALLED).toBe(2);
 
                                 var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
                                 t.click(yesButton[0], function () {
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(CALLED).toBe(4);
                                     });
 
@@ -687,14 +685,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("message editor isCreated argument - message created failed", function (t) {
+                t.it("message editor isCreated argument - message created failed", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -712,13 +710,13 @@ StartTest(async t => {
                             //debugger;
                         });
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(CALLED).toBe(0);
                             view.down("#subjectField").setValue("TESTFAIL");
                             view.down("#saveButton").fireEvent("click");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.expect(CALLED).toBe(2);
 
@@ -735,29 +733,29 @@ StartTest(async t => {
                 });
 
 
-                t.it("\"draft\"-flag *NOT* removed from MessageDraft when sending succeeded", function (t) {
+                t.it("\"draft\"-flag *NOT* removed from MessageDraft when sending succeeded", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             let messageDraft = view.getViewModel().get("messageDraft");
 
                             messageDraft.set("to", "address@domain.tld");
                             messageDraft.set("subject", "foo");
                             view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(messageDraft.get("draft")).toBe(true);
 
                                 controller.onSendButtonClick();
 
-                                t.waitForMs(TIMEOUT, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
                                     t.expect(messageDraft.get("draft")).toBe(true);
                                 });
 
@@ -771,13 +769,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave() - attachments committed before save app-cn_mail#75", function (t) {
+                t.it("onMailMessageBeforeSave() - attachments committed before save extjs-app-webmail#75", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -813,14 +811,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#39 - getMailboxService()", function (t) {
+                t.it("extjs-app-webmail#39 - getMailboxService()", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -837,14 +835,14 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#39 - applyAccountInformation()", function (t) {
+                t.it("extjs-app-webmail#39 - applyAccountInformation()", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -856,7 +854,7 @@ StartTest(async t => {
                         t.expect(messageDraft.get("mailFolderId")).toBeFalsy();
                         t.expect(messageDraft.get("date")).toBeFalsy();
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             controller.applyAccountInformation(messageDraft);
 
                             t.expect(messageDraft.get("mailFolderId")).toBeTruthy();
@@ -881,7 +879,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("applyAccountInformation() - no mailFolder set if already available in draft", function (t) {
+                t.it("applyAccountInformation() - no mailFolder set if already available in draft", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -890,7 +888,7 @@ StartTest(async t => {
 
                     let MAILFOLDERID = "foo";
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -901,7 +899,7 @@ StartTest(async t => {
 
                         t.expect(messageDraft.get("mailFolderId")).toBe(MAILFOLDERID);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             controller.applyAccountInformation(messageDraft);
 
                             t.expect(messageDraft.get("mailFolderId")).toBe(MAILFOLDERID);

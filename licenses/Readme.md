@@ -1,3 +1,3 @@
-# app-cn_mail/licenses
+# extjs-app-webmail/licenses
 
 This folder contains the supported licenses for third-party use.

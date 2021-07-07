@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest", function (t) {
+StartTest(t => {
 
 
-    t.it("Should successfully create and test instance", function (t) {
+    t.it("Should successfully create and test instance", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
 
@@ -41,7 +41,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest",
     });
 
 
-    t.it("applyCompoundKey - exception", function (t) {
+    t.it("applyCompoundKey - exception", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
             exc, data;
@@ -76,7 +76,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest",
     });
 
 
-    t.it("applyCompoundKey()", function (t) {
+    t.it("applyCompoundKey()", t => {
 
         const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
@@ -112,7 +112,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest",
     });
 
 
-    t.it("applyCompoundKey() - success false", function (t) {
+    t.it("applyCompoundKey() - success false", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
             ret = reader.applyCompoundKey({success: false}, "read");

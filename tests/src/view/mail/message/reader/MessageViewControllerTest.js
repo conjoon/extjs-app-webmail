@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
         let controller;
@@ -54,7 +56,7 @@ StartTest(async t => {
         });
 
 
-        t.it("Should make sure setting up controller works", function (t) {
+        t.it("Should make sure setting up controller works", t => {
 
             controller = createController();
 
@@ -62,7 +64,7 @@ StartTest(async t => {
         });
 
 
-        t.it("app-cn_mail#88 - sanitizeLinks()", function (t) {
+        t.it("extjs-app-webmail#88 - sanitizeLinks()", t => {
 
             let tests = [{
                 has: {id: "cn_" + 1, target: "_blank"},
@@ -112,7 +114,7 @@ StartTest(async t => {
         });
 
 
-        t.it("onViewResize()", function (t) {
+        t.it("onViewResize()", t => {
 
             controller = createController();
 
@@ -140,7 +142,7 @@ StartTest(async t => {
         });
 
 
-        t.it("onRemoteImageWarningAfterrender", function (t) {
+        t.it("onRemoteImageWarningAfterrender", t => {
 
             controller = createController();
 
@@ -170,7 +172,7 @@ StartTest(async t => {
         });
 
 
-        t.it("iframe related events", function (t) {
+        t.it("iframe related events", t => {
 
             controller = createController();
 
@@ -182,7 +184,7 @@ StartTest(async t => {
         });
 
 
-        t.it("onBeforeSrcDoc()", function (t) {
+        t.it("onBeforeSrcDoc()", t => {
 
             controller = createController();
 
@@ -211,7 +213,7 @@ StartTest(async t => {
         });
 
 
-        t.it("onIframeLoad()", function (t) {
+        t.it("onIframeLoad()", t => {
 
             controller = createController();
 
@@ -316,7 +318,7 @@ StartTest(async t => {
         });
 
 
-        t.it("reloadWithImages()", function (t) {
+        t.it("reloadWithImages()", t => {
 
             controller = createController();
 
@@ -349,7 +351,7 @@ StartTest(async t => {
         });
 
 
-        t.it("sanitizeImages", function (t) {
+        t.it("sanitizeImages", t => {
 
             controller = createController();
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
+StartTest(t => {
 
     const
-        TIMEOUT   = 500,
         ACCOUNTID = "dev_sys_conjoon_org",
         createService = function (helper) {
 
@@ -82,14 +81,14 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
     // -----------------------------------------------------------------------------
     // |   Tests
     // -----------------------------------------------------------------------------
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
 
 
-        t.it("constructor()", function (t) {
+        t.it("constructor()", t => {
             let exc,
                 service;
 
@@ -103,7 +102,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("filterMessageItemValue() - exception", function (t) {
+        t.it("filterMessageItemValue() - exception", t => {
 
             let service = createService(), exc;
 
@@ -128,7 +127,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("createOperation()", function (t) {
+        t.it("createOperation()", t => {
 
             let service = createService();
 
@@ -144,7 +143,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("configureOperationCallbacks()", function (t) {
+        t.it("configureOperationCallbacks()", t => {
 
             let service = createService(),
                 op, cfg,
@@ -177,7 +176,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("callBefore()", function (t) {
+        t.it("callBefore()", t => {
 
             let service = createService(),
                 op,
@@ -196,7 +195,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveToTrashOrDeleteMessage() - no trashfolder", function (t) {
+        t.it("moveToTrashOrDeleteMessage() - no trashfolder", t => {
 
             let service = createService(),
                 messageItem = createMessageItem();
@@ -228,7 +227,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("deleteMessage()", function (t) {
+        t.it("deleteMessage()", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem();
@@ -257,14 +256,14 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
             t.expect(testObj.CALLED).toBe(0);
             t.expect(op.getResult()).toBeUndefined();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 let result = op.getResult();
                 t.expect(result.success).toBe(true);
                 t.expect(testObj.CALLED).toBe(1);
 
                 op = service.deleteMessage(createDummyItem(), cbOptions);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     let result = op.getResult();
                     t.expect(result.success).toBe(false);
                     t.expect(testObj.CALLED).toBe(0);
@@ -274,16 +273,16 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveToTrashOrDeleteMessage() - mailfolder is trashfolder", function (t) {
+        t.it("moveToTrashOrDeleteMessage() - mailfolder is trashfolder", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem(1, "INBOX.Trash");
 
             t.isCalledNTimes("deleteMessage", service, 1);
-            t.waitForMs(TIMEOUT, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 let op = service.moveToTrashOrDeleteMessage(messageItem);
 
-                t.waitForMs(TIMEOUT, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(op.getResult().success).toBe(true);
                 });
             });
@@ -291,7 +290,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveMessage() - exception mailFolderId", function (t) {
+        t.it("moveMessage() - exception mailFolderId", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem(),
@@ -306,7 +305,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveMessage() - same folder NOOP", function (t) {
+        t.it("moveMessage() - same folder NOOP", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem();
@@ -335,7 +334,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveMessage() - invalid target", function (t) {
+        t.it("moveMessage() - invalid target", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem();
@@ -357,12 +356,12 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveMessage()", function (t) {
+        t.it("moveMessage()", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem(1, "INBOX");
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                 let testObj   = {CALLED: 0},
@@ -397,7 +396,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
 
                 t.expect(op.getResult()).toBeUndefined();
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     let result = op.getResult();
                     t.expect(result.success).toBe(true);
                     t.expect(testObj.CALLED).toBe(1);
@@ -414,7 +413,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveToTrashOrDeleteMessage() - message moved to trashfolder", function (t) {
+        t.it("moveToTrashOrDeleteMessage() - message moved to trashfolder", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem(1, "INBOX");
@@ -427,11 +426,11 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
                 };
 
             t.isCalledNTimes("moveMessage", service, 1);
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(testObj.CALLED).toBe(0);
                 let op = service.moveToTrashOrDeleteMessage(messageItem, cbOptions);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(testObj.CALLED).toBe(1);
                     t.expect(op.getResult().success).toBe(true);
                     t.expect(messageItem.get("mailFolderId")).toBe("INBOX.Trash");
@@ -442,7 +441,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("callBefore() - check return value", function (t) {
+        t.it("callBefore() - check return value", t => {
 
             let service = createService(),
                 op,
@@ -459,7 +458,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("deleteMessage() - cancel", function (t) {
+        t.it("deleteMessage() - cancel", t => {
 
             let service     = createService(),
                 messageItem = createMessageItem();
@@ -483,7 +482,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveCallback()", function (t) {
+        t.it("moveCallback()", t => {
             let service     = createService(),
                 sourceFolderId = "INBOX",
                 targetFolderId = "INBOX.Trash",
@@ -492,7 +491,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
             let oldMessageBodyId = messageItem.get("messageBodyId");
             t.expect(oldMessageBodyId).toBeFalsy();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId),
                     targetFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, targetFolderId);
@@ -543,13 +542,13 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("deleteCallback()", function (t) {
+        t.it("deleteCallback()", t => {
             let service        = createService(),
                 sourceFolderId = "INBOX.Trash",
                 messageItem    = createMessageItem(4, sourceFolderId);
 
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId);
 
@@ -591,7 +590,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("configureOperationCallbacks() - internal delete/move callbacks called", function (t) {
+        t.it("configureOperationCallbacks() - internal delete/move callbacks called", t => {
 
             let service = createService(),
                 op, opts,
@@ -637,13 +636,13 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("deleteCallback() - max 0 unreadCount", function (t) {
+        t.it("deleteCallback() - max 0 unreadCount", t => {
             let service        = createService(),
                 sourceFolderId = "INBOX.Trash",
                 messageItem    = createMessageItem(4, sourceFolderId);
 
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId);
 
@@ -666,7 +665,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("filterMessageItemValue() - accepts AbstractMessageItems", function (t) {
+        t.it("filterMessageItemValue() - accepts AbstractMessageItems", t => {
 
             let service  = createService(),
                 abstract = Ext.create("conjoon.cn_mail.model.mail.message.AbstractMessageItem", {
@@ -677,7 +676,7 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
         });
 
 
-        t.it("moveToTrashOrDeleteMessage() - message not moved, deleted directly since it was a phantom", function (t) {
+        t.it("moveToTrashOrDeleteMessage() - message not moved, deleted directly since it was a phantom", t => {
 
             let service     = createService(),
                 messageItem =  Ext.create("conjoon.cn_mail.model.mail.message.MessageItem",{
@@ -689,10 +688,10 @@ describe("conjoon.cn_mail.data.mail.service.MailboxServiceTest", function (t) {
 
             let cbOptions = {success: Ext.emptyFn, failure: Ext.emptyFn};
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 let op = service.moveToTrashOrDeleteMessage(messageItem, cbOptions);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(op.getResult().success).toBe(true);
                 });
             });

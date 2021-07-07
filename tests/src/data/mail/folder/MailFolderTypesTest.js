@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,15 +23,15 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.folder.MailFolderTypesTest", function (t) {
+StartTest(t => {
 
 
     // -----------------------------------------------------------------------------
     // |   Tests
     // -----------------------------------------------------------------------------
-    t.requireOk("conjoon.cn_mail.data.mail.folder.MailFolderTypes", function () {
+    t.requireOk("conjoon.cn_mail.data.mail.folder.MailFolderTypes", () => {
 
-        t.it("types", function (t) {
+        t.it("types", t => {
 
             let coll = [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,

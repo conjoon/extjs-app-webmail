@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -49,32 +49,36 @@
 Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
 
     requires: [
-        "coon.core.text.transformer.html.BlockquoteTransformer",
-        "coon.core.text.transformer.html.HyperlinkTransformer",
-        "coon.core.text.transformer.html.EmailAddressTransformer",
-        "coon.core.text.transformer.html.LineBreakTransformer"
+        // @define l8.text.transformer.html.BlockquoteTransformer
+        "l8.text.transformer.html.BlockquoteTransformer",
+        // @define l8.text.transformer.html.HyperlinkTransformer
+        "l8.text.transformer.html.HyperlinkTransformer",
+        // @define l8.text.transformer.html.EmailAddressTransformer
+        "l8.text.transformer.html.EmailAddressTransformer",
+        // @define l8.text.transformer.html.LineBreakTransformer
+        "l8.text.transformer.html.LineBreakTransformer"
     ],
 
     /**
-     * @type coon.core.text.transformer.html.BlockquoteTransformer
+     * @type l8.text.transformer.html.BlockquoteTransformer
      * @private
      */
     blockquoteTransformer: null,
 
     /**
-     * @type coon.core.text.transformer.html.HyperlinkTransformer
+     * @type l8.text.transformer.html.HyperlinkTransformer
      * @private
      */
     hyperlinkTransformer: null,
 
     /**
-     * @type coon.core.text.transformer.html.EmailAddressTransformer
+     * @type l8.text.transformer.html.EmailAddressTransformer
      * @private
      */
     emailAddressTransformer: null,
 
     /**
-     * @type coon.core.text.transformer.html.LineBreakTransformer
+     * @type l8.text.transformer.html.LineBreakTransformer
      * @private
      */
     lineBreakTransformer: null,
@@ -110,13 +114,13 @@ Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
     /**
      * Returns the BlockquoteTransformer used by this strategy.
      *
-     * @return {coon.core.text.transformer.html.BlockquoteTransformer}
+     * @return {l8.text.transformer.html.BlockquoteTransformer}
      */
     getBlockquoteTransformer: function () {
         const me = this;
 
         if (!me.blockquoteTransformer) {
-            me.blockquoteTransformer = Ext.create("coon.core.text.transformer.html.BlockquoteTransformer");
+            me.blockquoteTransformer = Ext.create("l8.text.transformer.html.BlockquoteTransformer");
         }
 
         return me.blockquoteTransformer;
@@ -126,13 +130,13 @@ Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
     /**
      * Returns the EmailAddressTransformer used by this strategy.
      *
-     * @return {coon.core.text.transformer.html.EmailAddressTransformer}
+     * @return {l8.text.transformer.html.EmailAddressTransformer}
      */
     getEmailAddressTransformer: function () {
         const me = this;
 
         if (!me.emailAddressTransformer) {
-            me.emailAddressTransformer = Ext.create("coon.core.text.transformer.html.EmailAddressTransformer");
+            me.emailAddressTransformer = Ext.create("l8.text.transformer.html.EmailAddressTransformer");
         }
 
         return me.emailAddressTransformer;
@@ -142,13 +146,13 @@ Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
     /**
      * Returns the HyperlinkTransformer used by this strategy.
      *
-     * @return {coon.core.text.transformer.html.HyperlinkTransformer}
+     * @return {l8.text.transformer.html.HyperlinkTransformer}
      */
     getHyperlinkTransformer: function () {
         const me = this;
 
         if (!me.hyperlinkTransformer) {
-            me.hyperlinkTransformer = Ext.create("coon.core.text.transformer.html.HyperlinkTransformer");
+            me.hyperlinkTransformer = Ext.create("l8.text.transformer.html.HyperlinkTransformer");
         }
 
         return me.hyperlinkTransformer;
@@ -158,13 +162,13 @@ Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
     /**
      * Returns the LineBreakTransformer used by this strategy.
      *
-     * @return {coon.core.text.transformer.html.LineBreakTransformer}
+     * @return {l8.text.transformer.html.LineBreakTransformer}
      */
     getLineBreakTransformer: function () {
         const me = this;
 
         if (!me.lineBreakTransformer) {
-            me.lineBreakTransformer = Ext.create("coon.core.text.transformer.html.LineBreakTransformer");
+            me.lineBreakTransformer = Ext.create("l8.text.transformer.html.LineBreakTransformer");
         }
 
         return me.lineBreakTransformer;

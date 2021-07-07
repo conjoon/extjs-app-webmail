@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -22,65 +22,8 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {l8} from "./../../l8.js/l8/dist/l8.bundle.js";
-import {default as TestHelper} from "./lib/mail/TestHelper.js";
 
-const project = new Siesta.Project.Browser.ExtJS();
-
-project.configure({
-    title: "app-cn_mail",
-    isEcmaModule: true,
-    disableCaching: true,
-    loaderPath: {
-
-        /**
-         * ux
-         */
-        "Ext.ux": "../../../../ext/packages/ux/src/",
-
-        /**
-         * Universal
-         */
-        "conjoon.cn_mail": "../src",
-        "conjoon.cn_mail.view.mail.account.MailAccountViewModel": "../src/view/mail/account/MailAccountViewModel.js",
-        "conjoon.cn_mail.view.mail.account.MailAccountViewController": "../src/view/mail/account/MailAccountViewController.js",
-        "conjoon.cn_mail.view.mail.inbox.InboxViewModel": "../src/view/mail/inbox/InboxViewModel.js",
-        "conjoon.cn_mail.view.mail.inbox.InboxViewController": "../src/view/mail/inbox/InboxViewController.js",
-        "conjoon.cn_mail.view.mail.message.reader.MessageViewModel": "../src/view/mail/message/reader/MessageViewModel.js",
-        "conjoon.cn_mail.view.mail.message.reader.MessageViewController": "../src/view/mail/message/reader/MessageViewController.js",
-        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel": "../src/view/mail/message/editor/MessageEditorViewModel.js",
-        "conjoon.cn_mail.view.mail.message.AbstractAttachmentListController": "../src/view/mail/message/AbstractAttachmentListController.js",
-        "conjoon.cn_mail.view.mail.message.reader.AttachmentListController": "../src/view/mail/message/reader/AttachmentListController.js",
-        "conjoon.cn_mail.view.mail.message.editor.AttachmentListController": "../src/view/mail/message/editor/AttachmentListController.js",
-        "conjoon.cn_mail.view.mail.MailDesktopViewController": "../src/view/mail/MailDesktopViewController.js",
-        "conjoon.cn_mail.view.mail.MailDesktopViewModel": "../src/view/mail/MailDesktopViewModel.js",
-        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController": "../src/view/mail/message/editor/MessageEditorViewController.js",
-        "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener": "../src/view/mail/message/editor/MessageEditorDragDropListener.js",
-
-        /**
-         * Classic
-         */
-        "conjoon.cn_mail.view": "../classic/src/view",
-
-        /**
-         * Requirements
-         */
-        "coon.core": "../../lib-cn_core/src/",
-        "coon.comp": "../../lib-cn_comp/classic/src",
-        "conjoon.dev.cn_mailsim": "../../dev-cn_mailsim/src"
-    },
-    preload: [
-        conjoon.tests.config.paths.extjs.css.url,
-        conjoon.tests.config.paths.conjoon.css.url,
-        conjoon.tests.config.paths.extjs.js.url
-    ],
-    config: {
-        l8: l8,
-        TestHelper: TestHelper
-    }
-});
-
-project.plan({
+export default [{
     group: "universal",
     items: [{
         group: "app",
@@ -118,7 +61,7 @@ project.plan({
                         "src/data/mail/folder/reader/MailFolderJsonReaderTest.js"
                     ]
                 },
-                "src/data/mail/folder/MailFolderTypesTest.js"
+                    "src/data/mail/folder/MailFolderTypesTest.js"
                 ]
             }, {
                 group: "message",
@@ -144,25 +87,25 @@ project.plan({
                         "src/data/mail/message/proxy/UtilityMixinTest.js"
                     ]
                 },
-                {
-                    group: "reader",
-                    items: [
-                        "src/data/mail/message/reader/MessageItemJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageBodyJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageItemChildJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageEntityJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageItemUpdaterTest.js"
-                    ]
-                },
-                {
-                    group: "session",
-                    items: [
-                        "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",
-                        "src/data/mail/message/session/MessageDraftSessionTest.js"
-                    ]
-                },
-                "src/data/mail/message/CompoundKeyTest.js",
-                "src/data/mail/message/EditingModesTest.js"
+                    {
+                        group: "reader",
+                        items: [
+                            "src/data/mail/message/reader/MessageItemJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageBodyJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageItemChildJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageEntityJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageItemUpdaterTest.js"
+                        ]
+                    },
+                    {
+                        group: "session",
+                        items: [
+                            "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",
+                            "src/data/mail/message/session/MessageDraftSessionTest.js"
+                        ]
+                    },
+                    "src/data/mail/message/CompoundKeyTest.js",
+                    "src/data/mail/message/EditingModesTest.js"
                 ]
             }, {
                 group: "service",
@@ -172,11 +115,11 @@ project.plan({
                         "src/data/mail/service/mailbox/OperationTest.js"
                     ]
                 },
-                "src/data/mail/service/MailFolderHelperTest.js",
-                "src/data/mail/service/MailboxServiceTest.js"
+                    "src/data/mail/service/MailFolderHelperTest.js",
+                    "src/data/mail/service/MailboxServiceTest.js"
                 ]
             },
-            "src/data/mail/BaseSchemaTest.js"
+                "src/data/mail/BaseSchemaTest.js"
             ]
         }]
     }, {
@@ -240,15 +183,15 @@ project.plan({
                     group: "reader",
                     items: ["src/text/mail/message/reader/PlainReadableStrategyTest.js"]
                 },
-                "src/text/mail/message/CopyDecoratorTest.js",
-                "src/text/mail/message/DecoratorFormatTest.js",
-                "src/text/mail/message/ForwardMessageDecoratorTest.js",
-                "src/text/mail/message/ReplyToMessageDecoratorTest.js",
-                "src/text/mail/message/ReplyAllMessageDecoratorTest.js"
+                    "src/text/mail/message/CopyDecoratorTest.js",
+                    "src/text/mail/message/DecoratorFormatTest.js",
+                    "src/text/mail/message/ForwardMessageDecoratorTest.js",
+                    "src/text/mail/message/ReplyToMessageDecoratorTest.js",
+                    "src/text/mail/message/ReplyAllMessageDecoratorTest.js"
                 ]
             }]
         },
-        "src/text/QueryStringParserTest.js"
+            "src/text/QueryStringParserTest.js"
         ]
     }, {
         group: "view",
@@ -353,12 +296,8 @@ project.plan({
                     "classic/src/view/mail/mixin/LoadingFailedDialogTest.js"
                 ]
             },
-            "classic/src/view/mail/MailDesktopViewTest.js"
+                "classic/src/view/mail/MailDesktopViewTest.js"
             ]
         }]
     }]
-});
-
-project.start();
-
-export {l8};
+}];

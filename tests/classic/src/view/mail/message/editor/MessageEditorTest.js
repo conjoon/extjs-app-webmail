@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,17 +23,16 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
         
-        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
-            const TIMEOUT = 1250;
-
-
-            var viewConfig,
+           var viewConfig,
                 view,
                 createKey = function (id1, id2, id3) {
                     return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
@@ -111,6 +110,11 @@ StartTest(async t => {
             });
 
             t.beforeEach(function () {
+
+                Ext.ux.ajax.SimManager.init({
+                    delay: 1
+                });
+
                 viewConfig = {
                     renderTo: document.body,
                     width: 400,
@@ -121,17 +125,12 @@ StartTest(async t => {
                 };
             });
 
-            t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
-
+            t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
                 // +---------------------------------------------------------------------------
                 // | BASIC BEHAVIOR
                 // +---------------------------------------------------------------------------
-                t.it("constructor() - no config", function (t) {
+                t.it("constructor() - no config", t => {
                     var exc;
 
                     try {
@@ -145,7 +144,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("constructor() - no config.messageDraft", function (t) {
+                t.it("constructor() - no config.messageDraft", t => {
                     var exc;
 
                     try {
@@ -159,7 +158,7 @@ StartTest(async t => {
                     t.expect(exc.msg).toContain("must be set");
                 });
 
-                t.it("constructor() - with ViewModel", function (t) {
+                t.it("constructor() - with ViewModel", t => {
                     var exc;
 
                     try {
@@ -172,7 +171,7 @@ StartTest(async t => {
                     t.expect(exc.msg).toContain("Cannot set");
                 });
 
-                t.it("Should create and show the view along with default config checks", function (t) {
+                t.it("Should create and show the view along with default config checks", t => {
                     view = createWithViewConfig(viewConfig);
 
                     t.expect(view.isCnMessageEditor).toBe(true);
@@ -203,13 +202,13 @@ StartTest(async t => {
                 });
 
                 //
-                // since conjoon/app-cn_mail/1 the attachmentList is always visible
+                // since conjoon/extjs-app-webmail/1 the attachmentList is always visible
                 //
-                t.it("Should create with empty messageItem and show/hide attachmentList properly", function (t) {
+                t.it("Should create with empty messageItem and show/hide attachmentList properly", t => {
                     view = createWithViewConfig(viewConfig);
 
                     // wait for bindings
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.down("cn_mail-mailmessageeditorattachmentlist").isHidden()).toBe(false);
                         view.down("cn_mail-mailmessageeditorattachmentlist").getStore().add({text: "dummfile"});
                         t.expect(view.down("cn_mail-mailmessageeditorattachmentlist").isHidden()).toBe(false);
@@ -219,10 +218,10 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should return default subject for emptyMessage", function (t) {
+                t.it("Should return default subject for emptyMessage", t => {
                     view = createWithViewConfig(viewConfig);
                     // wait for bindings
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.getTitle().toLowerCase()).toBe("(no subject)");
                     });
                 });
@@ -230,7 +229,7 @@ StartTest(async t => {
                 // +---------------------------------------------------------------------------
                 // | CONSTRUCTOR CHECKS
                 // +---------------------------------------------------------------------------
-                t.it("Should create empty message with specified to-address (string)", function (t) {
+                t.it("Should create empty message with specified to-address (string)", t => {
                     var messageDraftConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
                         to: "name@domain.tld"
                     });
@@ -240,23 +239,23 @@ StartTest(async t => {
                         messageDraft: messageDraftConfig
                     });
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         checkConstructorCreateWithAddress(["name@domain.tld"], t, view);
                     });
                 });
 
-                t.it("Should create empty message with specified to-address (array, 1)", function (t) {
+                t.it("Should create empty message with specified to-address (array, 1)", t => {
                     var messageDraftConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
                         to: [{name: "Peter", address: "name@domain.tld"}]
                     });
                     view = createWithMessageConfig(messageDraftConfig, "CREATE");
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         checkConstructorCreateWithAddress(["name@domain.tld"], t, view);
                     });
                 });
 
-                t.it("Should create empty message with specified to-address (array, 2)", function (t) {
+                t.it("Should create empty message with specified to-address (array, 2)", t => {
                     var messageDraftConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
                         to: [
                             {name: "Peter", address: "name@domain.tld"},
@@ -265,14 +264,14 @@ StartTest(async t => {
                     });
                     view = createWithMessageConfig(messageDraftConfig, "CREATE");
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         checkConstructorCreateWithAddress(
                             ["name@domain.tld", "name2@domain.tld"], t, view);
                     });
                 });
 
 
-                t.it("Should throw exception when called with viewModel and messageDraft", function (t) {
+                t.it("Should throw exception when called with viewModel and messageDraft", t => {
                     var messageDraftConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
                         to: [
                             {name: "Peter", address: "name@domain.tld"},
@@ -295,7 +294,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should be okay when called with viewConfig", function (t) {
+                t.it("Should be okay when called with viewConfig", t => {
 
                     var exc = undefined;
                     try {
@@ -311,7 +310,7 @@ StartTest(async t => {
                     t.expect(exc.msg).toContain("Cannot set");
                 });
 
-                t.it("Should create message with to, cc, bcc, subject and textHtml", function (t) {
+                t.it("Should create message with to, cc, bcc, subject and textHtml", t => {
                     var messageDraftConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
                         to: [
                             {name: "Peter", address: "name@domain.tld"},
@@ -324,7 +323,7 @@ StartTest(async t => {
                     });
                     view = createWithMessageConfig(messageDraftConfig, "CREATE");
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.down("cn_mail-mailmessageeditorhtmleditor").getValue()).toBe("bar");
 
                         t.expect(view.down("#toField").getValue()).toEqual(["name@domain.tld", "name2@domain.tld"]);
@@ -341,7 +340,7 @@ StartTest(async t => {
                 // | initComponent Check
                 // +---------------------------------------------------------------------------
 
-                t.it("Should throw exception when called with items without attachmentList", function (t) {
+                t.it("Should throw exception when called with items without attachmentList", t => {
 
                     var exc = undefined;
                     try {
@@ -362,12 +361,12 @@ StartTest(async t => {
                 // | showBcCcFields
                 // +---------------------------------------------------------------------------
 
-                t.it("Should test showCcBccFields properly", function (t) {
+                t.it("Should test showCcBccFields properly", t => {
 
                     view = createWithViewConfig(viewConfig);
 
                     // give the ViewModel bindings some time
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.down("#ccField").isHidden()).toBe(true);
                         t.expect(view.down("#bccField").isHidden()).toBe(true);
                         t.expect(view.showCcBccFields(true)).toBe(view);
@@ -391,11 +390,11 @@ StartTest(async t => {
                 //  | CC / BCC FIELD BEHAVIOR
                 //  +---------------------------------------------------------------------------
 
-                t.it("Should load message from backend", function (t) {
+                t.it("Should load message from backend", t => {
                     // anything but 1 returns cc/bcc which is needed for this test
                     view = createWithMessageConfig(createKeyForExistingMessage(2));
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.editMode).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorattachmentlist").getEditMode()).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorhtmleditor").getValue()).toBeTruthy();
@@ -409,10 +408,10 @@ StartTest(async t => {
                     });
                 });
 
-                t.it("Should load message from backend and not hide cc/bcc if fields are cleared", function (t) {
+                t.it("Should load message from backend and not hide cc/bcc if fields are cleared", t => {
                     view = createWithMessageConfig(createKeyForExistingMessage(2));
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.editMode).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorhtmleditor").getValue()).toBeTruthy();
 
@@ -423,7 +422,7 @@ StartTest(async t => {
                         view.getViewModel().set("messageDraft.cc", []);
                         view.getViewModel().set("messageDraft.bcc", []);
 
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.down("#ccField").getValue().length).toBe(0);
                             t.expect(view.down("#bccField").getValue().length).toBe(0);
 
@@ -434,10 +433,10 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should load message from backend and showHide ccbcc button depending on the values of the cc bcc fields", function (t) {
+                t.it("Should load message from backend and showHide ccbcc button depending on the values of the cc bcc fields", t => {
                     view = createWithMessageConfig(createKeyForExistingMessage(2));
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.editMode).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorhtmleditor").getValue()).toBeTruthy();
 
@@ -448,7 +447,7 @@ StartTest(async t => {
                         view.getViewModel().set("messageDraft.cc", []);
                         view.getViewModel().set("messageDraft.bcc", []);
 
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.down("#showCcBccButton").isHidden()).toBe(false);
                         });
 
@@ -456,11 +455,11 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should load message from backend, cc and bcc field hidden", function (t) {
+                t.it("Should load message from backend, cc and bcc field hidden", t => {
 
                     view = createWithMessageConfig(createKeyForExistingMessage(1));
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         expectCcsHidden(true, t, view);
 
                         t.expect(view.down("#ccField").getValue().length).toBe(0);
@@ -468,11 +467,11 @@ StartTest(async t => {
                     });
                 });
 
-                t.it("Typing into cc/bcc field and then click showCcBccButton should not add value (createNewOnBlur setting)", function (t) {
+                t.it("Typing into cc/bcc field and then click showCcBccButton should not add value (createNewOnBlur setting)", t => {
 
                     view = createWithViewConfig(viewConfig);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         expectCcsHidden(true, t, view);
 
                         view.down("#showCcBccButton").setUI("default");
@@ -489,7 +488,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("closable mvvm", function (t) {
+                t.it("closable mvvm", t => {
                     view = createWithViewConfig(viewConfig);
                     t.waitForMs(200, function () {
                         t.expect(view.getClosable()).toBe(true);
@@ -514,7 +513,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("iconCls mvvm", function (t) {
+                t.it("iconCls mvvm", t => {
                     view = createWithViewConfig(viewConfig);
                     t.waitForMs(200, function () {
                         var iconCls = view.getIconCls();
@@ -541,7 +540,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("setBusy()", function (t) {
+                t.it("setBusy()", t => {
                     view = createWithViewConfig(viewConfig);
 
                     t.expect(view.busyMask).toBeFalsy();
@@ -583,7 +582,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showAddressMissingNotice()", function (t) {
+                t.it("showAddressMissingNotice()", t => {
                     let view = createWithViewConfig(viewConfig);
 
                     view.getViewModel().notify();
@@ -624,7 +623,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showSubjectMissingNotice()", function (t) {
+                t.it("showSubjectMissingNotice()", t => {
                     view = createWithViewConfig(viewConfig);
 
                     view.getViewModel().notify();
@@ -699,7 +698,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMailMessageSaveFailedNotice()", function (t) {
+                t.it("showMailMessageSaveFailedNotice()", t => {
                     view = createWithViewConfig(viewConfig);
 
                     view.getViewModel().notify();
@@ -758,12 +757,12 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMessageDraftLoadingNotice()", function (t) {
+                t.it("showMessageDraftLoadingNotice()", t => {
                     view = createWithViewConfig(viewConfig);
 
                     t.expect(view.loadingMask).toBeTruthy();
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(view.loadingMask).toBeFalsy();
 
@@ -781,9 +780,11 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMessageDraftLoadingNotice() - vm isMessageBodyLoading", function (t) {
+                t.it("showMessageDraftLoadingNotice() - vm isMessageBodyLoading", t => {
+
                     Ext.ux.ajax.SimManager.init({
-                        delay: 500
+                        // /3: Draft, Body Attachments
+                        delay: Math.round(t.parent.TIMEOUT / 3)
                     });
 
                     var modes = [
@@ -807,7 +808,7 @@ StartTest(async t => {
                             })
                         ],
 
-                        func = function (t, i) {
+                        func = (t, i) => {
 
                             if (!modes[i]) {
                                 return;
@@ -817,14 +818,15 @@ StartTest(async t => {
 
                             t.expect(view.editMode).toBe(modes[i].getEditMode());
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(Math.round(t.parent.TIMEOUT / 3), () => {
                                 t.isInstanceOf(view.loadingMask, "Ext.LoadMask");
                                 t.expect(view.loadingMask.isHidden()).toBe(false);
                                 t.isCalledOnce("destroy", view.loadingMask);
 
-                                t.waitForMs(1500, function () {
+                                t.waitForMs(t.parent.TIMEOUT + 500, function () {
+
                                     t.expect(view.loadingMask).toBe(null);
-                                    view.hide();// destroying the view trigegrs error with Siesta 5.3.1,
+                                    view.hide();// destroying the view triggers error with Siesta 5.3.1,
                                     // wrong implementation of overrides for parentNode.removeChild
                                     // and synthetic mouse events?
                                     view = null;
@@ -841,13 +843,10 @@ StartTest(async t => {
 
 
                 t.it("getMessageDraft()", function (t){
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
 
                     view = createWithViewConfig(viewConfig);
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(view.getMessageDraft()).toBeTruthy();
                         t.expect(view.getMessageDraft()).toBe(view.getViewModel().get("messageDraft"));
@@ -857,9 +856,6 @@ StartTest(async t => {
 
 
                 t.it("confirmDialogMask mixin", function (t){
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
 
                     view = createWithViewConfig(viewConfig);
 
@@ -868,7 +864,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#65", function (t) {
+                t.it("extjs-app-webmail#65", t => {
 
                     let item  = createMessageItem(1, "INBOX.Drafts"),
                         editor;
@@ -876,7 +872,7 @@ StartTest(async t => {
 
                     item.loadAttachments();
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(item.attachments().getRange().length).toBeGreaterThan(0);
 
@@ -884,7 +880,7 @@ StartTest(async t => {
                         editor = createWithMessageConfig(item.getCompoundKey());
 
 
-                        t.waitForMs(750, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(editor.getViewModel().get("messageDraft.attachments").getRange().length).toBeGreaterThan(0);
 
@@ -898,7 +894,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#67", function (t) {
+                t.it("extjs-app-webmail#67", t => {
 
                     let item  = createMessageItem(1, "INBOX.Drafts"),
                         editor;
@@ -906,7 +902,7 @@ StartTest(async t => {
 
                     item.loadAttachments();
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(item.attachments().getRange().length).toBeGreaterThan(0);
 
@@ -919,7 +915,7 @@ StartTest(async t => {
                         store.load();
                         editor.getViewModel().set("cn_mail_mailfoldertreestore", store);
 
-                        t.waitForMs(750, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let prev = editor.getViewModel().get("messageDraft.attachments").getRange().length;
                             t.expect(prev).toBeGreaterThan(0);
@@ -932,7 +928,7 @@ StartTest(async t => {
                             editor.getController().configureAndStartSaveBatch();
 
 
-                            t.waitForMs(750, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 editor.destroy();
                                 editor = null;
@@ -947,10 +943,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#66 - loadingFailedDialog mixin", function (t){
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+                t.it("extjs-app-webmail#66 - loadingFailedDialog mixin", function (t){
 
                     view = createWithViewConfig(viewConfig);
 
@@ -959,10 +952,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#66 - isDraftLoading()", function (t){
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+                t.it("extjs-app-webmail#66 - isDraftLoading()", function (t){
 
                     view = createWithViewConfig(viewConfig);
 
@@ -992,7 +982,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#66 - hasLoadingFailed()", function (t) {
+                t.it("extjs-app-webmail#66 - hasLoadingFailed()", t => {
                     view = createWithViewConfig(viewConfig);
 
                     let vm = view.getViewModel();
@@ -1006,7 +996,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#66 - showLoadingFailedDialog()", function (t) {
+                t.it("extjs-app-webmail#66 - showLoadingFailedDialog()", t => {
                     view = createWithViewConfig(viewConfig);
 
 
@@ -1019,7 +1009,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#39 - combobox with default value", function (t) {
+                t.it("extjs-app-webmail#39 - combobox with default value", t => {
 
                     view = createWithViewConfig(viewConfig);
 
@@ -1027,7 +1017,7 @@ StartTest(async t => {
 
                     t.expect(combo).toBeTruthy();
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(view.getViewModel().get("messageDraft.mailAccountId")).toBeTruthy();
 

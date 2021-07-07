@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
-
-    const TIMEOUT = 1250;
+StartTest(t => {
 
     var viewModel,
         decorateMockView = function (viewModel) {
@@ -62,13 +60,13 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
         }
     });
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
 
-        t.it("Should create the ViewModel", function (t) {
+        t.it("Should create the ViewModel", t => {
             viewModel = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxViewModel");
             t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
 
@@ -76,7 +74,7 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
 
         });
 
-        t.it("Should properly define the stores", function (t) {
+        t.it("Should properly define the stores", t => {
             viewModel = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxViewModel");
 
             // check config since store filters uses binding.
@@ -102,7 +100,7 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
         });
 
 
-        t.it("Should properly test updateUnreadMessageCount", function (t) {
+        t.it("Should properly test updateUnreadMessageCount", t => {
 
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxViewModel", {
@@ -116,7 +114,7 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
             decorateMockView(viewModel);
 
 
-            t.waitForMs(TIMEOUT, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 var store = viewModel.getStore("cn_mail_mailfoldertreestore"),
                     rec = store.getRoot().findChild("id", "dev_sys_conjoon_org").findChild("id", "INBOX");
 
@@ -136,7 +134,7 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
         });
 
 
-        t.it("app-cn_mail#83 - no load if any filter is disabled", function (t) {
+        t.it("extjs-app-webmail#83 - no load if any filter is disabled", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxViewModel");
 
@@ -146,7 +144,7 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
             viewModel.set("cn_mail_ref_mailfoldertree.selection.id", "a");
             viewModel.set("cn_mail_ref_mailfoldertree.selection.mailAccountId", "b");
 
-            t.waitForMs(TIMEOUT, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 let store = viewModel.getStore("cn_mail_mailmessageitemstore"),
                     defaultStoreConfig = viewModel.defaultConfig.stores["cn_mail_mailmessageitemstore"];
@@ -168,7 +166,7 @@ describe("conjoon.cn_mail.view.mail.inbox.InboxViewModelTest", function (t) {
         });
 
 
-        t.it("app-cn_mail#98", function (t) {
+        t.it("extjs-app-webmail#98", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.inbox.InboxViewModel");
 

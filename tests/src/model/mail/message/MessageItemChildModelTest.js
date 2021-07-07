@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -44,14 +44,14 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", functio
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.CompoundKeyedModel");
 
         t.expect(model.foreignKeyFields).toEqual(["mailAccountId", "mailFolderId", "parentMessageItemId", "id"]);
     });
 
 
-    t.it("Test fields", function (t) {
+    t.it("Test fields", t => {
 
         let fields = ["parentMessageItemId"],
             field;
@@ -79,7 +79,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", functio
     });
 
 
-    t.it("load()", function (t) {
+    t.it("load()", t => {
 
         let exc;
 
@@ -99,7 +99,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", functio
     });
 
 
-    t.it("save()", function (t) {
+    t.it("save()", t => {
 
         let exc;
 
@@ -119,7 +119,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", functio
     });
 
 
-    t.it("updateLocalId()", function (t) {
+    t.it("updateLocalId()", t => {
 
         let m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
                 id: "foo-1",
@@ -152,7 +152,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", functio
     });
 
 
-    t.it("getCompoundKey()", function (t) {
+    t.it("getCompoundKey()", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
             "mailFolderId": "x",
@@ -166,7 +166,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageItemChildModelTest", functio
     });
 
 
-    t.it("getRepresentingCompoundKeyClass", function (t) {
+    t.it("getRepresentingCompoundKeyClass", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
 

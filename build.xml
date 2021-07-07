@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="app-cn_mail" default=".help">
+<project name="extjs-app-webmail" default=".help">
 
     <script language="javascript">
         <![CDATA[

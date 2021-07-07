@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest", function (t) {
+StartTest(t => {
 
     var createMessageItem = function () {
 
@@ -80,19 +80,19 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest", func
         };
 
 
-    t.requireOk("conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater", function () {
+    t.requireOk("conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater", () => {
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
-            t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", function () {
+            t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", () => {
 
-                t.it("Should make sure MessageItemUpdater exist", function (t) {
+                t.it("Should make sure MessageItemUpdater exist", t => {
 
                     t.expect(conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater).toBeDefined();
 
                 });
 
-                t.it("updateItemWithDraft()", function (t) {
+                t.it("updateItemWithDraft()", t => {
 
                     var messageItem = createMessageItem(),
                         UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
@@ -157,7 +157,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageItemUpdaterTest", func
                 });
 
 
-                t.it("createItemFromDraft()", function (t) {
+                t.it("createItemFromDraft()", t => {
 
                     let UPDATER     =  conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater,
                         exc,

@@ -1,7 +1,8 @@
+<!--
 /**
- * conjoon
- * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * coon.js
+ * siesta-lib-helper
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/siesta-lib-helper
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,27 +24,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * The default AttachmentList implementation for a
- * {@link coon.core.view.mail.message.reader.MessageView}.
- */
-Ext.define("conjoon.cn_mail.view.mail.message.reader.AttachmentList", {
+ /**
+  * file for redirecting from html-file specified as index-file to subfolder "tests"
+  * and its containing index.extjs-browser.html.
+  */
 
-    extend: "conjoon.cn_mail.view.mail.message.AbstractAttachmentList",
+ -->
 
-    requires: [
-        "conjoon.cn_mail.view.mail.message.reader.AttachmentListController"
-    ],
-
-    alias: "widget.cn_mail-mailmessagereaderattachmentlist",
-
-    controller: "cn_mail-mailmessagereaderattachmentlistcontroller",
-
-    /**
-     * @inheritdoc
-     */
-    displayButtonType: function (type) {
-        return type === "DOWNLOAD";
-    }
-
-});
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="0;url=/tests/index.extjs-browser.html" />
+    <title>Page Moved</title>
+</head>
+<body>
+<a href="/tests">Tests -&gt;</a>
+</body>
+</html>

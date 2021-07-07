@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2020-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2020-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
         var view,
@@ -46,7 +48,7 @@ StartTest(async t => {
         });
 
         t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim",
-            "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+            "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
                 Ext.ux.ajax.SimManager.init({
                     delay: 1
@@ -58,7 +60,7 @@ StartTest(async t => {
                 // +----------------------------------------------------------------------------
 
 
-                t.it("getSendMessageDraftRequestConfig()", function (t) {
+                t.it("getSendMessageDraftRequestConfig()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });

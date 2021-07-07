@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest", function (t) {
+StartTest(t => {
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+    t.requireOk(
+        "conjoon.dev.cn_mailsim.data.mail.PackageSim",
+        "conjoon.cn_mail.data.mail.message.EditingModes",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
             const createKey = function (id1, id2, id3) {
                     return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
@@ -46,8 +48,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest", func
                 delay: 1
             });
 
-
-            t.it("constructor()", function (t) {
+            t.it("constructor()", t => {
                 var copier;
 
                 copier = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier");
@@ -56,7 +57,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest", func
             });
 
 
-            t.it("loadMessageDraftCopy() - exceptions", function (t) {
+            t.it("loadMessageDraftCopy() - exceptions", t => {
                 var copier, exc, request;
                 copier = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier");
 
@@ -113,6 +114,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest", func
                     SCOPE       = null,
                     scope       = {foo: "bar"},
                     func        = function (copier, draftConfig, success, operation) {
+
                         SCOPE       = this;
                         COPIER      = copier;
                         SUCCESS     = success;
@@ -130,7 +132,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest", func
 
                 copier.loadMessageDraftCopy(request, func, scope);
 
-                t.waitForMs(500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
 
                     t.expect(SCOPE).toBe(scope);
                     t.expect(COPIER).toBe(copier);
@@ -150,16 +152,16 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopierTest", func
             };
 
 
-            t.it("loadMessageDraftCopy() - success", function (t) {
+            t.it("loadMessageDraftCopy() - success", t => {
                 testLoad(t, createKeyForExistingMessage(1), true);
             });
 
 
-            t.it("loadMessageDraftCopy() - failure", function (t) {
+            t.it("loadMessageDraftCopy() - failure", t => {
                 testLoad(t, createKey(1, 2, 3), false);
             });
 
 
         });
 
-    });});
+});

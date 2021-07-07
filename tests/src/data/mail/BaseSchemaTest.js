@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,13 +23,13 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.BaseSchemaTest", function (t) {
+StartTest(t => {
 
     t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", function (){
         t.requireOk("conjoon.cn_mail.model.mail.account.MailAccount", function (){
             t.requireOk("conjoon.cn_mail.model.mail.message.MessageDraft", function (){
 
-                t.it("Should properly create the schema and check for default config", function (t) {
+                t.it("Should properly create the schema and check for default config", t => {
 
                     var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
 
@@ -47,7 +47,7 @@ describe("conjoon.cn_mail.data.mail.BaseSchemaTest", function (t) {
                 });
 
 
-                t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntityProxy", function (t) {
+                t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntityProxy", t => {
 
                     var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
 
@@ -66,7 +66,7 @@ describe("conjoon.cn_mail.data.mail.BaseSchemaTest", function (t) {
                 });
 
 
-                t.it("Make sure configured reader for MessageDraft and MessageItem is of type MessageItemJsonReader", function (t) {
+                t.it("Make sure configured reader for MessageDraft and MessageItem is of type MessageItemJsonReader", t => {
 
                     let schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema"),
                         ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem),
@@ -87,7 +87,7 @@ describe("conjoon.cn_mail.data.mail.BaseSchemaTest", function (t) {
                 });
 
 
-                t.it("Make sure proxy for DraftAttachment and ItemAttachment is of type MessageItemChildProxy", function (t) {
+                t.it("Make sure proxy for DraftAttachment and ItemAttachment is of type MessageItemChildProxy", t => {
 
                     var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
 
@@ -101,7 +101,7 @@ describe("conjoon.cn_mail.data.mail.BaseSchemaTest", function (t) {
                 });
 
 
-                t.it("Make sure proxy for MailAccount is of type MailAccountdProxy", function (t) {
+                t.it("Make sure proxy for MailAccount is of type MailAccountdProxy", t => {
 
                     var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
 

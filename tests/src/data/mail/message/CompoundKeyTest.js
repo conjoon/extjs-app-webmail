@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
+StartTest(t => {
 
     const create = function (cfg) {
             return Ext.create("conjoon.cn_mail.data.mail.message.CompoundKey", cfg);
@@ -33,7 +33,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
         ID            = "foobar";
 
 
-    t.it("constructor() / apply*()", function (t) {
+    t.it("constructor() / apply*()", t => {
 
         let exc;
         try{create();}catch(e){exc=e;}
@@ -97,7 +97,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("toObject()", function (t) {
+    t.it("toObject()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
 
@@ -109,7 +109,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("toArray()", function (t) {
+    t.it("toArray()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
 
@@ -120,7 +120,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("toLocalId()", function (t) {
+    t.it("toLocalId()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
 
@@ -131,7 +131,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("fromRecord()", function (t) {
+    t.it("fromRecord()", t => {
 
         let exc = undefined;
         try{conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord({});}catch(e){exc=e;}
@@ -152,7 +152,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("createFor()", function (t) {
+    t.it("createFor()", t => {
 
         let key = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID, ID
@@ -164,7 +164,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("createFor() - exception", function (t) {
+    t.it("createFor() - exception", t => {
 
         let exc = undefined;
         try{conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
@@ -177,7 +177,7 @@ describe("conjoon.cn_mail.data.mail.message.CompoundKeyTest", function (t) {
     });
 
 
-    t.it("equalTo()", function (t) {
+    t.it("equalTo()", t => {
 
         let keyLeft = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
                 MAILACCOUNTID, MAILFOLDERID, ID

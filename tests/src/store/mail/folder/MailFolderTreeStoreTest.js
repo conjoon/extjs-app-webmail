@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,17 +23,16 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest", function (t) {
+StartTest(t => {
 
-    const TIMEOUT = 1250;
-
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+    
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
 
-        t.it("Should properly create the store and check for default config, and initial load", function (t) {
+        t.it("Should properly create the store and check for default config, and initial load", t => {
 
             var store = Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
                 asynchronousLoad: false
@@ -65,7 +64,7 @@ describe("conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest", function (
 
             t.expect(store.getRoot().isLoading()).toBe(true);
 
-            t.waitForMs(TIMEOUT, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(store.getRoot().childNodes.length).toBe(2);
 

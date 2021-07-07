@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.account.MailAccountTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -42,20 +42,20 @@ describe("conjoon.cn_mail.model.mail.account.MailAccountTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance and check basic configuration", function (t) {
+    t.it("Should create instance and check basic configuration", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
         t.expect(model.getIdProperty()).toBe("id");
 
     });
 
-    t.it("Test Entity Name", function (t) {
+    t.it("Test Entity Name", t => {
         t.expect(
             model.entityName
         ).toBe("MailAccount");
     });
 
-    t.it("toUrl()", function (t) {
+    t.it("toUrl()", t => {
 
         let model =  Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
             id: "foo"
@@ -65,7 +65,7 @@ describe("conjoon.cn_mail.model.mail.account.MailAccountTest", function (t) {
     });
 
 
-    t.it("Test Record Validity", function (t) {
+    t.it("Test Record Validity", t => {
         t.expect(model.isValid()).toBe(false);
 
         model.set("folderType", "Posteingang");
@@ -85,7 +85,7 @@ describe("conjoon.cn_mail.model.mail.account.MailAccountTest", function (t) {
     });
 
 
-    t.it("app-cn_mail#101", function (t) {
+    t.it("extjs-app-webmail#101", t => {
         t.isInstanceOf(model.getField("from"), "coon.core.data.field.EmailAddress");
         t.isInstanceOf(model.getField("replyTo"), "coon.core.data.field.EmailAddress");
     });

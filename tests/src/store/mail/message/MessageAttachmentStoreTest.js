@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", function (t) {
+StartTest(t => {
 
 
-    t.it("Should properly create the store and check for default config", function (t) {
+    t.it("Should properly create the store and check for default config", t => {
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
@@ -41,7 +41,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("load()", function (t) {
+    t.it("load()", t => {
 
         let exc,
             store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
@@ -165,7 +165,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("add()", function (t) {
+    t.it("add()", t => {
 
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore"),
@@ -203,7 +203,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("checkAndBuildCompoundKeyFilters() - associatedEntity available", function (t) {
+    t.it("checkAndBuildCompoundKeyFilters() - associatedEntity available", t => {
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
@@ -253,7 +253,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("checkAndBuildCompoundKeyFilters() - associatedEntity available", function (t) {
+    t.it("checkAndBuildCompoundKeyFilters() - associatedEntity available", t => {
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
@@ -303,7 +303,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("conjoon/app-cn_mail#65", function (t) {
+    t.it("conjoon/extjs-app-webmail#65", t => {
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
@@ -357,7 +357,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("add() - record alread in store", function (t) {
+    t.it("add() - record alread in store", t => {
 
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
@@ -377,7 +377,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageAttachmentStoreTest", functi
     });
 
 
-    t.it("add() - no record instance", function (t) {
+    t.it("add() - no record instance", t => {
 
         let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 

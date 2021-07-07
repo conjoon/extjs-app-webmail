@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -100,8 +100,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewIframe", {
             theme = coon.core.ThemeManager.getTheme(),
             themeConfig = theme.get(),
             tplPath = coon.core.Environment.getPathForResource(
-                coon.core.ConfigManager.get("app-cn_mail", "resources.templates.html.reader"),
-                "app-cn_mail"
+                coon.core.ConfigManager.get("extjs-app-webmail", "resources.templates.html.reader"),
+                "extjs-app-webmail"
             ),
             tpl = await coon.core.Template.load(tplPath);
 

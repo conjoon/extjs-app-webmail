@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,12 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
-
-        const TIMEOUT = 1250;
 
         var view,
             controller,
@@ -99,15 +99,15 @@ StartTest(async t => {
         });
 
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
                 Ext.ux.ajax.SimManager.init({
                     delay: 1
                 });
 
 
-                t.it("Should make sure setting up controller works", function (t) {
+                t.it("Should make sure setting up controller works", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -119,8 +119,8 @@ StartTest(async t => {
                 });
 
 
-                //remove/add listener where removed for conjoon/app-cn_mail/1
-                t.it("Should register and catch the events properly", function (t) {
+                //remove/add listener where removed for conjoon/extjs-app-webmail/1
+                t.it("Should register and catch the events properly", t => {
 
                     // the itemremove event fires directly when the view was created.
                     // this might be related to the use of MVVM, where the store
@@ -148,7 +148,7 @@ StartTest(async t => {
 
                     t.isCalledNTimes("onMailMessageEditorBeforeDestroy", controller, 1);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -182,8 +182,8 @@ StartTest(async t => {
 
                 });
 
-                //onAttachmentListItemRemove() removed for conjoon/app-cn_mail/1
-                t.it("Should make sure that onAttachmentListItemRemove works properly", function (t) {
+                //onAttachmentListItemRemove() removed for conjoon/extjs-app-webmail/1
+                t.it("Should make sure that onAttachmentListItemRemove works properly", t => {
 
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -192,8 +192,8 @@ StartTest(async t => {
                     t.expect(controller.onAttachmentListItemRemove).toBeUndefined();
                 });
 
-                //onAttachmentListItemAdd() removed for conjoon/app-cn_mail/1
-                t.it("Should make sure that onAttachmentListItemAdd works properly", function (t) {
+                //onAttachmentListItemAdd() removed for conjoon/extjs-app-webmail/1
+                t.it("Should make sure that onAttachmentListItemAdd works properly", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
@@ -202,17 +202,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should make sure that onFormFileButtonChange works properly", function (t) {
+                t.it("Should make sure that onFormFileButtonChange works properly", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             var attachmentList = view.down("cn_mail-mailmessageeditorattachmentlist");
                             t.expect(attachmentList.getStore().getRange().length).toBe(0);
                             controller.onFormFileButtonChange(null, null, null, [createFile()]);
@@ -222,17 +222,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should make sure that onShowCcBccButtonClick works properly", function (t) {
+                t.it("Should make sure that onShowCcBccButtonClick works properly", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(view.down("#ccField").isHidden()).toBe(true);
                             t.expect(view.down("#bccField").isHidden()).toBe(true);
@@ -248,14 +248,14 @@ StartTest(async t => {
                 });
 
 
-                //conjoon/app-cn_mail/1
-                t.it("Should test properly changes for conjoon/app-cn_mail/1", function (t){
+                //conjoon/extjs-app-webmail/1
+                t.it("Should test properly changes for conjoon/extjs-app-webmail/1", function (t){
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -314,7 +314,7 @@ StartTest(async t => {
                         expectCountAndHover(t, 0, false);
 
                         // wait for viewmodel bindings
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             var attachmentList = view.down("cn_mail-mailmessageeditorattachmentlist");
                             t.expect(attachmentList.getStore().getRange().length).toBe(0);
                             controller.addAttachmentsFromFileList([createFile()]);
@@ -333,13 +333,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("endBusyState()", function (t) {
+                t.it("endBusyState()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -350,7 +350,7 @@ StartTest(async t => {
                         t.expect(view.busyMask.isHidden()).toBe(false);
                         controller.endBusyState("saving");
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(view.getViewModel().get("isSaving")).toBe(false);
                             t.expect(view.getViewModel().get("isSending")).toBe(true);
@@ -360,7 +360,7 @@ StartTest(async t => {
                             view.setBusy({msg: "foo"});
                             controller.endBusyState("sending");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(view.getViewModel().get("isSending")).toBe(false);
                                 t.expect(view.busyMask.isHidden()).toBe(true);
 
@@ -378,13 +378,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("setViewBusy()", function (t) {
+                t.it("setViewBusy()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -405,13 +405,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageEditorBeforeDestroy()", function (t) {
+                t.it("onMailMessageEditorBeforeDestroy()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -441,17 +441,17 @@ StartTest(async t => {
                 // +----------------------------------------------------------------------------
                 // | SAVING
                 // +----------------------------------------------------------------------------
-                t.it("Should make sure that onSaveButtonClick works properly", function (t) {
+                t.it("Should make sure that onSaveButtonClick works properly", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             view.down("#subjectField").setValue("test");
                             view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
 
@@ -462,7 +462,7 @@ StartTest(async t => {
 
                             controller.onSaveButtonClick();
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // give enough time for the tests to finish
                             });
                         });
@@ -472,18 +472,18 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should make sure that onSaveButtonClick works properly with exception", function (t) {
+                t.it("Should make sure that onSaveButtonClick works properly with exception", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             view.down("#subjectField").setValue("TESTFAIL");
                             view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
 
@@ -494,7 +494,7 @@ StartTest(async t => {
 
                             controller.onSaveButtonClick();
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // give enough time for the tests to finish
                             });
                         });
@@ -503,13 +503,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSaveOperationComplete()", function (t) {
+                t.it("onMailMessageSaveOperationComplete()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -522,13 +522,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSaveOperationException()", function (t) {
+                t.it("onMailMessageSaveOperationException()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -547,7 +547,7 @@ StartTest(async t => {
                         var noButton = Ext.dom.Query.select("span[data-ref=noButton]", view.el.dom);
                         t.click(noButton[0], function () {
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(view.getViewModel().get("isSaving")).toBe(false);
 
                                 view.getViewModel().set("isSaving", true);
@@ -559,7 +559,7 @@ StartTest(async t => {
 
                                 var yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", view.el.dom);
                                 t.click(yesButton[0], function () {
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(view.getViewModel().get("isSaving")).toBe(true);
                                     });
                                 });
@@ -575,13 +575,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageBeforeSave()", function (t) {
+                t.it("onMailMessageBeforeSave()", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
 
@@ -589,7 +589,7 @@ StartTest(async t => {
                         view.getViewModel().get("messageDraft").set("subject", "foo");
                         controller.onMailMessageBeforeSave(
                             view, view.getViewModel().get("messageDraft"), false, false);
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(view.getViewModel().get("isSaving")).toBe(true);
                         });
 

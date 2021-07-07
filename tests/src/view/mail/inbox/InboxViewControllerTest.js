@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,13 +23,13 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
-
-        const TIMEOUT = 1250;
 
         var panel;
 
@@ -131,15 +131,15 @@ StartTest(async t => {
             panel = null;
         });
 
-        t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", function () {
-            t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+        t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", () => {
+            t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
                 Ext.ux.ajax.SimManager.init({
                     delay: 1
                 });
 
 
-                t.it("Should create the ViewController", function (t) {
+                t.it("Should create the ViewController", t => {
 
                     var _testMailFolderId = {},
                         viewController    = Ext.create(
@@ -209,7 +209,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailFolderTreeSelect", function (t) {
+                t.it("onMailFolderTreeSelect", t => {
 
                     const viewController = Ext.create(
                             "conjoon.cn_mail.view.mail.inbox.InboxViewController"
@@ -224,7 +224,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageItemRead()", function (t) {
+                t.it("onMessageItemRead()", t => {
 
                     let CALLED = 0;
 
@@ -262,7 +262,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onRowFlyMenuItemClick()", function (t) {
+                t.it("onRowFlyMenuItemClick()", t => {
 
                     const viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.inbox.InboxViewController");
@@ -288,7 +288,7 @@ StartTest(async t => {
 
                     viewController.onRowFlyMenuItemClick(null, null, "markunread", rec);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(rec.get("seen")).toBe(false);
                         t.expect(CALLED).toBe(1);
                     });
@@ -296,7 +296,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onRowFlyMenuBeforeShow()", function (t) {
+                t.it("onRowFlyMenuBeforeShow()", t => {
 
                     let CALLED = 0;
 
@@ -319,13 +319,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("getMailBoxMessageService()", function (t) {
+                t.it("getMailBoxMessageService()", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         let service = viewController.getMailboxService();
 
                         t.isInstanceOf(service, "conjoon.cn_mail.data.mail.service.MailboxService");
@@ -339,7 +339,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onRowFlyMenuItemClick() - delete", function (t) {
+                t.it("onRowFlyMenuItemClick() - delete", t => {
 
                     const viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.inbox.InboxViewController");
@@ -362,7 +362,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onRowFlyMenuBeforeShow() - cn_deleted / cn_moved", function (t) {
+                t.it("onRowFlyMenuBeforeShow() - cn_deleted / cn_moved", t => {
 
                     const viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.inbox.InboxViewController"
@@ -383,17 +383,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("onBeforeMessageMoveOrDelete()", function (t) {
+                t.it("onBeforeMessageMoveOrDelete()", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3);
 
@@ -430,17 +430,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageMovedOrDeletedFailure()", function (t) {
+                t.it("onMessageMovedOrDeletedFailure()", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3),
                                 owningStore = messageItem.store;
@@ -487,17 +487,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageMovedOrDeleted() - MOVED - targetFolder not shown in messageGrid", function (t) {
+                t.it("onMessageMovedOrDeleted() - MOVED - targetFolder not shown in messageGrid", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3),
                                 owningStore = messageItem.store;
@@ -526,24 +526,24 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageMovedOrDeleted() - MOVED - targetFolder shown in messageGrid", function (t) {
+                t.it("onMessageMovedOrDeleted() - MOVED - targetFolder shown in messageGrid", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3),
                                 owningStore = messageItem.store;
                             deselectMessage(panel, messageItem);
                             let targetFolder = selectMailFolder(panel, 4);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 messageItem.unjoin(messageItem.store);
                                 messageItem.set("cn_moved",   true);
 
@@ -569,24 +569,24 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder not selected", function (t) {
+                t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder not selected", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3),
                                 owningStore = messageItem.store;
 
                             selectMailFolder(panel, 4);
 
-                            t.waitForMs(500, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 messageItem.unjoin(messageItem.store);
                                 messageItem.set("cn_deleted", true);
 
@@ -611,17 +611,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder is selected", function (t) {
+                t.it("onMessageMovedOrDeleted() - DELETED - messageItems MailFolder is selected", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3),
                                 owningStore = messageItem.store;
@@ -649,19 +649,19 @@ StartTest(async t => {
                 });
 
 
-                t.it("moveOrDeleteMessage()", function (t) {
+                t.it("moveOrDeleteMessage()", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         // should be move operation since selected folder is not of type
                         // TRASH
                         t.expect(selectMailFolder(panel, 2).get("folderType")).not.toBe("TRASH");
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             let messageItem = panel.down("cn_mail-mailmessagegrid").getStore().getAt(0);
 
                             t.isCalled("moveToTrashOrDeleteMessage", viewController.getMailboxService());
@@ -672,7 +672,7 @@ StartTest(async t => {
 
                             t.isInstanceOf(viewController.moveOrDeleteMessage(messageItem, true), "conjoon.cn_mail.data.mail.service.mailbox.Operation");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // intentionally left empty
                             });
                         });
@@ -686,12 +686,12 @@ StartTest(async t => {
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let folder =  selectMailFolder(panel, 5);
                         t.expect(folder.get("folderType")).toBe("TRASH");
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             let messageItem = Ext.create(
                                 "conjoon.cn_mail.model.mail.message.MessageItem", {
                                     localId: "bla",
@@ -705,7 +705,7 @@ StartTest(async t => {
 
                             viewController.moveOrDeleteMessage(messageItem, true);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // intentionally left empty
 
                             });
@@ -724,7 +724,7 @@ StartTest(async t => {
                     let messageView = panel.down("cn_mail-mailmessagereadermessageview");
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.isCalledNTimes("onDeleteClick", viewController, 2);
                         t.isCalledNTimes("onDeleteClick", viewController, 2);
@@ -732,24 +732,24 @@ StartTest(async t => {
 
                         selectMailFolder(panel, 5);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             selectMessage(panel, 2);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 messageView.down("#btn-delete").fireEvent("click");
 
-                                t.waitForMs(TIMEOUT, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     selectMessage(panel, 4);
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         messageView.down("#btn-deletedraft").fireEvent("click");
 
 
-                                        t.waitForMs(TIMEOUT, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
                                             // intentionally left empty
                                         });
 
@@ -762,17 +762,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("onBeforeMessageMoveOrDelete() - cancel delete", function (t) {
+                t.it("onBeforeMessageMoveOrDelete() - cancel delete", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 5);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3);
 
@@ -802,17 +802,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("moveOrDeleteMessage() - confirm dialog not shown", function (t) {
+                t.it("moveOrDeleteMessage() - confirm dialog not shown", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 5);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3);
 
@@ -830,17 +830,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("moveOrDeleteMessage() - confirm dialog shown", function (t) {
+                t.it("moveOrDeleteMessage() - confirm dialog shown", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 5);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3);
 
@@ -859,7 +859,7 @@ StartTest(async t => {
                             let yesButton = Ext.dom.Query.select("span[data-ref=yesButton]", viewController.getView().el.dom);
                             t.click(yesButton[0]);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // intentionally left blank
                             });
 
@@ -869,17 +869,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("moveOrDeleteMessage() - confirm dialog shown while global event returned false again", function (t) {
+                t.it("moveOrDeleteMessage() - confirm dialog shown while global event returned false again", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 5);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3);
 
@@ -902,7 +902,7 @@ StartTest(async t => {
                             t.click(yesButton[0]);
 
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // intentionally left blank
                             });
 
@@ -911,13 +911,13 @@ StartTest(async t => {
                 });
 
 
-                t.it("updateViewForSentDraft() - no selection", function (t) {
+                t.it("updateViewForSentDraft() - no selection", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let oldM = conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage,
                             CALLED = 0;
@@ -942,25 +942,25 @@ StartTest(async t => {
                 });
 
 
-                t.it("updateViewForSentDraft() - mail folder SENT selected", function (t) {
+                t.it("updateViewForSentDraft() - mail folder SENT selected", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         // messageDrafts are sent once they have been moved to DRAFT folder
                         let messageDraft = createMessageDraftByFolderId(1, "INBOX.Drafts");
 
                         messageDraft.setMessageBody(Ext.create("conjoon.cn_mail.model.mail.message.MessageBody"));
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let mailFolder = selectMailFolder(panel, 2);
                             let tfid = mailFolder.get("id");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.isCalledOnce("onBeforeMessageMoveOrDelete", viewController);
                                 t.isCalledOnce("onMessageMovedOrDeleted", viewController);
@@ -971,7 +971,7 @@ StartTest(async t => {
 
                                 t.expect(op.getRequest().targetFolderId).toBe(tfid);
 
-                                t.waitForMs(TIMEOUT, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
                                     // intentionally left blank
                                 });
                             });
@@ -980,27 +980,27 @@ StartTest(async t => {
                 });
 
 
-                t.it("updateViewForSentDraft() - mail folder DRAFT selected", function (t) {
+                t.it("updateViewForSentDraft() - mail folder DRAFT selected", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let mailFolder = selectMailFolder(panel, 4);
                             t.expect(mailFolder.get("folderType")).toBe("DRAFT");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 let messageItem  = selectMessage(panel, 0),
                                     messageDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                                         messageItem.getCompoundKey()
                                     );
 
-                                t.waitForMs(TIMEOUT, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     let op = viewController.updateViewForSentDraft(messageDraft);
 
@@ -1008,7 +1008,7 @@ StartTest(async t => {
                                     t.expect(op.getRequest().targetFolderId).toBe("INBOX.Sent Messages");
                                     t.expect(op.getRequest().sourceFolderId).toBe(mailFolder.get("id"));
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         // intentionally left blank
                                     });
                                 });
@@ -1019,7 +1019,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("moveOrDeleteMessage() - event \"cn_mail-messageitemmove\" fired", function (t) {
+                t.it("moveOrDeleteMessage() - event \"cn_mail-messageitemmove\" fired", t => {
 
                     panel = createPanelWithViewModel();
 
@@ -1031,19 +1031,19 @@ StartTest(async t => {
                         CALLED++;
                     });
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         // should be move operation since selected folder is not of type
                         // TRASH
                         t.expect(selectMailFolder(panel, 1).get("folderType, ")).not.toBe("TRASH");
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             let messageItem = panel.down("cn_mail-mailmessagegrid").getStore().getAt(0);
 
                             t.expect(CALLED).toBe(0);
                             viewController.moveOrDeleteMessage(messageItem, true);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(CALLED).toBe(1);
                             });
                         });
@@ -1051,21 +1051,21 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#82 - onMessageMovedOrDeleted() - DELETED - messageItem has no compound key (composed)", function (t) {
+                t.it("extjs-app-webmail#82 - onMessageMovedOrDeleted() - DELETED - messageItem has no compound key (composed)", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
                             selectMailFolder(panel, 4);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 let op = Ext.create("conjoon.cn_mail.data.mail.service.mailbox.Operation", {
                                     request: {
@@ -1085,17 +1085,17 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#47 - updateViewForSentDraft() - mail folder INBOX is selected and message to which was replied is available", function (t) {
+                t.it("extjs-app-webmail#47 - updateViewForSentDraft() - mail folder INBOX is selected and message to which was replied is available", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 1);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 0);
 
@@ -1112,7 +1112,7 @@ StartTest(async t => {
                             t.expect(messageItem.get("answered")).toBe(false);
                             viewController.updateViewForSentDraft(messageDraft);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.expect(messageItem.get("answered")).toBe(true);
 
@@ -1123,23 +1123,23 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#90 - joining to store", function (t) {
+                t.it("extjs-app-webmail#90 - joining to store", t => {
 
                     panel = createPanelWithViewModel();
 
                     const viewController = panel.getController();
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let messageItem = selectMessage(panel, 3);
                             deselectMessage(panel, messageItem);
                             let targetFolder = selectMailFolder(panel, 4);
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 // UNJOIN
                                 messageItem.unjoin(messageItem.store);
 
@@ -1164,7 +1164,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#83 - make sure MailFolderTree *select-events are registered", function (t) {
+                t.it("extjs-app-webmail#83 - make sure MailFolderTree *select-events are registered", t => {
 
                     panel = createPanelWithViewModel();
 
@@ -1185,14 +1185,14 @@ StartTest(async t => {
                         };
                     };
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.isCalled("onMailFolderTreeSelect", ctrl);
                         t.isCalled("onMailFolderTreeBeforeSelect", ctrl);
 
                         selectMailFolder(panel, 2);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                         });
 
@@ -1200,7 +1200,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("app-cn_mail#83 - onMailFolderTreeBeforeSelect()", function (t){
+                t.it("extjs-app-webmail#83 - onMailFolderTreeBeforeSelect()", function (t){
 
                     panel = createPanelWithViewModel();
 
@@ -1208,7 +1208,7 @@ StartTest(async t => {
                         PENDINGCHANGES = false,
                         CALLED;
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         panel.showMailAccountIsBeingEditedNotice = function () {
                             CALLED = true;

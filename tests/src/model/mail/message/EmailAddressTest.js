@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.EmailAddressTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -40,11 +40,11 @@ describe("conjoon.cn_mail.model.mail.message.EmailAddressTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.BaseModel");
     });
 
-    t.it("id", function (t) {
+    t.it("id", t => {
         t.expect(model.getIdProperty()).toBe("id");
     });
 

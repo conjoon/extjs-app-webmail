@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function (t) {
+StartTest(t => {
 
     var view,
         viewConfig,
@@ -50,7 +50,7 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
     });
 
 
-    t.it("Should create and show the attachment list along with default config checks", function (t) {
+    t.it("Should create and show the attachment list along with default config checks", t => {
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", viewConfig);
 
@@ -64,7 +64,7 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
     });
 
 
-    t.it("Should make sure editMode cannot be changed during runtime", function (t) {
+    t.it("Should make sure editMode cannot be changed during runtime", t => {
 
         var view = Ext.create("conjoon.cn_mail.view.mail.message.editor.AttachmentList", {editMode: "CREATE"});
         t.expect(view.getEditMode()).toBe("CREATE");
@@ -106,7 +106,7 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
 
     });
 
-    t.it("Should test displayButtonType properly", function (t) {
+    t.it("Should test displayButtonType properly", t => {
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", viewConfig);
 
@@ -146,7 +146,7 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
     });
 
 
-    t.it("Should throw if no valid argument passed to addAttachment", function (t) {
+    t.it("Should throw if no valid argument passed to addAttachment", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
             editMode: "CREATE"
@@ -167,13 +167,13 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
     });
 
 
-    t.it("Should throw if store configured for attachment list has a model defined which is not a DraftAttachment.", function (t) {
+    t.it("Should throw if store configured for attachment list has a model defined which is not a DraftAttachment.", t => {
 
         Ext.define("DummyModel", {
             extend: "Ext.data.Model"
         });
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             view = Ext.create(
                 "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
                     renderTo: document.body,
@@ -199,7 +199,7 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
         });
     });
 
-    t.it("Should test addAttachment with store's model set to DraftAttachment properly", function (t) {
+    t.it("Should test addAttachment with store's model set to DraftAttachment properly", t => {
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
                 renderTo: document.body,
@@ -220,7 +220,7 @@ describe("conjoon.cn_mail.view.mail.message.editor.AttachmentListTest", function
     });
 
 
-    t.it("Should process beforedestroy properly", function (t) {
+    t.it("Should process beforedestroy properly", t => {
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
                 renderTo: document.body,

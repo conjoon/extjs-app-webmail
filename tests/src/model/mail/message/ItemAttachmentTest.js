@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.ItemAttachmentTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -46,44 +46,44 @@ describe("conjoon.cn_mail.model.mail.message.ItemAttachmentTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.MessageItemChildModel");
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.AbstractAttachment");
     });
 
-    t.it("Test Entity Name", function (t) {
+    t.it("Test Entity Name", t => {
         t.expect(
             model.entityName
         ).toBe("ItemAttachment");
     });
 
-    t.it("Test Record Validity", function (t) {
+    t.it("Test Record Validity", t => {
         t.expect(model.isValid()).toBe(true);
     });
 
-    t.it("Test mailFolderId", function (t) {
+    t.it("Test mailFolderId", t => {
         t.expect(model.getField("mailFolderId")).toBeTruthy();
         t.expect(model.getField("mailFolderId").critical).toBe(true);
         t.isInstanceOf(model.getField("mailFolderId"), "coon.core.data.field.CompoundKeyField");
     });
 
-    t.it("Test mailAccountId", function (t) {
+    t.it("Test mailAccountId", t => {
         t.expect(model.getField("mailAccountId")).toBeTruthy();
         t.expect(model.getField("mailAccountId").critical).toBe(true);
         t.isInstanceOf(model.getField("mailAccountId"), "coon.core.data.field.CompoundKeyField");
     });
 
-    t.it("localId", function (t) {
+    t.it("localId", t => {
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-    t.it("id", function (t) {
+    t.it("id", t => {
         t.expect(model.getField("id")).toBeTruthy();
         t.expect(model.getField("id").critical).toBe(true);
         t.isInstanceOf(model.getField("id"), "coon.core.data.field.CompoundKeyField");
     });
 
-    t.it("parentMessageItemId", function (t) {
+    t.it("parentMessageItemId", t => {
         t.expect(model.getField("parentMessageItemId")).toBeTruthy();
     });
 

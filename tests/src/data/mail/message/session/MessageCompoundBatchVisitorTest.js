@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorTest", function (t) {
+StartTest(t => {
 
     const setupSession = function (withExistingDraft = false) {
 
@@ -93,9 +93,9 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
             return Ext.create("Ext.data.Batch");
         };
 
-    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", function () {
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-            t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor", function () {
+    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor", () => {
 
 
                 Ext.ux.ajax.SimManager.init({
@@ -103,7 +103,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Should successfully create and test instance", function (t) {
+                t.it("Should successfully create and test instance", t => {
 
                     let visitor = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor");
 
@@ -111,7 +111,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("getBatch()", function (t) {
+                t.it("getBatch()", t => {
 
                     let MessageCompoundBatchVisitor = conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor,
                         tmp = MessageCompoundBatchVisitor.prototype.onBatchOperationComplete;
@@ -132,7 +132,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("isOperationSwappable()", function (t) {
+                t.it("isOperationSwappable()", t => {
 
                     let visitor = createVisitor(),
                         op = createOp();
@@ -162,7 +162,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("onBatchOperationComplete() - exception", function (t) {
+                t.it("onBatchOperationComplete() - exception", t => {
 
                     let visitor = createVisitor(),
                         op      = createOp(),
@@ -174,7 +174,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("onBatchOperationComplete() - no operations", function (t) {
+                t.it("onBatchOperationComplete() - no operations", t => {
 
                     let visitor = createVisitor(),
                         op      = createOp(),
@@ -184,7 +184,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("onBatchOperationComplete() - no records", function (t) {
+                t.it("onBatchOperationComplete() - no records", t => {
 
                     let visitor = createVisitor(),
                         op      = createOp(),
@@ -196,7 +196,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("onBatchOperationComplete()", function (t) {
+                t.it("onBatchOperationComplete()", t => {
 
                     let visitor = createVisitor(),
                         op      = createOp(),
@@ -230,7 +230,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Should properly test behavior", function (t) {
+                t.it("Should properly test behavior", t => {
 
                     let session = setupSession();
 
@@ -280,7 +280,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                     batch.start();
                     t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
 
-                    t.waitForMs(2000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(REFR_OP[0]).toBeTruthy();
                         t.expect(REFR_OP[0]).toBe(CMP_REC);
@@ -292,7 +292,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Test setMessageDraft()", function (t) {
+                t.it("Test setMessageDraft()", t => {
 
                     const visitor = createVisitor(false);
 
@@ -328,7 +328,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Test seedRetrievedKey()", function (t) {
+                t.it("Test seedRetrievedKey()", t => {
 
                     const visitor = createVisitor(false);
 
@@ -369,7 +369,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Test seedRetrievedKey() - response was application/json - app-cn_mail#119", function (t) {
+                t.it("Test seedRetrievedKey() - response was application/json - extjs-app-webmail#119", t => {
 
                     const visitor = createVisitor(false),
                         op = createOp(),
@@ -405,7 +405,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Test refreshKeyForDestroy()", function (t) {
+                t.it("Test refreshKeyForDestroy()", t => {
 
                     const visitor = createVisitor(false);
 
@@ -440,7 +440,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 });
 
 
-                t.it("Should make sure preBatchCompoundKey is saved on MessageDraft", function (t) {
+                t.it("Should make sure preBatchCompoundKey is saved on MessageDraft", t => {
 
                     let session    = setupSession(true),
                         batch      = session.getSaveBatch(),
@@ -467,7 +467,7 @@ describe("conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                     batch.start();
                     t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey()));
 
-                    t.waitForMs(2000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                     });
 

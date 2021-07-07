@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.comp.grid.feature.LivegridTest", function (t) {
+StartTest(t => {
 
     Ext.define("MockModel", {
         extend: "Ext.data.Model",
@@ -114,7 +114,7 @@ describe("coon.comp.grid.feature.LivegridTest", function (t) {
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.comp.grid.feature.Livegrid", function () {
+    t.requireOk("coon.comp.grid.feature.Livegrid", () => {
 
 
         t.it("constructor()", function (t){
@@ -128,7 +128,7 @@ describe("coon.comp.grid.feature.LivegridTest", function (t) {
         });
 
 
-        t.it("getRecordByCompoundKey()", function (t) {
+        t.it("getRecordByCompoundKey()", t => {
 
             let grid           = getGrid({sorters: {property: "testProp", dir: "ASC"}, autoLoad: true}),
                 feature        = grid.view.getFeature("livegrid"),
@@ -136,7 +136,7 @@ describe("coon.comp.grid.feature.LivegridTest", function (t) {
                 exc;
 
 
-            t.waitForMs(750, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.isCalledOnce("getRecordBy", PageMapUtil);
 
@@ -148,7 +148,7 @@ describe("coon.comp.grid.feature.LivegridTest", function (t) {
 
                 feature.getRecordByCompoundKey(ck);
 
-                t.waitForMs(750, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     grid.destroy();
                     grid = null;
                 });

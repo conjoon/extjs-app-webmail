@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../lib/mail/TestHelper.js";
 
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().load(
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.BaseSchema",
@@ -39,8 +40,7 @@ StartTest(async t => {
 
         var viewModel;
 
-        const SMALLEST_DELAY = 1,
-            TIMEOUT = 1250;
+        const SMALLEST_DELAY = 1;
 
         var view,
             createKey = function (id1, id2, id3) {
@@ -103,10 +103,10 @@ StartTest(async t => {
                 });
 
 
-                t.waitForMs(TIMEOUT, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     var body = draft.loadMessageBody();
                     draft.loadAttachments();
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         var attachments = draft.attachments().getRange();
                         var messageDraft = viewModel.get("messageDraft");
                         var messageBody  = viewModel.get("messageDraft.messageBody");
@@ -135,7 +135,7 @@ StartTest(async t => {
                         // with the copier, but we'll leave it in here for now
                         if (editMode === conjoon.cn_mail.data.mail.message.EditingModes.FORWARD) {
                             var draftAttachments = messageDraft.attachments().getRange();
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
                                 t.expect(attachments.length).toBe(draftAttachments.length);
                                 t.expect(attachments.length).toBeGreaterThan(0);
 
@@ -165,6 +165,12 @@ StartTest(async t => {
                 view.destroy();
                 view = null;
             }
+
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+
+
         });
 
 
@@ -172,16 +178,10 @@ StartTest(async t => {
             t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", function (){
                 t.requireOk("coon.core.data.Session", function (){
                     t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor", function (){
-                        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-                            t.requireOk("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", function () {
+                        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+                            t.requireOk("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", () => {
 
-
-                                Ext.ux.ajax.SimManager.init({
-                                    delay: SMALLEST_DELAY
-                                });
-
-
-                                t.it("constructor() - exception", function (t) {
+                                t.it("constructor() - exception", t => {
 
                                     var exc,
                                         cls = "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel";
@@ -211,7 +211,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("constructor() - messageDraft is messageDraftConfig", function (t) {
+                                t.it("constructor() - messageDraft is messageDraftConfig", t => {
 
                                     t.isCalledOnce("createDraftFromData", conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
 
@@ -223,10 +223,10 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("constructor() - messageDraft is MessageDraftCopyRequest", function (t) {
+                                t.it("constructor() - messageDraft is MessageDraftCopyRequest", t => {
 
                                     Ext.ux.ajax.SimManager.init({
-                                        delay: 1
+                                        delay: Math.max(1, t.parent.TIMEOUT - 1000)
                                     });
 
                                     t.isCalledOnce("onMessageDraftCopyLoad", conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
@@ -251,19 +251,16 @@ StartTest(async t => {
                                     t.expect(exc.msg).toBeDefined();
                                     t.expect(exc.msg).toContain("is not available");
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.isInstanceOf(viewModel.messageDraftCopier, conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier);
                                         conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
 
-                                        Ext.ux.ajax.SimManager.init({
-                                            delay: SMALLEST_DELAY
-                                        });
                                     });
 
                                 });
 
 
-                                t.it("constructor() - MessageDraftCopyRequest is not properly configured", function (t) {
+                                t.it("constructor() - MessageDraftCopyRequest is not properly configured", t => {
 
                                     t.isntCalled("onMessageDraftCopyLoad", conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
 
@@ -294,7 +291,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("constructor() - MessageDraftCopyRequest is not properly configured, processing manually", function (t) {
+                                t.it("constructor() - MessageDraftCopyRequest is not properly configured, processing manually", t => {
 
                                     t.isCalled("onMessageDraftCopyLoad", conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype);
 
@@ -320,7 +317,7 @@ StartTest(async t => {
 
                                     t.expect(viewModel.hasPendingCopyRequest()).toBe(false);
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.get("messageDraft").get("mailAccountId")).toBe("foo");
                                         t.expect(viewModel.get("messageDraft").get("mailFolderId")).toBe("bar");
                                         conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
@@ -330,7 +327,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("constructor() - messageDraft is compound key", function (t) {
+                                t.it("constructor() - messageDraft is compound key", t => {
 
                                     let index = 1;
 
@@ -344,7 +341,7 @@ StartTest(async t => {
 
                                     let messageItem = getMessageItemAt(index);
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.get("messageDraft").get("id")).toBe(messageItem.id);
                                         t.expect(viewModel.get("messageDraft").get("mailAccountId")).toBe(messageItem.mailAccountId);
                                         t.expect(viewModel.get("messageDraft").get("mailFolderId")).toBe(messageItem.mailFolderId);
@@ -356,7 +353,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("createDraftFromData()", function (t) {
+                                t.it("createDraftFromData()", t => {
 
                                     viewModel = createWithSession(false);
 
@@ -377,7 +374,7 @@ StartTest(async t => {
                                     viewModel.getSession()._messageDraft = undefined;
                                     viewModel.createDraftFromData(c);
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.get("messageDraft.subject")).toBe("SUBJECT");
                                         t.expect(viewModel.get("messageDraft.messageBody.textHtml")).toBe("TEXTHTML");
                                     });
@@ -385,7 +382,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("onMessageDraftCopyLoad()", function (t) {
+                                t.it("onMessageDraftCopyLoad()", t => {
 
                                     let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
                                     conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function (){return{fireEvent: Ext.emptyFn};};
@@ -403,7 +400,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should create the ViewModel", function (t) {
+                                t.it("Should create the ViewModel", t => {
                                     viewModel = createWithSession();
 
                                     t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
@@ -414,7 +411,7 @@ StartTest(async t => {
                                     t.expect(viewModel.get("isSending")).toBe(false);
                                     t.expect(viewModel.get("isSubjectRequired")).toBe(true);
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         var formulas = viewModel.getFormulas(),
                                             expected = [
                                                 "addressStoreData", "getBcc", "getCc",
@@ -439,7 +436,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should create the ViewModel with data from the backend", function (t) {
+                                t.it("Should create the ViewModel with data from the backend", t => {
 
                                     let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
                                     conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function (){return{fireEvent: Ext.emptyFn};};
@@ -452,7 +449,7 @@ StartTest(async t => {
 
                                     let item = getMessageItemAt(1);
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.get("messageDraft")).toBeDefined();
                                         t.expect(viewModel.get("messageDraft").phantom).toBe(false);
                                         t.expect(viewModel.get("messageDraft").get("id")).toBe(item.id);
@@ -463,7 +460,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that getAddressValuesFromDraft works properly", function (t) {
+                                t.it("Should make sure that getAddressValuesFromDraft works properly", t => {
                                     viewModel = createWithSession();
 
                                     var addresses = [{
@@ -482,7 +479,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that setAddressesForDraft works properly", function (t) {
+                                t.it("Should make sure that setAddressesForDraft works properly", t => {
                                     viewModel = createWithSession();
 
                                     var addresses = [{
@@ -504,7 +501,7 @@ StartTest(async t => {
                                             name: "c"
                                         }];
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         t.expect(viewModel.get("messageDraft.to")).toEqual([]);
                                         t.expect(viewModel.get("messageDraft.cc")).toEqual([]);
@@ -516,7 +513,7 @@ StartTest(async t => {
                                         viewModel.setAddressesForDraft("cc", values);
                                         viewModel.setAddressesForDraft("bcc", values);
 
-                                        t.waitForMs(TIMEOUT, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
                                             t.expect(viewModel.get("messageDraft.to")).toEqual(expected);
                                             t.expect(viewModel.get("messageDraft.cc")).toEqual(expected);
                                             t.expect(viewModel.get("messageDraft.bcc")).toEqual(expected);
@@ -526,7 +523,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that addressStoreDate works properly", function (t) {
+                                t.it("Should make sure that addressStoreDate works properly", t => {
                                     viewModel = createWithSession();
 
                                     var formulas = viewModel.getFormulas(),
@@ -549,7 +546,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that isCcOrBccValueSet works properly", function (t) {
+                                t.it("Should make sure that isCcOrBccValueSet works properly", t => {
                                     viewModel = createWithSession();
 
                                     var formulas = viewModel.getFormulas(),
@@ -585,7 +582,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that getSubject works properly", function (t) {
+                                t.it("Should make sure that getSubject works properly", t => {
                                     viewModel = createWithSession();
 
                                     var formulas       = viewModel.getFormulas(),
@@ -603,7 +600,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that isMessageBodyLoading works properly", function (t) {
+                                t.it("Should make sure that isMessageBodyLoading works properly", t => {
                                     viewModel = createWithSession();
 
                                     var formulas = viewModel.getFormulas();
@@ -625,7 +622,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that isAccountAndFolderSet works properly", function (t) {
+                                t.it("Should make sure that isAccountAndFolderSet works properly", t => {
                                     viewModel = createWithSession();
 
                                     var formulas = viewModel.getFormulas();
@@ -644,7 +641,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should make sure that isPhantom works properly", function (t) {
+                                t.it("Should make sure that isPhantom works properly", t => {
                                     viewModel = createWithSession();
 
                                     var formulas = viewModel.getFormulas();
@@ -661,22 +658,22 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("Should create the ViewModel with data from the backend - replyTo", function (t) {
+                                t.it("Should create the ViewModel with data from the backend - replyTo", t => {
                                     testEditorMode(t, conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO);
                                 });
 
 
-                                t.it("Should create the ViewModel with data from the backend - replyAll", function (t) {
+                                t.it("Should create the ViewModel with data from the backend - replyAll", t => {
                                     testEditorMode(t, conjoon.cn_mail.data.mail.message.EditingModes.REPLY_ALL);
                                 });
 
 
-                                t.it("Should create the ViewModel with data from the backend - forward", function (t) {
+                                t.it("Should create the ViewModel with data from the backend - forward", t => {
                                     testEditorMode(t, conjoon.cn_mail.data.mail.message.EditingModes.FORWARD);
                                 });
 
 
-                                t.it("constructor() - messageDraft is compound key, but message cannot be found conjoon/app-cn_mail#64", function (t) {
+                                t.it("constructor() - messageDraft is compound key, but message cannot be found conjoon/extjs-app-webmail#64", t => {
 
                                     let CK       = createKey(1, 2, 3),
                                         session  = createSession(),
@@ -693,7 +690,7 @@ StartTest(async t => {
                                     });
 
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.get("messageDraft")).toBeFalsy();
                                         t.expect(session.peekRecord("MessageDraft", CK.toLocalId())).toBeFalsy();
 
@@ -703,7 +700,7 @@ StartTest(async t => {
                                             messageDraft: existing
                                         });
 
-                                        t.waitForMs(TIMEOUT, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                                             // test loading of compoundKey and makse sure session is
                                             // set properly
@@ -739,14 +736,14 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("conjoon/app-cn_mail#66 - cn_mail-messagedraftload event fired from draft load", function (t) {
+                                t.it("conjoon/extjs-app-webmail#66 - cn_mail-messagedraftload event fired from draft load", t => {
 
                                     let session  = createSession(),
                                         CK = createKeyForExistingMessage(1),
                                         CALLED = 0, EVTSOURCE, EVTDRAFT;
 
                                     Ext.ux.ajax.SimManager.init({
-                                        delay: 500
+                                        delay: Math.max(1, t.parent.TIMEOUT - 1000)
                                     });
 
 
@@ -771,30 +768,25 @@ StartTest(async t => {
                                     viewModel.getView = function (){return VIEWMOCK;};
 
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.loadingDraft).toBeFalsy();
                                         t.expect(CALLED).toBe(1);
                                         t.expect(EVTSOURCE).toBe(VIEWMOCK);
                                         t.expect(EVTDRAFT.getCompoundKey().toObject()).toEqual(CK.toObject());
-
-
-                                        Ext.ux.ajax.SimManager.init({
-                                            delay: SMALLEST_DELAY
-                                        });
 
                                     });
 
                                 });
 
 
-                                t.it("conjoon/app-cn_mail#66 - failure registered", function (t) {
+                                t.it("conjoon/extjs-app-webmail#66 - failure registered", t => {
 
                                     let session  = createSession(),
                                         CK = createKey(1, 2, 3),
                                         CALLED = 0;
 
                                     Ext.ux.ajax.SimManager.init({
-                                        delay: 500
+                                        delay: Math.max(1, t.parent.TIMEOUT - 1000)
                                     });
 
                                     let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.processMessageDraftLoadFailure;
@@ -810,20 +802,17 @@ StartTest(async t => {
                                     t.expect(CALLED).toBe(0);
 
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(CALLED).toBe(1);
 
                                         conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.processMessageDraftLoadFailure = tmp;
 
-                                        Ext.ux.ajax.SimManager.init({
-                                            delay: SMALLEST_DELAY
-                                        });
 
                                     });
                                 });
 
 
-                                t.it("conjoon/app-cn_mail#66 - processMessageDraftLoadFailure", function (t) {
+                                t.it("conjoon/extjs-app-webmail#66 - processMessageDraftLoadFailure", t => {
 
                                     let session  = createSession(),
                                         CALLED = 0;
@@ -869,7 +858,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("conjoon/app-cn_mail#66 - onMessageDraftCopyLoad, success false/true", function (t) {
+                                t.it("conjoon/extjs-app-webmail#66 - onMessageDraftCopyLoad, success false/true", t => {
 
                                     let session  = createSession(),
                                         CALLED = 0, FIRED = 0;
@@ -907,7 +896,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("conjoon/app-cn_mail#39 - mailAccountStore", function (t) {
+                                t.it("conjoon/extjs-app-webmail#39 - mailAccountStore", t => {
 
                                     let session = createSession();
 
@@ -918,7 +907,7 @@ StartTest(async t => {
 
                                     viewModel.set("cn_mail_mailfoldertreestore", Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"));
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         t.expect(viewModel.get("mailAccountStore")).toBeTruthy();
 
                                         t.isInstanceOf(viewModel.get("mailAccountStore"), "Ext.data.ChainedStore");
@@ -933,7 +922,7 @@ StartTest(async t => {
                                 });
 
 
-                                t.it("make sure messageDraft is in session before messagebody gets loaded", function (t) {
+                                t.it("make sure messageDraft is in session before messagebody gets loaded", t => {
 
                                     let index = 1;
 
@@ -950,7 +939,7 @@ StartTest(async t => {
                                         messageDraft: createKeyForExistingMessage(index)
                                     });
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
                                     });
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKeyTest", function (t) {
+StartTest(t => {
 
     const create = function (cfg) {
             return Ext.create("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey", cfg);
@@ -34,7 +34,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
         ID                  = "foobar";
 
 
-    t.it("constructor() / apply*()", function (t) {
+    t.it("constructor() / apply*()", t => {
 
         let exc;
 
@@ -64,7 +64,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("toObject()", function (t) {
+    t.it("toObject()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
@@ -77,7 +77,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("toArray()", function (t) {
+    t.it("toArray()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
@@ -88,7 +88,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("toLocalId()", function (t) {
+    t.it("toLocalId()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID, parentMessageItemId: PARENTMESSAGEITEMID});
 
@@ -99,7 +99,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("fromRecord()", function (t) {
+    t.it("fromRecord()", t => {
 
         let exc = undefined;
 
@@ -122,7 +122,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompound
     });
 
 
-    t.it("createFor()", function (t) {
+    t.it("createFor()", t => {
 
         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID, PARENTMESSAGEITEMID, ID

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
+StartTest(t => {
 
     var grid,
         gridConfig,
@@ -44,31 +44,33 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
     });
 
     t.beforeEach(function () {
+
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
+        });
+
         gridConfig = {
             renderTo: document.body
         };
     });
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim", function () {
-        t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", function () {
-            t.requireOk("conjoon.cn_mail.store.mail.message.MessageItemStore", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim", () => {
+
+        conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim.init();
+
+        t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", () => {
+            t.requireOk("conjoon.cn_mail.store.mail.message.MessageItemStore", () => {
 
                 conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
 
-
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
-
-
-                t.it("Should create and show the grid along with default config checks", function (t) {
+                t.it("Should create and show the grid along with default config checks", t => {
                     grid = Ext.create(
                         "conjoon.cn_mail.view.mail.message.MessageGrid", gridConfig);
 
                     t.expect(grid.getSelectionModel().toggleOnClick).toBe(false);
 
                     //
-                    // app-cn_mail#99
+                    // extjs-app-webmail#99
                     //
                     t.expect(grid.getEmptyText()).toBeTruthy();
 
@@ -102,7 +104,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("enableRowPreview()", function (t) {
+                t.it("enableRowPreview()", t => {
                     grid = Ext.create(
                         "conjoon.cn_mail.view.mail.message.MessageGrid", gridConfig);
                     let feature    = grid.view.getFeature("cn_mail-mailMessageFeature-messagePreview"),
@@ -124,12 +126,12 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("enableRowPreview while store loads", function (t) {
+                t.it("enableRowPreview while store loads", t => {
 
-                    t.diag("upping SimManager delay to 1500");
+                    t.diag("upping SimManager delay to t.parent.TIMEOUT + 1000");
 
                     Ext.ux.ajax.SimManager.init({
-                        delay: 1500
+                        delay: t.parent.TIMEOUT + 1000
                     });
 
                     var exc;
@@ -153,7 +155,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                         {property: "mailFolderId", value: "INBOX"}
                     ]);
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         try {
                             grid.enableRowPreview(true);
                         } catch (e) {
@@ -167,7 +169,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("bindStore with exception", function (t) {
+                t.it("bindStore with exception", t => {
                     var exc;
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
@@ -187,7 +189,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("bindStore ext-empty-store", function (t) {
+                t.it("bindStore ext-empty-store", t => {
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
                         height: 400,
@@ -201,19 +203,15 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                     t.isCalledNTimes("onMessageItemStoreLoad", grid, 0);
                     grid.getStore().load();
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                     });
                 });
 
 
-                t.it("bindStore with proper store config and event behavior", function (t) {
+                t.it("bindStore with proper store config and event behavior", t => {
 
                     t.diag("downing SimManager delay to 1");
-
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
 
                     let ULOAD = 0, UBEFORELOAD = 0, store;
 
@@ -240,7 +238,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                         {property: "mailFolderId", value: "INBOX"}
                     ]);
 
-                    t.waitForMs(850, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(ULOAD).toBe(1);
                         t.expect(UBEFORELOAD).toBe(1);
 
@@ -248,7 +246,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
 
                         store.reload();
 
-                        t.waitForMs(850, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(ULOAD).toBe(1);
                             t.expect(UBEFORELOAD).toBe(1);
 
@@ -258,7 +256,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("selection still available after pageremove", function (t) {
+                t.it("selection still available after pageremove", t => {
                     let store;
 
                     t.expect(conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
@@ -281,7 +279,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                         {property: "mailFolderId", value: "INBOX"}
                     ]);
 
-                    t.waitForMs(850, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let rec = store.getAt(0);
 
@@ -289,7 +287,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
 
                         grid.view.getScrollable().scrollTo(0, 100000);
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             store.getData().removeAtKey(1);
                             t.expect(store.getData().map[1]).toBeUndefined();
@@ -301,7 +299,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("call to relayEvents properly registered", function (t) {
+                t.it("call to relayEvents properly registered", t => {
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -347,7 +345,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("updateRowFlyMenu()", function (t) {
+                t.it("updateRowFlyMenu()", t => {
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -384,7 +382,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("getRowClass()", function (t) {
+                t.it("getRowClass()", t => {
                     grid = Ext.create(
                         "conjoon.cn_mail.view.mail.message.MessageGrid", gridConfig);
 
@@ -421,7 +419,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("draft rendering", function (t) {
+                t.it("draft rendering", t => {
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
                         height: 400,
@@ -439,7 +437,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                         {property: "mailFolderId", value: "INBOX"}
                     ]);
 
-                    t.waitForMs(1250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, function () {
 
                         let messageItem, index, len;
                         for (index = 0, len = 20; index < len; index++) {
@@ -469,7 +467,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("stringifyTo", function (t) {
+                t.it("stringifyTo", t => {
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
                         height: 400,
@@ -487,7 +485,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                         {property: "mailFolderId", value: "INBOX"}
                     ]);
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(grid.stringifyTo([{
                             address: "foobar",
@@ -501,7 +499,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#39 - setRepresentedFolderType()", function (t) {
+                t.it("extjs-app-webmail#39 - setRepresentedFolderType()", t => {
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -517,7 +515,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#39 - renderDraftDisplayAddress()", function (t) {
+                t.it("extjs-app-webmail#39 - renderDraftDisplayAddress()", t => {
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -570,13 +568,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                 });
 
 
-                t.it("enable/disable rowPreview removes prefetch-requests and reloads store", function (t) {
-
-
-                    t.diag("upping SimManager delay to 1");
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+                t.it("enable/disable rowPreview removes prefetch-requests and reloads store", t => {
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -600,7 +592,7 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
 
                     let PAGEABORT = 0;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         grid.getStore().pageRequests = [{
                             getOperation: function () {
@@ -612,9 +604,9 @@ describe("conjoon.cn_mail.view.mail.message.MessageGridTest", function (t) {
                             }
                         }];
 
-                        t.diag("upping SimManager delay to 1500");
+                        t.diag("upping SimManager delay");
                         Ext.ux.ajax.SimManager.init({
-                            delay: 750
+                            delay: t.parent.TIMEOUT + 500
                         });
 
                         t.expect(PAGEABORT).toBe(0);

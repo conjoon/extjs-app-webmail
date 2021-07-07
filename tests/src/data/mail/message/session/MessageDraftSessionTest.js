@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest", function (t) {
+StartTest(t => {
 
 
-    t.it("test instance", function (t) {
+    t.it("test instance", t => {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -37,7 +37,7 @@ describe("conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest", fu
     });
 
 
-    t.it("Test setMessageDraft()", function (t) {
+    t.it("Test setMessageDraft()", t => {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -74,7 +74,7 @@ describe("conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest", fu
     });
 
 
-    t.it("Test createVisitor() with no messageDraft set", function (t) {
+    t.it("Test createVisitor() with no messageDraft set", t => {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -91,7 +91,7 @@ describe("conjoon.cn_mail.data.mail.message.session.MessageDraftSessionTest", fu
     });
 
 
-    t.it("Test createVisitor() with messageDraft set", function (t) {
+    t.it("Test createVisitor() with messageDraft set", t => {
 
         const session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession"),
             draft   = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", function (t) {
+StartTest(t => {
 
     var view,
         controller,
@@ -51,7 +51,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("Should make sure setting up controller works", function (t) {
+    t.it("Should make sure setting up controller works", t => {
 
         controller = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentListController", {
@@ -63,7 +63,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("Should register and catch the events properly", function (t) {
+    t.it("Should register and catch the events properly", t => {
 
         var beforedestroy = 0;
 
@@ -92,7 +92,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("Should test addAttachment properly", function (t) {
+    t.it("Should test addAttachment properly", t => {
 
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
@@ -113,7 +113,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("Should test onFileReaderLoad properly", function (t) {
+    t.it("Should test onFileReaderLoad properly", t => {
 
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
@@ -141,7 +141,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("Should test onAttachmentItemClick properly", function (t) {
+    t.it("Should test onAttachmentItemClick properly", t => {
 
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
@@ -166,7 +166,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("Should make sure that onAttachmenListStoreBeforeDestroy has access to records", function (t) {
+    t.it("Should make sure that onAttachmenListStoreBeforeDestroy has access to records", t => {
 
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
@@ -199,7 +199,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
     });
 
 
-    t.it("app-cn_mail#76", function (t) {
+    t.it("extjs-app-webmail#76", t => {
 
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
@@ -262,7 +262,7 @@ describe("conjoon.cn_mail.view.mail.message.AttachmentListControllerTest", funct
         t.expect(foundRec).toBe(rec2);
 
 
-        t.waitForMs(750, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             window.FileReader = tmpReader;
         });
     });

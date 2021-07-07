@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.AbstractAttachmentListControllerTest", function (t) {
+StartTest(t => {
 
-    t.it("Should make sure setting up controller works", function (t) {
+    t.it("Should make sure setting up controller works", t => {
 
         var controller = Ext.create(
             "conjoon.cn_mail.view.mail.message.AbstractAttachmentListController", {
@@ -36,7 +36,7 @@ describe("conjoon.cn_mail.view.mail.message.AbstractAttachmentListControllerTest
     });
 
 
-    t.it("Should register and catch the events properly", function (t) {
+    t.it("Should register and catch the events properly", t => {
 
         var clicked = 0;
 
@@ -53,7 +53,7 @@ describe("conjoon.cn_mail.view.mail.message.AbstractAttachmentListControllerTest
             alias: "widget.mockattachmentlist"
         });
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             var view = Ext.create(
                 "conjoon.cn_mail.view.mail.message.AbstractAttachmentList", {
                     controller: controller,

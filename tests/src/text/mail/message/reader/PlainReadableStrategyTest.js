@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", function (t) {
+StartTest(t => {
 
     
-    t.it("constructor()", function (t) {
+    t.it("constructor()", t => {
 
         let strategy = Ext.create("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
 
@@ -34,29 +34,29 @@ describe("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", funct
     });
 
 
-    t.it("getter for transformers", function (t) {
+    t.it("getter for transformers", t => {
 
         let strategy = Ext.create("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
 
         t.expect(strategy.blockquoteTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getBlockquoteTransformer(), "coon.core.text.transformer.html.BlockquoteTransformer");
+        t.isInstanceOf(strategy.getBlockquoteTransformer(), "l8.text.transformer.html.BlockquoteTransformer");
         t.expect(strategy.blockquoteTransformer).toBe(strategy.getBlockquoteTransformer());
 
         t.expect(strategy.hyperlinkTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getHyperlinkTransformer(), "coon.core.text.transformer.html.HyperlinkTransformer");
+        t.isInstanceOf(strategy.getHyperlinkTransformer(), "l8.text.transformer.html.HyperlinkTransformer");
         t.expect(strategy.hyperlinkTransformer).toBe(strategy.getHyperlinkTransformer());
 
         t.expect(strategy.emailAddressTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getEmailAddressTransformer(), "coon.core.text.transformer.html.EmailAddressTransformer");
+        t.isInstanceOf(strategy.getEmailAddressTransformer(), "l8.text.transformer.html.EmailAddressTransformer");
         t.expect(strategy.emailAddressTransformer).toBe(strategy.getEmailAddressTransformer());
 
         t.expect(strategy.lineBreakTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getLineBreakTransformer(), "coon.core.text.transformer.html.LineBreakTransformer");
+        t.isInstanceOf(strategy.getLineBreakTransformer(), "l8.text.transformer.html.LineBreakTransformer");
         t.expect(strategy.lineBreakTransformer).toBe(strategy.getLineBreakTransformer());
 
     });
 
-    t.it("process()", function (t) {
+    t.it("process()", t => {
         let strategy = Ext.create("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
 
         t.isCalled("getBlockquoteTransformer", strategy);

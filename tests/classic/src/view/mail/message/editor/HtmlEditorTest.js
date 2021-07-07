@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
         var view, viewConfig;
@@ -46,7 +48,7 @@ StartTest(async t => {
         });
 
 
-        t.it("Should create and show the HtmlEditor along with default config checks", function (t) {
+        t.it("Should create and show the HtmlEditor along with default config checks", t => {
             view = Ext.create(
                 "conjoon.cn_mail.view.mail.message.editor.HtmlEditor", viewConfig);
 
@@ -58,8 +60,8 @@ StartTest(async t => {
         });
 
 
-        //@see https://github.com/conjoon/app-cn_mail/issues/2
-        t.it("Should fix conjoon/app-cn_mail/issues/2", function (t) {
+        //@see https://github.com/conjoon/extjs-app-webmail/issues/2
+        t.it("Should fix conjoon/extjs-app-webmail/issues/2", t => {
             view = Ext.create(
                 "conjoon.cn_mail.view.mail.message.editor.HtmlEditor", viewConfig);
 
@@ -67,7 +69,7 @@ StartTest(async t => {
         });
 
 
-        t.it("app-cn_mail#68", function (t) {
+        t.it("extjs-app-webmail#68", t => {
             view = Ext.create(
                 "conjoon.cn_mail.view.mail.message.editor.HtmlEditor", viewConfig);
 

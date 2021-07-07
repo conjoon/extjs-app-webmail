@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
+StartTest(t => {
 
     var createMessageDraft = function (andBodyToo, skipReplyTo, andAttachmentsTo) {
         var draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
@@ -65,7 +65,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     };
 
 
-    t.it("constructor()", function (t) {
+    t.it("constructor()", t => {
 
         var exc;
 
@@ -100,7 +100,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("API", function (t) {
+    t.it("API", t => {
 
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.CopyDecorator", messageDraft),
@@ -159,7 +159,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("empty replyTo", function (t) {
+    t.it("empty replyTo", t => {
 
         var messageDraft = createMessageDraft(true, true, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.CopyDecorator", messageDraft);
@@ -169,7 +169,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("getAttachments()", function (t) {
+    t.it("getAttachments()", t => {
 
         var messageDraft   = createMessageDraft(true, true, true),
             decorator      = Ext.create("conjoon.cn_mail.text.mail.message.CopyDecorator", messageDraft),
@@ -193,7 +193,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("toMessageDraftConfig()", function (t) {
+    t.it("toMessageDraftConfig()", t => {
 
         var messageDraft   = createMessageDraft(true, true, true),
             decorator      = Ext.create("conjoon.cn_mail.text.mail.message.CopyDecorator", messageDraft);
@@ -217,7 +217,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("toMessageDraftConfig() compare", function (t) {
+    t.it("toMessageDraftConfig() compare", t => {
 
         var messageDraft       = createMessageDraft(true, true, true),
             decorator          = Ext.create("conjoon.cn_mail.text.mail.message.CopyDecorator", messageDraft),
@@ -239,7 +239,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("toMessageDraftConfig() - apply", function (t) {
+    t.it("toMessageDraftConfig() - apply", t => {
 
         var messageDraft       = createMessageDraft(true, true, true),
             decorator          = Ext.create("conjoon.cn_mail.text.mail.message.CopyDecorator", messageDraft),
@@ -257,7 +257,7 @@ describe("conjoon.cn_mail.text.mail.message.CopyDecoratorTest", function (t) {
     });
 
 
-    t.it("app-cn_mail#80", function (t) {
+    t.it("extjs-app-webmail#80", t => {
 
         let createDraft = function (wFrom) {
             let cfg = {},

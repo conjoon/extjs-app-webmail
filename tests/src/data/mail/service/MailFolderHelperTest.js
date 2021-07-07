@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.service.MailFolderHelperTest", function (t) {
+StartTest(t => {
 
     const ACCOUNTID = "dev_sys_conjoon_org",
         createHelper = function (store) {
@@ -39,14 +39,14 @@ describe("conjoon.cn_mail.data.mail.service.MailFolderHelperTest", function (t) 
     // -----------------------------------------------------------------------------
     // |   Tests
     // -----------------------------------------------------------------------------
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
 
 
-        t.it("constructor()", function (t) {
+        t.it("constructor()", t => {
             let exc, helper;
 
             try{helper = createHelper(false);}catch(e){exc=e;}
@@ -61,11 +61,11 @@ describe("conjoon.cn_mail.data.mail.service.MailFolderHelperTest", function (t) 
         });
 
 
-        t.it("getAccountNode()", function (t) {
+        t.it("getAccountNode()", t => {
 
             let helper = createHelper();
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(helper.getAccountNode("foo")).toBe(null);
 
@@ -74,11 +74,11 @@ describe("conjoon.cn_mail.data.mail.service.MailFolderHelperTest", function (t) 
         });
 
 
-        t.it("getMailFolderIdForType()", function (t) {
+        t.it("getMailFolderIdForType()", t => {
 
             let helper = createHelper();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(helper.getMailFolderIdForType(ACCOUNTID, "foo")).toBeNull();
                 t.expect(helper.getMailFolderIdForType("ACCOUNTID", conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX)).toBe(null);
                 t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX)).toBe("INBOX");
@@ -91,11 +91,11 @@ describe("conjoon.cn_mail.data.mail.service.MailFolderHelperTest", function (t) 
         });
 
 
-        t.it("getMailFolder()", function (t) {
+        t.it("getMailFolder()", t => {
 
             let helper = createHelper();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(helper.getMailFolder(ACCOUNTID, "foo")).toBeNull();
 
                 t.isInstanceOf(helper.getMailFolder(ACCOUNTID, "INBOX"), "conjoon.cn_mail.model.mail.folder.MailFolder");
@@ -106,11 +106,11 @@ describe("conjoon.cn_mail.data.mail.service.MailFolderHelperTest", function (t) 
         });
 
 
-        t.it("doesFolderBelongToAccount()", function (t) {
+        t.it("doesFolderBelongToAccount()", t => {
 
             let helper = createHelper();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(helper.doesFolderBelongToAccount("foo", ACCOUNTID)).toBe(false);
                 t.expect(helper.doesFolderBelongToAccount("INBOX", "ACCOUNTID")).toBe(false);
                 t.expect(helper.doesFolderBelongToAccount("INBOX", ACCOUNTID)).toBe(true);

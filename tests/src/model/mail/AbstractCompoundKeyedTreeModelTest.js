@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest", function (t) {
+StartTest(t => {
 
     let model, TMPFUNC;
 
@@ -51,15 +51,15 @@ describe("conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModelTest", functi
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.BaseTreeModel");
     });
 
-    t.it("idProperty", function (t) {
+    t.it("idProperty", t => {
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-    t.it("Test fields", function (t) {
+    t.it("Test fields", t => {
 
         let fields = ["mailAccountId", "id"],
             field;

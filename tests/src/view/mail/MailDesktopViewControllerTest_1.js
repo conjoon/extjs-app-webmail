@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,14 +23,15 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
 
-        const TIMEOUT = 1250,
-            getChildAt = function (panel, rootId, index, shouldBe, t) {
+        const getChildAt = function (panel, rootId, index, shouldBe, t) {
 
                 let root = panel.down("cn_mail-mailfoldertree").getStore().getRoot().findChild("id", rootId),
                     c    = root.getChildAt(index);
@@ -114,22 +115,21 @@ StartTest(async t => {
             conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.resetAll();
         });
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", function () {
+        t.beforeEach(function () {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
+        });
 
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
-
-                t.it("onBeforeMessageItemDelete() - event registered", function (t) {
+                t.it("onBeforeMessageItemDelete() - event registered", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -137,12 +137,12 @@ StartTest(async t => {
                         height: 600
                     });
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.isCalledOnce("onBeforeMessageItemDelete", viewController);
                         panel.down("cn_mail-mailinboxview").fireEvent(
                             "cn_mail-beforemessageitemdelete", panel.down("cn_mail-mailinboxview"), getRecordCollection()[0]);
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             panel.destroy();
                             panel = null;
                         });
@@ -151,7 +151,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onBeforeMessageItemDelete()", function (t) {
+                t.it("onBeforeMessageItemDelete()", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -165,12 +165,12 @@ StartTest(async t => {
                     });
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 0, "INBOX", t));
 
 
-                        t.waitForMs(TIMEOUT, function (){
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let DRAFTMESSAGE = selectMessage(panel, 1),
                                 DRAFTCK      = DRAFTMESSAGE.getCompoundKey(),
@@ -181,7 +181,7 @@ StartTest(async t => {
                                 ),
                                 inboxView = panel.down("cn_mail-mailinboxview");
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 let view      = viewController.showMailMessageViewFor(compoundKey),
                                     edit      = viewController.showMailEditor(compoundKey, "edit");
@@ -212,7 +212,7 @@ StartTest(async t => {
 
                                 panel.setActiveTab(inboxView);
 
-                                t.waitForMs(TIMEOUT, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                                     t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
@@ -221,13 +221,13 @@ StartTest(async t => {
                                     t.expect(isActive([view, edit, replyAll, replyTo, forward])).toBe(true);
 
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                         forward.close();
 
                                         t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                         t.expect(isActive([view, edit, replyAll, replyTo])).toBe(true);
 
-                                        t.waitForMs(TIMEOUT, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                                             t.expect(
                                                 viewController.onBeforeMessageItemDelete(
@@ -241,22 +241,22 @@ StartTest(async t => {
                                             t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                             t.expect(isActive([view, edit, replyAll])).toBe(true);
 
-                                            t.waitForMs(TIMEOUT, function () {
+                                            t.waitForMs(t.parent.TIMEOUT, () => {
                                                 replyAll.close();
 
                                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                                 t.expect(isActive([view, edit])).toBe(true);
 
-                                                t.waitForMs(TIMEOUT, function () {
+                                                t.waitForMs(t.parent.TIMEOUT, () => {
                                                     edit.close();
 
                                                     t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(false);
                                                     t.expect(isActive([view])).toBe(true);
 
-                                                    t.waitForMs(TIMEOUT, function () {
+                                                    t.waitForMs(t.parent.TIMEOUT, () => {
                                                         view.close();
 
-                                                        t.waitForMs(TIMEOUT, function () {
+                                                        t.waitForMs(t.parent.TIMEOUT, () => {
                                                             t.expect(viewController.onBeforeMessageItemDelete(inboxView, rec)).toBe(true);
 
                                                             t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
@@ -266,7 +266,7 @@ StartTest(async t => {
                                                             t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(true);
 
 
-                                                            t.waitForMs(TIMEOUT, function () {
+                                                            t.waitForMs(t.parent.TIMEOUT, () => {
                                                                 panel.destroy();
                                                                 panel = null;
                                                             });
@@ -284,14 +284,12 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSaveComplete() - DRAFT folder active, DRAFT created", function (t) {
+                t.it("onMailMessageSaveComplete() - DRAFT folder active, DRAFT created", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -303,22 +301,22 @@ StartTest(async t => {
                     t.isCalledNTimes("createItemFromDraft", conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
                     t.isCalledOnce("updateViewForCreatedDraft", panel.down("cn_mail-mailinboxview"));
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t));
 
-                        t.waitForMs(1250, function () {
+                        t.waitForMs(t.parent.TIMEOUT, function () {
 
                             let editor = viewController.showMailEditor(2253236, "compose");
                             let myValue = Ext.id();
 
-                            t.waitForMs(750, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.expect(editor.getViewModel().get("messageDraft").get("mailAccountId")).toBeTruthy();
                                 t.expect(editor.getViewModel().get("messageDraft").get("mailFolderId")).toBeTruthy();
                                 editor.down("#subjectField").setValue(myValue);
 
-                                t.waitForMs(750, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     t.click(editor.down("#saveButton"), function () {
 
@@ -333,7 +331,7 @@ StartTest(async t => {
 
                                         t.click(editor.down("#saveButton"));
 
-                                        t.waitForMs(750, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                                             panel.setActiveTab(panel.down("cn_mail-mailinboxview"));
 
@@ -351,14 +349,12 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSaveComplete() - edited data after switching folders is reflected in grid", function (t) {
+                t.it("onMailMessageSaveComplete() - edited data after switching folders is reflected in grid", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -370,22 +366,22 @@ StartTest(async t => {
                     t.isCalled("createItemFromDraft", conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater);
 
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t));
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let editor = viewController.showMailEditor(2253236, "compose");
                             let myValue = "ff-snafu-876";
                             editor.down("#subjectField").setValue(myValue);
 
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.click(editor.down("#saveButton"), function () {
 
-                                    t.waitForMs(TIMEOUT, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         t.expect(editor.getViewModel().get("messageDraft").get("mailFolderId")).toBe("INBOX.Drafts");
 
@@ -401,7 +397,7 @@ StartTest(async t => {
 
                                         ctrl.moveOrDeleteMessage(mvRec);
 
-                                        t.waitForMs(TIMEOUT, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                                             t.expect(mvRec.get("mailFolderId")).toBe("INBOX.Trash");
                                             t.expect(mvRec.get("id")).not.toBe(oldId);
@@ -410,7 +406,7 @@ StartTest(async t => {
                                             selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 4, "INBOX.Trash", t));
 
 
-                                            t.waitForMs(TIMEOUT, function () {
+                                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                                 subjectCont = Ext.dom.Query.select("div[class=subject]", panel.down("cn_mail-mailmessagegrid").el.dom);
                                                 t.expect(subjectCont[0].innerHTML).toContain(myValue);
@@ -421,7 +417,7 @@ StartTest(async t => {
 
                                                 t.click(editor.down("#saveButton"), function () {
 
-                                                    t.waitForMs(TIMEOUT, function () {
+                                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                                         panel.setActiveTab(panel.down("cn_mail-mailinboxview"));
 
@@ -434,7 +430,7 @@ StartTest(async t => {
 
                                                         t.click(editor.down("#saveButton"), function () {
 
-                                                            t.waitForMs(TIMEOUT, function () {
+                                                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                                                 editor.close();
                                                                 panel.setActiveTab(panel.down("cn_mail-mailinboxview"));
@@ -468,7 +464,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSendComplete() - registered", function (t) {
+                t.it("onMailMessageSendComplete() - registered", t => {
 
                     var viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -484,7 +480,7 @@ StartTest(async t => {
                         }]
                     });
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let CALLED = 0;
 
@@ -496,7 +492,7 @@ StartTest(async t => {
 
                         t.expect(CALLED).toBe(0);
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             editor.fireEvent("cn_mail-mailmessagesendcomplete",
                                 editor,
@@ -516,7 +512,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMailMessageSendComplete() - delegating to InboxView", function (t) {
+                t.it("onMailMessageSendComplete() - delegating to InboxView", t => {
 
                     var viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -532,13 +528,13 @@ StartTest(async t => {
                         }]
                     });
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         let editor = panel.showMailEditor("233242", "compose");
                         t.isCalledOnce("updateViewForSentDraft", panel.down("cn_mail-mailinboxview"));
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             let md = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                                 mailAccountId: "foo",
@@ -572,9 +568,7 @@ StartTest(async t => {
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -586,7 +580,7 @@ StartTest(async t => {
                     t.isCalledNTimes("createItemFromDraft", conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater, 1);
                     t.isCalledOnce("updateViewForCreatedDraft", panel.down("cn_mail-mailinboxview"));
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         let folder = selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t));
@@ -606,7 +600,7 @@ StartTest(async t => {
                                 editor.down("#subjectField").setValue(myValue);
 
 
-                                t.waitForMs(750, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     t.click(editor.down("#saveButton"), function () {
 
@@ -623,7 +617,7 @@ StartTest(async t => {
 
                                             t.click(editor.down("#saveButton"), function () {
 
-                                                t.waitForMs(750, function () {
+                                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                                     panel.setActiveTab(panel.down("cn_mail-mailinboxview"));
 
@@ -650,30 +644,28 @@ StartTest(async t => {
                 };
 
 
-                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created replyTo", function (t) {
+                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created replyTo", t => {
                     testForContext("replyTo", t);
                 });
 
-                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created replyAll", function (t) {
+                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created replyAll", t => {
                     testForContext("replyAll", t);
                 });
 
-                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created forward", function (t) {
+                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created forward", t => {
                     testForContext("forward", t);
                 });
 
-                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created compose", function (t) {
+                t.it("onMailMessageSaveComplete() - INBOX active, DRAFT created compose", t => {
                     testForContext("compose", t);
                 });
 
 
-                t.it("conjoon/app-cn_mail#55", function (t) {
+                t.it("conjoon/extjs-app-webmail#55", t => {
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -684,7 +676,7 @@ StartTest(async t => {
                     let inboxView       = panel.down("cn_mail-mailinboxview"),
                         messageGrid     = panel.down("cn_mail-mailmessagegrid");
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let draftFolder = getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t),
                             inboxFolder = getChildAt(panel, "dev_sys_conjoon_org", 0, "INBOX", t);
@@ -742,14 +734,12 @@ StartTest(async t => {
                 });
 
 
-                t.it("deleting a message draft  - picked from DRAFTS", function (t) {
+                t.it("deleting a message draft  - picked from DRAFTS", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -761,7 +751,7 @@ StartTest(async t => {
                     let editor, draft;
 
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let mailFolder =  selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t));
 
@@ -851,14 +841,12 @@ StartTest(async t => {
                 });
 
 
-                t.it("deleting a message draft  - composed message moved immediately to TRASH", function (t) {
+                t.it("deleting a message draft  - composed message moved immediately to TRASH", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -872,7 +860,7 @@ StartTest(async t => {
 
                     editor = viewController.showMailEditor("1", "compose");
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(panel.down("cn_mail-mailmessageeditor")).toBe(editor);
 
@@ -886,12 +874,12 @@ StartTest(async t => {
                             editor
                         );
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                             editor.close();
 
-                            t.waitForMs(TIMEOUT, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 t.expect(panel.down("cn_mail-mailmessageeditor")).toBe(null);
 
@@ -905,14 +893,12 @@ StartTest(async t => {
                 });
 
 
-                t.it("deleting a message draft  - moved immediately to TRASH", function (t) {
+                t.it("deleting a message draft  - moved immediately to TRASH", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     );
-                    Ext.ux.ajax.SimManager.init({
-                        delay: 1
-                    });
+
                     panel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         controller: viewController,
                         renderTo: document.body,
@@ -986,7 +972,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onBeforeMessageItemDelete() - requestingView", function (t) {
+                t.it("onBeforeMessageItemDelete() - requestingView", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1003,7 +989,7 @@ StartTest(async t => {
                         ck        = rec.getCompoundKey(),
                         inboxView = panel.down("cn_mail-mailinboxview");
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let edit = viewController.showMailEditor(ck, "edit");
 
@@ -1011,7 +997,7 @@ StartTest(async t => {
 
                         t.expect(viewController.onBeforeMessageItemDelete(edit, rec, edit)).toBe(true);
 
-                        t.waitForMs(750, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             panel.destroy();
                             panel = null;
                         });
@@ -1020,7 +1006,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageItemMove() - event registered", function (t) {
+                t.it("onMessageItemMove() - event registered", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1044,14 +1030,14 @@ StartTest(async t => {
                     inboxView.fireEvent("cn_mail-messageitemmove");
                     t.expect(CALLED).toBe(1);
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         panel.destroy();
                         panel = null;
                     });
                 });
 
 
-                t.it("onMessageItemMove() - toast window not shown", function (t) {
+                t.it("onMessageItemMove() - toast window not shown", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1077,14 +1063,14 @@ StartTest(async t => {
                         {getCompoundKey: prevCk ,getPreviousCompoundKey: prevCk, getId: Ext.emptyFn},
                         {getCompoundKey: prevCk ,getPreviousCompoundKey: prevCk, get: Ext.emptyFn, getId: Ext.emptyFn});
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         panel.destroy();
                         panel = null;
                     });
                 });
 
 
-                t.it("onMessageItemMove() - toast window shown", function (t) {
+                t.it("onMessageItemMove() - toast window shown", t => {
 
                     let viewController = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1110,14 +1096,14 @@ StartTest(async t => {
                         {getCompoundKey: prevCk, getPreviousCompoundKey: prevCk, getId: Ext.emptyFn},
                         {getCompoundKey: prevCk, getPreviousCompoundKey: prevCk, get: Ext.emptyFn, getId: Ext.emptyFn});
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         panel.destroy();
                         panel = null;
                     });
                 });
 
 
-                t.it("getMessageItemsFromOpenedViews()", function (t) {
+                t.it("getMessageItemsFromOpenedViews()", t => {
 
                     let ctrl = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1159,11 +1145,11 @@ StartTest(async t => {
 
                                 selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 2, "INBOX.Junk", t));
 
-                                t.waitForMs(750, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     let messageItemFromInboxView = selectMessage(panel, 1);
 
-                                    t.waitForMs(750, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         let expected = [{
                                             view: messageView,
@@ -1205,7 +1191,7 @@ StartTest(async t => {
                                             t.expect(messageItem).toBe(expected[i].messageItem);
                                         }
 
-                                        t.waitForMs(750, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
                                             panel.destroy();
                                             panel = null;
                                         });
@@ -1217,7 +1203,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("getMessageItemsFromOpenedViews() - messageItemId specified", function (t) {
+                t.it("getMessageItemsFromOpenedViews() - messageItemId specified", t => {
 
                     let ctrl = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1260,11 +1246,11 @@ StartTest(async t => {
 
                                 selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 2, "INBOX.Junk", t));
 
-                                t.waitForMs(750, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     selectMessage(panel, 1);
 
-                                    t.waitForMs(750, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         let expected = [{
                                             view: editorEdit1,
@@ -1290,7 +1276,7 @@ StartTest(async t => {
                                         }
 
 
-                                        t.waitForMs(750, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
                                             panel.destroy();
                                             panel = null;
                                         });
@@ -1302,7 +1288,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("updateMessageItemsFromOpenedViews()", function (t) {
+                t.it("updateMessageItemsFromOpenedViews()", t => {
 
                     let ctrl = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1351,11 +1337,11 @@ StartTest(async t => {
                                 selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 2, "INBOX.Junk", t));
 
 
-                                t.waitForMs(750, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     selectMessage(panel, 1);
 
-                                    t.waitForMs(750, function () {
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         let coll = ctrl.getMessageItemsFromOpenedViews(),
                                             count = 0, refs = {}, check = [];
@@ -1388,7 +1374,7 @@ StartTest(async t => {
                                         t.expect(count).toBe(2);
 
 
-                                        t.waitForMs(750, function () {
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
                                             panel.destroy();
                                             panel = null;
                                         });
@@ -1400,7 +1386,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("updateMessageItemsFromOpenedViews() - exception", function (t) {
+                t.it("updateMessageItemsFromOpenedViews() - exception", t => {
 
                     let ctrl = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1443,7 +1429,7 @@ StartTest(async t => {
                                 t.expect(exc.msg).toBeDefined();
                                 t.expect(exc.msg.toLowerCase()).toContain("not defined in the model");
 
-                                t.waitForMs(750, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
                                     panel.destroy();
                                     panel = null;
                                 });
@@ -1453,7 +1439,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("onMessageItemMove() - updateMessageItemsFromOpenedViews() / updateHistoryForMessageRelatedView() called", function (t) {
+                t.it("onMessageItemMove() - updateMessageItemsFromOpenedViews() / updateHistoryForMessageRelatedView() called", t => {
 
                     let ctrl = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
@@ -1519,7 +1505,7 @@ StartTest(async t => {
                     t.expect(COLLS.length).toBe(1);
                     t.expect(COLLS[0].view.CALLED).toBe(true);
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         panel.destroy();
                         panel = null;
                     });

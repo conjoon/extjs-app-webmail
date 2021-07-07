@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -116,11 +116,11 @@ export default class TestHelper {
         let win = this.owningWindow,
             coon = win.coon;
 
-        t.beforeEach(function (t) {
+        t.beforeEach(t => {
 
             t.THEME_MOCK = new coon.core.Theme({modes: {blue: {default: true, config: {blue: "blue"}}}});
             t.THEME_SPY = t.spyOn(coon.core.ThemeManager, "getTheme").and.callFake(() => t.THEME_MOCK);
-            t.TPL_SPY = t.spyOn(coon.core.template.javaScript.StringTemplate.prototype, "render");
+            t.TPL_SPY = t.spyOn(l8.template.esix.StringTemplate.prototype, "render");
             t.TEMPLATE_SPY = t.spyOn(coon.core.Template, "load");
             t.ENVIRONMENT_SPY = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake((resource) => resource);
             t.CONFIG_SPY = t.spyOn(coon.core.ConfigManager, "get").and.callFake((path, config) => {
@@ -132,7 +132,7 @@ export default class TestHelper {
 
         });
 
-        t.afterEach(function (t) {
+        t.afterEach(t => {
 
             t.TEMPLATE_SPY.remove();
             t.ENVIRONMENT_SPY.remove();

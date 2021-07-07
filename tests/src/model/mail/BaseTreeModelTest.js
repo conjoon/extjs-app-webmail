@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.BaseTreeModelTest", function (t) {
+StartTest(t => {
 
-    t.requireOk("conjoon.cn_mail.model.mail.BaseTreeModel", function () {
+    t.requireOk("conjoon.cn_mail.model.mail.BaseTreeModel", () => {
 
         Ext.define("conjoon.cn_mail.model.mail.BaseTreeModelExtended", {
             extend: "conjoon.cn_mail.model.mail.BaseTreeModel",
@@ -48,7 +48,7 @@ describe("conjoon.cn_mail.model.mail.BaseTreeModelTest", function (t) {
         // |                    =~. Unit Tests .~=
         // +----------------------------------------------------------------------------
 
-        t.it("Should not work without setting idProperty in subclass", function (t) {
+        t.it("Should not work without setting idProperty in subclass", t => {
 
             let exc;
             try{Ext.create("conjoon.cn_mail.model.mail.BaseTreeModel");}catch(e){exc=e;}
@@ -79,7 +79,7 @@ describe("conjoon.cn_mail.model.mail.BaseTreeModelTest", function (t) {
         });
 
 
-        t.it("constructor", function (t) {
+        t.it("constructor", t => {
 
             model = Ext.create("conjoon.cn_mail.model.mail.BaseTreeModelExtended", {
                 id: 1
@@ -92,7 +92,7 @@ describe("conjoon.cn_mail.model.mail.BaseTreeModelTest", function (t) {
         });
 
 
-        t.it("Test Schema", function (t) {
+        t.it("Test Schema", t => {
             model = Ext.create("conjoon.cn_mail.model.mail.BaseTreeModelExtended", {
                 id: 1
             });
@@ -103,7 +103,7 @@ describe("conjoon.cn_mail.model.mail.BaseTreeModelTest", function (t) {
         });
 
 
-        t.it("Test Proxy", function (t) {
+        t.it("Test Proxy", t => {
 
             t.expect(conjoon.cn_mail.model.mail.BaseTreeModel.getProxy() instanceof Ext.data.proxy.Rest).toBe(true);
         });

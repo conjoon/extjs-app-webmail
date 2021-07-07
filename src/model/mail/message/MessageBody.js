@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * Base model for app-cn_mail representing the body of a message that gets
+ * Base model for extjs-app-webmail representing the body of a message that gets
  * loaded upon request. This is usually the case if a MessageItem is selected
  * for inspecting its contents. Instead of sending large chunks of message bodies
  * with a message item, this data is encapsulated in a separate model.

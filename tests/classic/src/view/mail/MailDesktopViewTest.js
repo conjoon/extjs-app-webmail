@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,17 +23,18 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import TestHelper from "../../../../lib/mail/TestHelper.js";
+
 StartTest(async t => {
 
-    const helper =  t.l8.liquify(t.TestHelper.get(t, window));
+    const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.mockUpMailTemplates().andRun((t) => {
 
         t.requireOk(
             "conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable",
             "conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
-                const TIMEOUT = 1250,
-                    createKey = function (id1, id2, id3) {
+                const createKey = function (id1, id2, id3) {
                         return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
                     },
                     getMessageItemAt = function (messageIndex) {
@@ -66,7 +67,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("Should create and show the view along with default config checks", function (t) {
+                t.it("Should create and show the view along with default config checks", t => {
                     view = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopView", viewConfig);
 
@@ -77,18 +78,18 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMailEditor() (1)", function (t) {
+                t.it("showMailEditor() (1)", t => {
                     var exc;
 
                     view = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopView", viewConfig);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         try{view.showMailEditor(1);}catch(e){exc = e;}
                         t.expect(exc).toBeDefined();
                         t.expect(exc.msg).toContain("is not a valid value");
 
-                        t.waitForMs(TIMEOUT, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                         });
 
@@ -97,7 +98,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMailEditor() (2)", function (t) {
+                t.it("showMailEditor() (2)", t => {
                     var editor1, editor2;
 
                     view = Ext.create(
@@ -116,13 +117,13 @@ StartTest(async t => {
 
                     t.expect(view.showMailEditor(1, "compose")).not.toBe(editor1);
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                     });
                 });
 
 
-                t.it("showInboxViewFor()", function (t) {
+                t.it("showInboxViewFor()", t => {
 
                     let inb1, inb2;
 
@@ -140,7 +141,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMessageCannotBeDeletedWarning()", function (t) {
+                t.it("showMessageCannotBeDeletedWarning()", t => {
 
                     view = Ext.create(
                         "conjoon.cn_mail.view.mail.MailDesktopView", viewConfig);
@@ -154,10 +155,10 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMessageMovedInfo()", function (t) {
+                t.it("showMessageMovedInfo()", t => {
 
                     /**
-         * test for app-cn_mail#102
+         * test for extjs-app-webmail#102
          */
 
                     view = Ext.create(
@@ -177,7 +178,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("showMailAccountFor()", function (t) {
+                t.it("showMailAccountFor()", t => {
 
 
                     view = Ext.create(
@@ -190,7 +191,7 @@ StartTest(async t => {
                     let accountView = view.showMailAccountFor("dev_sys_conjoon_org");
                     t.isInstanceOf(accountView, "conjoon.cn_mail.view.mail.account.MailAccountView");
 
-                    t.waitForMs(TIMEOUT, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                     });
 

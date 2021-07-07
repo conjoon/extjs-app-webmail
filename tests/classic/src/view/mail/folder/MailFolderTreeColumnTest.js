@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumnTest", function (t) {
+StartTest(t => {
 
     var treeColumn;
 
@@ -38,12 +38,12 @@ describe("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumnTest", function (
     });
 
 
-    t.it("Should create the column", function (t) {
+    t.it("Should create the column", t => {
         t.expect(treeColumn instanceof Ext.tree.Column).toBeTruthy();
         t.expect(treeColumn.alias).toContain("widget.cn_mail-mailfoldertreecolumn");
     });
 
-    t.it("Should return proper iconCls based upon type", function (t) {
+    t.it("Should return proper iconCls based upon type", t => {
         var mapping = {
             "INBOX": "fas fa-inbox",
             "DRAFT": "fas fa-edit",

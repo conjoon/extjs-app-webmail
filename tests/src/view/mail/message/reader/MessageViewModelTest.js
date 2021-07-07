@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", function (t) {
+StartTest(t => {
 
     var viewModel;
 
@@ -85,10 +85,10 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
     });
 
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-        t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", () => {
 
-            t.it("1. Should create the ViewModel", function (t) {
+            t.it("1. Should create the ViewModel", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
                 t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
 
@@ -96,7 +96,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
 
             });
 
-            t.it("2. Should trigger loading the messageBody along with a configured view for firing the event", function (t) {
+            t.it("2. Should trigger loading the messageBody along with a configured view for firing the event", t => {
 
                 var wasCalled = false,
                     view      = Ext.create("Ext.Component", {
@@ -112,7 +112,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                 });
 
                 Ext.ux.ajax.SimManager.init({
-                    delay: 500
+                    delay: Math.max(1, t.parent.TIMEOUT - 1000)
                 });
 
                 let msgItem = createMessageItem();
@@ -130,7 +130,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                 t.expect(viewModel.bodyLoadOperation.loadOperation.isRunning()).toBe(true);
 
                 t.expect(wasCalled).toBe(false);
-                t.waitForMs(1500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                     t.expect(wasCalled).toBe(true);
@@ -144,7 +144,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("3. Should abort loading the messageBody and reload later on properly", function (t) {
+            t.it("3. Should abort loading the messageBody and reload later on properly", t => {
 
                 var view = Ext.create("Ext.Component", {
                     listeners: {
@@ -159,13 +159,14 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                 });
 
                 Ext.ux.ajax.SimManager.init({
-                    delay: 1000
+                    // delay needs to be bigger than configured TIMEOUT to check the load operations
+                    delay: t.parent.TIMEOUT + 500
                 });
 
                 let msgItem = createMessageItem();
                 viewModel.setMessageItem(msgItem);
 
-                t.waitForMs(500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(viewModel.bodyLoadOperation.loadOperation instanceof Ext.data.operation.Read).toBe(true);
                     t.expect(viewModel.bodyLoadOperation.loadOperation.isRunning()).toBe(true);
                     t.expect(viewModel.abortedRequestMap).toEqual({});
@@ -175,7 +176,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                     t.expect(viewModel.abortedRequestMap).toEqual(obj);
                     t.expect(viewModel.bodyLoadOperation).toBe(null);
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(viewModel.get("messageItem")).not.toBe(null);
                         t.expect(viewModel.get("messageItem").getCompoundKey().equalTo(msgItem.getCompoundKey())).toBe(true);
                         t.expect(viewModel.get("messageItem").getId()).toBe(msgItem.getId());
@@ -189,12 +190,12 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                         t.expect(mbLoad.getId()).toBe(msgItem.get("messageBodyId"));
 
                         Ext.ux.ajax.SimManager.init({
-                            delay: 100
+                            delay: Math.max(1, t.parent.TIMEOUT - 1000)
                         });
 
                         // and trigger reload
                         viewModel.setMessageItem(createMessageItem());
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(viewModel.abortedRequestMap).toEqual({});
                             t.expect(viewModel.get("messageBody").get("textHtml")).not.toBe("");
                         });
@@ -206,7 +207,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("4. Should not trigger an error if no message body was specified", function (t) {
+            t.it("4. Should not trigger an error if no message body was specified", t => {
 
                 var view = Ext.create("Ext.Component");
 
@@ -219,7 +220,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                 viewModel.setMessageItem(item);
 
 
-                t.waitForMs(1500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                     t.expect(viewModel.get("messageItem").getCompoundKey().equalTo(item.getCompoundKey())).toBe(true);
@@ -230,7 +231,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("5. MessageItem's MessageBody/Attachments should not be loaded for the same Reference", function (t) {
+            t.it("5. MessageItem's MessageBody/Attachments should not be loaded for the same Reference", t => {
 
                 var view = Ext.create("Ext.Component");
 
@@ -238,11 +239,11 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                     view: view
                 });
                 Ext.ux.ajax.SimManager.init({
-                    delay: 100
+                    delay: Math.max(1, t.parent.TIMEOUT - 1000)
                 });
                 viewModel.setMessageItem(createMessageItem());
 
-                t.waitForMs(1500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(viewModel.bodyLoadOperation).toBe(null);
 
                     t.expect(viewModel.get("messageBody")).toBeTruthy();
@@ -260,7 +261,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("6. Should abort loading the attachments and reload later on properly", function (t) {
+            t.it("6. Should abort loading the attachments and reload later on properly", t => {
 
                 var view = Ext.create("Ext.Component");
 
@@ -269,13 +270,14 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                 });
 
                 Ext.ux.ajax.SimManager.init({
-                    delay: 1000
+                    // delay needs to be bigger than configured TIMEOUT to check the load operations
+                    delay: t.parent.TIMEOUT + 500
                 });
 
                 let msgItem = createMessageItem();
                 viewModel.setMessageItem(msgItem);
 
-                t.waitForMs(500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
 
                     t.expect(viewModel.attachmentsLoadOperation instanceof Ext.data.operation.Read).toBe(true);
                     t.expect(viewModel.attachmentsLoadOperation.isRunning()).toBe(true);
@@ -299,18 +301,18 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                     viewModel.abortMessageAttachmentsLoad();
                     t.expect(viewModel.attachmentsLoadOperation).toBe(null);
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(viewModel.get("messageItem")).not.toBe(null);
                         t.expect(viewModel.get("messageItem").getCompoundKey().equalTo(msgItem.getCompoundKey())).toBe(true);
                         t.expect(viewModel.get("attachments")).toEqual([]);
 
                         Ext.ux.ajax.SimManager.init({
-                            delay: 100
+                            delay: Math.max(1, t.parent.TIMEOUT - 1000)
                         });
 
                         // and trigger reload
                         viewModel.setMessageItem(createMessageItem());
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(viewModel.abortedRequestMap).toEqual({});
                             t.expect(viewModel.get("attachments")).not.toEqual([]);
                         });
@@ -322,28 +324,28 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("data.isLoading", function (t) {
+            t.it("data.isLoading", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 t.expect(viewModel.get("isLoading")).toBe(false);
             });
 
 
-            t.it("data.iframeLoaded", function (t) {
+            t.it("data.iframeLoaded", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 t.expect(viewModel.get("iframeLoaded")).toBe(false);
             });
 
 
-            t.it("data.hasImages", function (t) {
+            t.it("data.hasImages", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 t.expect(viewModel.get("hasImages")).toBe(false);
             });
 
 
-            t.it("formula.getIndicatorText", function (t) {
+            t.it("formula.getIndicatorText", t => {
 
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
@@ -374,7 +376,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("formula.getIndicatorIcon", function (t) {
+            t.it("formula.getIndicatorIcon", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 var MESSAGEBODY = false,
@@ -402,22 +404,22 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("stores.attachmentStore", function (t) {
+            t.it("stores.attachmentStore", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 viewModel.set("attachments", []);
 
-                t.waitForMs(500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(viewModel.getStore("attachmentStore")).toBeDefined();
                     t.expect(viewModel.getStore("attachmentStore").model.$className).toBe("conjoon.cn_mail.model.mail.message.ItemAttachment");
                 });
             });
 
 
-            t.it("updateMessageItem()", function (t) {
+            t.it("updateMessageItem()", t => {
 
                 Ext.ux.ajax.SimManager.init({
-                    delay: 1
+                    delay: Math.max(1, t.parent.TIMEOUT - 1000)
                 });
 
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
@@ -453,7 +455,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
 
                 viewModel.setMessageItem(createMessageItem());
 
-                t.waitForMs(500, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
 
                     try {viewModel.updateMessageItem({});} catch (e) {exc = e;}
                     t.expect(exc).toBeDefined();
@@ -484,7 +486,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("formula.getFormattedDate", function (t) {
+            t.it("formula.getFormattedDate", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 var date        = new Date(),
@@ -500,7 +502,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
     
-            t.it("formula.getDisplayToAddress", function (t) {
+            t.it("formula.getDisplayToAddress", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 var formulas    = viewModel.getFormulas(),
@@ -529,7 +531,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("formula.getDisplayFromAddress", function (t) {
+            t.it("formula.getDisplayFromAddress", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 var formulas    = viewModel.getFormulas(),
@@ -564,7 +566,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("formula.getSubject", function (t) {
+            t.it("formula.getSubject", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 const formulas       = viewModel.getFormulas(),
@@ -577,7 +579,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("app-cn_mail#66 - onMessageBodyLoadFailure", function (t) {
+            t.it("extjs-app-webmail#66 - onMessageBodyLoadFailure", t => {
 
                 let view = Ext.create("Ext.Component", {});
 
@@ -603,7 +605,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                     messageBodyId: "foobar"
                 }));
 
-                t.waitForMs(750, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(CALLED).toBe(1);
                 });
 
@@ -611,7 +613,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("app-cn_mail#66 - onMessageBodyLoadFailure with error exiting", function (t) {
+            t.it("extjs-app-webmail#66 - onMessageBodyLoadFailure with error exiting", t => {
 
                 let view = Ext.create("Ext.Component", {});
 
@@ -630,13 +632,13 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
                 viewModel.onMessageBodyLoadFailure({}, {error: {status: -1}});
 
 
-                t.waitForMs(750, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(CALLED).toBe(0);
                 });
             });
 
 
-            t.it("contextButtonsEnabled", function (t) {
+            t.it("contextButtonsEnabled", t => {
 
                 let view = Ext.create("Ext.Component", {});
 
@@ -649,7 +651,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.MessageViewModelTest", functi
             });
 
 
-            t.it("formula.textPlainToHtml", function (t) {
+            t.it("formula.textPlainToHtml", t => {
                 vm = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
                 const

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,16 +23,18 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.store.mail.message.MessageItemStoreTest", function (t) {
+StartTest(t => {
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim", () => {
+
+        conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim.init();
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
 
 
-        t.it("Should properly create the store and check for default config", function (t) {
+        t.it("Should properly create the store and check for default config", t => {
 
             var store = Ext.create("conjoon.cn_mail.store.mail.message.MessageItemStore");
 
@@ -66,13 +68,13 @@ describe("conjoon.cn_mail.store.mail.message.MessageItemStoreTest", function (t)
                     mailFolderId: "INBOX"
                 }
             });
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(store.getTotalCount()).toBeGreaterThan(0);
             });
         });
 
 
-        t.it("applySorters()", function (t) {
+        t.it("applySorters()", t => {
 
             var store = Ext.create("conjoon.cn_mail.store.mail.message.MessageItemStore");
 
@@ -102,7 +104,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageItemStoreTest", function (t)
 
         });
 
-        t.it("findByCompoundKey()", function (t) {
+        t.it("findByCompoundKey()", t => {
 
             let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageItemStore");
 
@@ -121,7 +123,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageItemStoreTest", function (t)
                 }
             });
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 let draft = store.getAt(0);
 
                 t.expect(draft).toBe(store.getAt(store.findByCompoundKey(
@@ -132,7 +134,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageItemStoreTest", function (t)
         });
 
 
-        t.it("app-cn_mail#81 - afterEdit() not called", function (t) {
+        t.it("extjs-app-webmail#81 - afterEdit() not called", t => {
 
             let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageItemStore");
 
@@ -148,7 +150,7 @@ describe("conjoon.cn_mail.store.mail.message.MessageItemStoreTest", function (t)
         });
 
 
-        t.it("app-cn_mail#81 / app-cn_mail#47 - afterEdit() called", function (t) {
+        t.it("extjs-app-webmail#81 / extjs-app-webmail#47 - afterEdit() called", t => {
 
             let testFor = function (t, types) {
                 let store = Ext.create("conjoon.cn_mail.store.mail.message.MessageItemStore");

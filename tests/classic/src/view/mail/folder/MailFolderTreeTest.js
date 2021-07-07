@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.folder.MailFolderTreeTest", function (t) {
+StartTest(t => {
 
     var tree,
         treeConfig;
@@ -42,7 +42,7 @@ describe("conjoon.cn_mail.view.mail.folder.MailFolderTreeTest", function (t) {
     });
 
 
-    t.it("Should create and show the tree along with default config checks", function (t) {
+    t.it("Should create and show the tree along with default config checks", t => {
         tree = Ext.create(
             "conjoon.cn_mail.view.mail.folder.MailFolderTree", treeConfig);
 

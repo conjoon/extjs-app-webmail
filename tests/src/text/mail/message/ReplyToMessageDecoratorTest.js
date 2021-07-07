@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
+StartTest(t => {
 
     var createMessageDraft = function (andBodyToo, skipReplyTo, andAttachmentsTo) {
         var draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
@@ -62,7 +62,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     };
 
 
-    t.it("constructor()", function (t) {
+    t.it("constructor()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -70,7 +70,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("getTo()", function (t) {
+    t.it("getTo()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -78,7 +78,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("getCc()", function (t) {
+    t.it("getCc()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -87,7 +87,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("getBcc()", function (t) {
+    t.it("getBcc()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -96,7 +96,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("getTextHtml()", function (t) {
+    t.it("getTextHtml()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -106,7 +106,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("getAttachments()", function (t) {
+    t.it("getAttachments()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -114,7 +114,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("app-cn_mail#47 - getInReplyTo()", function (t) {
+    t.it("extjs-app-webmail#47 - getInReplyTo()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -122,7 +122,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("app-cn_mail#47 - getReferences()", function (t) {
+    t.it("extjs-app-webmail#47 - getReferences()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -133,7 +133,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("app-cn_mail#47 - getXCnDraftInfo()", function (t) {
+    t.it("extjs-app-webmail#47 - getXCnDraftInfo()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 
@@ -147,7 +147,7 @@ describe("conjoon.cn_mail.text.ReplyToMessageDecoratorTest", function (t) {
     });
 
 
-    t.it("app-cn_mail#47 - toMessageDraftConfig()", function (t) {
+    t.it("extjs-app-webmail#47 - toMessageDraftConfig()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
 

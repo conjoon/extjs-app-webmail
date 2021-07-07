@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKeyTest", function (t) {
+StartTest(t => {
 
     const create = function (cfg) {
             return Ext.create("conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey", cfg);
@@ -34,7 +34,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKe
         ID                  = "foobar";
 
 
-    t.it("constructor() / apply*()", function (t) {
+    t.it("constructor() / apply*()", t => {
 
         let key = create({
             mailAccountId: MAILACCOUNTID,
@@ -53,7 +53,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKe
     });
 
 
-    t.it("fromRecord()", function (t) {
+    t.it("fromRecord()", t => {
 
         let key = conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey.fromRecord(Ext.create("Ext.data.Model", {
             mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, parentMessageItemId: PARENTMESSAGEITEMID, id: ID
@@ -64,7 +64,7 @@ describe("conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKe
     });
 
 
-    t.it("createFor()", function (t) {
+    t.it("createFor()", t => {
 
         let key = conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID, PARENTMESSAGEITEMID, ID

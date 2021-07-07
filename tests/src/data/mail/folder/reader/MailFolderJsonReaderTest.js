@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest", function (t) {
+StartTest(t => {
 
 
-    t.it("Should successfully create and test instance", function (t) {
+    t.it("Should successfully create and test instance", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
 
@@ -41,7 +41,7 @@ describe("conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest", fun
     });
 
 
-    t.it("applyCompoundKey - exception", function (t) {
+    t.it("applyCompoundKey - exception", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
             exc, data;
@@ -61,7 +61,7 @@ describe("conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest", fun
     });
 
 
-    t.it("recurseChildren()", function (t) {
+    t.it("recurseChildren()", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
             ret,
@@ -95,7 +95,7 @@ describe("conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest", fun
     });
 
 
-    t.it("applyCompoundKey() - success false", function (t) {
+    t.it("applyCompoundKey() - success false", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
             ret = reader.applyCompoundKey({success: false});

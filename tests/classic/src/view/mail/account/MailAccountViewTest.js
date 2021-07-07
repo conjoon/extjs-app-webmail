@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
+StartTest(t => {
 
     let createModel = function () {
 
@@ -67,7 +67,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("Should create and show the MailAccountView along with default config checks", function (t) {
+    t.it("Should create and show the MailAccountView along with default config checks", t => {
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
         t.expect(view instanceof Ext.Panel).toBeTruthy();
@@ -82,7 +82,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("setMailAccount()", function (t) {
+    t.it("setMailAccount()", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
@@ -100,7 +100,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("hasPendingChanges()", function (t) {
+    t.it("hasPendingChanges()", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
@@ -120,7 +120,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("rejectPendingChanges()", function (t) {
+    t.it("rejectPendingChanges()", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
@@ -142,7 +142,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("setMailAccount() - view updated", function (t) {
+    t.it("setMailAccount() - view updated", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -154,7 +154,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
 
         view.setMailAccount(ma);
 
-        t.waitForMs(250, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
             let values = view.down("form").getValues(),
                 data = ma.data;
@@ -191,7 +191,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("cancel button", function (t) {
+    t.it("cancel button", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -208,7 +208,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("save button", function (t) {
+    t.it("save button", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -225,7 +225,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("setBusy()", function (t) {
+    t.it("setBusy()", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -258,7 +258,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("setMailAccount() - switch mailAccounts and check for busyMask", function (t) {
+    t.it("setMailAccount() - switch mailAccounts and check for busyMask", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -290,7 +290,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("cn_mail-mailaccountbeforesave", function (t) {
+    t.it("cn_mail-mailaccountbeforesave", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -304,7 +304,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("cn_mail-mailaccountsave", function (t) {
+    t.it("cn_mail-mailaccountsave", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,
@@ -318,7 +318,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewTest", function (t) {
     });
 
 
-    t.it("cn_mail-mailaccountsavefailure", function (t) {
+    t.it("cn_mail-mailaccountsavefailure", t => {
 
         view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
             renderTo: document.body,

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * Base model for app-cn_mail representing a message item.
+ * Base model for extjs-app-webmail representing a message item.
  * Message items should be used whenever contents of MailFolders should be inspected.
  * The data structure used for MessageItems does only need necessary (meta) data
  * for providing information about a message. Further data can be requested

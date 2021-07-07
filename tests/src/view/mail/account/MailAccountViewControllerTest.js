@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", function (t) {
+StartTest(t => {
 
     let VIEW_ISBUSY = false,
         VIEW_ISVISIBLE = true;
@@ -81,7 +81,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("Should create and show the MailAccountViewController along with default config checks", function (t) {
+    t.it("Should create and show the MailAccountViewController along with default config checks", t => {
         ctrl = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewController");
 
         t.expect(ctrl instanceof Ext.app.ViewController).toBeTruthy();
@@ -92,7 +92,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("onCancelButtonClick()", function (t) {
+    t.it("onCancelButtonClick()", t => {
 
         ctrl = createCtrlMock();
 
@@ -103,7 +103,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("onSaveButtonClick()", function (t) {
+    t.it("onSaveButtonClick()", t => {
 
         ctrl = createCtrlMock();
 
@@ -115,7 +115,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("onBeforeMailAccountSave()", function (t) {
+    t.it("onBeforeMailAccountSave()", t => {
 
         ctrl = createCtrlMock();
 
@@ -130,7 +130,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("onMailAccountSaveCallback() - visible view", function (t) {
+    t.it("onMailAccountSaveCallback() - visible view", t => {
 
         ctrl = createCtrlMock();
 
@@ -147,7 +147,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("onMailAccountSaveCallback() - hidden view", function (t) {
+    t.it("onMailAccountSaveCallback() - hidden view", t => {
 
         ctrl = createCtrlMock();
 
@@ -164,7 +164,7 @@ describe("conjoon.cn_mail.view.mail.account.MailAccountViewControllerTest", func
     });
 
 
-    t.it("onMailAccountViewHide()", function (t) {
+    t.it("onMailAccountViewHide()", t => {
 
         ctrl = createCtrlMock();
 

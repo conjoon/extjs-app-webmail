@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
+StartTest(t => {
 
     var createMessageDraft = function (andBodyToo, skipReplyTo, andAttachmentsTo) {
         var draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
@@ -60,7 +60,7 @@ describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
     };
 
 
-    t.it("constructor()", function (t) {
+    t.it("constructor()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
@@ -68,7 +68,7 @@ describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
     });
 
 
-    t.it("getTo()", function (t) {
+    t.it("getTo()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
@@ -77,7 +77,7 @@ describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
     });
 
 
-    t.it("getCc()", function (t) {
+    t.it("getCc()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
@@ -86,7 +86,7 @@ describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
     });
 
 
-    t.it("getBcc()", function (t) {
+    t.it("getBcc()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 
@@ -95,7 +95,7 @@ describe("conjoon.cn_mail.text.ForwardMessageDecorator", function (t) {
     });
 
 
-    t.it("getTextHtml()", function (t) {
+    t.it("getTextHtml()", t => {
         var messageDraft = createMessageDraft(true, false, true),
             decorator    = Ext.create("conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
 

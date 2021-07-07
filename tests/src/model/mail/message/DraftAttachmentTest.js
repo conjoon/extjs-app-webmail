@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -46,15 +46,15 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-        t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", function () {
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", () => {
 
 
             Ext.ux.ajax.SimManager.init({
                 delay: 1
             });
 
-            t.it("Should create instance", function (t) {
+            t.it("Should create instance", t => {
 
                 t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.MessageItemChildModel");
 
@@ -67,47 +67,47 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
                     }});
             });
 
-            t.it("Test Entity Name", function (t) {
+            t.it("Test Entity Name", t => {
                 t.expect(
                     model.entityName
                 ).toBe("DraftAttachment");
             });
 
-            t.it("Test Record Validity", function (t) {
+            t.it("Test Record Validity", t => {
                 t.expect(model.isValid()).toBe(true);
             });
 
 
-            t.it("Test mailFolderId", function (t) {
+            t.it("Test mailFolderId", t => {
                 t.expect(model.getField("mailFolderId")).toBeTruthy();
                 t.expect(model.getField("mailFolderId").critical).toBe(true);
             });
 
-            t.it("Test mailAccountId", function (t) {
+            t.it("Test mailAccountId", t => {
                 t.expect(model.getField("mailAccountId")).toBeTruthy();
                 t.expect(model.getField("mailAccountId").critical).toBe(true);
             });
 
-            t.it("localId", function (t) {
+            t.it("localId", t => {
                 t.expect(model.getIdProperty()).toBe("localId");
             });
 
-            t.it("id", function (t) {
+            t.it("id", t => {
                 t.expect(model.getField("id")).toBeTruthy();
                 t.expect(model.getField("id").critical).toBe(true);
             });
 
-            t.it("parentMessageItemId", function (t) {
+            t.it("parentMessageItemId", t => {
                 t.expect(model.getField("parentMessageItemId")).toBeTruthy();
                 t.isInstanceOf(model.getField("parentMessageItemId"), "coon.core.data.field.CompoundKeyField");
             });
 
-            t.it("messageItemId", function (t) {
+            t.it("messageItemId", t => {
                 t.expect(model.getField("messageItemId").persist).toBe(false);
             });
 
 
-            t.it("getAssociatedCompoundKeyedData", function (t) {
+            t.it("getAssociatedCompoundKeyedData", t => {
                 let model = Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment");
 
                 model.getMessageItem = undefined;
@@ -120,7 +120,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
             });
 
 
-            t.it("Test MessageDraft add attachment - compound key updated", function (t) {
+            t.it("Test MessageDraft add attachment - compound key updated", t => {
 
                 let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                     subject: "test",
@@ -158,13 +158,13 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
 
             });
 
-            t.it("proxy", function (t) {
+            t.it("proxy", t => {
 
                 t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy");
 
             });
 
-            t.it("Test MessageDraft save with MessageBody and Attachments", function (t) {
+            t.it("Test MessageDraft save with MessageBody and Attachments", t => {
 
                 var session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -197,7 +197,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
 
                 batch.start();
 
-                t.waitForMs(1000, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
 
                     t.expect(att.phantom).toBe(false);
                     t.expect(att.get("mailAccountId")).toBe("dev_sys_conjoon_org");
@@ -212,7 +212,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
 
                     session.getSaveBatch().start();
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(draft.get("id")).not.toBe(oldId);
                         t.expect(draft.get("id")).toBe(draft.getMessageBody().get("id"));
@@ -222,7 +222,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
 
                         session.getSaveBatch().start();
 
-                        t.waitForMs(1000, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(draft.get("id")).not.toBe(oldId);
                             t.expect(draft.get("id")).toBe(draft.getMessageBody().get("id"));
@@ -238,7 +238,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
             });
 
 
-            t.it("Test MessageDraft attachment delete with MessageBody", function (t) {
+            t.it("Test MessageDraft attachment delete with MessageBody", t => {
 
                 var session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -273,7 +273,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
 
                 batch.start();
 
-                t.waitForMs(1000, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
 
                     t.expect(att.phantom).toBe(false);
                     t.expect(att.get("mailAccountId")).toBe("dev_sys_conjoon_org");
@@ -291,7 +291,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
                     let btch = session.getSaveBatch();
                     btch.start();
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(draft.get("id")).not.toBe(oldId);
                         t.expect(draft.get("id")).toBe(draft.getMessageBody().get("id"));
@@ -305,7 +305,7 @@ describe("conjoon.cn_mail.model.mail.message.DraftAttachmentTest", function (t) 
                         btch = session.getSaveBatch();
                         btch.start();
 
-                        t.waitForMs(1000, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(draft.get("id")).not.toBe(oldId);
                             t.expect(draft.get("id")).toBe(draft.getMessageBody().get("id"));

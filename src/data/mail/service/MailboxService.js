@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -478,7 +478,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // just like MessageItemUpdater#updateItemWithDraft, we're setting the
         // messageBodyId here
-        // @see conjoon/app-cn_mail#116
+        // @see conjoon/extjs-app-webmail#116
         record.set("messageBodyId", record.getId());
 
         if (op.getResult().success !== true) {

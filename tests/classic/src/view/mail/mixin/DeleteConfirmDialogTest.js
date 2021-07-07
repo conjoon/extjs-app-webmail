@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialogTest", function (t) {
+StartTest(t => {
 
     t.diag("defining mock and waiting until complete...");
 
@@ -74,16 +74,16 @@ describe("conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialogTest", function (t)
 
     };
 
-    t.waitForMs(1000, function () {
+    t.waitForMs(t.TIMEOUT, () => {
 
         t.diag("Starting tests.");
 
-        t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete true", function (t) {
+        t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete true", t => {
             funcview(t, true);
         });
 
 
-        t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete false", function (t) {
+        t.it("showMessageDeleteConfirmDialog() - canCloseAfterDelete false", t => {
             funcview(t, false);
         });
 

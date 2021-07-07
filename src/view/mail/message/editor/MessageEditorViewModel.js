@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,7 +43,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier",
-        "coon.core.Util",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.data.mail.message.session.MessageDraftSession"
     ],
@@ -284,7 +283,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
             // of the ViewModel if the record was successfully initially loaded,
             // otherwise Ext 6.2.0 tries to load associations automatically
             // which shouldnt happen since the initial Entity was not successfully
-            // loaded @see conjoon/app-cn_mail#64
+            // loaded @see conjoon/extjs-app-webmail#64
             if (!sessDraft) {
                 let options = {
                     params: messageDraft.toObject(),

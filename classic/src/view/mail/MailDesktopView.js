@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * This is the main view for the app-cn_mail package.
+ * This is the main view for the extjs-app-webmail package.
  * The view consist of a {@link conjoon.cn_mail.view.mail.inbox.InboxView} and
  * various other helper views that provide mail editing/viewing functionality.
  *

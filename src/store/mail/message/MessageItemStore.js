@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -115,7 +115,7 @@ Ext.define("conjoon.cn_mail.store.mail.message.MessageItemStore", {
      * @param {Ext.data.Model} record The model instance that was edited.
      * @param {String[]} [modifiedFieldNames] (private)
      *
-     * @see app-cn_mail#81
+     * @see extjs-app-webmail#81
      */
     afterEdit: function (record, modifiedFieldNames) {
 

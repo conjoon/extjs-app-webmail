@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest", function (t) {
+StartTest(t => {
 
     t.diag("defining mock and waiting until complete...");
 
@@ -87,11 +87,11 @@ describe("conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest", function (t)
 
     };
 
-    t.waitForMs(1000, function () {
+    t.waitForMs(t.TIMEOUT, () => {
 
         t.diag("Starting tests.");
 
-        t.it("showToast()", function (t) {
+        t.it("showToast()", t => {
 
             let view = Ext.create("mocked.TestPanel", {
                 width: 800,
@@ -105,7 +105,7 @@ describe("conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest", function (t)
             view = null;
         });
 
-        t.it("updateTargetHeader()", function (t) {
+        t.it("updateTargetHeader()", t => {
 
             let view = Ext.create("mocked.TestPanel", {
                 width: 800,
@@ -129,11 +129,11 @@ describe("conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest", function (t)
             view = null;
         });
 
-        t.it("showLoadingFailedDialog() - show button, no header", function (t) {
+        t.it("showLoadingFailedDialog() - show button, no header", t => {
             funcview(t, true);
         });
 
-        t.it("showLoadingFailedDialog() - hide button, no header", function (t) {
+        t.it("showLoadingFailedDialog() - hide button, no header", t => {
             funcview(t, false);
         });
 

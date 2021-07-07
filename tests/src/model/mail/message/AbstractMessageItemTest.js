@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function (t) {
+StartTest(t => {
 
     var model,
         messageBody;
@@ -55,66 +55,66 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.CompoundKeyedModel");
     });
 
-    t.it("Test Record Validity", function (t) {
+    t.it("Test Record Validity", t => {
         t.expect(model.isValid()).toBe(true);
     });
 
-    t.it("Test getMessageBody", function (t) {
+    t.it("Test getMessageBody", t => {
         model.setMessageBody(messageBody);
         t.expect(model.getMessageBody()).toBeTruthy();
         t.expect(model.getField("messageBodyId").persist).toBe(false);
         t.expect(model.getField("messageBodyId").unique).toBe(true);
     });
 
-    t.it("Test date", function (t) {
+    t.it("Test date", t => {
         t.expect(model.getField("date")).toBeTruthy();
         t.expect(model.getField("date").getDateReadFormat()).toBe("Y-m-d H:i:s O");
     });
 
-    t.it("Test seen", function (t) {
+    t.it("Test seen", t => {
         t.expect(model.getField("seen")).toBeTruthy();
     });
 
-    t.it("Test recent", function (t) {
+    t.it("Test recent", t => {
         t.expect(model.getField("recent")).toBeTruthy();
     });
 
-    t.it("Test flagged", function (t) {
+    t.it("Test flagged", t => {
         t.expect(model.getField("flagged")).toBeTruthy();
     });
 
-    t.it("Test answered", function (t) {
+    t.it("Test answered", t => {
         t.expect(model.getField("answered")).toBeTruthy();
     });
 
-    t.it("Test draft", function (t) {
+    t.it("Test draft", t => {
         t.expect(model.getField("draft")).toBeTruthy();
     });
 
-    t.it("Test mailFolderId", function (t) {
+    t.it("Test mailFolderId", t => {
         t.expect(model.getField("mailFolderId")).toBeTruthy();
         t.expect(model.getField("mailFolderId").critical).toBe(true);
     });
 
-    t.it("Test mailAccountId", function (t) {
+    t.it("Test mailAccountId", t => {
         t.expect(model.getField("mailAccountId")).toBeTruthy();
         t.expect(model.getField("mailAccountId").critical).toBe(true);
     });
 
-    t.it("Test id", function (t) {
+    t.it("Test id", t => {
         t.expect(model.getField("id")).toBeTruthy();
         t.expect(model.getField("id").critical).toBe(true);
     });
 
-    t.it("localId", function (t) {
+    t.it("localId", t => {
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-    t.it("loadAttachments()", function (t) {
+    t.it("loadAttachments()", t => {
         t.isInstanceOf(model.attachments(), "conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
         t.isCalled("load", model.attachments());
@@ -141,7 +141,7 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
     });
 
 
-    t.it("loadMessageBody()", function (t) {
+    t.it("loadMessageBody()", t => {
         t.isCalled("getMessageBody", model);
 
         let CALLED = 0,
@@ -157,13 +157,13 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
         t.expect(options.params.id).toBe(model.get("id"));
         t.expect(options.params.parentMessageItemId).toBeFalsy();
 
-        t.waitForMs(250, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             t.expect(CALLED).toBe(1);
         });
     });
 
 
-    t.it("loadMessageBody() - exception", function (t) {
+    t.it("loadMessageBody() - exception", t => {
 
         let exc;
 
@@ -181,20 +181,20 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
     });
 
 
-    t.it("getAssociatedCompoundKeyedData()", function (t) {
+    t.it("getAssociatedCompoundKeyedData()", t => {
 
         t.expect(model.getAssociatedCompoundKeyedData()).toEqual([]);
 
         model.loadMessageBody();
 
-        t.waitForMs(250, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             t.expect(model.getAssociatedCompoundKeyedData().length).toBe(1);
             t.expect(model.getAssociatedCompoundKeyedData()[0]).toBe(model.getMessageBody());
         });
     });
 
 
-    t.it("getAssociatedCompoundKeyedData() - 2",  function (t) {
+    t.it("getAssociatedCompoundKeyedData() - 2",  t => {
 
         let att, body;
 
@@ -210,7 +210,7 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
     });
 
 
-    t.it("onAssociatedRecordSet() - MessageBody", function (t) {
+    t.it("onAssociatedRecordSet() - MessageBody", t => {
 
         t.isCalled("processRecordAssociation", model);
         model.onAssociatedRecordSet(messageBody);
@@ -218,7 +218,7 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
     });
 
 
-    t.it("processRecordAssociation() - MessageBody", function (t) {
+    t.it("processRecordAssociation() - MessageBody", t => {
 
         t.isCalled("compareAndApplyCompoundKeys", model);
         model.processRecordAssociation(messageBody);
@@ -226,7 +226,7 @@ describe("conjoon.cn_mail.model.mail.message.AbstractMessageItemTest", function 
     });
 
 
-    t.it("processRecordAssociation() - no MessageBody", function (t) {
+    t.it("processRecordAssociation() - no MessageBody", t => {
 
         t.isntCalled("compareAndApplyCompoundKeys", model);
         model.processRecordAssociation(Ext.create("Ext.data.Model"));

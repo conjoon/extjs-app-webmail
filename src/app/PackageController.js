@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * This is the package controller of the app-cn_mail package to be used with
+ * This is the package controller of the extjs-app-webmail package to be used with
  * {@link coon.comp.app.Application}.
  *
  * This controller will hook into the launch-process of {@link coon.comp.app.Application#launch},

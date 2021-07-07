@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -44,7 +44,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function (t) {
+    t.it("Should create instance", t => {
         t.isInstanceOf(model, "conjoon.cn_mail.model.mail.BaseModel");
 
         t.expect(model.callerEntityName).toBe("");
@@ -54,11 +54,11 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
         t.expect(model.foreignKeyFields).toEqual(["mailAccountId", "mailFolderId", "id"]);
     });
 
-    t.it("idProperty", function (t) {
+    t.it("idProperty", t => {
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-    t.it("Test fields", function (t) {
+    t.it("Test fields", t => {
 
         let fields = ["mailAccountId", "mailFolderId", "id"],
             field;
@@ -86,7 +86,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("load()", function (t) {
+    t.it("load()", t => {
 
         t.isCalledNTimes("checkForeignKeysForAction", model, 1);
 
@@ -102,7 +102,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("save()", function (t) {
+    t.it("save()", t => {
 
         model.set("mailAccountId", "a");
         model.set("mailFolderId", "INBOX.Drafts");
@@ -113,7 +113,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("erase() - phantom", function (t) {
+    t.it("erase() - phantom", t => {
 
         model.set("mailAccountId", "a");
         model.set("mailFolderId", "INBOX.Drafts");
@@ -125,7 +125,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("erase()", function (t) {
+    t.it("erase()", t => {
 
         model.set("localId", "abcd");
         model.set("mailAccountId", "a");
@@ -139,7 +139,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("loadEntity()", function (t) {
+    t.it("loadEntity()", t => {
 
         let exc;
 
@@ -188,7 +188,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("checkForeignKeysForAction()", function (t) {
+    t.it("checkForeignKeysForAction()", t => {
 
         let exc;
 
@@ -247,7 +247,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("updateLocalId()", function (t) {
+    t.it("updateLocalId()", t => {
 
         let m = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
                 id: "foo-1",
@@ -277,7 +277,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("set()", function (t) {
+    t.it("set()", t => {
 
         let modelLeft = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel"),
             modelRight = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel"),
@@ -316,7 +316,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("compareAndApplyCompoundKeys()", function (t) {
+    t.it("compareAndApplyCompoundKeys()", t => {
 
         let createModel = function (fields) {
                 return Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel",
@@ -425,7 +425,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("isCompoundKeyConfigured()", function (t) {
+    t.it("isCompoundKeyConfigured()", t => {
         let model;
 
         model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
@@ -462,7 +462,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("set() with mapping for compoundKeyFields", function (t) {
+    t.it("set() with mapping for compoundKeyFields", t => {
 
         let modelLeft = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
             }),
@@ -505,7 +505,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("compareAndApplyCompoundKeys() with mapping for compoundFields", function (t) {
+    t.it("compareAndApplyCompoundKeys() with mapping for compoundFields", t => {
 
         let mapping = {
             mailAccountId: "accountField",
@@ -661,12 +661,12 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("processRecordAssociation()", function (t) {
+    t.it("processRecordAssociation()", t => {
         t.expect(model.processRecordAssociation).toBe(Ext.emptyFn);
     });
 
 
-    t.it("compareAndApplyCompoundKeys() - entity mapping, but field is array", function (t) {
+    t.it("compareAndApplyCompoundKeys() - entity mapping, but field is array", t => {
 
         let modelLeft = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
             // enforcing a bug that should be fixed with this test
@@ -703,7 +703,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("getCompoundKey()", function (t) {
+    t.it("getCompoundKey()", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
             "mailFolderId": "x",
@@ -717,7 +717,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("save() - consider modified (UPDATE)", function (t) {
+    t.it("save() - consider modified (UPDATE)", t => {
 
         model.set("mailAccountId", "a");
         model.set("mailFolderId", "INBOX.Drafts");
@@ -741,13 +741,13 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
         t.expect(Object.prototype.hasOwnProperty.call(jsonData, "mailFolderId")).toBe(true);
         t.expect(jsonData.mailFolderId).toBeUndefined();
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("save() - consider modified (CREATE)", function (t) {
+    t.it("save() - consider modified (CREATE)", t => {
 
         let exc;
 
@@ -764,13 +764,13 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
         t.expect(exc.msg).toContain("must be set");
 
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("erase() - consider modified (NO PHANTOM)", function (t) {
+    t.it("erase() - consider modified (NO PHANTOM)", t => {
 
         model.set("mailAccountId", "a");
         model.set("mailFolderId", "INBOX.Drafts");
@@ -789,13 +789,13 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
 
         t.expect(ret).toBeTruthy();
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("erase() - consider modified (PHANTOM) ", function (t) {
+    t.it("erase() - consider modified (PHANTOM) ", t => {
 
         let exc;
 
@@ -812,13 +812,13 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
         t.expect(exc.msg).toContain("must be set");
 
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("set/reject - association is also reset", function (t) {
+    t.it("set/reject - association is also reset", t => {
 
         let modelL = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
             mailAccountId: "meh."
@@ -846,7 +846,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("checkForeignKeysModified()", function (t) {
+    t.it("checkForeignKeysModified()", t => {
 
         let exc,
             model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
@@ -864,7 +864,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("getPreviousCompoundKey()", function (t) {
+    t.it("getPreviousCompoundKey()", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
             mailFolderId: "foo",
@@ -891,7 +891,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("localId updated when compound key value changes", function (t) {
+    t.it("localId updated when compound key value changes", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
             localId: "abc"
@@ -913,7 +913,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("previousCompoundKey available upon reject()", function (t) {
+    t.it("previousCompoundKey available upon reject()", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
 
@@ -966,7 +966,7 @@ describe("conjoon.cn_mail.model.mail.message.CompoundKeyedModelTest", function (
     });
 
 
-    t.it("getRepresentingCompoundKeyClass", function (t) {
+    t.it("getRepresentingCompoundKeyClass", t => {
 
         let model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
 

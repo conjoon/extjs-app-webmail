@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", function (t) {
+StartTest(t => {
 
 
-    t.it("constructor()", function (t) {
+    t.it("constructor()", t => {
         var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
         t.expect(config.getTo()).toBeUndefined();
@@ -47,7 +47,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("applyAddressFactory()", function (t) {
+    t.it("applyAddressFactory()", t => {
         var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
 
@@ -130,7 +130,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
 
     });
 
-    t.it("applyTo()", function (t) {
+    t.it("applyTo()", t => {
         var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
         t.isCalledOnce("applyAddressFactory", config);
@@ -138,7 +138,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("applyCc()", function (t) {
+    t.it("applyCc()", t => {
         var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
         t.isCalledOnce("applyAddressFactory", config);
@@ -146,7 +146,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("applyBcc()", function (t) {
+    t.it("applyBcc()", t => {
         var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
         t.isCalledOnce("applyAddressFactory", config);
@@ -154,7 +154,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("applyAttachments()", function (t) {
+    t.it("applyAttachments()", t => {
         var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
 
@@ -214,7 +214,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("toObject()", function (t) {
+    t.it("toObject()", t => {
 
         var config,
             tests = [{
@@ -342,9 +342,9 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("app-cn_mail#84", function (t) {
+    t.it("extjs-app-webmail#84", t => {
 
-        t.it("applyTo()", function (t) {
+        t.it("applyTo()", t => {
             var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
             });
 
@@ -354,7 +354,7 @@ describe("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest", func
     });
 
 
-    t.it("app-cn_mail#47 - references, inReplyTo, xCnDraftInfo", function (t) {
+    t.it("extjs-app-webmail#47 - references, inReplyTo, xCnDraftInfo", t => {
 
 
         var config,

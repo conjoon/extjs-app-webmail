@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
+StartTest(t => {
 
     var model;
 
@@ -44,29 +44,29 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", function () {
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function () {
-            t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", function () {
+    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", () => {
 
                 Ext.ux.ajax.SimManager.init({
                     delay: 1
                 });
 
-                t.it("Should create instance", function (t) {
+                t.it("Should create instance", t => {
                     t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
                 });
 
-                t.it("Test for proper proxy", function (t) {
+                t.it("Test for proper proxy", t => {
                     t.isInstanceOf(model.getProxy(), "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
                 });
 
-                t.it("Test Entity Name", function (t) {
+                t.it("Test Entity Name", t => {
                     t.expect(
                         model.entityName
                     ).toBe("MessageDraft");
                 });
 
-                t.it("compoundKeyFields", function (t) {
+                t.it("compoundKeyFields", t => {
                     t.expect(
                         model.compoundKeyFields
                     ).toEqual({
@@ -80,7 +80,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("processRecordAssociation() - not called", function (t) {
+                t.it("processRecordAssociation() - not called", t => {
 
                     t.isntCalled("compareAndApplyCompoundKeys", model);
 
@@ -89,7 +89,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("processRecordAssociation() - called", function (t) {
+                t.it("processRecordAssociation() - called", t => {
 
                     t.isCalledOnce("compareAndApplyCompoundKeys", model);
 
@@ -98,7 +98,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test Record Validity", function (t) {
+                t.it("Test Record Validity", t => {
                     // messageBody is missing
                     t.expect(model.isValid()).toBe(false);
 
@@ -112,7 +112,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test addresses inline", function (t) {
+                t.it("Test addresses inline", t => {
 
                     var model = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft",{
                         id: "1",
@@ -134,7 +134,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test addresses load", function (t) {
+                t.it("Test addresses load", t => {
 
                     let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
@@ -146,7 +146,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                         )
                     );
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(rec.get("to")).toContain(
                             { name: "Firstname Lastnameto", address: "nameto@domain.tld"}
                         );
@@ -155,7 +155,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageBody load", function (t) {
+                t.it("Test MessageBody load", t => {
 
                     let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
@@ -168,10 +168,10 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                     );
 
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         var mb = rec.loadMessageBody();
 
-                        t.waitForMs(1500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(mb.get("textHtml")).toBeTruthy();
                             t.expect(mb.get("mailFolderId")).toBe(rec.get("mailFolderId"));
                             t.expect(mb.get("mailAccountId")).toBe(rec.get("mailAccountId"));
@@ -184,7 +184,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test attachments load", function (t) {
+                t.it("Test attachments load", t => {
 
                     let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
@@ -196,20 +196,20 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                         )
                     );
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(typeof rec.attachments).toBe("function");
                         t.isInstanceOf(rec.attachments(), "conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
                         t.expect(rec.attachments().getRange().length).toBe(0);
                         t.isInstanceOf(rec.loadAttachments(), "Ext.data.Store");
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(rec.attachments().isLoaded()).toBe(true);
                         });
                     });
 
                 });
 
-                t.it("Test MessageDraft save", function (t) {
+                t.it("Test MessageDraft save", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                         subject: "test",
@@ -223,7 +223,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     rec.save();
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec);
 
@@ -234,7 +234,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageDraft save MessageBody with session", function (t) {
+                t.it("Test MessageDraft save MessageBody with session", t => {
 
                     var session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -269,7 +269,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     saveBatch.start();
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec);
                         let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec2);
@@ -284,7 +284,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("field - replyTo", function (t) {
+                t.it("field - replyTo", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                         subject: "test",
@@ -299,7 +299,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("field - draft", function (t) {
+                t.it("field - draft", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
@@ -307,28 +307,28 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("field - seen", function (t) {
+                t.it("field - seen", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
                     t.expect(rec.get("seen")).toBe(true);
                 });
 
-                t.it("field - answered", function (t) {
+                t.it("field - answered", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
                     t.expect(rec.get("answered")).toBe(false);
                 });
 
-                t.it("field - flagged", function (t) {
+                t.it("field - flagged", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
                     t.expect(rec.get("flagged")).toBe(false);
                 });
 
-                t.it("field - recent", function (t) {
+                t.it("field - recent", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
@@ -336,7 +336,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageDraft save MessageBody updated mailFolderId", function (t) {
+                t.it("Test MessageDraft save MessageBody updated mailFolderId", t => {
 
                     var session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession"),
                         newFolder = "INBOX.TRASH";
@@ -369,7 +369,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                     saveBatch.start();
 
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft);
                         let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(body);
@@ -386,7 +386,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageDraft save MessageDraft updated id", function (t) {
+                t.it("Test MessageDraft save MessageDraft updated id", t => {
 
                     var session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
@@ -413,7 +413,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     saveBatch.start();
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft);
                         let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(body);
@@ -427,7 +427,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageDraft save MessageDraft updated mailFolderId for Body", function (t) {
+                t.it("Test MessageDraft save MessageDraft updated mailFolderId for Body", t => {
 
                     var session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession"),
                         newFolder = "INBOX.TRASH";
@@ -458,7 +458,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     saveBatch.start();
 
-                    t.waitForMs(1000, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let msgKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(draft);
                         let bodyKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(body);
@@ -474,7 +474,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("save() - phantom", function (t) {
+                t.it("save() - phantom", t => {
                     let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
                     delete messageItem.localId;
@@ -490,7 +490,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     t.expect(ret.request.getUrl()).toContain("MailFolders/foo/");
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(draft.get("mailFolderId")).toBe("foo");
                         t.expect(draft.get("id")).toBe(messageItem.id);
@@ -500,7 +500,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("save() - consider modified", function (t) {
+                t.it("save() - consider modified", t => {
                     let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
 
                     var draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
@@ -511,7 +511,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                         )
                     );
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(draft.phantom).toBe(false);
 
@@ -522,7 +522,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                         t.expect(ret.request.getJsonData().mailFolderId).toBe("foo");
                         t.expect(ret.request.getUrl()).toContain("MailFolders/" + encodeURIComponent(messageItem.mailFolderId) + "/");
 
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             t.expect(draft.get("mailFolderId")).toBe("foo");
                             t.expect(draft.get("id")).toBe(messageItem.id);
@@ -533,7 +533,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#73 - 1", function (t) {
+                t.it("extjs-app-webmail#73 - 1", t => {
 
                     let messageItem,
                         session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
@@ -557,13 +557,13 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                     );
 
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         session.setMessageDraft(draft);
                         draft.loadMessageBody();
                         draft.loadAttachments();
 
-                        t.waitForMs(1250, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             draft.set("mailFolderId", "15");
 
@@ -582,7 +582,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#73 - 2", function (t) {
+                t.it("extjs-app-webmail#73 - 2", t => {
 
                     let messageItem,
                         session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
@@ -606,12 +606,12 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                     );
 
 
-                    t.waitForMs(750, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         session.setMessageDraft(draft);
                         draft.loadAttachments();
 
-                        t.waitForMs(750, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             draft.set("mailFolderId", "15");
 
@@ -626,7 +626,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#47 - references", function (t) {
+                t.it("extjs-app-webmail#47 - references", t => {
 
                     let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField("references");
 
@@ -637,7 +637,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#47 - inReplyTo", function (t) {
+                t.it("extjs-app-webmail#47 - inReplyTo", t => {
 
                     let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField("inReplyTo");
 
@@ -648,7 +648,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#47 - messageId", function (t) {
+                t.it("extjs-app-webmail#47 - messageId", t => {
 
                     let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField("messageId");
 
@@ -659,7 +659,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#47 - xCnDraftInfo", function (t) {
+                t.it("extjs-app-webmail#47 - xCnDraftInfo", t => {
 
                     let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField("xCnDraftInfo");
 
@@ -669,7 +669,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("app-cn_mail#39 - savedAt", function (t) {
+                t.it("extjs-app-webmail#39 - savedAt", t => {
 
                     let w = conjoon.cn_mail.model.mail.message.MessageDraft.getField("savedAt");
 
@@ -679,7 +679,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageBody assoc", function (t) {
+                t.it("Test MessageBody assoc", t => {
 
                     let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                         mailFolderId: "INBOX",
@@ -700,7 +700,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("Test MessageBody save", function (t) {
+                t.it("Test MessageBody save", t => {
                     let session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
                     let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
@@ -715,10 +715,10 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     session.setMessageDraft(rec);
 
-                    t.waitForMs(500, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         var mb = rec.loadMessageBody();
 
-                        t.waitForMs(500, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
 
                             rec.set("subject", "a");
                             mb.set("text/plain", "foo");
@@ -727,7 +727,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                             t.expect(mb.getMessageDraft()).toBe(rec);
 
                             session.getSaveBatch().start();
-                            t.waitForMs(500, function () {
+                            t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 rec.set("subject", "b");
                                 mb.set("text/plain", "foobar");
@@ -736,7 +736,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                                 t.expect(mb.getMessageDraft()).toBe(rec);
 
                                 session.getSaveBatch().start();
-                                t.waitForMs(500, function () {
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
                                 });
                             });
@@ -747,7 +747,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
                 });
 
 
-                t.it("preBatchCompoundKey", function (t) {
+                t.it("preBatchCompoundKey", t => {
 
                     let model = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
@@ -772,7 +772,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                 });
 
-                t.it("loadMessageBody() - target parameter", function (t) {
+                t.it("loadMessageBody() - target parameter", t => {
 
                     let CALLED = 0,
                         options = {callback: function (){CALLED++;}};
@@ -788,7 +788,7 @@ describe("conjoon.cn_mail.model.mail.message.MessageDraftTest", function (t) {
 
                     t.expect(options.params.target).toBe("MessageBodyDraft");
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(CALLED).toBe(1);
                     });
                 });

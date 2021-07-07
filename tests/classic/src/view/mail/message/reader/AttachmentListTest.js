@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("conjoon.cn_mail.view.mail.message.reader.AttachmentListTest", function (t) {
+StartTest(t => {
 
     var view,
         viewConfig;
@@ -44,7 +44,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.AttachmentListTest", function
     });
 
 
-    t.it("Should create and show the attachment list along with default config checks", function (t) {
+    t.it("Should create and show the attachment list along with default config checks", t => {
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.reader.AttachmentList", viewConfig);
 
@@ -55,7 +55,7 @@ describe("conjoon.cn_mail.view.mail.message.reader.AttachmentListTest", function
         t.expect(view.getController() instanceof conjoon.cn_mail.view.mail.message.reader.AttachmentListController).toBe(true);
     });
 
-    t.it("Should test displayButtonType properly", function (t) {
+    t.it("Should test displayButtonType properly", t => {
         view = Ext.create(
             "conjoon.cn_mail.view.mail.message.reader.AttachmentList", viewConfig);
 
