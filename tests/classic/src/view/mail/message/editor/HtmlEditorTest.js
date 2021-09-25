@@ -112,7 +112,7 @@ StartTest(async t => {
 
             let res = await view.loadMarkup();
             t.expect(res).toBeDefined();
-            t.expect(t.TPL_SPY.calls.mostRecent().args[0].theme).toBe(coon.core.ThemeManager.getTheme().get());
+            t.expect(t.TPL_SPY.calls.mostRecent().args[0].theme).toBe(coon.core.ThemeManager.getTheme());
 
 
         });

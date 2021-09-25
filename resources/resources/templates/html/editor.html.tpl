@@ -22,7 +22,7 @@
                     line-height: 20px;
                     border:0;
                     padding:10px 0 0 10px;
-                    color: ${theme.color};
+                    color: ${theme.get("color")};
                 }
 
                 p, ul, blockquote {
@@ -35,11 +35,25 @@
                 }
                 blockquote {
                     padding-left:10px;
-                    border-left:4px solid ${theme["accent-color"]};
+                    border-left:4px solid ${theme.get("accent-color")};
                 }
                 a {
-                    color:${theme.color}
+                    color:${theme.get("color")}
                 }
+
+                ::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+
+                ::-webkit-scrollbar-track {
+                    background: ${theme.get("reverse-color")};
+                }
+
+                ::-webkit-scrollbar-thumb {
+                    background:  ${theme.get("accent-foreground-color")};
+                }
+
 
             </style>
         </head>

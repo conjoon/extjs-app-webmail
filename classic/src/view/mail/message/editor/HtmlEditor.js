@@ -113,21 +113,20 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
 
 
     /**
-     * Makes sure the editor template is loaded and compiled with the theme's config.
+     * Makes sure the editor template is loaded and compiled with the theme'.
      *
      * @return {Promise<*>}
      */
     async loadMarkup () {
         const
             theme = coon.core.ThemeManager.getTheme(),
-            themeConfig = theme.get(),
             tplPath = coon.core.Environment.getPathForResource(
                 coon.core.ConfigManager.get("extjs-app-webmail", "resources.templates.html.editor"),
                 "extjs-app-webmail"
             ),
             tpl = await coon.core.Template.load(tplPath);
 
-        let html = tpl.render({theme: themeConfig ? themeConfig : {}});
+        let html = tpl.render({theme: theme});
 
         return html;
     } ,
