@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,10 +28,10 @@
  * {@link conjoon.cn_mail.view.mail.message.reader.AttachmentList}.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.message.reader.AttachmentListController', {
+Ext.define("conjoon.cn_mail.view.mail.message.reader.AttachmentListController", {
 
-    extend : 'conjoon.cn_mail.view.mail.message.AbstractAttachmentListController',
+    extend: "conjoon.cn_mail.view.mail.message.AbstractAttachmentListController",
 
-    alias : 'controller.cn_mail-mailmessagereaderattachmentlistcontroller'
+    alias: "controller.cn_mail-mailmessagereaderattachmentlistcontroller"
 
 });

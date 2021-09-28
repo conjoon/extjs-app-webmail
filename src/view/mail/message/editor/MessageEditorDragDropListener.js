@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,7 +35,7 @@
  *
  * @private
  */
-Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener', {
+Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener", {
 
     /**
      * Helper to indicate the number of times the attachmentlistWrap was entered/
@@ -43,12 +43,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      * @type {Integer=0} dragEnterCount
      * @private
      */
-    dragEnterCount : 0,
+    dragEnterCount: 0,
 
     /**
      * @cfg {conjoon.cn_mail.view.mail.message.editor.MessageEditor} view
      */
-    view : null,
+    view: null,
 
 
     /**
@@ -56,7 +56,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @param {Object} conf
      */
-    constructor : function(conf) {
+    constructor: function (conf) {
 
         var me = this;
 
@@ -68,11 +68,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      * Makes sure #installDragDropListeners is called as soon as the controller's
      * editor was rendered.
      */
-    init : function() {
+    init: function () {
         var me   = this,
             view = me.view;
 
-        view.on('afterrender', me.installDragDropListeners, me, {single : true});
+        view.on("afterrender", me.installDragDropListeners, me, {single: true});
     },
 
 
@@ -82,21 +82,21 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @private
      */
-    installDragDropListeners : function() {
+    installDragDropListeners: function () {
         var me             = this,
             view           = me.view,
-            attachmentWrap = view.down('#attachmentListWrap').el;
+            attachmentWrap = view.down("#attachmentListWrap").el;
 
         view.mon(
-            attachmentWrap, 'dragenter', me.onAttachmentListWrapDragEnter, me);
+            attachmentWrap, "dragenter", me.onAttachmentListWrapDragEnter, me);
         view.mon(
-            attachmentWrap, 'dragover',  me.onAttachmentListWrapDragOver, me);
+            attachmentWrap, "dragover",  me.onAttachmentListWrapDragOver, me);
         view.mon(
-            attachmentWrap, 'dragleave', me.onAttachmentListWrapDragLeave, me);
+            attachmentWrap, "dragleave", me.onAttachmentListWrapDragLeave, me);
         view.mon(
-            attachmentWrap, 'dragend',   me.onAttachmentListWrapDragEnd,   me);
+            attachmentWrap, "dragend",   me.onAttachmentListWrapDragEnd,   me);
         view.mon(
-            attachmentWrap, 'drop',      me.onAttachmentListWrapDrop,      me);
+            attachmentWrap, "drop",      me.onAttachmentListWrapDrop,      me);
     },
 
 
@@ -107,7 +107,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      * @param {Boolean} isHover true to add the css class, false to remove it.
      * @param {Boolean} forceReset true to reset #dragEnterCount to 0
      */
-    registerAttachmentListWrapEnter : function(isHover, forceReset) {
+    registerAttachmentListWrapEnter: function (isHover, forceReset) {
         var me   = this,
             view = me.view;
 
@@ -121,9 +121,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
             ? 0
             : me.dragEnterCount;
 
-        view.down('#attachmentListWrap').el[
-            me.dragEnterCount ? 'addCls' : 'removeCls'
-            ]('hover')
+        view.down("#attachmentListWrap").el[
+            me.dragEnterCount ? "addCls" : "removeCls"
+        ]("hover");
     },
 
 
@@ -133,7 +133,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @param {Ext.util.Event} e
      */
-    onAttachmentListWrapDragOver : function(e) {
+    onAttachmentListWrapDragOver: function (e) {
         e.preventDefault();
     },
 
@@ -144,7 +144,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @param {Ext.util.Event} e
      */
-    onAttachmentListWrapDragEnter : function(e) {
+    onAttachmentListWrapDragEnter: function (e) {
         e.preventDefault();
 
         var me = this;
@@ -159,7 +159,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @param {Ext.util.Event} e
      */
-    onAttachmentListWrapDragLeave : function(e) {
+    onAttachmentListWrapDragLeave: function (e) {
         e.preventDefault();
 
         var me = this;
@@ -172,7 +172,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @param {Ext.util.Event} e
      */
-    onAttachmentListWrapDragEnd : function(e) {
+    onAttachmentListWrapDragEnd: function (e) {
         e.preventDefault();
 
         var me = this;
@@ -185,7 +185,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListen
      *
      * @param {Ext.util.Event} e
      */
-    onAttachmentListWrapDrop : function(e) {
+    onAttachmentListWrapDrop: function (e) {
         e.preventDefault();
 
         var me           = this,

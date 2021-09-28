@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,35 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', function(t) {
+StartTest(t => {
 
-    var model,
-        messageBody;
+    var model;
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
-        model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
+        model = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
         });
 
 
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         model       = null;
     });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.message.CompoundKeyedModel');
+    t.it("Should create instance", t => {
+        t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.CompoundKeyedModel");
 
-        t.expect(model.foreignKeyFields).toEqual(['mailAccountId', 'mailFolderId', 'parentMessageItemId', 'id']);
+        t.expect(model.foreignKeyFields).toEqual(["mailAccountId", "mailFolderId", "parentMessageItemId", "id"]);
     });
 
 
-    t.it("Test fields", function(t) {
+    t.it("Test fields", t => {
 
         let fields = ["parentMessageItemId"],
             field;
@@ -61,7 +60,7 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
 
             field = fields[i];
 
-            t.isInstanceOf(model.getField(field), 'coon.core.data.field.CompoundKeyField');
+            t.isInstanceOf(model.getField(field), "coon.core.data.field.CompoundKeyField");
 
             t.expect(model.getField(field)).toBeTruthy();
 
@@ -80,17 +79,17 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
     });
 
 
-    t.it("load()", function(t) {
+    t.it("load()", t => {
 
-        let exc, e;
+        let exc;
 
         try{model.load({
-            params : {
-                mailAccountId : 'a',
-                mailFolderId  : 'b',
-                id            : 'c'
+            params: {
+                mailAccountId: "a",
+                mailFolderId: "b",
+                id: "c"
             }
-        });} catch(e){exc=e};
+        });} catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be set");
@@ -100,17 +99,17 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
     });
 
 
-    t.it("save()", function(t) {
+    t.it("save()", t => {
 
-        let exc, e;
+        let exc;
 
         model.set({
-            mailAccountId : 'a',
-            mailFolderId  : 'b',
-            id            : 'c'
+            mailAccountId: "a",
+            mailFolderId: "b",
+            id: "c"
         });
 
-        try{model.save();} catch(e){exc=e};
+        try{model.save();} catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be set");
@@ -120,24 +119,23 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
     });
 
 
+    t.it("updateLocalId()", t => {
 
-    t.it("updateLocalId()", function(t) {
-
-        let m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
-                id            : "foo-1",
-                mailAccountId : "foo",
-                mailFolderId  : "INBOX.Drafts",
-                parentMessageItemId : 'bar'
+        let m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
+                id: "foo-1",
+                mailAccountId: "foo",
+                mailFolderId: "INBOX.Drafts",
+                parentMessageItemId: "bar"
             }),
             MessageItemChildCompoundKey = conjoon.cn_mail.data.mail.message
                 .compoundKey.MessageItemChildCompoundKey;
 
         let expected =
             MessageItemChildCompoundKey.createFor(
-                m.get('mailAccountId'),
-                m.get('mailFolderId'),
-                m.get('parentMessageItemId'),
-                m.get('id')
+                m.get("mailAccountId"),
+                m.get("mailFolderId"),
+                m.get("parentMessageItemId"),
+                m.get("id")
             ).toLocalId();
 
 
@@ -147,30 +145,30 @@ describe('conjoon.cn_mail.model.mail.message.MessageItemChildModelTest', functio
         t.expect(m.getId()).toBe(expected);
 
 
-        m = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel');
+        m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel");
         expected = m.updateLocalId();
         t.expect(null).toBe(expected);
 
     });
 
 
-    t.it("getCompoundKey()", function(t) {
+    t.it("getCompoundKey()", t => {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
-            'mailFolderId' : 'x',
-            'mailAccountId'  : 'y',
-            'parentMessageItemId' : 'v',
-            'id'      : 'z'
+        let model = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
+            "mailFolderId": "x",
+            "mailAccountId": "y",
+            "parentMessageItemId": "v",
+            "id": "z"
         });
 
-        t.isCalledNTimes('checkForeignKeysModified', model, 1);
-        t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey');
+        t.isCalledNTimes("checkForeignKeysModified", model, 1);
+        t.isInstanceOf(model.getCompoundKey(), "conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey");
     });
 
 
-    t.it("getRepresentingCompoundKeyClass", function(t) {
+    t.it("getRepresentingCompoundKeyClass", t => {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.message.MessageItemChildModel', {
+        let model = Ext.create("conjoon.cn_mail.model.mail.message.MessageItemChildModel", {
 
         });
 

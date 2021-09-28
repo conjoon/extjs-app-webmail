@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,33 +29,33 @@
  *
  * @private
  */
-Ext.define('conjoon.cn_mail.data.mail.message.EditingModes', {
+Ext.define("conjoon.cn_mail.data.mail.message.EditingModes", {
 
-    statics : {
+    statics: {
         /**
          * @type {String} MODE_EDIT
          */
-        EDIT : 'EDIT',
+        EDIT: "EDIT",
 
         /**
          * @type {String} MODE_CREATE
          */
-        CREATE : 'CREATE',
+        CREATE: "CREATE",
 
         /**
          * @type {String} MODE_REPLY_TO
          */
-        REPLY_TO  : 'REPLY_TO',
+        REPLY_TO: "REPLY_TO",
 
         /**
          * @type {String} MODE_REPLY_ALL
          */
-        REPLY_ALL : 'REPLY_ALL',
+        REPLY_ALL: "REPLY_ALL",
 
         /**
          * @type {String} MODE_FORWARD
          */
-        FORWARD : 'FORWARD'
+        FORWARD: "FORWARD"
     }
 
 });

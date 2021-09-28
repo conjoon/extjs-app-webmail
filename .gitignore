@@ -3,3 +3,7 @@
 /tests/tests.config.js
 /tests/index.html
 /.idea
+/node_modules/
+*.env
+/.githooks/
+/.extjs-link.conf.json

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * This is the package controller of the app-cn_mail package to be used with
+ * This is the package controller of the extjs-app-webmail package to be used with
  * {@link coon.comp.app.Application}.
  *
  * This controller will hook into the launch-process of {@link coon.comp.app.Application#launch},
@@ -46,208 +46,208 @@
  *      });
  *
  */
-Ext.define('conjoon.cn_mail.app.PackageController', {
+Ext.define("conjoon.cn_mail.app.PackageController", {
 
-    extend : 'coon.core.app.PackageController',
+    extend: "coon.core.app.PackageController",
 
-    requires : [
-        'conjoon.cn_mail.view.mail.MailDesktopView',
-        'conjoon.cn_mail.view.mail.message.editor.MessageEditor',
-        'conjoon.cn_mail.view.mail.message.reader.MessageView',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+    requires: [
+        "conjoon.cn_mail.view.mail.MailDesktopView",
+        "conjoon.cn_mail.view.mail.message.editor.MessageEditor",
+        "conjoon.cn_mail.view.mail.message.reader.MessageView",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
 
-    routes : {
+    routes: {
 
         // route for generic compser instances
-        'cn_mail/message/compose/:id'  : {
-            action     : 'onComposeMessageRoute',
-            conditions : {
-                ':id' : '([0-9]+$)'
+        "cn_mail/message/compose/:id": {
+            action: "onComposeMessageRoute",
+            conditions: {
+                ":id": "([0-9]+$)"
             },
-            before : 'onBeforePackageRoute'
+            before: "onBeforePackageRoute"
         },
 
         // route for "mailto"
-        'cn_mail/message/compose/mailto%3A:id'  : {
-            action     : 'onComposeMailtoMessageRoute',
-            conditions : {
-                ':id' : '(.+)'
+        "cn_mail/message/compose/mailto%3A:id": {
+            action: "onComposeMailtoMessageRoute",
+            conditions: {
+                ":id": "(.+)"
             },
-            before : 'onBeforePackageRoute'
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/message/edit/:mailAccountId/:mailFolderId/:id'     : {
-            conditions : {
-                ':mailAccountId' : '(.+)',
-                ':mailFolderId'  : '(.+)',
-                ':id'            : '(.+)'
+        "cn_mail/message/edit/:mailAccountId/:mailFolderId/:id": {
+            conditions: {
+                ":mailAccountId": "(.+)",
+                ":mailFolderId": "(.+)",
+                ":id": "(.+)"
 
             } ,
-            action     : 'onEditMessageRoute',
-            before     : 'onBeforePackageRoute'
+            action: "onEditMessageRoute",
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/message/replyTo/:mailAccountId/:mailFolderId/:id'  : {
-            conditions : {
-                ':mailAccountId' : '(.+)',
-                ':mailFolderId'  : '(.+)',
-                ':id'            : '(.+)'
+        "cn_mail/message/replyTo/:mailAccountId/:mailFolderId/:id": {
+            conditions: {
+                ":mailAccountId": "(.+)",
+                ":mailFolderId": "(.+)",
+                ":id": "(.+)"
 
             } ,
-            action     : 'onReplyToRoute',
-            before     : 'onBeforePackageRoute'
+            action: "onReplyToRoute",
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/message/replyAll/:mailAccountId/:mailFolderId/:id' : {
-            conditions : {
-                ':mailAccountId' : '(.+)',
-                ':mailFolderId'  : '(.+)',
-                ':id'            : '(.+)'
+        "cn_mail/message/replyAll/:mailAccountId/:mailFolderId/:id": {
+            conditions: {
+                ":mailAccountId": "(.+)",
+                ":mailFolderId": "(.+)",
+                ":id": "(.+)"
 
             } ,
-            action     : 'onReplyAllRoute',
-            before     : 'onBeforePackageRoute'
+            action: "onReplyAllRoute",
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/message/forward/:mailAccountId/:mailFolderId/:id'  : {
-            conditions : {
-                ':mailAccountId' : '(.+)',
-                ':mailFolderId'  : '(.+)',
-                ':id'            : '(.+)'
+        "cn_mail/message/forward/:mailAccountId/:mailFolderId/:id": {
+            conditions: {
+                ":mailAccountId": "(.+)",
+                ":mailFolderId": "(.+)",
+                ":id": "(.+)"
 
             } ,
-            action     : 'onForwardRoute',
-            before     : 'onBeforePackageRoute'
+            action: "onForwardRoute",
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/message/read/:mailAccountId/:mailFolderId/:id'   : {
-            conditions : {
-                ':mailAccountId' : '(.+)',
-                ':mailFolderId'  : '(.+)',
-                ':id'            : '(.+)'
+        "cn_mail/message/read/:mailAccountId/:mailFolderId/:id": {
+            conditions: {
+                ":mailAccountId": "(.+)",
+                ":mailFolderId": "(.+)",
+                ":id": "(.+)"
 
             } ,
-            action     : 'onReadMessageRoute',
-            before     : 'onBeforePackageRoute'
+            action: "onReadMessageRoute",
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/folder/:mailAccountId/:id'  : {
-            action     : 'onMailFolderRoute',
-            conditions : {
-                ':mailAccountId' : '(.+)',
-                ':id'            : '(.+)'
+        "cn_mail/folder/:mailAccountId/:id": {
+            action: "onMailFolderRoute",
+            conditions: {
+                ":mailAccountId": "(.+)",
+                ":id": "(.+)"
             },
-            before     : 'onBeforePackageRoute'
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/account/:mailAccountId'  : {
-            action     : 'onMailAccountRoute',
-            conditions : {
-                ':mailAccountId' : '(.+)'
+        "cn_mail/account/:mailAccountId": {
+            action: "onMailAccountRoute",
+            conditions: {
+                ":mailAccountId": "(.+)"
             },
-            before     : 'onBeforePackageRoute'
+            before: "onBeforePackageRoute"
         },
-        'cn_mail/home' : {
-            action : 'onHomeTabRoute',
-            before : 'onBeforePackageRoute'
+        "cn_mail/home": {
+            action: "onHomeTabRoute",
+            before: "onBeforePackageRoute"
         }
     },
 
-    control : {
-        'cn_mail-maildesktopview' : {
-            tabchange : 'onMailDesktopViewTabChange'
+    control: {
+        "cn_mail-maildesktopview": {
+            tabchange: "onMailDesktopViewTabChange"
         },
-        'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree' : {
-            selectionchange : 'onMailFolderTreeSelectionChange'
+        "cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree": {
+            selectionchange: "onMailFolderTreeSelectionChange"
         },
-        'cn_mail-maildesktopview > cn_mail-mailinboxview' : {
-            activate   : 'onMailInboxViewActivate',
-            deactivate : 'onMailInboxViewDeactivate'
+        "cn_mail-maildesktopview > cn_mail-mailinboxview": {
+            activate: "onMailInboxViewActivate",
+            deactivate: "onMailInboxViewDeactivate"
         },
-        'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid' : {
-            deselect                            : 'onMailMessageGridDeselect',
-            select                              : 'onMailMessageGridSelect',
-            'cn_mail-mailmessagegridbeforeload' : 'onMailMessageGridBeforeLoad',
-            'cn_mail-mailmessagegridload'       : 'onMailMessageGridLoad'
+        "cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid": {
+            deselect: "onMailMessageGridDeselect",
+            select: "onMailMessageGridSelect",
+            "cn_mail-mailmessagegridbeforeload": "onMailMessageGridBeforeLoad",
+            "cn_mail-mailmessagegridload": "onMailMessageGridLoad"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavCreateMessage' : {
-            click : 'onMessageComposeButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavCreateMessage": {
+            click: "onMessageComposeButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavEditMessage' : {
-            click : 'onMessageEditButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavEditMessage": {
+            click: "onMessageEditButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavDeleteMessage' : {
-            click : 'onMessageDeleteButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavDeleteMessage": {
+            click: "onMessageDeleteButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavReplyTo' : {
-            click : 'onReplyToButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavReplyTo": {
+            click: "onReplyToButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavReplyAll' : {
-            click : 'onReplyAllButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavReplyAll": {
+            click: "onReplyAllButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavForward' : {
-            click : 'onForwardButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavForward": {
+            click: "onForwardButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavReadingPane > menu > menucheckitem' : {
-            checkchange : 'onReadingPaneCheckChange'
+        "cn_navport-tbar > #cn_mail-nodeNavReadingPane > menu > menucheckitem": {
+            checkchange: "onReadingPaneCheckChange"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavToggleList' : {
-            toggle : 'onToggleListViewButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavToggleList": {
+            toggle: "onToggleListViewButtonClick"
         },
-        'cn_navport-tbar > #cn_mail-nodeNavToggleFolder' : {
-            toggle : 'onToggleFolderViewButtonClick'
+        "cn_navport-tbar > #cn_mail-nodeNavToggleFolder": {
+            toggle: "onToggleFolderViewButtonClick"
         }
     },
 
-    refs : [{
-        ref      : 'mailDesktopView',
-        selector : 'cn_mail-maildesktopview'
+    refs: [{
+        ref: "mailDesktopView",
+        selector: "cn_mail-maildesktopview"
     }, {
-        ref      : 'mailInboxView',
-        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview'
+        ref: "mailInboxView",
+        selector: "cn_mail-maildesktopview > cn_mail-mailinboxview"
     }, {
-        ref      : 'mailMessageGrid',
-        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid'
+        ref: "mailMessageGrid",
+        selector: "cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid"
     }, {
-        ref      : 'gridContainer',
-        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegridcontainer'
+        ref: "gridContainer",
+        selector: "cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegridcontainer"
     }, {
-        ref      : 'mailFolderTree',
-        selector : 'cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree'
+        ref: "mailFolderTree",
+        selector: "cn_mail-maildesktopview > cn_mail-mailinboxview > cn_mail-mailfoldertree"
     }, {
-        ref      : 'navigationToolbar',
-        selector : 'cn_navport-tbar'
+        ref: "navigationToolbar",
+        selector: "cn_navport-tbar"
     }, {
-        ref      : 'toggleGridListButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavToggleList'
+        ref: "toggleGridListButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavToggleList"
     }, {
-        ref      : 'toggleMailFolderButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavToggleFolder'
+        ref: "toggleMailFolderButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavToggleFolder"
     }, {
-        ref      : 'switchReadingPaneButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavReadingPane'
+        ref: "switchReadingPaneButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
     }, {
-        ref      : 'replyToButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavReplyTo'
+        ref: "replyToButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavReplyTo"
     }, {
-        ref      : 'replyAllButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavReplyAll'
+        ref: "replyAllButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavReplyAll"
     }, {
-        ref      : 'forwardButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavForward'
+        ref: "forwardButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavForward"
     }, {
-        ref      : 'editButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavEditMessage'
+        ref: "editButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavEditMessage"
     }, {
-        ref      : 'deleteButton',
-        selector : 'cn_navport-tbar > #cn_mail-nodeNavDeleteMessage'
+        ref: "deleteButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavDeleteMessage"
     }],
 
 
     /**
      * @private
      */
-    observedMessageView : null,
+    observedMessageView: null,
 
     /**
      * @private
      */
-    observedMessageEditor : null,
+    observedMessageEditor: null,
 
     /**
      * Callback for the MailDesktopView's tabchange event. Makes sure the
@@ -260,13 +260,13 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @return false if no action was initiated and the activatedPanel is the
      * MailInboxView, otherwise true
      */
-    onMailDesktopViewTabChange : function(panel, activatedPanel) {
+    onMailDesktopViewTabChange: function (panel, activatedPanel) {
 
         const me = this;
 
         if (me.observedMessageView) {
             me.observedMessageView.un(
-                'cn_mail-messageitemload',
+                "cn_mail-messageitemload",
                 me.onMailMessageItemLoadForActivatedView,
                 me
             );
@@ -274,7 +274,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
 
         if (me.observedMessageEditor) {
             me.observedMessageEditor.un(
-                'cn_mail-messagedraftload',
+                "cn_mail-messagedraftload",
                 me.messageEditorIsActivatedTab,
                 me
             );
@@ -294,22 +294,20 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
         if (activatedPanel.isCnMessageEditor) {
 
             if (activatedPanel.isDraftLoading()) {
-                me.observedMessageEditor = activatedPanel.on('cn_mail-messagedraftload',
+                me.observedMessageEditor = activatedPanel.on("cn_mail-messagedraftload",
                     me.messageEditorIsActivatedTab,
-                    me, {single : true});
-            } else {
-                if (activatedPanel.hasLoadingFailed() !== true) {
-                    me.messageEditorIsActivatedTab();
-                }
+                    me, {single: true});
+            } else if (activatedPanel.hasLoadingFailed() !== true) {
+                me.messageEditorIsActivatedTab();
             }
 
 
         } else if  (activatedPanel.isCnMessageView) {
 
             if (activatedPanel.loadingItem) {
-                me.observedMessageView = activatedPanel.on('cn_mail-messageitemload',
+                me.observedMessageView = activatedPanel.on("cn_mail-messageitemload",
                     me.onMailMessageItemLoadForActivatedView,
-                    me, {single : true});
+                    me, {single: true});
             } else {
                 me.onMailMessageItemLoadForActivatedView(activatedPanel);
             }
@@ -332,11 +330,11 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @param {Boolean} deleteDis, optional. True to disable the delete-button,
      * false to enable it.
      */
-    disableEmailEditButtons : function(editDis, deleteDis) {
+    disableEmailEditButtons: function (editDis, deleteDis) {
 
         const me        = this,
-              editBtn   = me.getEditButton(),
-              deleteBtn = me.getDeleteButton();
+            editBtn   = me.getEditButton(),
+            deleteBtn = me.getDeleteButton();
 
         if (arguments.length === 1) {
             deleteDis = editDis;
@@ -353,7 +351,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Boolean} disable true to disable the buttons, false to enable them.
      */
-    disableEmailActionButtons : function(disable) {
+    disableEmailActionButtons: function (disable) {
         const me          = this,
             replyToBtn  = me.getReplyToButton(),
             replyAllBtn = me.getReplyAllButton(),
@@ -373,9 +371,9 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @see disableEmailActionButtons
      * @see disableEmailEditButtons
      */
-    activateButtonsForMessageGrid : function() {
+    activateButtonsForMessageGrid: function () {
         const me        = this,
-              selection = me.getMailMessageGrid().getSelection();
+            selection = me.getMailMessageGrid().getSelection();
 
         if (selection.length) {
             me.activateButtonsForMessageItem(selection[0]);
@@ -394,21 +392,21 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @see disableEmailActionButtons
      * @see disableEmailEditButtons
      */
-    activateButtonsForMessageItem : function(record) {
+    activateButtonsForMessageItem: function (record) {
 
         const me      = this,
-              isDraft = record.get('draft');
+            isDraft = record.get("draft");
 
         switch (isDraft) {
-            case true:
-                me.disableEmailActionButtons(true);
-                me.disableEmailEditButtons(false, false);
-                break;
+        case true:
+            me.disableEmailActionButtons(true);
+            me.disableEmailEditButtons(false, false);
+            break;
 
-            default:
-                me.disableEmailActionButtons(false);
-                me.disableEmailEditButtons(true, false);
-                break;
+        default:
+            me.disableEmailActionButtons(false);
+            me.disableEmailEditButtons(true, false);
+            break;
         }
 
     },
@@ -420,16 +418,16 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
      */
-    onMailInboxViewActivate : function(view) {
+    onMailInboxViewActivate: function (view) {
 
         const me      = this,
-              ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
+            ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
         let treeDisabled    = false,
             paneDisabled    = false,
             toggleDisabled  = false,
             sel             = me.getMailFolderTree().getSelection(),
-            type            = sel.length && sel[0].get('folderType'),
+            type            = sel.length && sel[0].get("folderType"),
             accountSelected = type === ACCOUNT;
 
         if (sel.length === 0 || accountSelected) {
@@ -462,7 +460,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
      */
-    onMailInboxViewDeactivate : function(inboxView) {
+    onMailInboxViewDeactivate: function (inboxView) {
         var me = this;
 
         me.getToggleGridListButton().setDisabled(true);
@@ -477,7 +475,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridBeforeLoad : function(store) {
+    onMailMessageGridBeforeLoad: function (store) {
         var me = this;
 
         me.getToggleGridListButton().setDisabled(true);
@@ -490,7 +488,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridLoad : function(store) {
+    onMailMessageGridLoad: function (store) {
         var me = this;
 
         if (me.getMailDesktopView().getLayout().getActiveItem() !== me.getMailInboxView()) {
@@ -508,7 +506,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @param {Ext.Button} btn
      * @param {Boolean}    pressed
      */
-    onToggleFolderViewButtonClick : function(btn, pressed) {
+    onToggleFolderViewButtonClick: function (btn, pressed) {
 
         var me         = this,
             mailFolder = me.getMailFolderTree();
@@ -529,7 +527,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @param {Ext.Button} btn
      * @param {Boolean}    pressed
      */
-    onToggleListViewButtonClick : function(btn, pressed) {
+    onToggleListViewButtonClick: function (btn, pressed) {
 
         var me          = this,
             messageGrid = me.getMailMessageGrid();
@@ -545,7 +543,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @param {Ext.menu.CheckItem} menuItem
      * @param {boolean}            checked
      */
-    onReadingPaneCheckChange : function(menuItem, checked) {
+    onReadingPaneCheckChange: function (menuItem, checked) {
 
         // exit if checked is set to false. There will
         // follow an immediate call to this method with the
@@ -555,17 +553,18 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
         }
 
         var me            = this,
-            mailInboxView = me.getMailInboxView(),
-            menuItem      = menuItem.getItemId();
+            mailInboxView = me.getMailInboxView();
+
+        menuItem = menuItem.getItemId();
 
 
         switch (menuItem) {
-            case 'right':
-                return mailInboxView.toggleReadingPane('right');
-            case 'bottom':
-                return mailInboxView.toggleReadingPane('bottom');
-            case 'hide':
-                return mailInboxView.toggleReadingPane();
+        case "right":
+            return mailInboxView.toggleReadingPane("right");
+        case "bottom":
+            return mailInboxView.toggleReadingPane("bottom");
+        case "hide":
+            return mailInboxView.toggleReadingPane();
         }
 
     },
@@ -582,19 +581,19 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @throws if this method was called with more than one record available
      * in records
      */
-    onMailFolderTreeSelectionChange : function(treeList, records) {
+    onMailFolderTreeSelectionChange: function (treeList, records) {
 
         const me = this;
 
         if (records.length > 1) {
             Ext.raise({
-                records : records,
-                msg     : "unexpected multiple records"
+                records: records,
+                msg: "unexpected multiple records"
             });
         }
 
         let accountSelected = records.length <= 0
-                              || records[0].get('folderType') === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
+                              || records[0].get("folderType") === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
         me.getSwitchReadingPaneButton().setDisabled(accountSelected);
         me.getToggleGridListButton().setDisabled(accountSelected);
@@ -616,7 +615,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @param selectionModel
      * @param record
      */
-    onMailMessageGridDeselect : function(selectionModel, record) {
+    onMailMessageGridDeselect: function (selectionModel, record) {
 
         const me = this;
 
@@ -626,7 +625,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
 
         me.disableEmailActionButtons(true);
         me.disableEmailEditButtons(true);
-   },
+    },
 
 
     /**
@@ -636,7 +635,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      * @param selectionModel
      * @param record
      */
-    onMailMessageGridSelect : function(selectionModel, record) {
+    onMailMessageGridSelect: function (selectionModel, record) {
 
         const me = this;
 
@@ -648,11 +647,11 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
     /**
      * Action for cn_mail/home.
      */
-    onHomeTabRoute : function() {
+    onHomeTabRoute: function () {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
-        mailDesktopView.setActiveTab(mailDesktopView.down('cn_mail-mailinboxview'));
+        mailDesktopView.setActiveTab(mailDesktopView.down("cn_mail-mailinboxview"));
     },
 
 
@@ -665,11 +664,12 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailMessageViewFor}
      */
-    onReadMessageRoute : function(mailAccountId, mailFolderId, id) {
+    onReadMessageRoute: function (mailAccountId, mailFolderId, id) {
 
-        const me              = this,
-              mailDesktopView = me.getMainPackageView();
-              compoundKey     = me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id);
+        const
+            me              = this,
+            mailDesktopView = me.getMainPackageView(),
+            compoundKey     = me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id);
 
         mailDesktopView.showMailMessageViewFor(compoundKey);
     },
@@ -682,7 +682,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailAccountFor}
      */
-    onMailAccountRoute : function(mailAccountId) {
+    onMailAccountRoute: function (mailAccountId) {
         const me              = this,
             mailDesktopView = me.getMainPackageView();
 
@@ -698,9 +698,9 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailFolderFor}
      */
-    onMailFolderRoute : function(mailAccountId, mailFolderId) {
+    onMailFolderRoute: function (mailAccountId, mailFolderId) {
         const me              = this,
-              mailDesktopView = me.getMainPackageView();
+            mailDesktopView = me.getMainPackageView();
 
         mailDesktopView.showInboxViewFor(
             decodeURI(mailAccountId), decodeURI(mailFolderId)
@@ -713,8 +713,8 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {String} id the id to be able to track this MessageEditor instance
      */
-    onComposeMessageRoute : function(id) {
-        this.showMailEditor(id, 'compose');
+    onComposeMessageRoute: function (id) {
+        this.showMailEditor(id, "compose");
     },
 
 
@@ -723,9 +723,9 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {String} id the id to be able to track this MessageEditor instance
      */
-    onComposeMailtoMessageRoute : function(id) {
-        id = 'mailto%3A'  + id;
-        this.showMailEditor(id, 'compose');
+    onComposeMailtoMessageRoute: function (id) {
+        id = "mailto%3A"  + id;
+        this.showMailEditor(id, "compose");
     },
 
 
@@ -734,8 +734,8 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Ext.Button} btn
      */
-    onMessageComposeButtonClick : function(btn) {
-        this.showMailEditor(Ext.id().split('-').pop(), 'compose');
+    onMessageComposeButtonClick: function (btn) {
+        this.showMailEditor(Ext.id().split("-").pop(), "compose");
     },
 
 
@@ -744,12 +744,12 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onEditMessageRoute : function(mailAccountId, mailFolderId, id) {
+    onEditMessageRoute: function (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
             me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
-            'edit'
+            "edit"
         );
     },
 
@@ -759,12 +759,12 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onReplyToRoute : function(mailAccountId, mailFolderId, id) {
+    onReplyToRoute: function (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
             me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
-            'replyTo'
+            "replyTo"
         );
     },
 
@@ -774,12 +774,12 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onReplyAllRoute : function(mailAccountId, mailFolderId, id) {
+    onReplyAllRoute: function (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
             me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
-            'replyAll'
+            "replyAll"
         );
     },
 
@@ -789,12 +789,12 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {String} id the id of the message to edit
      */
-    onForwardRoute : function(mailAccountId, mailFolderId, id) {
+    onForwardRoute: function (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
             me.createCompoundKeyFromUrlFragments(mailAccountId, mailFolderId, id),
-            'forward'
+            "forward"
         );
     },
 
@@ -804,11 +804,11 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Ext.Button} btn
      */
-    onMessageEditButtonClick : function(btn) {
+    onMessageEditButtonClick: function (btn) {
         const me  = this,
-              key = me.getCompoundKeyFromGridOrMessageView();
+            key = me.getCompoundKeyFromGridOrMessageView();
 
-        me.showMailEditor(key, 'edit');
+        me.showMailEditor(key, "edit");
     },
 
 
@@ -817,9 +817,9 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Ext.Button} btn
      */
-    onMessageDeleteButtonClick : function(btn) {
+    onMessageDeleteButtonClick: function (btn) {
         const me   = this,
-              item = me.getItemOrDraftFromActiveView();
+            item = me.getItemOrDraftFromActiveView();
 
         if (item === null) {
             Ext.raise("Unexpected null-value for item.");
@@ -838,11 +838,11 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Ext.Button} btn
      */
-    onReplyToButtonClick : function(btn) {
+    onReplyToButtonClick: function (btn) {
         const me  = this,
             key = me.getCompoundKeyFromGridOrMessageView();
 
-        me.showMailEditor(key, 'replyTo');
+        me.showMailEditor(key, "replyTo");
     },
 
 
@@ -851,11 +851,11 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Ext.Button} btn
      */
-    onReplyAllButtonClick : function(btn) {
+    onReplyAllButtonClick: function (btn) {
         const me  = this,
-              key = me.getCompoundKeyFromGridOrMessageView();
+            key = me.getCompoundKeyFromGridOrMessageView();
 
-        me.showMailEditor(key, 'replyAll');
+        me.showMailEditor(key, "replyAll");
     },
 
 
@@ -864,132 +864,132 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @param {Ext.Button} btn
      */
-    onForwardButtonClick : function(btn) {
+    onForwardButtonClick: function (btn) {
         const me  = this,
             key = me.getCompoundKeyFromGridOrMessageView();
 
-        me.showMailEditor(key, 'forward');
+        me.showMailEditor(key, "forward");
     },
 
 
     /**
      * @inheritdoc
      */
-    postLaunchHook : function() {
+    postLaunchHook: function () {
         return {
-            navigation  : [{
-                text    : 'Email',
-                route   : 'cn_mail/home',
-                view    : 'conjoon.cn_mail.view.mail.MailDesktopView',
-                iconCls : 'x-fa fa-send',
-                nodeNav : [{
-                    xtype   : 'button',
-                    iconCls : 'x-fa fa-plus',
-                    tooltip : {
-                        title : 'Create new message',
-                        text  : 'Opens the editor for writing a new message.'
+            navigation: [{
+                text: "Email",
+                route: "cn_mail/home",
+                view: "conjoon.cn_mail.view.mail.MailDesktopView",
+                iconCls: "fas fa-paper-plane",
+                nodeNav: [{
+                    xtype: "button",
+                    iconCls: "fas fa-plus",
+                    tooltip: {
+                        title: "Create new message",
+                        text: "Opens the editor for writing a new message."
                     },
-                    itemId : 'cn_mail-nodeNavCreateMessage'
+                    itemId: "cn_mail-nodeNavCreateMessage"
                 }, {
-                    xtype : 'tbseparator'
+                    xtype: "tbseparator"
                 }, {
-                    xtype    : 'button',
-                    iconCls  : 'x-fa fa-mail-reply',
-                    disabled : true,
-                    itemId   : 'cn_mail-nodeNavReplyTo',
-                    tooltip  : {
-                        title : 'Reply to message',
-                        text  : 'Opens the editor for replying to the sender of the selected message.'
+                    xtype: "button",
+                    iconCls: "fas fa-reply",
+                    disabled: true,
+                    itemId: "cn_mail-nodeNavReplyTo",
+                    tooltip: {
+                        title: "Reply to message",
+                        text: "Opens the editor for replying to the sender of the selected message."
                     }
                 }, {
-                    xtype    : 'button',
-                    iconCls  :'x-fa fa-mail-reply-all',
-                    itemId   : 'cn_mail-nodeNavReplyAll',
-                    disabled : true,
-                    tooltip  : {
-                        title : 'Reply all to message',
-                        text  : 'Opens the editor for replying to all recipients/senders of the selected message.'
+                    xtype: "button",
+                    iconCls: "fas fa-reply-all",
+                    itemId: "cn_mail-nodeNavReplyAll",
+                    disabled: true,
+                    tooltip: {
+                        title: "Reply all to message",
+                        text: "Opens the editor for replying to all recipients/senders of the selected message."
                     }
                 }, {
-                    xtype    : 'button',
-                    iconCls  : 'x-fa fa-mail-forward',
-                    itemId   : 'cn_mail-nodeNavForward',
-                    disabled : true,
-                    tooltip  : {
-                        title : 'Forward message',
-                        text  : 'Opens the editor for forwarding the selected message.'
+                    xtype: "button",
+                    iconCls: "fas fa-share",
+                    itemId: "cn_mail-nodeNavForward",
+                    disabled: true,
+                    tooltip: {
+                        title: "Forward message",
+                        text: "Opens the editor for forwarding the selected message."
                     }
                 }, {
-                    xtype    : 'button',
-                    iconCls  : 'x-fa fa-edit',
-                    itemId   : 'cn_mail-nodeNavEditMessage',
-                    disabled : true,
-                    tooltip  : {
-                        title : 'Edit message draft',
-                        text  : 'Opens the editor for editing the selected message draft.'
+                    xtype: "button",
+                    iconCls: "fas fa-edit",
+                    itemId: "cn_mail-nodeNavEditMessage",
+                    disabled: true,
+                    tooltip: {
+                        title: "Edit message draft",
+                        text: "Opens the editor for editing the selected message draft."
                     }
                 }, {
-                    xtype    : 'button',
-                    iconCls  : 'x-fa fa-trash',
-                    itemId   : 'cn_mail-nodeNavDeleteMessage',
-                    disabled : true,
-                    tooltip  : {
-                        title : 'Delete message',
-                        text  : 'Moves this message to the Trash Bin or removes it completely out of it.'
+                    xtype: "button",
+                    iconCls: "fas fa-trash",
+                    itemId: "cn_mail-nodeNavDeleteMessage",
+                    disabled: true,
+                    tooltip: {
+                        title: "Delete message",
+                        text: "Moves this message to the Trash Bin or removes it completely out of it."
                     }
                 }, {
-                    xtype : 'tbseparator'
+                    xtype: "tbseparator"
                 }, {
-                    xtype        : 'button',
-                    iconCls      : 'x-fa fa-folder-o',
-                    disabled     : false,
-                    cls          : 'toggleFolderViewBtn',
-                    itemId       : 'cn_mail-nodeNavToggleFolder',
-                    enableToggle : true,
-                    pressed      : true,
-                    tooltip      : {
-                        title : 'Hide/ show Mail Folder',
-                        text  : 'Hides or shows the Mail Folder tree.'
+                    xtype: "button",
+                    iconCls: "far fa-folder",
+                    disabled: false,
+                    cls: "toggleFolderViewBtn",
+                    itemId: "cn_mail-nodeNavToggleFolder",
+                    enableToggle: true,
+                    pressed: true,
+                    tooltip: {
+                        title: "Hide/ show Mail Folder",
+                        text: "Hides or shows the Mail Folder tree."
                     }
                 }, {
-                    xtype        : 'button',
-                    iconCls      : 'x-fa fa-list',
-                    disabled     : true,
-                    cls          : 'toggleGridViewBtn',
-                    itemId       : 'cn_mail-nodeNavToggleList',
-                    enableToggle : true,
-                    tooltip      : {
-                        title : 'Switch message list view',
-                        text  : 'Switches between the message grid\'s preview- and detail-view.'
+                    xtype: "button",
+                    iconCls: "fas fa-list",
+                    disabled: true,
+                    cls: "toggleGridViewBtn",
+                    itemId: "cn_mail-nodeNavToggleList",
+                    enableToggle: true,
+                    tooltip: {
+                        title: "Switch message list view",
+                        text: "Switches between the message grid's preview- and detail-view."
                     }
                 }, {
-                    xtype    : 'button',
-                    disabled : true,
-                    iconCls  : 'x-fa fa-columns',
-                    itemId   : 'cn_mail-nodeNavReadingPane',
-                    tooltip  : {
-                        title : 'Change reading pane position',
-                        text  : 'Switch the position of the reading pane or hide it.'
+                    xtype: "button",
+                    disabled: true,
+                    iconCls: "fas fa-columns",
+                    itemId: "cn_mail-nodeNavReadingPane",
+                    tooltip: {
+                        title: "Change reading pane position",
+                        text: "Switch the position of the reading pane or hide it."
                     },
-                    menu : [{
-                        iconCls : 'x-fa fa-toggle-right',
-                        text    : 'Right',
-                        itemId  : 'right',
-                        checked : true,
-                        xtype   : 'menucheckitem',
-                        group   : 'cn_mail-nodeNavReadingPaneRGroup'
+                    menu: [{
+                        iconCls: "fas fa-toggle-right",
+                        text: "Right",
+                        itemId: "right",
+                        checked: true,
+                        xtype: "menucheckitem",
+                        group: "cn_mail-nodeNavReadingPaneRGroup"
                     }, {
-                        iconCls : 'x-fa fa-toggle-down',
-                        text    : 'Bottom',
-                        itemId  : 'bottom',
-                        xtype   : 'menucheckitem',
-                        group   : 'cn_mail-nodeNavReadingPaneRGroup'
+                        iconCls: "fas fa-toggle-down",
+                        text: "Bottom",
+                        itemId: "bottom",
+                        xtype: "menucheckitem",
+                        group: "cn_mail-nodeNavReadingPaneRGroup"
                     }, {
-                        iconCls : 'x-fa fa-close',
-                        text    : 'Hidden',
-                        itemId  : 'hide',
-                        xtype   : 'menucheckitem',
-                        group   : 'cn_mail-nodeNavReadingPaneRGroup'
+                        iconCls: "fas fa-close",
+                        text: "Hidden",
+                        itemId: "hide",
+                        xtype: "menucheckitem",
+                        group: "cn_mail-nodeNavReadingPaneRGroup"
                     }]
                 }]
             }]
@@ -1003,18 +1003,18 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @return {conjoon.cn_mail.view.mail.MailDesktopView}
      */
-    getMainPackageView : function() {
+    getMainPackageView: function () {
         var me  = this,
             app = me.getApplication();
 
         /**
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
          */
-        return app.activateViewForHash('cn_mail/home');
+        return app.activateViewForHash("cn_mail/home");
     },
 
 
-    privates : {
+    privates: {
 
 
         /**
@@ -1029,10 +1029,10 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
          *
          * @return {null|conjoon.cn_mail.model.mail.message.AbstractMessageItem}
          */
-        getItemOrDraftFromActiveView : function() {
+        getItemOrDraftFromActiveView: function () {
 
             const me  = this,
-                  tab = me.getMailDesktopView().getActiveTab();
+                tab = me.getMailDesktopView().getActiveTab();
 
             if (tab instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditor) {
                 return tab.getMessageDraft();
@@ -1055,10 +1055,10 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
          *
          * @private
          */
-        getCompoundKeyFromGridOrMessageView : function() {
+        getCompoundKeyFromGridOrMessageView: function () {
 
             const me  = this,
-                  tab = me.getMailDesktopView().getActiveTab();
+                tab = me.getMailDesktopView().getActiveTab();
 
             if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
                 return  tab.getMessageItem().getCompoundKey();
@@ -1081,15 +1081,15 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
          *
          * @private
          */
-        onMailMessageItemLoadForActivatedView : function(messageView, messageItem) {
+        onMailMessageItemLoadForActivatedView: function (messageView, messageItem) {
 
             const me = this;
 
             if (!messageItem) {
-                messageItem = messageView.getViewModel().get('messageItem');
+                messageItem = messageView.getViewModel().get("messageItem");
             }
 
-            if (messageItem.get('draft')) {
+            if (messageItem.get("draft")) {
                 me.disableEmailActionButtons(true);
                 me.disableEmailEditButtons(false, false);
             } else {
@@ -1113,17 +1113,17 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
          *
          * @throws if type is not "compose" and key is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
          */
-        showMailEditor : function(key, type) {
+        showMailEditor: function (key, type) {
 
             var me              = this,
                 mailDesktopView = me.getMainPackageView();
 
-            if (type !== 'compose' &&
+            if (type !== "compose" &&
                 !(key instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
                 Ext.raise({
-                    msg : "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-                    key : key,
-                    type : type
+                    msg: "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                    key: key,
+                    type: type
                 });
             }
 
@@ -1145,7 +1145,7 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @private
      */
-    createCompoundKeyFromUrlFragments : function(mailAccountId, mailFolderId, id) {
+    createCompoundKeyFromUrlFragments: function (mailAccountId, mailFolderId, id) {
 
         return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
             decodeURIComponent(mailAccountId),
@@ -1162,11 +1162,11 @@ Ext.define('conjoon.cn_mail.app.PackageController', {
      *
      * @private
      */
-    messageEditorIsActivatedTab : function() {
+    messageEditorIsActivatedTab: function () {
         const me = this;
 
         me.disableEmailActionButtons(true);
         me.disableEmailEditButtons(true, false);
-    },
+    }
 
 });

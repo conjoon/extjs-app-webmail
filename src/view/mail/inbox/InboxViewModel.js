@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,28 +32,28 @@
  * id of the selection in the MailFolderTree.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
+Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewModel", {
 
-    extend : 'Ext.app.ViewModel',
+    extend: "Ext.app.ViewModel",
 
-    requires : [
-        'conjoon.cn_mail.store.mail.message.MessageItemStore',
-        'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
+    requires: [
+        "conjoon.cn_mail.store.mail.message.MessageItemStore",
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
-    alias : 'viewmodel.cn_mail-mailinboxviewmodel',
+    alias: "viewmodel.cn_mail-mailinboxviewmodel",
 
-    stores : {
-        'cn_mail_mailmessageitemstore' : {
-            type     : 'cn_mail-mailmessageitemstore',
-            autoLoad : true,
-            listeners : {
+    stores: {
+        "cn_mail_mailmessageitemstore": {
+            type: "cn_mail-mailmessageitemstore",
+            autoLoad: true,
+            listeners: {
                 /**
                  * Makes sure we prevent loading of the store if any of the filter is
                  * disabled, which is the case if any of the MailAccount nodes in the
                  * MailFolderTree gets selected
                  */
-                beforeload : function(store) {
+                beforeload: function (store) {
                     let filters = store.getFilters();
 
                     for (let i = 0, len = filters.length; i < len; i++) {
@@ -64,27 +64,27 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
 
                 }
             },
-            filters  : [{
-                disabled : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
-                property : 'mailFolderId',
-                value    : '{cn_mail_ref_mailfoldertree.selection.id}'
+            filters: [{
+                disabled: "{cn_mail_ref_mailfoldertree.selection.folderType === \"ACCOUNT\"}",
+                property: "mailFolderId",
+                value: "{cn_mail_ref_mailfoldertree.selection.id}"
             }, {
-                disabled : '{cn_mail_ref_mailfoldertree.selection.folderType === "ACCOUNT"}',
-                property : 'mailAccountId',
-                value    : '{cn_mail_ref_mailfoldertree.selection.mailAccountId}'
+                disabled: "{cn_mail_ref_mailfoldertree.selection.folderType === \"ACCOUNT\"}",
+                property: "mailAccountId",
+                value: "{cn_mail_ref_mailfoldertree.selection.mailAccountId}"
             }]
         }
     },
 
-    data : {
+    data: {
         /**
          * Controls visibility of the MessageView.
          * True to hide the view and expand the MessageGrid.
          */
-        messageViewHidden : false
+        messageViewHidden: false
     },
 
-    formulas : {
+    formulas: {
 
         /**
          * Computes the margin of the MessageGrid-Container to make sure its shadow
@@ -93,18 +93,18 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
          * @param get
          * @returns {string}
          */
-        computeMessageGridMargin : function(get) {
+        computeMessageGridMargin: function (get) {
 
             const me          = this,
-                  folderType  = get('cn_mail_ref_mailfoldertree.selection.folderType'),
-                  readingPane = me.getView().down('cn_mail-mailmessagereadermessageview'),
-                  orientation = readingPane.splitter.orientation;
+                folderType  = get("cn_mail_ref_mailfoldertree.selection.folderType"),
+                readingPane = me.getView().down("cn_mail-mailmessagereadermessageview"),
+                orientation = readingPane.splitter.orientation;
 
             let margin = folderType === "ACCOUNT"
-                         ? "0 0 0 0"
-                         : get('messageViewHidden')
-                           ? "0 5 5 0"
-                           : orientation === 'vertical' ? "0 0 5 0" : "0 5 0 0";
+                ? "0 0 0 0"
+                : get("messageViewHidden")
+                    ? "0 5 5 0"
+                    : orientation === "vertical" ? "0 0 5 0" : "0 5 0 0";
 
             return margin;
         }
@@ -121,13 +121,13 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
      * @param {String} mailFolderId
      * @param {Number} unreadCount
      */
-    updateUnreadMessageCount : function(mailAccountId, mailFolderId, unreadCount) {
+    updateUnreadMessageCount: function (mailAccountId, mailFolderId, unreadCount) {
 
         var me    = this,
-            store = me.get('cn_mail_mailfoldertreestore'),
+            store = me.get("cn_mail_mailfoldertreestore"),
             folder;
 
-        folder = store.getRoot().findChild('id', mailAccountId, false);
+        folder = store.getRoot().findChild("id", mailAccountId, false);
 
         if (!folder) {
             return;
@@ -137,7 +137,7 @@ Ext.define('conjoon.cn_mail.view.mail.inbox.InboxViewModel', {
         if (!folder) {
             return;
         }
-        folder.set('unreadCount', folder.get('unreadCount') + unreadCount);
+        folder.set("unreadCount", folder.get("unreadCount") + unreadCount);
     }
 
 

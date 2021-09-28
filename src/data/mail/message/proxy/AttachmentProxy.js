@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,43 +27,43 @@
  * Specialized version of a REST-proxy to be used with
  * MessageItem child entities, such as attachments.
  */
-Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
+Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
 
-    extend : 'coon.core.data.proxy.RestForm',
+    extend: "coon.core.data.proxy.RestForm",
 
-    requires : [
-         'conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader',
-         'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader",
+        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     ],
 
-    mixins : {
-        utilityMixin : 'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
+    mixins: {
+        utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     },
 
-    alias : 'proxy.cn_mail-mailmessageattachmentproxy',
+    alias: "proxy.cn_mail-mailmessageattachmentproxy",
 
-    reader : {
-        type : 'cn_mail-mailmessageitemchildjsonreader'
+    reader: {
+        type: "cn_mail-mailmessageitemchildjsonreader"
     },
 
-    idParam : 'localId',
+    idParam: "localId",
 
-    appendId : false,
+    appendId: false,
 
     /**
      * The entity being used with this Proxy. Either DraftAttachment or
      * ItemAttachment.
      * @cfg {string}
      */
-    entityName : null,
+    entityName: null,
 
     /**
      * Valid entity names to be used with this proxy.
      * @private
      */
-    validEntityNames : [
-        'DraftAttachment',
-        'ItemAttachment'
+    validEntityNames: [
+        "DraftAttachment",
+        "ItemAttachment"
     ],
 
     /**
@@ -75,22 +75,22 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
      *
      * @throws if #entityName is not in the list of #validEntityNames
      */
-    buildUrl: function(request) {
+    buildUrl: function (request) {
 
         if (request.getRecords() && request.getRecords().length > 1) {
             Ext.raise({
-                msg : "Doesn't support batch operations with multiple records.",
-                request : request
+                msg: "Doesn't support batch operations with multiple records.",
+                request: request
             });
         }
 
         const me     = this,
-              params = request.getParams();
+            params = request.getParams();
 
         if (me.validEntityNames.indexOf(me.entityName) === -1) {
             Ext.raise({
-                msg : "The entityName (\"" + me.entityName + "\") is not allowed to be used with the url builder of this proxy.",
-                entityName : me.entityName
+                msg: "The entityName (\"" + me.entityName + "\") is not allowed to be used with the url builder of this proxy.",
+                entityName: me.entityName
             });
         }
 
@@ -99,19 +99,19 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
             rec = request.getRecords() ? request.getRecords()[0] : null,
             source;
 
-        if (me.entityName !== 'DraftAttachment' && ["create", "update", "destroy"].indexOf(action) !== -1) {
+        if (me.entityName !== "DraftAttachment" && ["create", "update", "destroy"].indexOf(action) !== -1) {
             Ext.raise({
-                msg : "Unexpected entityName with specified action",
-                entityName : me.entityName,
-                action : action
+                msg: "Unexpected entityName with specified action",
+                entityName: me.entityName,
+                action: action
             });
         }
 
         if (!url.match(me.slashRe)) {
-            url += '/';
+            url += "/";
         }
 
-        if (action === 'read') {
+        if (action === "read") {
 
             source = params;
 
@@ -120,37 +120,33 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy', {
             } else if (rec && !source.id) {
                 source.id = rec.data.id;
             }
+        } else if (rec.phantom) {
+            source = rec.data;
         } else {
-
-            if (rec.phantom) {
-                source = rec.data;
-            } else {
-                source = Ext.applyIf(Ext.apply({}, rec.modified), rec.data);
-            }
-
+            source = Ext.applyIf(Ext.apply({}, rec.modified), rec.data);
         }
 
         if (!source.mailAccountId || !source.mailFolderId || !source.parentMessageItemId) {
             Ext.raise({
-                msg    : "Missing compound keys.",
-                source : source
+                msg: "Missing compound keys.",
+                source: source
             });
         }
 
-        url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
-            'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
-            'MessageItems/' + encodeURIComponent(source.parentMessageItemId) + '/' +
-            'Attachments'
+        url += "MailAccounts/" + encodeURIComponent(source.mailAccountId) + "/" +
+            "MailFolders/" + encodeURIComponent(source.mailFolderId) + "/" +
+            "MessageItems/" + encodeURIComponent(source.parentMessageItemId) + "/" +
+            "Attachments";
 
-        if (me.entityName === 'DraftAttachment') {
+        if (me.entityName === "DraftAttachment") {
             request.setParams(Ext.apply(request.getParams() || {}, {
-                type : 'draft'
+                type: "draft"
             }));
         }
 
-        if (action !== 'create') {
-            if (source.hasOwnProperty('id')) {
-                url += '/' + source.id;
+        if (action !== "create") {
+            if (Object.prototype.hasOwnProperty.call(source,"id")) {
+                url += "/" + source.id;
             }
         }
 

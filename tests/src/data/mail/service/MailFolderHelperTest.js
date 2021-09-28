@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,104 +23,101 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.service.MailFolderHelperTest', function(t) {
+StartTest(t => {
 
-    const ACCOUNTID = 'dev_sys_conjoon_org',
-        createHelper = function(store) {
+    const ACCOUNTID = "dev_sys_conjoon_org",
+        createHelper = function (store) {
 
-        return Ext.create('conjoon.cn_mail.data.mail.service.MailFolderHelper', {
-            store : store === false ? undefined  : Ext.create('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore',{
-                autoLoad : true
-            })
-        });
-    };
-
-
-// -----------------------------------------------------------------------------
-// |   Tests
-// -----------------------------------------------------------------------------
-t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
-
-    Ext.ux.ajax.SimManager.init({
-        delay: 1
-    });
+            return Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
+                store: store === false ? undefined  : Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",{
+                    autoLoad: true
+                })
+            });
+        };
 
 
-    t.it("constructor()", function(t) {
-        let exc, e, helper;
+    // -----------------------------------------------------------------------------
+    // |   Tests
+    // -----------------------------------------------------------------------------
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
-        try{helper = createHelper(false);}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
-
-        helper = createHelper();
-        t.isInstanceOf(helper, 'conjoon.cn_mail.data.mail.service.MailFolderHelper');
-        t.expect(helper.getStore()).toBeDefined();
-        t.isInstanceOf(helper.getStore(), 'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore');
-    });
-
-
-    t.it("getAccountNode()", function(t) {
-
-        let helper = createHelper();
-
-        t.waitForMs(500, function() {
-
-            t.expect(helper.getAccountNode('foo')).toBe(null);
-
-            t.isInstanceOf(helper.getAccountNode(ACCOUNTID), 'conjoon.cn_mail.model.mail.account.MailAccount');
-        });
-    });
-
-
-
-    t.it("getMailFolderIdForType()", function(t) {
-
-        let helper = createHelper(),
-            exc, e;
-
-        t.waitForMs(250, function() {
-            t.expect(helper.getMailFolderIdForType(ACCOUNTID, 'foo')).toBeNull();
-            t.expect(helper.getMailFolderIdForType("ACCOUNTID", conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX)).toBe(null);
-            t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX)).toBe("INBOX");
-            t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT)).toBe("INBOX.Sent Messages");
-            t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.JUNK)).toBe("INBOX.Junk");
-            t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT)).toBe("INBOX.Drafts");
-            t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH)).toBe("INBOX.Trash");
-        });
-
-    });
-
-
-    t.it("getMailFolder()", function(t) {
-
-        let helper = createHelper();
-
-        t.waitForMs(250, function() {
-            t.expect(helper.getMailFolder(ACCOUNTID, 'foo')).toBeNull();
-
-            t.isInstanceOf(helper.getMailFolder(ACCOUNTID, "INBOX"), 'conjoon.cn_mail.model.mail.folder.MailFolder');
-
-            t.expect(helper.getMailFolder("ACCOUNTID", 'INBOX')).toBeNull();
-        });
-
-    });
-
-
-    t.it("doesFolderBelongToAccount()", function(t) {
-
-        let helper = createHelper(),
-            exc, e;
-
-        t.waitForMs(250, function() {
-            t.expect(helper.doesFolderBelongToAccount('foo', ACCOUNTID)).toBe(false);
-            t.expect(helper.doesFolderBelongToAccount("INBOX", "ACCOUNTID")).toBe(false);
-            t.expect(helper.doesFolderBelongToAccount("INBOX", ACCOUNTID)).toBe(true);
+        Ext.ux.ajax.SimManager.init({
+            delay: 1
         });
 
 
-    });
+        t.it("constructor()", t => {
+            let exc, helper;
+
+            try{helper = createHelper(false);}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+
+            helper = createHelper();
+            t.isInstanceOf(helper, "conjoon.cn_mail.data.mail.service.MailFolderHelper");
+            t.expect(helper.getStore()).toBeDefined();
+            t.isInstanceOf(helper.getStore(), "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore");
+        });
 
 
-});});
+        t.it("getAccountNode()", t => {
+
+            let helper = createHelper();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+
+                t.expect(helper.getAccountNode("foo")).toBe(null);
+
+                t.isInstanceOf(helper.getAccountNode(ACCOUNTID), "conjoon.cn_mail.model.mail.account.MailAccount");
+            });
+        });
+
+
+        t.it("getMailFolderIdForType()", t => {
+
+            let helper = createHelper();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                t.expect(helper.getMailFolderIdForType(ACCOUNTID, "foo")).toBeNull();
+                t.expect(helper.getMailFolderIdForType("ACCOUNTID", conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX)).toBe(null);
+                t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX)).toBe("INBOX");
+                t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.SENT)).toBe("INBOX.Sent Messages");
+                t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.JUNK)).toBe("INBOX.Junk");
+                t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT)).toBe("INBOX.Drafts");
+                t.expect(helper.getMailFolderIdForType(ACCOUNTID, conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH)).toBe("INBOX.Trash");
+            });
+
+        });
+
+
+        t.it("getMailFolder()", t => {
+
+            let helper = createHelper();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                t.expect(helper.getMailFolder(ACCOUNTID, "foo")).toBeNull();
+
+                t.isInstanceOf(helper.getMailFolder(ACCOUNTID, "INBOX"), "conjoon.cn_mail.model.mail.folder.MailFolder");
+
+                t.expect(helper.getMailFolder("ACCOUNTID", "INBOX")).toBeNull();
+            });
+
+        });
+
+
+        t.it("doesFolderBelongToAccount()", t => {
+
+            let helper = createHelper();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                t.expect(helper.doesFolderBelongToAccount("foo", ACCOUNTID)).toBe(false);
+                t.expect(helper.doesFolderBelongToAccount("INBOX", "ACCOUNTID")).toBe(false);
+                t.expect(helper.doesFolderBelongToAccount("INBOX", ACCOUNTID)).toBe(true);
+            });
+
+
+        });
+
+
+    });});

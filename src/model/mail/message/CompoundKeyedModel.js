@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,30 +45,30 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
+Ext.define("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
 
-    extend : 'conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel',
+    extend: "conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
 
-    fields : [{
-        name : 'mailFolderId',
-        type : 'cn_core-datafieldcompoundkey'
+    fields: [{
+        name: "mailFolderId",
+        type: "cn_core-datafieldcompoundkey"
     }],
 
 
     /**
      * @private
      */
-    compoundKeyFields : ['mailAccountId', 'mailFolderId', 'id'],
+    compoundKeyFields: ["mailAccountId", "mailFolderId", "id"],
 
     /**
      * @private
      */
-    foreignKeyFields : ['mailAccountId', 'mailFolderId', 'id'],
+    foreignKeyFields: ["mailAccountId", "mailFolderId", "id"],
 
 
     /**
@@ -76,7 +76,7 @@ Ext.define('conjoon.cn_mail.model.mail.message.CompoundKeyedModel', {
      *
      * @returns {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
      */
-    getRepresentingCompoundKeyClass : function() {
+    getRepresentingCompoundKeyClass: function () {
         return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
     }
 

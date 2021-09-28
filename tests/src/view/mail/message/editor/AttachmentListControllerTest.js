@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,20 +23,19 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', function(t) {
+StartTest(t => {
 
     var view,
-        viewConfig,
         controller,
-        createFile = function(type) {
+        createFile = function (type) {
 
             return new File([{
-                name : 'foo.png',
-                type : type ? type : 'image/jpg'
-            }], 'foo.png');
+                name: "foo.png",
+                type: type ? type : "image/jpg"
+            }], "foo.png");
         };
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         if (view) {
             view.destroy();
             view = null;
@@ -51,45 +50,38 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
 
     });
 
-    t.beforeEach(function() {
 
-        viewConfig = {
-
-        }
-    });
-
-
-    t.it("Should make sure setting up controller works", function(t) {
+    t.it("Should make sure setting up controller works", t => {
 
         controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentListController', {
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentListController", {
             });
 
         t.expect(controller instanceof conjoon.cn_mail.view.mail.message.AbstractAttachmentListController).toBe(true);
 
-        t.expect(controller.alias).toContain('controller.cn_mail-mailmessageeditorattachmentlistcontroller');
+        t.expect(controller.alias).toContain("controller.cn_mail-mailmessageeditorattachmentlistcontroller");
     });
 
 
-    t.it("Should register and catch the events properly", function(t) {
+    t.it("Should register and catch the events properly", t => {
 
         var beforedestroy = 0;
 
         controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentListController', {
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentListController", {
             });
 
-        controller.onAttachmentListBeforeDestroy = function() {
+        controller.onAttachmentListBeforeDestroy = function () {
             beforedestroy++;
         };
 
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
-                editMode : 'CREATE',
-                controller : controller,
-                renderTo : document.body,
-                store : {
-                    proxy : {type : 'memory'}
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
+                editMode: "CREATE",
+                controller: controller,
+                renderTo: document.body,
+                store: {
+                    proxy: {type: "memory"}
                 }
             });
 
@@ -100,42 +92,36 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
     });
 
 
-    t.it("Should test addAttachment properly", function(t) {
+    t.it("Should test addAttachment properly", t => {
 
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
-                editMode : 'CREATE',
-                renderTo : document.body,
-                store : {
-                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
-                    proxy : {type : 'memory'}
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
+                editMode: "CREATE",
+                renderTo: document.body,
+                store: {
+                    model: "conjoon.cn_mail.model.mail.message.DraftAttachment",
+                    proxy: {type: "memory"}
                 }
             });
 
-        var file = createFile('text/plain'),
-            rec,
-            ctrl = view.getController();
-
-        ctrl.onFileReaderLoad = function() {
-            filereaderload++;
-        };
-        rec = view.addAttachment(file);
+        var file = createFile("text/plain"),
+            rec = view.addAttachment(file);
 
         t.expect(rec instanceof conjoon.cn_mail.model.mail.message.DraftAttachment).toBe(true);
-        t.expect(rec.get('file')).toBe(file);
+        t.expect(rec.get("file")).toBe(file);
         t.expect(view.getStore().getAt(0)).toBe(rec);
     });
 
 
-    t.it("Should test onFileReaderLoad properly", function(t) {
+    t.it("Should test onFileReaderLoad properly", t => {
 
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
-                editMode : 'CREATE',
-                renderTo : document.body,
-                store : {
-                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
-                    proxy : {type : 'memory'}
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
+                editMode: "CREATE",
+                renderTo: document.body,
+                store: {
+                    model: "conjoon.cn_mail.model.mail.message.DraftAttachment",
+                    proxy: {type: "memory"}
                 }
             });
 
@@ -143,63 +129,65 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
             ctrl = view.getController(),
             rec  = ctrl.addAttachment(file),
             evt = {
-                target : {
-                    cn_id  : rec.getId(),
-                    result : 'someurl'
+                target: {
+                    cn_id: rec.getId(),
+                    result: "someurl"
                 }
             };
 
-        t.expect(view.getStore().getAt(0).get('previewImgSrc')).toBe("");
+        t.expect(view.getStore().getAt(0).get("previewImgSrc")).toBe("");
         ctrl.onFileReaderLoad(evt);
-        t.expect(view.getStore().getAt(0).get('previewImgSrc')).toBe("someurl");
+        t.expect(view.getStore().getAt(0).get("previewImgSrc")).toBe("someurl");
     });
 
 
-    t.it("Should test onAttachmentItemClick properly", function(t) {
+    t.it("Should test onAttachmentItemClick properly", t => {
 
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
-                editMode : 'CREATE',
-                renderTo : document.body,
-                store : {
-                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
-                    proxy : {type : 'memory'}
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
+                editMode: "CREATE",
+                renderTo: document.body,
+                store: {
+                    model: "conjoon.cn_mail.model.mail.message.DraftAttachment",
+                    proxy: {type: "memory"}
                 }
             });
 
         var file = createFile(),
-            ctrl = view.getController(),
-            rec  = ctrl.addAttachment(file);
+            ctrl = view.getController();
+
+        ctrl.addAttachment(file);
 
         t.expect(view.getStore().getRange().length).toBe(1);
-        t.click(view.el.selectNode('a.removebutton'), function() {
+        t.click(view.el.selectNode("a.removebutton"), function () {
             t.expect(view.getStore().getRange().length).toBe(0);
         });
 
     });
 
 
-    t.it("Should make sure that onAttachmenListStoreBeforeDestroy has access to records", function(t) {
+    t.it("Should make sure that onAttachmenListStoreBeforeDestroy has access to records", t => {
 
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
-                editMode : 'CREATE',
-                renderTo : document.body,
-                store : {
-                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
-                    proxy : {type : 'memory'}
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
+                editMode: "CREATE",
+                renderTo: document.body,
+                store: {
+                    model: "conjoon.cn_mail.model.mail.message.DraftAttachment",
+                    proxy: {type: "memory"}
                 }
             });
 
-        var file = createFile(),
-            ctrl = view.getController(),
-            rec  = ctrl.addAttachment(file),
-            destr = 0;
+        var destr = 0,
+            file = createFile(),
+            ctrl = view.getController();
+
+        ctrl.addAttachment(file);
 
         t.expect(view.getStore().getRange().length).toBe(1);
 
 
-        view.on('beforedestroy', function() {
+        view.on("beforedestroy", function () {
             destr = 1;
             t.expect(view.getStore().getRange().length).toBe(1);
         });
@@ -211,48 +199,48 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
     });
 
 
-    t.it("app-cn_mail#76", function(t) {
+    t.it("extjs-app-webmail#76", t => {
 
         view = Ext.create(
-            'conjoon.cn_mail.view.mail.message.editor.AttachmentList', {
-                editMode : 'CREATE',
-                renderTo : document.body,
-                store : {
-                    model : 'conjoon.cn_mail.model.mail.message.DraftAttachment',
-                    proxy : {type : 'memory'}
+            "conjoon.cn_mail.view.mail.message.editor.AttachmentList", {
+                editMode: "CREATE",
+                renderTo: document.body,
+                store: {
+                    model: "conjoon.cn_mail.model.mail.message.DraftAttachment",
+                    proxy: {type: "memory"}
                 }
             });
 
         let tmpReader = window.FileReader;
 
         let currReader;
-        window.FileReader = function() {
+        window.FileReader = function () {
             currReader = this;
         };
 
         window.FileReader.prototype = {
-            addEventListener : function() {
+            addEventListener: function () {
 
             },
-            readAsDataURL : function() {
+            readAsDataURL: function () {
 
             }
         };
 
 
-        let file1 = createFile('image/png'),
-            file2 = createFile('image/png'),
+        let file1 = createFile("image/png"),
+            file2 = createFile("image/png"),
             rec1, rec2,
             ctrl = view.getController();
 
         let tmpFn = coon.core.util.Mime.isImage;
-        coon.core.util.Mime.isImage = function(){return true;};
+        coon.core.util.Mime.isImage = function (){return true;};
 
 
         rec1 = ctrl.addAttachment(file1);
         let evt1 = {
-            target : {
-                cn_id : currReader.cn_id
+            target: {
+                cn_id: currReader.cn_id
             }
         };
 
@@ -262,8 +250,8 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
 
         rec2 = ctrl.addAttachment(file2);
         let evt2 = {
-            target : {
-                cn_id : currReader.cn_id
+            target: {
+                cn_id: currReader.cn_id
             }
         };
 
@@ -274,7 +262,7 @@ describe('conjoon.cn_mail.view.mail.message.AttachmentListControllerTest', funct
         t.expect(foundRec).toBe(rec2);
 
 
-        t.waitForMs(750, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             window.FileReader = tmpReader;
         });
     });

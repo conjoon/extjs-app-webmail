@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,20 +28,20 @@
  * {@link conjoon.cn_mail.view.mail.message.editor.AttachmentList}.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', {
+Ext.define("conjoon.cn_mail.view.mail.message.editor.AttachmentListController", {
 
-    extend : 'conjoon.cn_mail.view.mail.message.AbstractAttachmentListController',
+    extend: "conjoon.cn_mail.view.mail.message.AbstractAttachmentListController",
 
-    requires : [
-        'coon.core.util.Mime',
-        'conjoon.cn_mail.model.mail.message.DraftAttachment'
+    requires: [
+        "coon.core.util.Mime",
+        "conjoon.cn_mail.model.mail.message.DraftAttachment"
     ],
 
-    alias : 'controller.cn_mail-mailmessageeditorattachmentlistcontroller',
+    alias: "controller.cn_mail-mailmessageeditorattachmentlistcontroller",
 
-    control : {
-        'cn_mail-mailmessageeditorattachmentlist' : {
-            'beforedestroy' : 'onAttachmentListBeforeDestroy'
+    control: {
+        "cn_mail-mailmessageeditorattachmentlist": {
+            "beforedestroy": "onAttachmentListBeforeDestroy"
         }
     },
 
@@ -63,37 +63,35 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
      * for the store is not a
      * {@link conjoon.cn_mail.model.mail.message.DraftAttachment}.
      */
-    addAttachment : function(file) {
+    addAttachment: function (file) {
 
         var me             = this,
             attachmentList = me.getView(),
             store          = attachmentList.getStore(),
             Model          = store.getModel().getName(),
-            isDraft        = Model === 'conjoon.cn_mail.model.mail.message.DraftAttachment',
-            file,
-            reader, readerRef,
-            rec;
+            isDraft        = Model === "conjoon.cn_mail.model.mail.message.DraftAttachment",
+            reader, rec;
 
         if (!(file instanceof File)) {
             Ext.raise({
-                source : Ext.getClassName(this),
-                msg    : "argument for addAttachment must be a native File Object"
-            })
+                source: Ext.getClassName(this),
+                msg: "argument for addAttachment must be a native File Object"
+            });
         }
 
         if (!isDraft) {
             Ext.raise({
-                source : Ext.getClassName(this),
-                msg    : "The store's model must be of type DraftAttachment."
-            })
+                source: Ext.getClassName(this),
+                msg: "The store's model must be of type DraftAttachment."
+            });
         }
 
         rec = Ext.create(Model, {
-            text        : file.name,
-            size        : file.size,
-            type        : file.type,
-            downloadUrl : window.URL.createObjectURL(file),
-            file        : file
+            text: file.name,
+            size: file.size,
+            type: file.type,
+            downloadUrl: window.URL.createObjectURL(file),
+            file: file
         });
 
         store.add(rec);
@@ -102,9 +100,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
             reader = new FileReader();
 
             reader.addEventListener(
-                'load',
+                "load",
                 me.onFileReaderLoad.bind(this),
-                {once : true}
+                {once: true}
             );
 
             reader.cn_id = rec.getId();
@@ -124,7 +122,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
      *
      * @return null or the record for which the data was loaded
      */
-    onFileReaderLoad : function(evt) {
+    onFileReaderLoad: function (evt) {
 
         var me             = this,
             attachmentList = me.getView(),
@@ -132,7 +130,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
             id             = evt.target.cn_id,
             rec;
 
-        rec = store.findExact('localId', id);
+        rec = store.findExact("localId", id);
 
         if (rec === -1) {
             return;
@@ -140,9 +138,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
 
         rec = store.getAt(rec);
 
-        rec.set('previewImgSrc', evt.target.result);
+        rec.set("previewImgSrc", evt.target.result);
 
-        delete evt;
+        evt = null;
 
         return rec;
     },
@@ -164,8 +162,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
      * @param e
      * @param eOpts
      */
-    onAttachmentItemClick : function(view, record, item, index, e, eOpts) {
-        if (e.target.className.indexOf('removebutton') !== -1) {
+    onAttachmentItemClick: function (view, record, item, index, e, eOpts) {
+        if (e.target.className.indexOf("removebutton") !== -1) {
             view.getStore().remove(record);
         }
     },
@@ -177,27 +175,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.AttachmentListController', 
      *
      * @see #destroyFileAssociations
      */
-    onAttachmentListBeforeDestroy : function(store) {
+    onAttachmentListBeforeDestroy: function () {
 
-        var me      = this,
-            store   = me.getView().getStore(),
+        var me    = this,
+            store  = me.getView().getStore(),
             records = store && !store.destroyed ? store.getRange() : [];
 
         me.destroyFileAssociations(records);
     },
 
-    privates : {
+    privates: {
 
         /**
          * Revokes Object Urls for teh specified records.
          * @param records
          */
-        destroyFileAssociations : function(records) {
-
-            var me = this;
+        destroyFileAssociations: function (records) {
 
             for (var i = 0, len = records.length; i < len; i++) {
-                window.URL.revokeObjectURL(records[i].get('downloadUrl'));
+                window.URL.revokeObjectURL(records[i].get("downloadUrl"));
             }
         }
     }

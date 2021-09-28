@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,8 +23,4 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-$mail-attachment-border-color       : #eee;
-$mail-attachment-font-color         : #777;
-$mail-attachment-act-bg-color       : #eee;
-$mail-attachment-icon-color         : #e0e0e0;
-$mail-attachment-dload-button-color : #808080;
+// intentionally left empty

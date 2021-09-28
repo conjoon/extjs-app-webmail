@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,47 +38,47 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
+Ext.define("conjoon.cn_mail.view.mail.message.AbstractAttachmentList", {
 
-    extend : 'Ext.view.View',
+    extend: "Ext.view.View",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.AbstractAttachment',
-        'coon.core.util.Mime'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.AbstractAttachment",
+        "coon.core.util.Mime"
     ],
 
-    cls : 'cn_mail-attachment-list',
+    cls: "cn_mail-attachment-list",
 
-    overItemCls : 'over',
+    overItemCls: "over",
 
-    selectedItemCls : 'selected',
+    selectedItemCls: "selected",
 
-    itemSelector : 'div.attachment',
+    itemSelector: "div.attachment",
 
     tpl: [
-        '<tpl for=".">',
-           '<div target="_blank" class="attachment {[this.getPreviewCssClass(values.type, values.previewImgSrc)]}" ',
-               'style="background-image:url({previewImgSrc})">',
-             '<div class="imagecont">',
-               '<span class="mimetype fa {[this.getMimeTypeIcon(values.type)]}"></span>',
-             '</div>',
-             '<div class="actioncont">',
-               '<div class="attachmenticon fa fa-download"></div>',
-               '<div class="linkcont">',
-                  '<div class="filename">{text}</div>',
-                  '<div class="filesize">{[Ext.util.Format.fileSize(values.size)]}</div>',
-                  '<div class="attachmentaction">',
-                   '<tpl if="this.displayButtonType(\'DOWNLOAD\')">',
-                        '<a role="link" href="{downloadUrl}" class="downloadbutton fa fa-arrow-down" download="{text}"></a>',
-                    '</tpl>',
-                    '<tpl if="this.displayButtonType(\'REMOVE\')">',
-                        '<a class="removebutton fa fa-close"></a>',
-                    '</tpl>',
-                  '</div>',
-                '</div>',
-              '</div>',
-           '</div>',
-        '</tpl>'
+        "<tpl for=\".\">",
+        "<div target=\"_blank\" class=\"attachment {[this.getPreviewCssClass(values.type, values.previewImgSrc)]}\" ",
+        "style=\"background-image:url({previewImgSrc})\">",
+        "<div class=\"imagecont\">",
+        "<span class=\"mimetype far {[this.getMimeTypeIcon(values.type)]}\"></span>",
+        "</div>",
+        "<div class=\"actioncont\">",
+        "<div class=\"attachmenticon fa fa-download\"></div>",
+        "<div class=\"linkcont\">",
+        "<div class=\"filename\">{text}</div>",
+        "<div class=\"filesize\">{[Ext.util.Format.fileSize(values.size)]}</div>",
+        "<div class=\"attachmentaction\">",
+        "<tpl if=\"this.displayButtonType('DOWNLOAD')\">",
+        "<a role=\"link\" href=\"{downloadUrl}\" class=\"downloadbutton fa fa-arrow-down\" download=\"{text}\"></a>",
+        "</tpl>",
+        "<tpl if=\"this.displayButtonType('REMOVE')\">",
+        "<a class=\"removebutton fa fa-times\"></a>",
+        "</tpl>",
+        "</div>",
+        "</div>",
+        "</div>",
+        "</div>",
+        "</tpl>"
     ],
 
 
@@ -88,14 +88,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
      * Makes sure template related emthods are bound to the tpl used by this
      * view.
      */
-    initComponent : function() {
+    initComponent: function () {
 
         var me = this;
 
         me.tpl = me.tpl.concat([{
-            displayButtonType  : me.displayButtonType.bind(me),
-            getPreviewCssClass : me.getPreviewCssClass.bind(me),
-            getMimeTypeIcon    : me.getMimeTypeIcon.bind(me)
+            displayButtonType: me.displayButtonType.bind(me),
+            getPreviewCssClass: me.getPreviewCssClass.bind(me),
+            getMimeTypeIcon: me.getMimeTypeIcon.bind(me)
         }]);
 
         me.callParent(arguments);
@@ -111,8 +111,8 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
      * @param src
      * @returns {string}
      */
-    getPreviewCssClass : function(type, src) {
-        return coon.core.util.Mime.isImage(type) && src ? "preview" : ""
+    getPreviewCssClass: function (type, src) {
+        return coon.core.util.Mime.isImage(type) && src ? "preview" : "";
     },
 
 
@@ -128,7 +128,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
      *
      * @abstract
      */
-    displayButtonType : Ext.emptyFn,
+    displayButtonType: Ext.emptyFn,
 
 
     /**
@@ -139,42 +139,42 @@ Ext.define('conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
      * @param type
      * @returns {string}
      */
-    getMimeTypeIcon : function(type) {
+    getMimeTypeIcon: function (type) {
 
-        type = type + '';
+        type = type + "";
 
         switch(type.toLowerCase()) {
-            case 'image/jpeg':
-            case 'image/jpg':
-            case 'image/gif':
-            case 'image/png':
-            case 'image':
-                return 'fa-file-image-o';
+        case "image/jpeg":
+        case "image/jpg":
+        case "image/gif":
+        case "image/png":
+        case "image":
+            return "fa-file-image";
 
-            case 'audio':
-                return 'fa-file-audio-o';
+        case "audio":
+            return "fa-file-audio";
 
-            case 'video':
-                return 'fa-file-video-o';
+        case "video":
+            return "fa-file-video";
 
-            case 'application/pdf':
-                return 'fa-file-pdf-o';
+        case "application/pdf":
+            return "fa-file-pdf";
 
-            case 'text/plain':
-                return  'fa-file-text-o';
+        case "text/plain":
+            return  "fa-file-alt";
 
-            case 'text/html':
-            case 'application/json':
-                return 'fa-file-code-o';
+        case "text/html":
+        case "application/json":
+            return "fa-file-code";
 
-            case 'application/gzip':
-            case 'application/zip':
-            case 'application/x-rar-compressed':
-                return 'fa-file-archive-o';
+        case "application/gzip":
+        case "application/zip":
+        case "application/x-rar-compressed":
+            return "fa-file-archive";
 
         }
 
-        return 'fa-file-o';
+        return "fa-file-o";
     }
 
 

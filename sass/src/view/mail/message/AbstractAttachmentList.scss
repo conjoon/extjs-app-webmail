@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,9 @@
     .attachment {
 
         &.x-view-item-focused {
-            outline : 1px solid $mail-attachment-border-color!important;
+            outline: none!important;
+            border: 1px solid var(--accent-color);
+            border-radius: 6px;
         }
 
         &.over {
@@ -53,11 +55,11 @@
         }
 
         border-radius    : 6px;
-        background-color : $lightest-color;
+        background-color : var(--reverse-color);
 
         position : relative;
         overflow : hidden;
-        border   : 1px solid $mail-attachment-border-color;
+        border   : 1px solid var(--highlight-color);
         display  : block;
         width    : 180px;
         height   : 120px;
@@ -69,15 +71,17 @@
             text-align : center;
 
             span.mimetype {
-                color       : $mail-attachment-icon-color;
+                color : var(--highlight-color);
                 font-size   : 5em;
                 line-height : 88px;
             }
         }
 
         div.actioncont {
-            color            : #fff;
-            background-color : rgba(0, 0, 0, 0.6);
+
+            color : var(--reverse-color);
+
+            background-color : var(--highlight-color);
             border-top       : none;
             width            : 178px;
             border-radius    : 6px;
@@ -113,12 +117,10 @@
                     cursor     : default;
                     font-size  : 11px;
                     margin-top : 4px;
-                    color      : #fff;
                 }
 
                 div.attachmentaction {
                     margin-top : 3px;
-
 
                     a.downloadbutton,
                     a.removebutton {
@@ -127,8 +129,8 @@
                         display          : block;
                         height           : 24px;
                         width            : 24px;
-                        color            : #fff;
-                        background-color : $mail-attachment-dload-button-color;
+                        color: var(--highlight-color);
+                        background-color : var(--reverse-color);
                         float            : left;
                         line-height      : 24px;
                         text-align       : center;

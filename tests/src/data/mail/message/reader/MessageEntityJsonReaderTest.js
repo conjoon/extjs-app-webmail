@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,28 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest', function(t) {
+StartTest(t => {
 
 
-    t.it("Should successfully create and test instance", function(t) {
+    t.it("Should successfully create and test instance", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader', {
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
 
         });
 
-        t.isInstanceOf(reader, 'Ext.data.reader.Json');
+        t.isInstanceOf(reader, "Ext.data.reader.Json");
 
-        t.expect(reader.getRootProperty()).toBe('data');
+        t.expect(reader.getRootProperty()).toBe("data");
 
-        t.expect(reader.alias).toContain('reader.cn_mail-mailmessageentityjsonreader');
+        t.expect(reader.alias).toContain("reader.cn_mail-mailmessageentityjsonreader");
 
     });
 
 
-    t.it("applyCompoundKey - exception", function(t) {
+    t.it("applyCompoundKey - exception", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
-            exc, e, data;
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
+            exc, data;
 
         try{reader.applyCompoundKey(null, "read");} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
@@ -59,14 +59,14 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
         exc = undefined;
 
-        data = {data : ""};
+        data = {data: ""};
         try{reader.applyCompoundKey(data, "read");} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
         exc = undefined;
 
-        data = {data : {}};
+        data = {data: {}};
         try{reader.applyCompoundKey(data, "");} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
@@ -76,26 +76,26 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
     });
 
 
-    t.it("applyCompoundKey()", function(t) {
+    t.it("applyCompoundKey()", t => {
 
         const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
             ret,
             keys = {
-                mailAccountId : 'a',
-                mailFolderId : 'b',
-                id : 'c',
-                localId : 'f-t-l'
+                mailAccountId: "a",
+                mailFolderId: "b",
+                id: "c",
+                localId: "f-t-l"
             },
             data = {
-                data : [keys]
+                data: [keys]
             }, result = {
-                data : [{
-                    mailAccountId : 'a',
-                    mailFolderId : 'b',
-                    id : 'c',
-                    localId : MessageEntityCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.id).toLocalId()
+                data: [{
+                    mailAccountId: "a",
+                    mailFolderId: "b",
+                    id: "c",
+                    localId: MessageEntityCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.id).toLocalId()
                 }]
             };
 
@@ -103,59 +103,72 @@ describe('conjoon.cn_mail.view.mail.message.reader.MessageEntityJsonReaderTest',
 
         t.expect(ret).toEqual(result);
 
-        data = {data : data.data[0]};
+        data = {data: data.data[0]};
         ret = reader.applyCompoundKey(data, "read");
-        result = {data : result.data[0]};
+        result = {data: result.data[0]};
         t.expect(ret).toEqual(result);
 
 
     });
 
 
-    t.it("applyCompoundKey() - success false", function(t) {
+    t.it("applyCompoundKey() - success false", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
-        ret = reader.applyCompoundKey({success : false}, "read");
-        t.expect(ret).toEqual({success : false})
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
+            ret = reader.applyCompoundKey({success: false}, "read");
+        t.expect(ret).toEqual({success: false});
     });
 
 
-    t.it("readRecords()", function(t){
+    t.it("readRecords()", function (t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader");
 
-        t.isCalledNTimes('applyCompoundKey', reader, 1);
+        t.isCalledNTimes("applyCompoundKey", reader, 1);
 
         // exception is expected here and okay.
-        try {reader.readRecords();}catch(e){}
-    })
+        try {reader.readRecords();}catch(e){
+            // intentionally left empty
+        }
+    });
 
 
-    t.it("getResponseData()", function(t){
+    t.it("getResponseData()", function (t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader');
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader");
 
-        let response = {responseText : "{}", request : {action : "create"}};
+        let response = {responseText: "{}", request: {action: "create"}};
 
-        t.expect(reader.getResponseData(response)).toEqual({metaData : {cn_action : "create"}});
-    })
+        t.expect(reader.getResponseData(response)).toEqual({metaData: {cn_action: "create"}});
+    });
 
 
-    t.it("readRecords() - argument check", function(t){
+    t.it("readRecords() - argument check", function (t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader'),
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
             ACTION = "";
 
-        reader.applyCompoundKey = function(data, action) {
+        reader.applyCompoundKey = function (data, action) {
             ACTION = action;
         };
 
-        reader.readRecords({metaData : {cn_action : "update"}})
+        reader.readRecords({metaData: {cn_action: "update"}});
         t.expect(ACTION).toBe("update");
 
-        reader.readRecords({})
+        reader.readRecords({});
         t.expect(ACTION).toBe("");
-    })
+    });
+
+
+    t.it("readRecords() - applyCompoundKey not called if action was DESTROY", function (t){
+
+        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader");
+
+        t.isntCalled("applyCompoundKey", reader);
+
+        reader.readRecords({metaData: {cn_action: "destroy"}});
+
+    });
 
 });
 

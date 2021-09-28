@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,40 +23,40 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', function(t) {
+StartTest(t => {
 
 
-    t.it("Should successfully create and test instance", function(t) {
+    t.it("Should successfully create and test instance", t => {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy');
+        let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy");
 
-        t.isInstanceOf(proxy, 'Ext.data.proxy.Rest');
+        t.isInstanceOf(proxy, "Ext.data.proxy.Rest");
 
-        t.expect(proxy.getIdParam()).toBe('id');
+        t.expect(proxy.getIdParam()).toBe("id");
 
         t.expect(proxy.getAppendId()).toBe(false);
 
-        t.expect(proxy.entityName).toBe('MailAccount');
+        t.expect(proxy.entityName).toBe("MailAccount");
 
-        t.expect(proxy.alias).toContain('proxy.cn_mail-mailaccountproxy');
+        t.expect(proxy.alias).toContain("proxy.cn_mail-mailaccountproxy");
 
-        t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader');
+        t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader");
 
 
     });
 
 
-    t.it("buildUrl() - action \"read\"", function(t) {
+    t.it("buildUrl() - action \"read\"", t => {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy'),
-            request = Ext.create('Ext.data.Request', {
-                action : 'read',
-                params : {
-                    mailAccountId : 'root'
+        let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),
+            request = Ext.create("Ext.data.Request", {
+                action: "read",
+                params: {
+                    mailAccountId: "root"
                 },
-                operation : Ext.create('Ext.data.operation.Read')
+                operation: Ext.create("Ext.data.operation.Read")
             }),
-            targetUrl = '/MailAccounts';
+            targetUrl = "/MailAccounts";
 
         t.expect(request.getParams().mailAccountId).not.toBeUndefined();
         t.expect(request.getUrl()).not.toBe(targetUrl);
@@ -66,17 +66,17 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
     });
 
 
-    t.it("buildUrl() - params trigger url for MailFolder", function(t) {
+    t.it("buildUrl() - params trigger url for MailFolder", t => {
 
-        let proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy'),
-            request = Ext.create('Ext.data.Request', {
-                action : 'read',
-                params : {
-                    mailAccountId : 'foo'
+        let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),
+            request = Ext.create("Ext.data.Request", {
+                action: "read",
+                params: {
+                    mailAccountId: "foo"
                 },
-                operation : Ext.create('Ext.data.operation.Read')
+                operation: Ext.create("Ext.data.operation.Read")
             }),
-            targetUrl = '/MailAccounts/foo/MailFolders';
+            targetUrl = "/MailAccounts/foo/MailFolders";
 
         t.expect(request.getParams().mailAccountId).not.toBeUndefined();
         t.expect(request.getUrl()).not.toBe(targetUrl);
@@ -86,22 +86,22 @@ describe('conjoon.cn_mail.view.mail.account.proxy.MailAccountProxyTest', functio
     });
 
 
-    t.it("buildUrl() - action \"update\"", function(t) {
+    t.it("buildUrl() - action \"update\"", t => {
 
-        let recs = [Ext.create('Ext.data.Model', {
-                id : 'foo'
+        let recs = [Ext.create("Ext.data.Model", {
+                id: "foo"
             })],
-            proxy = Ext.create('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
-                entityName : 'MailAccount'
+            proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
+                entityName: "MailAccount"
             }),
-            request = Ext.create('Ext.data.Request', {
-                action : 'update',
-                operation : Ext.create('Ext.data.operation.Update', {
-                    records : recs
+            request = Ext.create("Ext.data.Request", {
+                action: "update",
+                operation: Ext.create("Ext.data.operation.Update", {
+                    records: recs
                 }),
-                records : recs
+                records: recs
             }),
-            targetUrl = '/MailAccounts/foo';
+            targetUrl = "/MailAccounts/foo";
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
 

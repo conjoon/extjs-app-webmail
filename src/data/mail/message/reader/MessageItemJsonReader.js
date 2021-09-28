@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,25 +27,25 @@
  * Specialized version of a JSON Reader used by Message Items, makes sure messageBodyId
  * gets computed if the action passed to #applyCompoundKey is "read"
  */
-Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
+Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader", {
 
-    extend : 'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader',
+    extend: "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
     ],
 
-    alias : 'reader.cn_mail-mailmessageitemjsonreader',
+    alias: "reader.cn_mail-mailmessageitemjsonreader",
 
-    foreignKeyProp : 'messageBodyId',
+    foreignKeyProp: "messageBodyId",
 
     /**
      * @inheritdoc
      */
-    applyCompoundKey : function(data, action) {
+    applyCompoundKey: function (data, action) {
 
         const me = this,
-              MessageEntityCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+            MessageEntityCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
         data = me.callParent(arguments);
 
@@ -53,15 +53,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
             if (Ext.isArray(data.data)) {
 
                 let records = data.data,
-                    len = records.length, rec, i
+                    len = records.length, rec, i;
 
                 for (i = 0; i < len; i++) {
                     rec = records[i];
 
-                    if (action === 'read') {
-                         rec[me.foreignKeyProp] = MessageEntityCompoundKey.createFor(
-                             rec.mailAccountId, rec.mailFolderId, rec.id
-                         ).toLocalId();
+                    if (action === "read") {
+                        rec[me.foreignKeyProp] = MessageEntityCompoundKey.createFor(
+                            rec.mailAccountId, rec.mailFolderId, rec.id
+                        ).toLocalId();
                     }
 
                 }
@@ -70,9 +70,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader', {
 
             } else if (Ext.isObject(data.data)) {
                 // POST / PUT
-                if (action === 'read') {
+                if (action === "read") {
                     data.data[me.foreignKeyProp] = MessageEntityCompoundKey.createFor(
-                       data.data.mailAccountId, data.data.mailFolderId, data.data.id
+                        data.data.mailAccountId, data.data.mailFolderId, data.data.id
                     ).toLocalId();
                 }
                 return data;

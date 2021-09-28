@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,6 +31,22 @@
         }
     }
 
+    .x-grid-cell {
+        position:inherit;
+    }
+
+    .x-grid-cell-inner {
+        padding: 7px 10px 2px;
+        color:var(--accent-dark-color);
+    }
+
+    .x-grid-item-over {
+        .x-grid-cell-inner {
+            color:var(--highlight-color);
+        }
+    }
+
+
     .previewDisabled {
 
         .x-grid-rowbody-tr {
@@ -39,24 +55,24 @@
     }
 
     .x-panel-header {
-        background : $lightest-color;
+        background : var(--header-background-color);
         border     : none;
+         padding: 10px 18px 10px 10px;
 
         .x-title-text {
-            color : $color;
+            color : var(--color);
+            text-transform:uppercase;
+            font-weight:normal;
+        }
+
+        .x-tool-tool-el {
+            color : var(--color);
+            font-size:14px;
         }
     }
 
-    .x-grid-item-selected {
-        background-color : $mail-item-selected-color;
-    }
-
-    .fa-circle:before {
-        color : $unread-icon-color;
-    }
-
-    .fa-circle-thin:before{
-        color : $read-icon-color;
+    .fas.fa-circle:before {
+        color : var(--base-color);
     }
 
     .x-grid-body {
@@ -68,7 +84,7 @@
     }
 
     .x-grid-cell.previewLarge {
-        font-size : 14px;
+        font-size : 13px;
     }
 
     .cn-moved {
@@ -96,17 +112,17 @@
         .x-grid-cell.previewLarge::before {
             content  : "";
             width    : 2px;
-            height   : 96%;
+            height   : 100%;
             width    : 2px;
             position : absolute;
-            background-color : $base-color;
+            background-color : var(--base-color);
         }
     }
 
     .cn_mail-mailmessagepreviewfeature{
 
         .x-grid-rowbody {
-            padding-top : 0px;
+            padding: 4px 8px 6px 10px;
         }
 
         .head {
@@ -118,7 +134,7 @@
 
                 .subject,
                 .date {
-                    color : $base-color;
+                    color : var(--base-color);
                 }
             }
 
@@ -129,7 +145,7 @@
             }
 
             .fa-mail-reply {
-                color   : $base-color;
+                color   : var(--base-color);
             }
 
             .fa-flag {
@@ -137,9 +153,8 @@
             }
 
             .draft {
-                color : $cn-draft-color;
+                color:var(--accent-color);
             }
-
 
             .subject {
                 float         : left;
@@ -147,6 +162,7 @@
                 text-overflow : ellipsis;
                 overflow      : hidden;
                 max-width     : calc(100% - 150px);
+                color:var(--base-foreground-color);
             }
 
             .date {
@@ -154,17 +170,20 @@
                 text-align    : right;
                 width         : 150px;
                 white-space   : nowrap;
+                color:var(--base-foreground-color);
 
             }
         }
 
-
-
         .previewText {
-            padding       : 4px 0px 4px 0px;
+            margin-top: 6px;
+            line-height: 20px;
+            height: 18px;
+            padding: 0;
             white-space   : nowrap;
             text-overflow : ellipsis;
-            color         : lighten($darkest-color, 50%);
+            overflow      : hidden;
+            color         : var(--highlight-color);
         }
     }
 
@@ -174,17 +193,18 @@
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
-        font-size:14px;
+        font-size:13px;
         text-align: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
 
         &::before {
-            color:lighten($base-color, 30%);
-            font-size:96px;
-            font-family:FontAwesome;
-            content : '\f115'
+            color:var(--color);
+            font-size:38px;
+            margin-bottom:8px;
+            font-family: $font-icon-font-family-regular;
+            content : '\f07b'
         }
 
     }

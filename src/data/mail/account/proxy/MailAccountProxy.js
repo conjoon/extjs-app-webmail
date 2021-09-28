@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,28 +35,28 @@
  * MailAccounts/[id]
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
+Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
 
-    extend : 'Ext.data.proxy.Rest',
+    extend: "Ext.data.proxy.Rest",
 
-    requires : [
-         'conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader'
+    requires: [
+        "conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"
     ],
 
-    alias : 'proxy.cn_mail-mailaccountproxy',
+    alias: "proxy.cn_mail-mailaccountproxy",
 
-    reader : {
-        type : 'cn_mail-mailaccountjsonreader'
+    reader: {
+        type: "cn_mail-mailaccountjsonreader"
     },
 
-    idParam : 'id',
+    idParam: "id",
 
-    appendId : false,
+    appendId: false,
 
     /**
      * @private
      */
-    entityName : 'MailAccount',
+    entityName: "MailAccount",
 
 
     /**
@@ -68,24 +68,24 @@ Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
      *
      * @throws if #entityName is not in the list of #validEntityNames
      */
-    buildUrl: function(request) {
+    buildUrl: function (request) {
 
         if (request.getRecords() && request.getRecords().length > 1) {
             Ext.raise({
-                msg : "Doesn't support batch operations with multiple records.",
-                request : request
+                msg: "Doesn't support batch operations with multiple records.",
+                request: request
             });
         }
 
         const me     = this,
-              action = request.getAction();
+            action = request.getAction();
 
         let url    = me.getUrl(request),
             rec    = request.getRecords() ? request.getRecords()[0] : null,
             params = request.getParams();
 
         if (!url.match(me.slashRe)) {
-            url += '/';
+            url += "/";
         }
 
         if (action !== "read" && action !== "update") {
@@ -93,18 +93,18 @@ Ext.define('conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy', {
         }
 
 
-        url += 'MailAccounts';
+        url += "MailAccounts";
 
-        if (action === 'read') {
+        if (action === "read") {
             // if we are here, the mailAccountId is specified as the mail-account
             // for which the child items should get loaded
             if (params.mailAccountId && params.mailAccountId !== "root") {
-                url += '/' +
+                url += "/" +
                     params.mailAccountId +
-                    '/MailFolders';
+                    "/MailFolders";
             }
         } else {
-            url += '/' + rec.getId();
+            url += "/" + rec.getId();
         }
 
         if (params) {

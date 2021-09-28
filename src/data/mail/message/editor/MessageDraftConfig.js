@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -93,31 +93,31 @@
  *
  * @private
  */
-Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+Ext.define("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
 
 
-    config : {
-        to              : undefined,
-        cc              : undefined,
-        bcc             : undefined,
-        subject         : undefined,
-        seen            : true,
-        textPlain       : undefined,
-        textHtml        : undefined,
-        attachments     : undefined,
-        answered        : false,
-        recent          : false,
-        draft           : true,
-        flagged         : false,
-        mailAccountId   : undefined,
-        mailFolderId    : undefined,
-        references   : undefined,
-        inReplyTo    : undefined,
-        xCnDraftInfo : undefined
+    config: {
+        to: undefined,
+        cc: undefined,
+        bcc: undefined,
+        subject: undefined,
+        seen: true,
+        textPlain: undefined,
+        textHtml: undefined,
+        attachments: undefined,
+        answered: false,
+        recent: false,
+        draft: true,
+        flagged: false,
+        mailAccountId: undefined,
+        mailFolderId: undefined,
+        references: undefined,
+        inReplyTo: undefined,
+        xCnDraftInfo: undefined
     },
 
 
-    constructor : function(config) {
+    constructor: function (config) {
         this.initConfig(config);
     },
 
@@ -127,30 +127,30 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @return {Object}
      */
-    toObject : function() {
+    toObject: function () {
 
         var me  = this,
             obj = {};
 
         if (me.getTo() !== undefined) {
-            obj.to = me.getTo()
+            obj.to = me.getTo();
         }
         if (me.getCc() !== undefined) {
-            obj.cc = me.getCc()
+            obj.cc = me.getCc();
         }
         if (me.getBcc() !== undefined) {
-            obj.bcc = me.getBcc()
+            obj.bcc = me.getBcc();
         }
         if (me.getSubject() !== undefined) {
-            obj.subject = me.getSubject()
+            obj.subject = me.getSubject();
         }
         if (me.getTextPlain() !== undefined) {
             obj.messageBody           = obj.messageBody || {};
-            obj.messageBody.textPlain = me.getTextPlain()
+            obj.messageBody.textPlain = me.getTextPlain();
         }
         if (me.getTextHtml() !== undefined) {
             obj.messageBody          = obj.messageBody || {};
-            obj.messageBody.textHtml = me.getTextHtml()
+            obj.messageBody.textHtml = me.getTextHtml();
         }
         if (me.getAttachments() !== undefined) {
             obj.attachments = me.getAttachments();
@@ -203,13 +203,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyFlagged : function(flagged) {
+    applyFlagged: function (flagged) {
         var me = this;
 
         if (me.getFlagged() !== undefined) {
             Ext.raise({
-                flagged : me.getFlagged(),
-                msg    : "\"flagged\" is immutable"
+                flagged: me.getFlagged(),
+                msg: "\"flagged\" is immutable"
             });
         }
 
@@ -228,13 +228,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applySeen : function(seen) {
+    applySeen: function (seen) {
         var me = this;
 
         if (me.getSeen() !== undefined) {
             Ext.raise({
-                seen : me.getSeen(),
-                msg    : "\"seen\" is immutable"
+                seen: me.getSeen(),
+                msg: "\"seen\" is immutable"
             });
         }
 
@@ -253,13 +253,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyRecent : function(recent) {
+    applyRecent: function (recent) {
         var me = this;
 
         if (me.getRecent() !== undefined) {
             Ext.raise({
-                recent : me.getRecent(),
-                msg    : "\"recent\" is immutable"
+                recent: me.getRecent(),
+                msg: "\"recent\" is immutable"
             });
         }
 
@@ -278,13 +278,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyDraft : function(draft) {
+    applyDraft: function (draft) {
         var me = this;
 
         if (me.getDraft() !== undefined) {
             Ext.raise({
-                draft : me.getDraft(),
-                msg   : "\"draft\" is immutable"
+                draft: me.getDraft(),
+                msg: "\"draft\" is immutable"
             });
         }
 
@@ -303,13 +303,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyAnswered : function(answered) {
+    applyAnswered: function (answered) {
         var me = this;
 
         if (me.getAnswered() !== undefined) {
             Ext.raise({
-                answered : me.getAnswered(),
-                msg      : "\"answered\" is immutable"
+                answered: me.getAnswered(),
+                msg: "\"answered\" is immutable"
             });
         }
 
@@ -327,13 +327,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyTextPlain : function(txt) {
+    applyTextPlain: function (txt) {
         var me = this;
 
         if (me.getTextPlain() !== undefined) {
             Ext.raise({
-                textPlain : me.getTextPlain(),
-                msg       : "\"textPlain\" is immutable"
+                textPlain: me.getTextPlain(),
+                msg: "\"textPlain\" is immutable"
             });
         }
 
@@ -352,13 +352,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyTextHtml : function(txt) {
+    applyTextHtml: function (txt) {
         var me = this;
 
         if (me.getTextHtml() !== undefined) {
             Ext.raise({
-                textHtml : me.getTextHtml(),
-                msg      : "\"textHtml\" is immutable"
+                textHtml: me.getTextHtml(),
+                msg: "\"textHtml\" is immutable"
             });
         }
 
@@ -377,13 +377,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applySubject : function(subject) {
+    applySubject: function (subject) {
         var me = this;
 
         if (me.getSubject() !== undefined) {
             Ext.raise({
-                subject : me.getSubject(),
-                msg     : "\"subject\" is immutable"
+                subject: me.getSubject(),
+                msg: "\"subject\" is immutable"
             });
         }
 
@@ -402,13 +402,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyMailFolderId : function(mailFolderId) {
+    applyMailFolderId: function (mailFolderId) {
         var me = this;
 
         if (me.getMailFolderId() !== undefined) {
             Ext.raise({
-                mailFolderId : me.getMailFolderId(),
-                msg          : "\"mailFolderId\" is immutable"
+                mailFolderId: me.getMailFolderId(),
+                msg: "\"mailFolderId\" is immutable"
             });
         }
 
@@ -427,13 +427,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyMailAccountId : function(mailAccountId) {
+    applyMailAccountId: function (mailAccountId) {
         var me = this;
 
         if (me.getMailAccountId() !== undefined) {
             Ext.raise({
-                mailAccountId : me.getMailAccountId(),
-                msg           : "\"mailAccountId\" is immutable"
+                mailAccountId: me.getMailAccountId(),
+                msg: "\"mailAccountId\" is immutable"
             });
         }
 
@@ -453,7 +453,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set, or if it is not an array
      */
-    applyAttachments : function(attachments) {
+    applyAttachments: function (attachments) {
         var me     = this,
             copied = [];
 
@@ -463,15 +463,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
 
         if (me.getAttachments() !== undefined) {
             Ext.raise({
-                attachments : me.getAttachments(),
-                msg         : "\"attachments\" is immutable"
+                attachments: me.getAttachments(),
+                msg: "\"attachments\" is immutable"
             });
         }
 
         if (!Ext.isArray(attachments)) {
             Ext.raise({
-                attachments : attachments,
-                msg         : "\"attachments\" must be an array"
+                attachments: attachments,
+                msg: "\"attachments\" must be an array"
             });
         }
 
@@ -479,7 +479,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
             copied.push(Ext.copy(
                 {},
                 attachments[i],
-                'type,text,size,previewImgSrc,downloadImgUrl,sourceId'
+                "type,text,size,previewImgSrc,downloadImgUrl,sourceId"
             ));
         }
 
@@ -498,9 +498,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @trows if the value was already set or if it is malformed
      */
-    applyTo : function(to) {
+    applyTo: function (to) {
         var me = this;
-        return me.applyAddressFactory(to, 'to');
+        return me.applyAddressFactory(to, "to");
     },
 
 
@@ -515,9 +515,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @trows if the value was already set or if it is malformed
      */
-    applyCc : function(cc) {
+    applyCc: function (cc) {
         var me = this;
-        return me.applyAddressFactory(cc, 'cc');
+        return me.applyAddressFactory(cc, "cc");
     },
 
 
@@ -532,54 +532,52 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @trows if the value was already set or if it is malformed
      */
-    applyBcc : function(bcc) {
+    applyBcc: function (bcc) {
         var me = this;
-        return me.applyAddressFactory(bcc, 'bcc');
+        return me.applyAddressFactory(bcc, "bcc");
     },
 
 
     /**
      * @private
      */
-    applyAddressFactory : function(value, type) {
+    applyAddressFactory: function (value, type) {
         var me      = this,
             address = value,
             obj;
 
-        if (me['get' + type.charAt(0).toUpperCase() + type.substring(1)]() !== undefined) {
+        if (me["get" + type.charAt(0).toUpperCase() + type.substring(1)]() !== undefined) {
             Ext.raise({
-                value : value,
-                type  : type,
-                msg   : "\"" + type + "\" is immutable"
+                value: value,
+                type: type,
+                msg: "\"" + type + "\" is immutable"
             });
         }
 
         if (Ext.isString(value) && value !== "") {
             address = [{
-                name    : value,
-                address : value
+                name: value,
+                address: value
             }];
         } else if (Ext.isArray(address)) {
             address = [];
             for (var i = 0, len = value.length; i < len; i++) {
                 obj = value[i];
                 if (Ext.isObject(obj)) {
-                    if (obj.hasOwnProperty('address') && obj.hasOwnProperty('name')) {
+                    if (Object.prototype.hasOwnProperty.call(obj,"address") && Object.prototype.hasOwnProperty.call(obj,"name")) {
                         address.push(obj);
                     } else {
                         Ext.raise({
-                            value : value,
-                            type  : type,
-                            msg   : "\"" + type + "\" seems to be malformed"
+                            value: value,
+                            type: type,
+                            msg: "\"" + type + "\" seems to be malformed"
                         });
                     }
-                } else {
-                    if (value[i] !== "") {
-                        address.push({
-                            name    : value[i],
-                            address : value[i]
-                        });
-                    }
+                } else if (value[i] !== "") {
+                    address.push({
+                        name: value[i],
+                        address: value[i]
+                    });
                 }
 
             }
@@ -601,13 +599,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyReferences : function(referencesc) {
+    applyReferences: function (referencesc) {
         var me = this;
 
         if (me.getReferences() !== undefined) {
             Ext.raise({
-                references : me.getReferences(),
-                msg        : "\"references\" is immutable"
+                references: me.getReferences(),
+                msg: "\"references\" is immutable"
             });
         }
 
@@ -626,13 +624,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyInReplyTo : function(inReplyTo) {
+    applyInReplyTo: function (inReplyTo) {
         var me = this;
 
         if (me.getInReplyTo() !== undefined) {
             Ext.raise({
-                inReplyTo : me.getInReplyTo(),
-                msg       : "\"inReplyTo\" is immutable"
+                inReplyTo: me.getInReplyTo(),
+                msg: "\"inReplyTo\" is immutable"
             });
         }
 
@@ -651,13 +649,13 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
      *
      * @throws if the value was already set
      */
-    applyXCnDraftInfo : function(xCnDraftInfo) {
+    applyXCnDraftInfo: function (xCnDraftInfo) {
         var me = this;
 
         if (me.getXCnDraftInfo() !== undefined) {
             Ext.raise({
-                xCnDraftInfo : me.getXCnDraftInfo(),
-                msg          : "\"xCnDraftInfo\" is immutable"
+                xCnDraftInfo: me.getXCnDraftInfo(),
+                msg: "\"xCnDraftInfo\" is immutable"
             });
         }
 

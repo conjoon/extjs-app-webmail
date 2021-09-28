@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,73 +23,72 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.account.MailAccountTest', function(t) {
+StartTest(t => {
 
     var model;
 
-    t.beforeEach(function() {
-        model = Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
-            id : 1
+    t.beforeEach(function () {
+        model = Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
+            id: 1
         });
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         model = null;
     });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it("Should create instance and check basic configuration", function(t) {
+    t.it("Should create instance and check basic configuration", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
-        t.expect(model.getIdProperty()).toBe('id');
+        t.expect(model.getIdProperty()).toBe("id");
 
     });
 
-    t.it("Test Entity Name", function(t) {
+    t.it("Test Entity Name", t => {
         t.expect(
             model.entityName
-        ).toBe('MailAccount');
+        ).toBe("MailAccount");
     });
 
-    t.it("toUrl()", function(t) {
+    t.it("toUrl()", t => {
 
-        let model =  Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
-            id : 'foo'
+        let model =  Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
+            id: "foo"
         });
-        t.expect(model.toUrl()).toBe('cn_mail/account/foo');
+        t.expect(model.toUrl()).toBe("cn_mail/account/foo");
 
     });
 
 
-    t.it("Test Record Validity", function(t) {
+    t.it("Test Record Validity", t => {
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'Posteingang');
+        model.set("folderType", "Posteingang");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', 'ACCOUNT');
+        model.set("folderType", "ACCOUNT");
         t.expect(model.isValid()).toBe(false);
 
-        model.set('name', 'foo');
+        model.set("name", "foo");
         t.expect(model.isValid()).toBe(true);
 
-        model.set('folderType', null);
+        model.set("folderType", null);
         t.expect(model.isValid()).toBe(false);
 
-        model.set('folderType', "ACCOUNT");
+        model.set("folderType", "ACCOUNT");
         t.expect(model.isValid()).toBe(true);
     });
 
 
-    t.it("app-cn_mail#101", function(t) {
-        t.isInstanceOf(model.getField('from'), 'coon.core.data.field.EmailAddress');
-        t.isInstanceOf(model.getField('replyTo'), 'coon.core.data.field.EmailAddress');
+    t.it("extjs-app-webmail#101", t => {
+        t.isInstanceOf(model.getField("from"), "coon.core.data.field.EmailAddress");
+        t.isInstanceOf(model.getField("replyTo"), "coon.core.data.field.EmailAddress");
     });
-
 
 
 });

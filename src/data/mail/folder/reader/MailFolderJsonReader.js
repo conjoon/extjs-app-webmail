@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,17 +26,17 @@
 /**
  * Specialized version of a JSON Reader used with data for MailFolders
  */
-Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
+Ext.define("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
 
-    extend : 'Ext.data.reader.Json',
+    extend: "Ext.data.reader.Json",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey"
     ],
 
-    alias : 'reader.cn_mail-mailfolderjsonreader',
+    alias: "reader.cn_mail-mailfolderjsonreader",
 
-    mailFolderModelClass : 'conjoon.cn_mail.model.mail.folder.MailFolder',
+    mailFolderModelClass: "conjoon.cn_mail.model.mail.folder.MailFolder",
 
     /**
      * @inheritdoc
@@ -48,7 +48,7 @@ Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
      *
      * @see applyCompoundKey
      */
-    readRecords : function(data, readOptions, internalReadOptions) {
+    readRecords: function (data, readOptions, internalReadOptions) {
 
         const me = this;
 
@@ -68,7 +68,7 @@ Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
      *
      * @see recurseChildren
      */
-    applyCompoundKey : function(data) {
+    applyCompoundKey: function (data) {
 
         const me = this;
 
@@ -82,10 +82,9 @@ Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
         }
 
 
-
         Ext.raise({
-            msg  : "The \"data\" property was malformed and could not be processed by this Reader",
-            data : data
+            msg: "The \"data\" property was malformed and could not be processed by this Reader",
+            data: data
         });
 
     },
@@ -96,14 +95,14 @@ Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
      *
      * @throws if any record found in records has no MailAccountId or no id.
      */
-    recurseChildren : function(records) {
+    recurseChildren: function (records) {
 
         if (!Ext.isArray(records)) {
             return;
         }
 
         const me = this,
-              MailFolderCompoundKey = conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey;
+            MailFolderCompoundKey = conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey;
 
         let rec;
 
@@ -113,8 +112,8 @@ Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
 
             if (!rec || !rec.mailAccountId || !rec.id) {
                 Ext.raise({
-                    msg  : "The \"data\" property was malformed and could not be processed by this Reader",
-                    data : records
+                    msg: "The \"data\" property was malformed and could not be processed by this Reader",
+                    data: records
                 });
             }
 
@@ -127,7 +126,6 @@ Ext.define('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
 
         }
     }
-
 
 
 });

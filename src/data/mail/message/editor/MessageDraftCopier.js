@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -52,16 +52,16 @@
  *      )
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
+Ext.define("conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier", {
 
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageDraft',
-        'conjoon.cn_mail.data.mail.message.EditingModes',
-        'conjoon.cn_mail.text.mail.message.ForwardMessageDecorator',
-        'conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator',
-        'conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageDraft",
+        "conjoon.cn_mail.data.mail.message.EditingModes",
+        "conjoon.cn_mail.text.mail.message.ForwardMessageDecorator",
+        "conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator",
+        "conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator",
+        "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest"
     ],
 
 
@@ -84,30 +84,30 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
      * @throws if messageDraftCopyRequest is not an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest,
      * or if MessageDraftCopyRequest#isConfigured returns false
      */
-    loadMessageDraftCopy : function(messageDraftCopyRequest, callback, scope) {
+    loadMessageDraftCopy: function (messageDraftCopyRequest, callback, scope) {
         var me = this,
             key, editMode;
 
 
         if (!(messageDraftCopyRequest instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest)) {
             Ext.raise({
-                messageDraftCopyRequest : messageDraftCopyRequest,
-                msg                     : "\"messageDraftCopyRequest\" must be an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest"
+                messageDraftCopyRequest: messageDraftCopyRequest,
+                msg: "\"messageDraftCopyRequest\" must be an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest"
             });
         }
 
         if (!messageDraftCopyRequest.isConfigured()) {
             Ext.raise({
-                msg                     : "\"messageDraftCopyRequest\" is not fully configured",
-                messageDraftCopyRequest : messageDraftCopyRequest
+                msg: "\"messageDraftCopyRequest\" is not fully configured",
+                messageDraftCopyRequest: messageDraftCopyRequest
 
             });
         }
 
         if (!Ext.isFunction(callback)) {
             Ext.raise({
-                callback : callback,
-                msg      : "\"callback\" must be a valid callback"
+                callback: callback,
+                msg: "\"callback\" must be a valid callback"
             });
         }
 
@@ -116,18 +116,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
 
         conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
             key, {
-            success : Ext.Function.bind(
-                me.onMessageDraftLoad, me, [editMode, callback, scope, messageDraftCopyRequest], true
-            ),
-            failure : Ext.Function.bind(
-                me.onLoadMessageDraftCopyFailure, me, [callback, scope], true
-            ),
-            scope : me
-        });
+                success: Ext.Function.bind(
+                    me.onMessageDraftLoad, me, [editMode, callback, scope, messageDraftCopyRequest], true
+                ),
+                failure: Ext.Function.bind(
+                    me.onLoadMessageDraftCopyFailure, me, [callback, scope], true
+                ),
+                scope: me
+            });
     },
 
 
-    privates : {
+    privates: {
 
 
         /**
@@ -143,18 +143,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @see onMessageBodyLoad
          * @private
          */
-        onMessageDraftLoad : function(record, operation, editMode, callback, scope, messageDraftCopyRequest) {
+        onMessageDraftLoad: function (record, operation, editMode, callback, scope, messageDraftCopyRequest) {
 
             var me = this;
 
             record.loadMessageBody({
-                success : Ext.Function.bind(
+                success: Ext.Function.bind(
                     me.onMessageBodyLoad, me, [record, editMode, callback, scope, messageDraftCopyRequest], true
                 ),
-                failure :  Ext.Function.bind(
+                failure: Ext.Function.bind(
                     me.onLoadMessageDraftCopyFailure, me, [callback, scope], true
                 ),
-                scope : me
+                scope: me
             });
 
         },
@@ -177,15 +177,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @see onAttachmentsLoad
          * @private
          */
-        onMessageBodyLoad : function(record, operation, messageDraft, editMode, callback, scope, messageDraftCopyRequest) {
+        onMessageBodyLoad: function (record, operation, messageDraft, editMode, callback, scope, messageDraftCopyRequest) {
 
             var me = this;
 
             messageDraft.loadAttachments({
-                callback : Ext.Function.bind(
+                callback: Ext.Function.bind(
                     me.onAttachmentsLoad, me, [messageDraft, editMode, callback, scope, messageDraftCopyRequest], true
                 ),
-                scope : me
+                scope: me
             });
         },
 
@@ -200,7 +200,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
          * @param {String} editMode
          */
-        onAttachmentsLoad : function(records, operation, success, messageDraft, editMode, callback, scope, messageDraftCopyRequest) {
+        onAttachmentsLoad: function (records, operation, success, messageDraft, editMode, callback, scope, messageDraftCopyRequest) {
 
             var me = this,
                 attachments = [];
@@ -230,7 +230,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          * @param {Function} callback
          * @param {Object} scope
          */
-        onLoadMessageDraftCopyFailure : function(record, operation, callback, scope) {
+        onLoadMessageDraftCopyFailure: function (record, operation, callback, scope) {
             const me = this;
 
             callback.apply(scope || null, [me, null, false, operation]);
@@ -254,32 +254,31 @@ Ext.define('conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier', {
          *
          * @private
          */
-        createMessageDraftConfig : function(messageDraft, editMode, messageDraftCopyRequest) {
+        createMessageDraftConfig: function (messageDraft, editMode, messageDraftCopyRequest) {
 
-            var me        = this,
-                decorator = null;
+            var decorator = null;
 
             switch (editMode) {
-                case conjoon.cn_mail.data.mail.message.EditingModes.FORWARD:
-                    decorator = Ext.create(
-                        'conjoon.cn_mail.text.mail.message.ForwardMessageDecorator', messageDraft);
-                    break;
+            case conjoon.cn_mail.data.mail.message.EditingModes.FORWARD:
+                decorator = Ext.create(
+                    "conjoon.cn_mail.text.mail.message.ForwardMessageDecorator", messageDraft);
+                break;
 
-                case conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO:
-                    decorator = Ext.create(
-                        'conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator', messageDraft);
-                    break;
+            case conjoon.cn_mail.data.mail.message.EditingModes.REPLY_TO:
+                decorator = Ext.create(
+                    "conjoon.cn_mail.text.mail.message.ReplyToMessageDecorator", messageDraft);
+                break;
 
-                case conjoon.cn_mail.data.mail.message.EditingModes.REPLY_ALL:
-                    decorator = Ext.create(
-                        'conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator', messageDraft);
-                    break;
+            case conjoon.cn_mail.data.mail.message.EditingModes.REPLY_ALL:
+                decorator = Ext.create(
+                    "conjoon.cn_mail.text.mail.message.ReplyAllMessageDecorator", messageDraft);
+                break;
 
             }
 
             return decorator.toMessageDraftConfig({
-                mailAccountId : messageDraftCopyRequest.getDefaultMailAccountId(),
-                mailFolderId  : messageDraftCopyRequest.getDefaultMailFolderId()
+                mailAccountId: messageDraftCopyRequest.getDefaultMailAccountId(),
+                mailFolderId: messageDraftCopyRequest.getDefaultMailFolderId()
             });
         }
     }

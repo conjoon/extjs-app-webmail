@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,35 +27,35 @@
  * Specialized version of a REST-proxy to be used with
  * MessageItems and MessageDrafts.
  */
-Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
+Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
-    extend : 'Ext.data.proxy.Rest',
+    extend: "Ext.data.proxy.Rest",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader',
-        'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
+        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     ],
 
-    mixins : {
-        utilityMixin : 'conjoon.cn_mail.data.mail.message.proxy.UtilityMixin'
+    mixins: {
+        utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     },
 
 
-    alias : 'proxy.cn_mail-mailmessageentityproxy',
+    alias: "proxy.cn_mail-mailmessageentityproxy",
 
     // default reader, gets set by BaseSchema for MessageItem and MessageDraft individually
-    reader : {
-        type : 'cn_mail-mailmessageentityjsonreader'
+    reader: {
+        type: "cn_mail-mailmessageentityjsonreader"
     },
 
-    idParam : 'localId',
+    idParam: "localId",
 
-    appendId : false,
+    appendId: false,
 
-    validEntityNames : [
-        'MessageDraft',
-        'MessageItem',
-        'MessageBody'
+    validEntityNames: [
+        "MessageDraft",
+        "MessageItem",
+        "MessageBody"
     ],
 
 
@@ -64,7 +64,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
      * MessageDraft or MessageBody.
      * @cfg {string}
      */
-    entityName : null,
+    entityName: null,
 
 
     /**
@@ -76,22 +76,22 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
      *
      * @throws if #entityName is not in the list of #validEntityNames
      */
-    buildUrl: function(request) {
+    buildUrl: function (request) {
 
         if (request.getRecords() && request.getRecords().length > 1) {
             Ext.raise({
-                msg : "Doesn't support batch operations with multiple records.",
-                request : request
+                msg: "Doesn't support batch operations with multiple records.",
+                request: request
             });
         }
 
         const me     = this,
-              params = request.getParams();
+            params = request.getParams();
 
         if (me.validEntityNames.indexOf(me.entityName) === -1) {
             Ext.raise({
-                msg : "The entityName (\"" + me.entityName + "\") is not allowed to be used with the url builder of this proxy.",
-                entityName : me.entityName
+                msg: "The entityName (\"" + me.entityName + "\") is not allowed to be used with the url builder of this proxy.",
+                entityName: me.entityName
             });
         }
 
@@ -101,10 +101,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
             source;
 
         if (!url.match(me.slashRe)) {
-            url += '/';
+            url += "/";
         }
 
-        if (action === 'read') {
+        if (action === "read") {
             source = params;
 
             if (source.filter) {
@@ -113,32 +113,29 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
                 source.id = rec.data.id;
             }
 
+        } else if (rec.phantom) {
+            source = rec.data;
         } else {
-
-            if (rec.phantom) {
-                source = rec.data;
-            } else {
-                source = Ext.applyIf(Ext.apply({}, rec.modified), rec.data);
-            }
+            source = Ext.applyIf(Ext.apply({}, rec.modified), rec.data);
         }
 
         if (!source.mailAccountId || !source.mailFolderId) {
             Ext.raise({
-                msg    : "Missing compound keys.",
-                source : source
+                msg: "Missing compound keys.",
+                source: source
             });
         }
 
-        url += 'MailAccounts/' + encodeURIComponent(source.mailAccountId) + '/' +
-            'MailFolders/' + encodeURIComponent(source.mailFolderId) + '/' +
-            'MessageItems';
+        url += "MailAccounts/" + encodeURIComponent(source.mailAccountId) + "/" +
+            "MailFolders/" + encodeURIComponent(source.mailFolderId) + "/" +
+            "MessageItems";
 
         // switch target parameter to MessageBodyDraft if applicable
         let target      = me.entityName,
             finalParams;
 
-        if ((action === 'create' || action === 'update') && target === 'MessageBody') {
-            target = 'MessageBodyDraft';
+        if ((action === "create" || action === "update") && target === "MessageBody") {
+            target = "MessageBodyDraft";
         }
 
         finalParams = {target: target};
@@ -149,9 +146,9 @@ Ext.define('conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy', {
 
         request.setParams(Ext.apply(request.getParams() || {}, finalParams));
 
-        if (action !== 'create') {
-            if (source.hasOwnProperty('id')) {
-                url += '/' + source.id;
+        if (action !== "create") {
+            if (Object.prototype.hasOwnProperty.call(source,"id")) {
+                url += "/" + source.id;
             }
         }
 

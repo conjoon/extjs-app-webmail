@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,9 +28,9 @@
  *
  * @see private
  */
-Ext.define('conjoon.cn_mail.text.mail.message.DecoratorFormat', {
+Ext.define("conjoon.cn_mail.text.mail.message.DecoratorFormat", {
 
-    singleton : true,
+    singleton: true,
 
     /**
      * Formats an email address object or an array of email address objects
@@ -56,7 +56,7 @@ Ext.define('conjoon.cn_mail.text.mail.message.DecoratorFormat', {
      *
      * @return {String}
      */
-    stringifyEmailAddress : function(addresses) {
+    stringifyEmailAddress: function (addresses) {
 
         var add    = [].concat(addresses),
             result = [];

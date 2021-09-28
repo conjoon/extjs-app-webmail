@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,11 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', function(t) {
+StartTest(t => {
 
 
-    t.it("constructor()", function(t) {
-        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+    t.it("constructor()", t => {
+        var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
         t.expect(config.getTo()).toBeUndefined();
         t.expect(config.getCc()).toBeUndefined();
@@ -47,51 +47,51 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
     });
 
 
-    t.it("applyAddressFactory()", function(t) {
-        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+    t.it("applyAddressFactory()", t => {
+        var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
 
         var tests = [{
-            args     : [[{name : 'Peter', address : 'name@domain.tld'}], 'to'],
-            expected : [{
-                name    : 'Peter',
-                address : 'name@domain.tld'
-            }]
-        }, {
-            args     : ['name@domain.tld', 'to'],
-            expected : [{
-                name    : 'name@domain.tld',
-                address : 'name@domain.tld'
-            }]
-        }, {
-            args     : [['name@domain.tld'], 'cc'],
-            expected : [{
-                name    : 'name@domain.tld',
-                address : 'name@domain.tld'
-            }]
-        }, {
-            args     : [['name@domain.tld', 'somename@somedomain.tld'], 'bcc'],
-            expected : [{
-                name    : 'name@domain.tld',
-                address : 'name@domain.tld'
+                args: [[{name: "Peter", address: "name@domain.tld"}], "to"],
+                expected: [{
+                    name: "Peter",
+                    address: "name@domain.tld"
+                }]
             }, {
-                name    : 'somename@somedomain.tld',
-                address : 'somename@somedomain.tld'
-            }]
-        }, {
-            args     : ['name@domain.tld', 'to'],
-            expected : 'Exception'
-        }, {
-            args     : ['name@domain.tld', 'cc'],
-            expected : 'Exception'
-        }, {
-            args     : ['name@domain.tld', 'bcc'],
-            expected : 'Exception'
-        }], test, exc, e, tCount = 0;
+                args: ["name@domain.tld", "to"],
+                expected: [{
+                    name: "name@domain.tld",
+                    address: "name@domain.tld"
+                }]
+            }, {
+                args: [["name@domain.tld"], "cc"],
+                expected: [{
+                    name: "name@domain.tld",
+                    address: "name@domain.tld"
+                }]
+            }, {
+                args: [["name@domain.tld", "somename@somedomain.tld"], "bcc"],
+                expected: [{
+                    name: "name@domain.tld",
+                    address: "name@domain.tld"
+                }, {
+                    name: "somename@somedomain.tld",
+                    address: "somename@somedomain.tld"
+                }]
+            }, {
+                args: ["name@domain.tld", "to"],
+                expected: "Exception"
+            }, {
+                args: ["name@domain.tld", "cc"],
+                expected: "Exception"
+            }, {
+                args: ["name@domain.tld", "bcc"],
+                expected: "Exception"
+            }], test, exc, tCount = 0;
 
         for (var i = 0, len = tests.length; i < len; i++) {
             test = tests[i];
-            if (test.expected == 'Exception') {
+            if (test.expected === "Exception") {
                 continue;
             }
             t.expect(
@@ -104,17 +104,17 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
 
         t.expect(tCount).toBe(4);
 
-        config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
-            to  : 'name.to@domain.tld',
-            cc  : 'name.cc@domain.tld',
-            bcc : 'name.bcc@domain.tld'
+        config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
+            to: "name.to@domain.tld",
+            cc: "name.cc@domain.tld",
+            bcc: "name.bcc@domain.tld"
         });
 
         var excCount = 0;
-        for (var i = 0, len = tests.length; i < len; i++) {
+        for (i = 0, len = tests.length; i < len; i++) {
             test = tests[i];
-            exc = e = undefined;
-            if (test.expected == 'Exception') {
+            exc = undefined;
+            if (test.expected === "Exception") {
                 try{
                     config.applyAddressFactory.apply(config, test.args);
                 } catch(e){
@@ -130,49 +130,48 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
 
     });
 
-    t.it("applyTo()", function(t) {
-        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+    t.it("applyTo()", t => {
+        var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
-        t.isCalledOnce('applyAddressFactory', config);
-        t.isArray(config.applyTo('name@domain.tld'));
+        t.isCalledOnce("applyAddressFactory", config);
+        t.isArray(config.applyTo("name@domain.tld"));
     });
 
 
-    t.it("applyCc()", function(t) {
-        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+    t.it("applyCc()", t => {
+        var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
-        t.isCalledOnce('applyAddressFactory', config)
-        t.isArray(config.applyCc('name@domain.tld'));
+        t.isCalledOnce("applyAddressFactory", config);
+        t.isArray(config.applyCc("name@domain.tld"));
     });
 
 
-    t.it("applyBcc()", function(t) {
-        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+    t.it("applyBcc()", t => {
+        var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
-        t.isCalledOnce('applyAddressFactory', config)
-        t.isArray(config.applyBcc('name@domain.tld'));
+        t.isCalledOnce("applyAddressFactory", config);
+        t.isArray(config.applyBcc("name@domain.tld"));
     });
 
 
-
-    t.it("applyAttachments()", function(t) {
-        var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+    t.it("applyAttachments()", t => {
+        var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
 
         var attachments = [{
-            type           : 'TYPE1',
-            text           : 'TEXT1',
-            size           : 1111,
-            sourceId       : '51',
-            previewImgSrc  : 'PREVIEWIMGSRC1',
-            downloadImgUrl : 'DOWNLOADIMGURL1'
+            type: "TYPE1",
+            text: "TEXT1",
+            size: 1111,
+            sourceId: "51",
+            previewImgSrc: "PREVIEWIMGSRC1",
+            downloadImgUrl: "DOWNLOADIMGURL1"
         }, {
-            type           : 'TYPE12',
-            text           : 'TEXT2',
-            size           : 1112,
-            sourceId       : '52',
-            previewImgSrc  : 'PREVIEWIMGSRC2',
-            downloadImgUrl : 'DOWNLOADIMGURL2'
+            type: "TYPE12",
+            text: "TEXT2",
+            size: 1112,
+            sourceId: "52",
+            previewImgSrc: "PREVIEWIMGSRC2",
+            downloadImgUrl: "DOWNLOADIMGURL2"
         }];
 
         var result    = config.applyAttachments(attachments),
@@ -185,7 +184,7 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         for (var i = 0, len = result.length; i < len; i++) {
             propCount = 0;
             for (var prop in result[i]) {
-                if (!result[i].hasOwnProperty(prop)) {
+                if (!Object.prototype.hasOwnProperty.call(result[i], prop)) {
                     continue;
                 }
                 t.expect(result[i][prop]).toBe(attachments[i][prop]);
@@ -195,147 +194,147 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
         }
 
         // test references
-        t.expect(result[0]['text']).toBe(attachments[0]['text']);
-        attachments[0]['text'] = "NEWTEXT";
-        t.expect(result[0]['text']).not.toBe(attachments[0]['text']);
+        t.expect(result[0]["text"]).toBe(attachments[0]["text"]);
+        attachments[0]["text"] = "NEWTEXT";
+        t.expect(result[0]["text"]).not.toBe(attachments[0]["text"]);
 
         // test exceptions
-        var exc, e;
+        var exc;
         config.setAttachments([]);
         try{config.applyAttachments([]);}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toContain("is immutable");
 
-        exc = e = undefined;
-        var config2 = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+        exc = undefined;
+        var config2 = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
         });
-        try{config2.applyAttachments('foo');}catch(e){exc = e;}
+        try{config2.applyAttachments("foo");}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toContain("must be an array");
     });
 
 
-    t.it("toObject()", function(t) {
+    t.it("toObject()", t => {
 
         var config,
             tests = [{
-                args : {
-                    to  : 'name.to@domain.tld',
-                    cc  : 'name.cc@domain.tld',
-                    bcc : 'name.bcc@domain.tld'
+                args: {
+                    to: "name.to@domain.tld",
+                    cc: "name.cc@domain.tld",
+                    bcc: "name.bcc@domain.tld"
                 },
-                expected : {
-                    to  : [{name : 'name.to@domain.tld',  address : 'name.to@domain.tld'}],
-                    cc  : [{name : 'name.cc@domain.tld',  address : 'name.cc@domain.tld'}],
-                    bcc : [{name : 'name.bcc@domain.tld', address : 'name.bcc@domain.tld'}],
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                expected: {
+                    to: [{name: "name.to@domain.tld",  address: "name.to@domain.tld"}],
+                    cc: [{name: "name.cc@domain.tld",  address: "name.cc@domain.tld"}],
+                    bcc: [{name: "name.bcc@domain.tld", address: "name.bcc@domain.tld"}],
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    mailFolderId  : 'foo',
-                    mailAccountId : 'bar'
+                args: {
+                    mailFolderId: "foo",
+                    mailAccountId: "bar"
                 },
-                expected : {
-                    mailFolderId  : 'foo',
-                    mailAccountId : 'bar',
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                expected: {
+                    mailFolderId: "foo",
+                    mailAccountId: "bar",
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    textHtml  : 'foo',
-                    textPlain : 'bar'
+                args: {
+                    textHtml: "foo",
+                    textPlain: "bar"
                 },
-                expected : {
-                    messageBody : {
-                        textHtml  : 'foo',
-                        textPlain : 'bar'
+                expected: {
+                    messageBody: {
+                        textHtml: "foo",
+                        textPlain: "bar"
                     },
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    seen : true
+                args: {
+                    seen: true
                 },
-                expected : {
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                expected: {
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    flagged : true
+                args: {
+                    flagged: true
                 },
-                expected : {
-                    seen : true, recent : false, flagged : true, draft : true, answered : false
+                expected: {
+                    seen: true, recent: false, flagged: true, draft: true, answered: false
                 }
             }, {
-                args : {
-                    recent : true
+                args: {
+                    recent: true
                 },
-                expected : {
-                    seen : true, recent : true, flagged : false, draft : true, answered : false
+                expected: {
+                    seen: true, recent: true, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    answered : true
+                args: {
+                    answered: true
                 },
-                expected : {
-                    seen : true, recent : false, flagged : false, draft : true, answered : true
+                expected: {
+                    seen: true, recent: false, flagged: false, draft: true, answered: true
                 }
             }, {
-                args : {
-                    draft : true
+                args: {
+                    draft: true
                 },
-                expected : {
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                expected: {
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    subject : 'foobar'
+                args: {
+                    subject: "foobar"
                 },
-                expected : {
-                    subject  : 'foobar',
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                expected: {
+                    subject: "foobar",
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }, {
-                args : {
-                    attachments : [{
-                        type           : 'TYPE1',
-                        text           : 'TEXT1',
-                        size           : 1111,
-                        sourceId       : '51',
-                        previewImgSrc  : 'PREVIEWIMGSRC1',
-                        downloadImgUrl : 'DOWNLOADIMGURL1'
+                args: {
+                    attachments: [{
+                        type: "TYPE1",
+                        text: "TEXT1",
+                        size: 1111,
+                        sourceId: "51",
+                        previewImgSrc: "PREVIEWIMGSRC1",
+                        downloadImgUrl: "DOWNLOADIMGURL1"
                     }, {
-                        type           : 'TYPE12',
-                        text           : 'TEXT2',
-                        size           : 1112,
-                        sourceId       : '52',
-                        previewImgSrc  : 'PREVIEWIMGSRC2',
-                        downloadImgUrl : 'DOWNLOADIMGURL2'
+                        type: "TYPE12",
+                        text: "TEXT2",
+                        size: 1112,
+                        sourceId: "52",
+                        previewImgSrc: "PREVIEWIMGSRC2",
+                        downloadImgUrl: "DOWNLOADIMGURL2"
                     }]
                 },
-                expected : {
-                    attachments : [{
-                        type           : 'TYPE1',
-                        text           : 'TEXT1',
-                        size           : 1111,
-                        sourceId       : '51',
-                        previewImgSrc  : 'PREVIEWIMGSRC1',
-                        downloadImgUrl : 'DOWNLOADIMGURL1'
+                expected: {
+                    attachments: [{
+                        type: "TYPE1",
+                        text: "TEXT1",
+                        size: 1111,
+                        sourceId: "51",
+                        previewImgSrc: "PREVIEWIMGSRC1",
+                        downloadImgUrl: "DOWNLOADIMGURL1"
                     }, {
-                        type           : 'TYPE12',
-                        text           : 'TEXT2',
-                        size           : 1112,
-                        sourceId       : '52',
-                        previewImgSrc  : 'PREVIEWIMGSRC2',
-                        downloadImgUrl : 'DOWNLOADIMGURL2'
+                        type: "TYPE12",
+                        text: "TEXT2",
+                        size: 1112,
+                        sourceId: "52",
+                        previewImgSrc: "PREVIEWIMGSRC2",
+                        downloadImgUrl: "DOWNLOADIMGURL2"
                     }],
-                    seen : true, recent : false, flagged : false, draft : true, answered : false
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
                 }
             }], test;
 
         for (var i = 0, len = tests.length; i < len; i++) {
             test = tests[i];
-            config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
+            config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
                 test.args
             );
             t.expect(config.toObject()).toEqual(test.expected);
@@ -343,10 +342,10 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
     });
 
 
-    t.it("app-cn_mail#84", function(t) {
+    t.it("extjs-app-webmail#84", t => {
 
-        t.it("applyTo()", function(t) {
-            var config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig', {
+        t.it("applyTo()", t => {
+            var config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
             });
 
             t.expect(config.applyTo([""])).toEqual([]);
@@ -355,32 +354,31 @@ describe('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfigTest', func
     });
 
 
-    t.it("app-cn_mail#47 - references, inReplyTo, xCnDraftInfo", function(t) {
+    t.it("extjs-app-webmail#47 - references, inReplyTo, xCnDraftInfo", t => {
 
 
+        var config,
+            tests = [{
+                args: {
+                    references: "foo",
+                    inReplyTo: "bar",
+                    xCnDraftInfo: "meh."
+                },
+                expected: {
+                    references: "foo",
+                    inReplyTo: "bar",
+                    xCnDraftInfo: "meh.",
+                    seen: true, recent: false, flagged: false, draft: true, answered: false
+                }
+            }], test;
 
-            var config,
-                tests = [{
-                    args : {
-                        references  : 'foo',
-                        inReplyTo : 'bar',
-                        xCnDraftInfo : 'meh.'
-                    },
-                    expected : {
-                        references  : 'foo',
-                        inReplyTo : 'bar',
-                        xCnDraftInfo : 'meh.',
-                        seen : true, recent : false, flagged : false, draft : true, answered : false
-                    }
-                }], test;
-
-            for (var i = 0, len = tests.length; i < len; i++) {
-                test = tests[i];
-                config = Ext.create('conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
-                    test.args
-                );
-                t.expect(config.toObject()).toEqual(test.expected);
-            }
+        for (var i = 0, len = tests.length; i < len; i++) {
+            test = tests[i];
+            config = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
+                test.args
+            );
+            t.expect(config.toObject()).toEqual(test.expected);
+        }
 
 
     });

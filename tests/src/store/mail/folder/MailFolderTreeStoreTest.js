@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,20 +23,19 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t) {
+StartTest(t => {
 
-    const TIMEOUT = 1250;
-
-    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
+    
+    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
         });
 
-        t.it("Should properly create the store and check for default config, and initial load", function(t) {
+        t.it("Should properly create the store and check for default config, and initial load", t => {
 
-            var store = Ext.create('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
-                asynchronousLoad : false
+            var store = Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
+                asynchronousLoad: false
             });
 
             t.expect(store instanceof Ext.data.TreeStore).toBe(true);
@@ -44,9 +43,9 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
             t.expect(store.getAutoLoad()).toBe(false);
 
 
-            t.expect(store.config.model).toBe('conjoon.cn_mail.model.mail.account.MailAccount');
+            t.expect(store.config.model).toBe("conjoon.cn_mail.model.mail.account.MailAccount");
 
-            t.expect(store.alias).toContain('store.cn_mail-mailfoldertreestore');
+            t.expect(store.alias).toContain("store.cn_mail-mailfoldertreestore");
             t.expect(store.getRoot() instanceof conjoon.cn_mail.model.mail.account.MailAccount).toBe(true);
 
             // proxy
@@ -65,7 +64,7 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
 
             t.expect(store.getRoot().isLoading()).toBe(true);
 
-            t.waitForMs(TIMEOUT, function() {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(store.getRoot().childNodes.length).toBe(2);
 
@@ -83,7 +82,6 @@ describe('conjoon.cn_mail.store.mail.folder.MailFolderTreeStoreTest', function(t
 
 
     });
-
 
 
 });

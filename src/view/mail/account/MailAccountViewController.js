@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,27 +29,27 @@
  */
 Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
 
-    extend : 'Ext.app.ViewController',
+    extend: "Ext.app.ViewController",
 
 
-    alias : 'controller.cn_mail-mailaccountviewcontroller',
+    alias: "controller.cn_mail-mailaccountviewcontroller",
 
 
-    control : {
+    control: {
 
-        'cn_mail-mailaccountview' : {
-            'cn_mail-mailaccountbeforesave'  : 'onBeforeMailAccountSave',
-            'cn_mail-mailaccountsave'        : 'onMailAccountSaveCallback',
-            'cn_mail-mailaccountsavefailure' : 'onMailAccountSaveCallback',
-            hide                             : 'onMailAccountViewHide'
+        "cn_mail-mailaccountview": {
+            "cn_mail-mailaccountbeforesave": "onBeforeMailAccountSave",
+            "cn_mail-mailaccountsave": "onMailAccountSaveCallback",
+            "cn_mail-mailaccountsavefailure": "onMailAccountSaveCallback",
+            hide: "onMailAccountViewHide"
         },
 
-        '#saveButton' : {
-            click : 'onSaveButtonClick'
+        "#saveButton": {
+            click: "onSaveButtonClick"
         },
 
-        '#cancelButton' : {
-            click : 'onCancelButtonClick'
+        "#cancelButton": {
+            click: "onCancelButtonClick"
         }
     },
 
@@ -59,7 +59,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      *
      * @param {Ext.Button} btn
      */
-    onSaveButtonClick : function(btn) {
+    onSaveButtonClick: function (btn) {
 
         const me = this,
             view = me.getView();
@@ -74,10 +74,10 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      *
      * @param {Ext.Button} btn
      */
-    onCancelButtonClick : function(btn) {
+    onCancelButtonClick: function (btn) {
 
         const me   = this,
-              view = me.getView();
+            view = me.getView();
 
         return view.rejectPendingChanges();
 
@@ -93,9 +93,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      *
      * @see #setBusy
      */
-    onBeforeMailAccountSave : function(view, mailAccount) {
-        const me = this;
-
+    onBeforeMailAccountSave: function (view, mailAccount) {
         view.setBusy();
     },
 
@@ -109,10 +107,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      *
      * @see #setBusy
      */
-    onMailAccountSaveCallback : function(view, mailAccount) {
-
-        const me = this;
-
+    onMailAccountSaveCallback: function (view, mailAccount) {
         view.setBusy(false);
 
         if (!view.isVisible()) {
@@ -127,10 +122,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      *
      * @param {conjoon.cn_mail.view.mail.account.MailAccountView} view
      */
-    onMailAccountViewHide : function(view) {
-
-        const me = this;
-
+    onMailAccountViewHide: function (view) {
         view.getViewModel().cleanup();
     }
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,40 +23,40 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest', function(t) {
+StartTest(t => {
 
     t.diag("defining mock and waiting until complete...");
 
-    Ext.define('mocked.TestPanel', {
+    Ext.define("mocked.TestPanel", {
 
-        extend : 'Ext.Panel',
+        extend: "Ext.Panel",
 
-        mixins : [
-            'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
+        mixins: [
+            "conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog"
         ]
 
     });
 
-    const funcview = function(t, showButton) {
+    const funcview = function (t, showButton) {
 
 
-        let view = Ext.create('mocked.TestPanel', {
-            width               : 800,
-            height              : 600,
-            renderTo            : document.body
+        let view = Ext.create("mocked.TestPanel", {
+            width: 800,
+            height: 600,
+            renderTo: document.body
         });
 
         let CALLED = 0, TOAST = 0;
-        view.updateTargetHeader = function() {
+        view.updateTargetHeader = function () {
             CALLED = 1;
         };
-        view.showToast = function() {
+        view.showToast = function () {
             TOAST = 1;
         };
 
         let mask = view.showLoadingFailedDialog(showButton);
 
-        t.isInstanceOf(mask, 'coon.comp.component.MessageMask');
+        t.isInstanceOf(mask, "coon.comp.component.MessageMask");
         t.expect(mask).toBe(view.loadingFailedMask);
         t.expect(view.showLoadingFailedDialog(showButton)).toBe(mask);
 
@@ -78,7 +78,7 @@ describe('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest', function(t) 
         }
 
 
-        t.click(okButton[0], function() {
+        t.click(okButton[0], function () {
             t.expect(view.loadingFailedMask).toBe(null);
             t.expect(view.destroyed).toBe(true);
             view = null;
@@ -87,59 +87,58 @@ describe('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialogTest', function(t) 
 
     };
 
-t.waitForMs(1000, function() {
+    t.waitForMs(t.TIMEOUT, () => {
 
-    t.diag("Starting tests.");
+        t.diag("Starting tests.");
 
-    t.it("showToast()", function(t) {
+        t.it("showToast()", t => {
 
-        let view = Ext.create('mocked.TestPanel', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body,
-            header   : {title : 'foo'}
-        });
-        t.isInstanceOf(view.showToast(), 'coon.comp.window.Toast');
+            let view = Ext.create("mocked.TestPanel", {
+                width: 800,
+                height: 600,
+                renderTo: document.body,
+                header: {title: "foo"}
+            });
+            t.isInstanceOf(view.showToast(), "coon.comp.window.Toast");
 
-        view.destroy();
-        view = null;
-    })
-
-    t.it("updateTargetHeader()", function(t) {
-
-        let view = Ext.create('mocked.TestPanel', {
-            width    : 800,
-            height   : 600,
-            renderTo : document.body,
-            header   : {title : 'foo'}
+            view.destroy();
+            view = null;
         });
 
-        let expTitle   = "oops.",
-            expIconCls = "fa fa-frown-o";
+        t.it("updateTargetHeader()", t => {
 
-        t.expect(view.getTitle()).not.toBe(expTitle);
-        t.expect(view.getIconCls()).not.toBe(expIconCls);
+            let view = Ext.create("mocked.TestPanel", {
+                width: 800,
+                height: 600,
+                renderTo: document.body,
+                header: {title: "foo"}
+            });
 
-        view.updateTargetHeader();
+            let expTitle   = "oops.",
+                expIconCls = "far fa-frown";
 
-        t.expect(view.getTitle()).toBe(expTitle);
-        t.expect(view.getIconCls()).toBe(expIconCls);
+            t.expect(view.getTitle()).not.toBe(expTitle);
+            t.expect(view.getIconCls()).not.toBe(expIconCls);
 
-        view.destroy();
-        view = null;
+            view.updateTargetHeader();
+
+            t.expect(view.getTitle()).toBe(expTitle);
+            t.expect(view.getIconCls()).toBe(expIconCls);
+
+            view.destroy();
+            view = null;
+        });
+
+        t.it("showLoadingFailedDialog() - show button, no header", t => {
+            funcview(t, true);
+        });
+
+        t.it("showLoadingFailedDialog() - hide button, no header", t => {
+            funcview(t, false);
+        });
+
+
     });
-
-    t.it("showLoadingFailedDialog() - show button, no header", function(t) {
-        funcview(t, true);
-    });
-
-    t.it("showLoadingFailedDialog() - hide button, no header", function(t) {
-        funcview(t, false);
-    });
-
-
-
-});
 
 
 });

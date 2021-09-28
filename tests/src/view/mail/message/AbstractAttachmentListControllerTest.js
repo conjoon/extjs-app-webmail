@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,21 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.AbstractAttachmentListControllerTest', function(t) {
+StartTest(t => {
 
-
-    t.beforeEach(function() {
-
-        viewConfig = {
-
-        }
-    });
-
-
-    t.it("Should make sure setting up controller works", function(t) {
+    t.it("Should make sure setting up controller works", t => {
 
         var controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.AbstractAttachmentListController', {
+            "conjoon.cn_mail.view.mail.message.AbstractAttachmentListController", {
             });
 
         t.expect(controller instanceof Ext.app.ViewController).toBe(true);
@@ -45,44 +36,44 @@ describe('conjoon.cn_mail.view.mail.message.AbstractAttachmentListControllerTest
     });
 
 
-    t.it("Should register and catch the events properly", function(t) {
+    t.it("Should register and catch the events properly", t => {
 
         var clicked = 0;
 
         var controller = Ext.create(
-            'conjoon.cn_mail.view.mail.message.AbstractAttachmentListController', {
-        });
+            "conjoon.cn_mail.view.mail.message.AbstractAttachmentListController", {
+            });
 
-        controller.onAttachmentItemClick = function() {
+        controller.onAttachmentItemClick = function () {
             clicked++;
         };
 
         Ext.define("MockAttachmentList", {
-            extend     : 'conjoon.cn_mail.view.mail.message.AbstractAttachmentList',
-            alias      : 'widget.mockattachmentlist'
+            extend: "conjoon.cn_mail.view.mail.message.AbstractAttachmentList",
+            alias: "widget.mockattachmentlist"
         });
 
-        t.waitForMs(500, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             var view = Ext.create(
-                'conjoon.cn_mail.view.mail.message.AbstractAttachmentList', {
-                    controller : controller,
-                    renderTo   : document.body,
-                    store      : {
-                        data : [{
-                           text  : 'filename',
-                            size : 100000
+                "conjoon.cn_mail.view.mail.message.AbstractAttachmentList", {
+                    controller: controller,
+                    renderTo: document.body,
+                    store: {
+                        data: [{
+                            text: "filename",
+                            size: 100000
                         }],
-                        proxy : {
-                            type : 'memory'
+                        proxy: {
+                            type: "memory"
                         }
                     }
                 });
 
             // clicked
             t.expect(clicked).toBe(0);
-            t.click(view.el.selectNode('div.attachment'), function() {
+            t.click(view.el.selectNode("div.attachment"), function () {
                 t.expect(clicked).toBe(1);
-                t.click(view.el.selectNode('div.attachment'), function() {
+                t.click(view.el.selectNode("div.attachment"), function () {
                     t.expect(clicked).toBe(2);
                 });
 

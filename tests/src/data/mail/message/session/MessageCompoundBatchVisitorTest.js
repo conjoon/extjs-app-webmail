@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,32 +23,32 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorTest', function(t) {
+StartTest(t => {
 
-    const setupSession = function(withExistingDraft = false) {
+    const setupSession = function (withExistingDraft = false) {
 
-            let session = Ext.create('coon.core.data.Session', {
-                schema : 'cn_mail-mailbaseschema',
-                batchVisitorClassName : 'conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor'
+            let session = Ext.create("coon.core.data.Session", {
+                schema: "cn_mail-mailbaseschema",
+                batchVisitorClassName: "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
             });
 
             let cfg = {
-                subject       : 'test',
-                mailFolderId  : "1",
-                mailAccountId : "3"
+                subject: "test",
+                mailFolderId: "1",
+                mailAccountId: "3"
             };
 
             if (withExistingDraft === true) {
                 cfg.id = "123";
             }
 
-            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', cfg);
+            let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", cfg);
 
             draft.setMessageBody(session.createRecord("MessageBody"));
 
             session.adopt(draft);
 
-            session.createVisitor = function() {
+            session.createVisitor = function () {
 
                 let visitor = coon.core.data.Session.prototype.createVisitor.apply(session);
 
@@ -57,20 +57,20 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
                 this.visitorForTesting = visitor;
 
                 return visitor;
-            }
+            };
 
 
             return session;
 
         },
-        createVisitor = function(setDraft = true) {
-            let visitor = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor');
+        createVisitor = function (setDraft = true) {
+            let visitor = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor");
 
             if (setDraft !== false) {
-                let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                    subject       : 'test',
-                    mailFolderId  : "1",
-                    mailAccountId : "3"
+                let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                    subject: "test",
+                    mailFolderId: "1",
+                    mailAccountId: "3"
                 });
 
                 visitor.setMessageDraft(draft);
@@ -78,407 +78,402 @@ describe('conjoon.cn_mail.view.mail.message.session.MessageCompoundBatchVisitorT
 
             return visitor;
         },
-        createOp = function() {
-            const op = Ext.create('Ext.data.operation.Operation');
+        createOp = function () {
+            const op = Ext.create("Ext.data.operation.Operation");
 
-            op.getResponse = function() {
+            op.getResponse = function () {
                 return {
-                    responseText : "{}"
+                    responseText: "{}"
                 };
-            }
+            };
 
             return op;
         },
-        createBatch = function() {
-            return Ext.create('Ext.data.Batch');
+        createBatch = function () {
+            return Ext.create("Ext.data.Batch");
         };
 
-    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", function() {
-    t.requireOk('conjoon.dev.cn_mailsim.data.mail.PackageSim', function() {
-    t.requireOk('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', function() {
+    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
+        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor", () => {
 
 
-        Ext.ux.ajax.SimManager.init({
-            delay: 1
-        });
-
-
-        t.it("Should successfully create and test instance", function(t) {
-
-            let visitor = Ext.create('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor');
-
-            t.isInstanceOf(visitor, 'coon.core.data.session.SplitBatchVisitor');
-        });
-
-
-        t.it("getBatch()", function(t) {
-
-            let MessageCompoundBatchVisitor = conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor,
-                tmp = MessageCompoundBatchVisitor.prototype.onBatchOperationComplete;
-
-            MessageCompoundBatchVisitor.prototype.onBatchOperationComplete = function() {
-                CALLED = 1;
-            };
-
-            let session = setupSession(),
-                batch = session.getSaveBatch(),
-                CALLED = 0;
-
-            t.expect(CALLED).toBe(0);
-            batch.fireEvent('operationcomplete');
-            t.expect(CALLED).toBe(1);
-
-            MessageCompoundBatchVisitor.prototype.onBatchOperationComplete = tmp;
-        });
-
-
-        t.it("isOperationSwappable()", function(t) {
-
-            let visitor = createVisitor(),
-                op = createOp();
-
-            op.setRecords(Ext.create("Ext.data.Model"));
-            t.expect(visitor.isOperationSwappable(op)).toBe(false);
-
-            op.action = 'create';
-            op.setRecords(Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft"));
-            t.expect(visitor.isOperationSwappable(op)).toBe(false);
-
-            op.setRecords(Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-                id : 1,
-                mailFolderId : 2
-            }));
-            t.expect(visitor.isOperationSwappable(op)).toBe(false);
-
-            op.setRecords(Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-                id : 1,
-                mailFolderId : 2,
-                mailAccountId : 3
-            }));
-            t.expect(visitor.isOperationSwappable(op)).toBe(true);
-
-            op.action = 'destroy';
-            t.expect(visitor.isOperationSwappable(op)).toBe(false);
-        });
-
-
-        t.it("onBatchOperationComplete() - exception", function(t) {
-
-            let visitor = createVisitor(),
-                op      = createOp(),
-                batch   = createBatch();
-
-            op.exception = true;
-
-            t.expect(visitor.onBatchOperationComplete(batch, op)).toBe(null);
-        });
-
-
-        t.it("onBatchOperationComplete() - no operations", function(t) {
-
-            let visitor = createVisitor(),
-                op      = createOp(),
-                batch   = createBatch();
-
-            t.expect(visitor.onBatchOperationComplete(batch, op)).toBe(null);
-        });
-
-
-        t.it("onBatchOperationComplete() - no records", function(t) {
-
-            let visitor = createVisitor(),
-                op      = createOp(),
-                batch   = createBatch();
-
-            batch.add(op);
-
-            t.expect(visitor.onBatchOperationComplete(batch, op)).toBe(null);
-        });
-
-
-        t.it("onBatchOperationComplete()", function(t) {
-
-            let visitor = createVisitor(),
-                op      = createOp(),
-                batch   = createBatch();
-
-            op.setRecords([
-                Ext.create('conjoon.cn_mail.model.mail.message.MessageBody', {
-                    id  : 1,
-                    mailFolderId  : 1,
-                    mailAccountId : 3
-                })
-            ]);
-            batch.add(op);
-
-            let op2 = createOp();
-            op2.action = 'create';
-            op2.setRecords([Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                subject       : 'test',
-                id  : 1,
-                mailFolderId  : 1,
-                mailAccountId : 3
-            })]);
-
-            batch.add(op2);
-            batch.current = 0;
-            let newOp = visitor.onBatchOperationComplete(batch, op);
-            t.expect(newOp).toBeTruthy();
-            t.expect(newOp).not.toBe(op);
-            t.expect(newOp.getParams().origin).toBe('create');
-            t.expect(batch.operations[1]).toBe(newOp);
-        });
-
-
-        t.it("Should properly test behavior", function(t) {
-
-            let session = setupSession();
-
-            let batch = session.getSaveBatch();
-
-            let operations = batch.getOperations();
-
-            t.expect(operations.length).toBe(2);
-
-            let oldOp      = operations[1],
-                oldId      = operations[1].id,
-                oldRecord  = operations[1].getRecords();
-
-            let REFR_OP = [];
-            session.visitorForTesting.refreshKeyForDestroy = function(op) {
-                if (op) {
-                  //  debugger;
-                    REFR_OP.push(op.getRecords()[0]);
-                } else {
-                    REFR_OP.push(false);
-                }
-
-            };
-
-            t.expect(oldId).toBeDefined();
-            t.expect(operations[1].getAction()).toBe('create');
-
-            let CMP_REC = -1;
-            // wait for the first operation to complete
-            batch.on('operationcomplete', function(batch, operation) {
-
-                if (operation !== operations[0]) {
-                    return;
-                }
-
-                //  t.expect(operations[1].id).not.toBe(oldId);
-                t.expect(operations[1]).not.toBe(oldOp);
-                t.expect(operations[1].getAction()).toBe('update');
-                t.expect(operations[1].getParams().origin).toBe("create");
-                t.expect(operations[1].getRecords()[0]).toBe(oldRecord[0]);
-                CMP_REC = operations[1].getRecords()[0];
-            });
-
-            let md = session.visitorForTesting.getMessageDraft();
-
-            t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
-            batch.start();
-            t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
-
-            t.waitForMs(2000, function() {
-
-                t.expect(REFR_OP[0]).toBeTruthy();
-                t.expect(REFR_OP[0]).toBe(CMP_REC);
-
-                t.expect(REFR_OP[1]).toBe(false);
-
-            });
-
-        });
-
-
-        t.it('Test setMessageDraft()', function(t) {
-
-            const visitor = createVisitor(false)
-
-            let exc;
-
-            // wrong type
-            exc = undefined;
-            try {
-                visitor.setMessageDraft({});
-            } catch(e) {
-                exc = e;
-            }
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg).toContain('must be an instance of');
-
-            // okay
-            t.expect(visitor.getMessageDraft()).toBeUndefined();
-            const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
-            visitor.setMessageDraft(draft);
-            t.expect(visitor.getMessageDraft()).toBe(draft);
-
-            // already set
-            exc = undefined;
-            try {
-                visitor.setMessageDraft({});
-            } catch(e) {
-                exc = e;
-            }
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg).toContain('already set');
-        });
-
-
-        t.it('Test seedRetrievedKey()', function(t) {
-
-            const visitor = createVisitor(false)
-
-            t.expect(visitor.seedRetrievedKey()).toBe(false);
-
-            const op = createOp();
-
-            t.expect(visitor.seedRetrievedKey(op)).toBe(false);
-
-            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                subject       : 'test',
-                mailFolderId  : "1",
-                mailAccountId : "3"
-            });
-
-            visitor.setMessageDraft(draft);
-
-            op.action = "destroy";
-            let CMP = "STRTIOULRFC2Z7Ä";
-            op.getResponse = function() {
-                return {
-                    responseText : Ext.encode({
-                        data : {
-                            parentMessageItemId : CMP
-                        }
-                    })
-                };
-            }
-            op.setRecords([ Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                mailFolderId  : "1",
-                mailAccountId : "3"
-            })]);
-
-            t.expect(visitor.seedRetrievedKey(op)).toBe(true);
-            t.expect(draft.get("id")).toBe(CMP);
-            t.expect(draft.dirty).toBe(false);
-
-        });
-
-
-        t.it('Test seedRetrievedKey() - response was application/json - app-cn_mail#119', function(t) {
-
-            const visitor = createVisitor(false),
-                  op = createOp(),
-                  draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                    subject       : 'test',
-                    mailFolderId  : "1",
-                    mailAccountId : "3"
+                Ext.ux.ajax.SimManager.init({
+                    delay: 1
                 });
 
-            visitor.setMessageDraft(draft);
 
-            op.action = "destroy";
-            let CMP = "STRTIOULRFC2Z7Ä";
-            op.getResponse = function() {
-                return {
-                    responseType : "json",
-                    responseJson : {
-                        data : {
-                            parentMessageItemId : CMP
+                t.it("Should successfully create and test instance", t => {
+
+                    let visitor = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor");
+
+                    t.isInstanceOf(visitor, "coon.core.data.session.SplitBatchVisitor");
+                });
+
+
+                t.it("getBatch()", t => {
+
+                    let MessageCompoundBatchVisitor = conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor,
+                        tmp = MessageCompoundBatchVisitor.prototype.onBatchOperationComplete;
+
+                    MessageCompoundBatchVisitor.prototype.onBatchOperationComplete = function () {
+                        CALLED = 1;
+                    };
+
+                    let session = setupSession(),
+                        batch = session.getSaveBatch(),
+                        CALLED = 0;
+
+                    t.expect(CALLED).toBe(0);
+                    batch.fireEvent("operationcomplete");
+                    t.expect(CALLED).toBe(1);
+
+                    MessageCompoundBatchVisitor.prototype.onBatchOperationComplete = tmp;
+                });
+
+
+                t.it("isOperationSwappable()", t => {
+
+                    let visitor = createVisitor(),
+                        op = createOp();
+
+                    op.setRecords(Ext.create("Ext.data.Model"));
+                    t.expect(visitor.isOperationSwappable(op)).toBe(false);
+
+                    op.action = "create";
+                    op.setRecords(Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft"));
+                    t.expect(visitor.isOperationSwappable(op)).toBe(false);
+
+                    op.setRecords(Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        id: 1,
+                        mailFolderId: 2
+                    }));
+                    t.expect(visitor.isOperationSwappable(op)).toBe(false);
+
+                    op.setRecords(Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        id: 1,
+                        mailFolderId: 2,
+                        mailAccountId: 3
+                    }));
+                    t.expect(visitor.isOperationSwappable(op)).toBe(true);
+
+                    op.action = "destroy";
+                    t.expect(visitor.isOperationSwappable(op)).toBe(false);
+                });
+
+
+                t.it("onBatchOperationComplete() - exception", t => {
+
+                    let visitor = createVisitor(),
+                        op      = createOp(),
+                        batch   = createBatch();
+
+                    op.exception = true;
+
+                    t.expect(visitor.onBatchOperationComplete(batch, op)).toBe(null);
+                });
+
+
+                t.it("onBatchOperationComplete() - no operations", t => {
+
+                    let visitor = createVisitor(),
+                        op      = createOp(),
+                        batch   = createBatch();
+
+                    t.expect(visitor.onBatchOperationComplete(batch, op)).toBe(null);
+                });
+
+
+                t.it("onBatchOperationComplete() - no records", t => {
+
+                    let visitor = createVisitor(),
+                        op      = createOp(),
+                        batch   = createBatch();
+
+                    batch.add(op);
+
+                    t.expect(visitor.onBatchOperationComplete(batch, op)).toBe(null);
+                });
+
+
+                t.it("onBatchOperationComplete()", t => {
+
+                    let visitor = createVisitor(),
+                        op      = createOp(),
+                        batch   = createBatch();
+
+                    op.setRecords([
+                        Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+                            id: 1,
+                            mailFolderId: 1,
+                            mailAccountId: 3
+                        })
+                    ]);
+                    batch.add(op);
+
+                    let op2 = createOp();
+                    op2.action = "create";
+                    op2.setRecords([Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        subject: "test",
+                        id: 1,
+                        mailFolderId: 1,
+                        mailAccountId: 3
+                    })]);
+
+                    batch.add(op2);
+                    batch.current = 0;
+                    let newOp = visitor.onBatchOperationComplete(batch, op);
+                    t.expect(newOp).toBeTruthy();
+                    t.expect(newOp).not.toBe(op);
+                    t.expect(newOp.getParams().origin).toBe("create");
+                    t.expect(batch.operations[1]).toBe(newOp);
+                });
+
+
+                t.it("Should properly test behavior", t => {
+
+                    let session = setupSession();
+
+                    let batch = session.getSaveBatch();
+
+                    let operations = batch.getOperations();
+
+                    t.expect(operations.length).toBe(2);
+
+                    let oldOp      = operations[1],
+                        oldId      = operations[1].id,
+                        oldRecord  = operations[1].getRecords();
+
+                    let REFR_OP = [];
+                    session.visitorForTesting.refreshKeyForDestroy = function (op) {
+                        if (op) {
+                            //  debugger;
+                            REFR_OP.push(op.getRecords()[0]);
+                        } else {
+                            REFR_OP.push(false);
                         }
+
+                    };
+
+                    t.expect(oldId).toBeDefined();
+                    t.expect(operations[1].getAction()).toBe("create");
+
+                    let CMP_REC = -1;
+                    // wait for the first operation to complete
+                    batch.on("operationcomplete", function (batch, operation) {
+
+                        if (operation !== operations[0]) {
+                            return;
+                        }
+
+                        //  t.expect(operations[1].id).not.toBe(oldId);
+                        t.expect(operations[1]).not.toBe(oldOp);
+                        t.expect(operations[1].getAction()).toBe("update");
+                        t.expect(operations[1].getParams().origin).toBe("create");
+                        t.expect(operations[1].getRecords()[0]).toBe(oldRecord[0]);
+                        CMP_REC = operations[1].getRecords()[0];
+                    });
+
+                    let md = session.visitorForTesting.getMessageDraft();
+
+                    t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
+                    batch.start();
+                    t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                        t.expect(REFR_OP[0]).toBeTruthy();
+                        t.expect(REFR_OP[0]).toBe(CMP_REC);
+
+                        t.expect(REFR_OP[1]).toBe(false);
+
+                    });
+
+                });
+
+
+                t.it("Test setMessageDraft()", t => {
+
+                    const visitor = createVisitor(false);
+
+                    let exc;
+
+                    // wrong type
+                    exc = undefined;
+                    try {
+                        visitor.setMessageDraft({});
+                    } catch(e) {
+                        exc = e;
                     }
-                };
-            }
-            op.setRecords([ Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                mailFolderId  : "1",
-                mailAccountId : "3"
-            })]);
+                    t.expect(exc).toBeDefined();
+                    t.expect(exc.msg).toBeDefined();
+                    t.expect(exc.msg).toContain("must be an instance of");
 
-            t.expect(visitor.seedRetrievedKey(op)).toBe(true);
-            t.expect(draft.get("id")).toBe(CMP);
-            t.expect(draft.dirty).toBe(false);
+                    // okay
+                    t.expect(visitor.getMessageDraft()).toBeUndefined();
+                    const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
+                    visitor.setMessageDraft(draft);
+                    t.expect(visitor.getMessageDraft()).toBe(draft);
 
-        });
-
-
-        t.it('Test refreshKeyForDestroy()', function(t) {
-
-            const visitor = createVisitor(false)
-
-            t.expect(visitor.refreshKeyForDestroy()).toBe(false);
-
-            const op = createOp();
-
-            t.expect(visitor.refreshKeyForDestroy(op)).toBe(false);
-
-            let draft = Ext.create('conjoon.cn_mail.model.mail.message.MessageDraft', {
-                subject       : 'test',
-                id            : "FOOBAR",
-                mailFolderId  : "1",
-                mailAccountId : "3"
-            });
-
-            visitor.setMessageDraft(draft);
-
-            op.action = "destroy";
-            let attachment = Ext.create('conjoon.cn_mail.model.mail.message.DraftAttachment', {
-                id            : "567",
-                mailFolderId  : "1",
-                mailAccountId : "3"
-            });
-            op.setRecords([attachment]);
-
-            t.expect(attachment.get("parentMessageItemId")).not.toBe(draft.get("id"));
-            t.expect(visitor.refreshKeyForDestroy(op)).toBe(true);
-            t.expect(attachment.get("parentMessageItemId")).toBe(draft.get("id"));
-            t.expect(attachment.dirty).toBe(false);
-
-        });
+                    // already set
+                    exc = undefined;
+                    try {
+                        visitor.setMessageDraft({});
+                    } catch(e) {
+                        exc = e;
+                    }
+                    t.expect(exc).toBeDefined();
+                    t.expect(exc.msg).toBeDefined();
+                    t.expect(exc.msg).toContain("already set");
+                });
 
 
+                t.it("Test seedRetrievedKey()", t => {
 
-        t.it("Should make sure preBatchCompoundKey is saved on MessageDraft", function(t) {
+                    const visitor = createVisitor(false);
 
-            let session    = setupSession(true),
-                batch      = session.getSaveBatch(),
-                operations = batch.getOperations();
+                    t.expect(visitor.seedRetrievedKey()).toBe(false);
 
-            t.expect(operations.length).toBe(2);
+                    const op = createOp();
 
-            let oldOp      = operations[1],
-                oldId      = operations[1].id,
-                oldRecord  = operations[1].getRecords();
+                    t.expect(visitor.seedRetrievedKey(op)).toBe(false);
 
-            let md = session.visitorForTesting.getMessageDraft();
+                    let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        subject: "test",
+                        mailFolderId: "1",
+                        mailAccountId: "3"
+                    });
 
-            // wait for the first operation to complete
-            batch.on('operationcomplete', function(batch, operation) {
+                    visitor.setMessageDraft(draft);
 
-                // test last operation!
-                if (operation !== operations[0]) {
-                    return;
-                }
+                    op.action = "destroy";
+                    let CMP = "STRTIOULRFC2Z7Ä";
+                    op.getResponse = function () {
+                        return {
+                            responseText: Ext.encode({
+                                data: {
+                                    parentMessageItemId: CMP
+                                }
+                            })
+                        };
+                    };
+                    op.setRecords([ Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                        mailFolderId: "1",
+                        mailAccountId: "3"
+                    })]);
 
-                t.expect(md.getPreBatchCompoundKey()).not.toBeUndefined();
-                t.expect(md.getPreBatchCompoundKey().getId()).not.toBe(md.getCompoundKey().getId());
-                t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey())).toBe(false);
-            });
+                    t.expect(visitor.seedRetrievedKey(op)).toBe(true);
+                    t.expect(draft.get("id")).toBe(CMP);
+                    t.expect(draft.dirty).toBe(false);
 
-            t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
-            batch.start();
-            t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey()));
-
-            t.waitForMs(2000, function() {
-
-            });
-
-        });
+                });
 
 
-});})})});
+                t.it("Test seedRetrievedKey() - response was application/json - extjs-app-webmail#119", t => {
+
+                    const visitor = createVisitor(false),
+                        op = createOp(),
+                        draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                            subject: "test",
+                            mailFolderId: "1",
+                            mailAccountId: "3"
+                        });
+
+                    visitor.setMessageDraft(draft);
+
+                    op.action = "destroy";
+                    let CMP = "STRTIOULRFC2Z7Ä";
+                    op.getResponse = function () {
+                        return {
+                            responseType: "json",
+                            responseJson: {
+                                data: {
+                                    parentMessageItemId: CMP
+                                }
+                            }
+                        };
+                    };
+                    op.setRecords([ Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                        mailFolderId: "1",
+                        mailAccountId: "3"
+                    })]);
+
+                    t.expect(visitor.seedRetrievedKey(op)).toBe(true);
+                    t.expect(draft.get("id")).toBe(CMP);
+                    t.expect(draft.dirty).toBe(false);
+
+                });
+
+
+                t.it("Test refreshKeyForDestroy()", t => {
+
+                    const visitor = createVisitor(false);
+
+                    t.expect(visitor.refreshKeyForDestroy()).toBe(false);
+
+                    const op = createOp();
+
+                    t.expect(visitor.refreshKeyForDestroy(op)).toBe(false);
+
+                    let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        subject: "test",
+                        id: "FOOBAR",
+                        mailFolderId: "1",
+                        mailAccountId: "3"
+                    });
+
+                    visitor.setMessageDraft(draft);
+
+                    op.action = "destroy";
+                    let attachment = Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                        id: "567",
+                        mailFolderId: "1",
+                        mailAccountId: "3"
+                    });
+                    op.setRecords([attachment]);
+
+                    t.expect(attachment.get("parentMessageItemId")).not.toBe(draft.get("id"));
+                    t.expect(visitor.refreshKeyForDestroy(op)).toBe(true);
+                    t.expect(attachment.get("parentMessageItemId")).toBe(draft.get("id"));
+                    t.expect(attachment.dirty).toBe(false);
+
+                });
+
+
+                t.it("Should make sure preBatchCompoundKey is saved on MessageDraft", t => {
+
+                    let session    = setupSession(true),
+                        batch      = session.getSaveBatch(),
+                        operations = batch.getOperations();
+
+                    t.expect(operations.length).toBe(2);
+
+                    let md = session.visitorForTesting.getMessageDraft();
+
+                    // wait for the first operation to complete
+                    batch.on("operationcomplete", function (batch, operation) {
+
+                        // test last operation!
+                        if (operation !== operations[0]) {
+                            return;
+                        }
+
+                        t.expect(md.getPreBatchCompoundKey()).not.toBeUndefined();
+                        t.expect(md.getPreBatchCompoundKey().getId()).not.toBe(md.getCompoundKey().getId());
+                        t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey())).toBe(false);
+                    });
+
+                    t.expect(md.getPreBatchCompoundKey()).toBeUndefined();
+                    batch.start();
+                    t.expect(md.getPreBatchCompoundKey().equalTo(md.getCompoundKey()));
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                    });
+
+                });
+
+
+            });});});});
 
 

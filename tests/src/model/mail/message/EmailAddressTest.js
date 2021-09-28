@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,29 +23,29 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.message.EmailAddressTest', function(t) {
+StartTest(t => {
 
     var model;
 
-    t.beforeEach(function() {
-        model = Ext.create('conjoon.cn_mail.model.mail.message.EmailAddress');
+    t.beforeEach(function () {
+        model = Ext.create("conjoon.cn_mail.model.mail.message.EmailAddress");
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         model       = null;
     });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
+    t.it("Should create instance", t => {
+        t.isInstanceOf(model, "conjoon.cn_mail.model.mail.BaseModel");
     });
 
-    t.it("id", function(t) {
-        t.expect(model.getIdProperty()).toBe('id');
+    t.it("id", t => {
+        t.expect(model.getIdProperty()).toBe("id");
     });
 
 });

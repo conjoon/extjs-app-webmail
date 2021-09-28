@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,47 +32,46 @@
  * method getAddressFormulas() which gets called from the constructor.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
+Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
 
-    extend : 'Ext.app.ViewModel',
+    extend: "Ext.app.ViewModel",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageDraft',
-        'conjoon.cn_mail.model.mail.message.MessageBody',
-        'conjoon.cn_mail.model.mail.message.EmailAddress',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest',
-        'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier',
-        'coon.core.Util',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
-        'conjoon.cn_mail.data.mail.message.session.MessageDraftSession'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageDraft",
+        "conjoon.cn_mail.model.mail.message.MessageBody",
+        "conjoon.cn_mail.model.mail.message.EmailAddress",
+        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
+        "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
+        "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+        "conjoon.cn_mail.data.mail.message.session.MessageDraftSession"
     ],
 
-    alias : 'viewmodel.cn_mail-mailmessageeditorviewmodel',
+    alias: "viewmodel.cn_mail-mailmessageeditorviewmodel",
 
     /**
      * @private
      */
-    loadingDraft : null,
+    loadingDraft: null,
 
     /**
      * Set to true once a draft/body could not be loaded.
      * @protected
      */
-    loadingFailed : false,
+    loadingFailed: false,
 
     /**
      * Default empty subject text for messages.
      * @i18n
      * @private
      */
-    emptySubjectText : '(No subject)',
+    emptySubjectText: "(No subject)",
 
     /**
      * @type {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier}
      * @private
      */
-    messageDraftCopier : null,
+    messageDraftCopier: null,
 
     /**
      * Will store the CopyRequest this ViewModel was configured with, if CopyRequest.isConfigured()
@@ -80,44 +79,44 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * @type {conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest}
      * @private
      */
-    pendingCopyRequest : null,
+    pendingCopyRequest: null,
 
-    data : {
+    data: {
         /**
          * Set to true to indicate that the view is busy saving a message.
          */
-        isSaving : false,
+        isSaving: false,
 
         /**
          * Set to true to indicate that the view is busy sending a message.
          */
-        isSending : false,
+        isSending: false,
 
         /**
          * The view will set this to false if the user does not wish to specify
          * a subject, even if a prompt requested one.
          */
-        isSubjectRequired : true
+        isSubjectRequired: true
     },
 
-    formulas : {
+    formulas: {
 
         /**
          * Returns true if the MessageDraft is still marked as phantom and the
          * savedAt-value has never been set (due to the way the MVVM accesses
          * the data we have to use this condition).
          */
-        isPhantom : function(get) {
-            return get('messageDraft').phantom && !get('messageDraft.savedAt');
+        isPhantom: function (get) {
+            return get("messageDraft").phantom && !get("messageDraft.savedAt");
         },
 
         /**
          * Returns true if both mailAccountId and mailFolderId are set fot the
          * messageDraft.
          */
-        isAccountAndFolderSet : function(get) {
-            var ma = get('messageDraft.mailAccountId'),
-                mf = get('messageDraft.mailFolderId');
+        isAccountAndFolderSet: function (get) {
+            var ma = get("messageDraft.mailAccountId"),
+                mf = get("messageDraft.mailFolderId");
 
             return !!(ma && mf);
 
@@ -127,15 +126,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          * Returns true if the "loading" property of the messageDraft's MessageBody
          * is true, otherwise false.
          */
-        isMessageBodyLoading : function(get) {
-            var mb = get('messageDraft.messageBody');
+        isMessageBodyLoading: function (get) {
+            var mb = get("messageDraft.messageBody");
 
             /**
              * @todo this should probably better be changed to Ext.data.Model#isLoading
              */
             return mb && mb.loading !== undefined
-                   ? mb.loading
-                   : false;
+                ? mb.loading
+                : false;
 
         },
 
@@ -145,13 +144,13 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          *
          * @return {Boolean} true if either cc or bcc is set, otherwise false.
          */
-        isCcOrBccValueSet : {
-            bind : {
-                cc   : '{messageDraft.cc}',
-                bcc  : '{messageDraft.bcc}'
+        isCcOrBccValueSet: {
+            bind: {
+                cc: "{messageDraft.cc}",
+                bcc: "{messageDraft.bcc}"
             },
 
-            get : function(data) {
+            get: function (data) {
                 return !!(data.cc && data.cc.length) ||
                        !!(data.bcc && data.bcc.length);
             }
@@ -167,14 +166,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          * MessageDraft's to, cc, and bcc fields.
          *
          */
-        addressStoreData : {
-            single : true,
-            bind : {
-                to  : '{messageDraft.to}',
-                cc  : '{messageDraft.cc}',
-                bcc : '{messageDraft.bcc}'
+        addressStoreData: {
+            single: true,
+            bind: {
+                to: "{messageDraft.to}",
+                cc: "{messageDraft.cc}",
+                bcc: "{messageDraft.bcc}"
             },
-            get : function(data) {
+            get: function (data) {
                 return [].concat(data.to, data.cc, data.bcc);
             }
         },
@@ -186,36 +185,36 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          * is empty, the #emptySubjectText will be used instead.
          *
          */
-        getSubject : {
+        getSubject: {
 
-            bind : {
-                subject : '{messageDraft.subject}'
+            bind: {
+                subject: "{messageDraft.subject}"
             },
 
-            get : function(data) {
+            get: function (data) {
                 var m = data.subject || this.emptySubjectText;
                 return m;
             },
-            set : function(value) {
-                this.set('messageDraft.subject', value || this.emptySubjectText);
+            set: function (value) {
+                this.set("messageDraft.subject", value || this.emptySubjectText);
             }
         }
     },
 
-    stores : {
+    stores: {
 
-        mailAccountStore : {
-            source: '{cn_mail_mailfoldertreestore}',
+        mailAccountStore: {
+            source: "{cn_mail_mailfoldertreestore}",
 
-            filters : [{
-                property : 'folderType',
-                value    : 'ACCOUNT'
+            filters: [{
+                property: "folderType",
+                value: "ACCOUNT"
             }]
         },
 
-        addressStore : {
-            model : 'conjoon.cn_mail.model.mail.message.EmailAddress',
-            data  : '{addressStoreData}'
+        addressStore: {
+            model: "conjoon.cn_mail.model.mail.message.EmailAddress",
+            data: "{addressStoreData}"
         }
     },
 
@@ -238,15 +237,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest or of type string,
      * or if the session used does not use the conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor
      */
-    constructor : function(config) {
+    constructor: function (config) {
 
         var me = this,
             messageDraft;
 
         if (!config || !config.messageDraft) {
             Ext.raise({
-                source : Ext.getClassName(this),
-                msg    : 'arguments "config" and  "config.messageDraft" must be set.'
+                source: Ext.getClassName(this),
+                msg: "arguments \"config\" and  \"config.messageDraft\" must be set."
             });
         }
 
@@ -254,7 +253,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         delete config.messageDraft;
 
         Ext.apply(config, {
-            formulas : me.createAddressFormulas()
+            formulas: me.createAddressFormulas()
         });
 
         me.callParent([config]);
@@ -262,83 +261,83 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
         let session = me.getSession();
         if (!(session instanceof conjoon.cn_mail.data.mail.message.session.MessageDraftSession)) {
             Ext.raise({
-                msg     : "This ViewModel requires a data session of the type conjoon.cn_mail.data.mail.message.session.MessageDraftSession",
-                session : session
-            })
+                msg: "This ViewModel requires a data session of the type conjoon.cn_mail.data.mail.message.session.MessageDraftSession",
+                session: session
+            });
         }
 
-        let MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+        let MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey,
+            localId, sessDraft;
 
         switch (true) {
 
-            case (messageDraft instanceof MessageEntityCompoundKey):
+        case (messageDraft instanceof MessageEntityCompoundKey):
 
-                let localId   = messageDraft.toLocalId(),
-                    sessDraft = session.peekRecord('MessageDraft', localId);
+            localId   = messageDraft.toLocalId();
+            sessDraft = session.peekRecord("MessageDraft", localId);
 
-                // instead of setting links property, this should have the
-                // same effect. We can, however, submit additional options
-                // which are considered in the request
-                // note the callbacks for this record; we we only set the messageDraft
-                // of the ViewModel if the record was successfully initially loaded,
-                // otherwise Ext 6.2.0 tries to load associations automatically
-                // which shouldnt happen since the initial Entity was not successfully
-                // loaded @see conjoon/app-cn_mail#64
-                if (!sessDraft) {
-                    let options = {
-                        params  : messageDraft.toObject(),
-                        scope   : me,
-                        success : function(record) {
-                            const me = this,
-                                  view = me.getView();
+            // instead of setting links property, this should have the
+            // same effect. We can, however, submit additional options
+            // which are considered in the request
+            // note the callbacks for this record; we we only set the messageDraft
+            // of the ViewModel if the record was successfully initially loaded,
+            // otherwise Ext 6.2.0 tries to load associations automatically
+            // which shouldnt happen since the initial Entity was not successfully
+            // loaded @see conjoon/extjs-app-webmail#64
+            if (!sessDraft) {
+                let options = {
+                    params: messageDraft.toObject(),
+                    success: function (record) {
+                        const me = this,
+                            view = me.getView();
 
-                            me.getSession().setMessageDraft(record);
+                        me.getSession().setMessageDraft(record);
 
-                            record.loadMessageBody({
-                                success : function(mb) {
-                                    me.set('messageDraft', record);
-                                    me.notify();
-                                    me.loadingDraft = null;
-                                    view.fireEvent('cn_mail-messagedraftload', view, record);
-                                },
-                                scope : me
-                            })
-                        },
-                        failure : me.processMessageDraftLoadFailure,
-                        scope : me
-                    };
-                    me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
-                } else {
-                    me.getSession().setMessageDraft(sessDraft);
-                    me.set('messageDraft', sessDraft);
-                }
+                        record.loadMessageBody({
+                            success: function (mb) {
+                                me.set("messageDraft", record);
+                                me.notify();
+                                me.loadingDraft = null;
+                                view.fireEvent("cn_mail-messagedraftload", view, record);
+                            },
+                            scope: me
+                        });
+                    },
+                    failure: me.processMessageDraftLoadFailure,
+                    scope: me
+                };
+                me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
+            } else {
+                me.getSession().setMessageDraft(sessDraft);
+                me.set("messageDraft", sessDraft);
+            }
 
-                return;
+            return;
 
-            case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig):
-                // MessageDraft is MessageDraftConfig
-                me.createDraftFromData(messageDraft);
-                return;
+        case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig):
+            // MessageDraft is MessageDraftConfig
+            me.createDraftFromData(messageDraft);
+            return;
 
-            case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest):
-                // MessageDraft is MessageDraftCopyRequest
-                me.messageDraftCopier = Ext.create(
-                    'conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier');
+        case (messageDraft instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest):
+            // MessageDraft is MessageDraftCopyRequest
+            me.messageDraftCopier = Ext.create(
+                "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopier");
 
-                if (messageDraft.isConfigured()) {
-                    me.pendingCopyRequest = messageDraft;
-                    me.processPendingCopyRequest();
-                } else {
-                    me.pendingCopyRequest = messageDraft;
-                }
-                return;
+            if (messageDraft.isConfigured()) {
+                me.pendingCopyRequest = messageDraft;
+                me.processPendingCopyRequest();
+            } else {
+                me.pendingCopyRequest = messageDraft;
+            }
+            return;
 
         }
 
         // exception
         Ext.raise({
-            messageDraft : messageDraft,
-            msg          : "\"messageDraft\" must either be an instance of " +
+            messageDraft: messageDraft,
+            msg: "\"messageDraft\" must either be an instance of " +
                            "MessageDraftConfig, of MessageDraftCopyRequest or of " +
                            "MessageEntityCompoundKey."
         });
@@ -357,7 +356,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      *
      * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showLoadingFailedDialog}
      */
-    processMessageDraftLoadFailure : function(draftRecord, operation) {
+    processMessageDraftLoadFailure: function (draftRecord, operation) {
 
         const me = this;
 
@@ -379,7 +378,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      *
      * @returns {Boolean}
      */
-    hasPendingCopyRequest : function() {
+    hasPendingCopyRequest: function () {
         const me = this;
 
         return !!me.pendingCopyRequest;
@@ -406,7 +405,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
      * @private
      *
      */
-    processPendingCopyRequest : function(mailAccountId, mailFolderId) {
+    processPendingCopyRequest: function (mailAccountId, mailFolderId) {
 
         const me = this;
 
@@ -414,16 +413,16 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
         if (!request) {
             Ext.raise({
-                msg  : "\"pendingCopyRequest\" is not available."
+                msg: "\"pendingCopyRequest\" is not available."
             });
         }
 
         if (!request.isConfigured()) {
             if (!mailAccountId || !mailFolderId) {
                 Ext.raise({
-                    msg  : "\"pendingCopyRequest\" is not properly configured, and arguments are missing.",
-                    args : arguments,
-                    pendingCopyRequest : request
+                    msg: "\"pendingCopyRequest\" is not properly configured, and arguments are missing.",
+                    args: arguments,
+                    pendingCopyRequest: request
                 });
             }
 
@@ -442,7 +441,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     /**
      * @inheritdoc
      */
-    destroy : function() {
+    destroy: function () {
 
         var me = this;
 
@@ -455,7 +454,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * Callback for the cn_mail-mailmessagecopyload of the MessageDraftCopier.
@@ -468,7 +467,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          *
          * @see createDraftFromData
          */
-        onMessageDraftCopyLoad : function(draftCopier, messageDraftConfig, success, operation) {
+        onMessageDraftCopyLoad: function (draftCopier, messageDraftConfig, success, operation) {
             var me = this,
                 view = me.getView();
 
@@ -478,7 +477,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
             me.createDraftFromData(messageDraftConfig);
             me.notify();
-            view.fireEvent('cn_mail-messagedraftload', view, me.get('messageDraft'));
+            view.fireEvent("cn_mail-messagedraftload", view, me.get("messageDraft"));
         },
 
 
@@ -493,7 +492,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          * @throws if messageDraftConfig is not of type
          * conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
          */
-        createDraftFromData : function(messageDraftConfig) {
+        createDraftFromData: function (messageDraftConfig) {
 
             var me = this,
                 messageBody,
@@ -502,9 +501,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
 
             if (!(messageDraftConfig instanceof conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig)) {
                 Ext.raise({
-                    messageDraftConfig : messageDraftConfig,
-                    msg                : "\"messageDraftConfig\" must be an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"
-                })
+                    messageDraftConfig: messageDraftConfig,
+                    msg: "\"messageDraftConfig\" must be an instance of conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"
+                });
             }
 
             data = messageDraftConfig.toObject();
@@ -517,12 +516,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             delete data.attachments;
 
 
-            me.linkTo('messageDraft', {
-                type   : 'MessageDraft',
-                create : data
+            me.linkTo("messageDraft", {
+                type: "MessageDraft",
+                create: data
             });
 
-            me.getSession().setMessageDraft(me.get('messageDraft'));
+            me.getSession().setMessageDraft(me.get("messageDraft"));
 
             /**
              * @bug
@@ -534,11 +533,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             // The messageBody might be initialized with some values as specified
             // in the constructor's config-argument
             me.set(
-                'messageDraft.messageBody',
-                me.getSession().createRecord('MessageBody', messageBody || {})
+                "messageDraft.messageBody",
+                me.getSession().createRecord("MessageBody", messageBody || {})
             );
 
-            me.get('messageDraft').attachments().add(
+            me.get("messageDraft").attachments().add(
                 attachments || []
             );
         },
@@ -568,9 +567,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          * @see #getAddressValuesFromDraft
          * @see #setAddressesForDraft
          */
-        createAddressFormulas : function() {
+        createAddressFormulas: function () {
 
-            var types    = ['to', 'cc', 'bcc'],
+            var types    = ["to", "cc", "bcc"],
                 type     = null,
                 formulas = {},
                 formula  = {},
@@ -579,15 +578,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
             for (var i = 0, len = types.length; i < len; i++) {
                 type = types[i];
 
-                formulaName = 'get' + Ext.String.capitalize(type);
+                formulaName = "get" + Ext.String.capitalize(type);
 
                 formula = {
-                    bind : {},
-                    get  : this.getAddressValuesFromDraft.bind(this, type),
-                    set  : this.setAddressesForDraft.bind(this, type)
+                    bind: {},
+                    get: this.getAddressValuesFromDraft.bind(this, type),
+                    set: this.setAddressesForDraft.bind(this, type)
                 };
 
-                formula['bind'][type] = '{messageDraft.' + type + '}';
+                formula["bind"][type] = "{messageDraft." + type + "}";
 
                 formulas[formulaName] = formula;
             }
@@ -608,11 +607,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          *
          * @returns {Array}
          */
-        getAddressValuesFromDraft : function(type, data) {
+        getAddressValuesFromDraft: function (type, data) {
             var ids = [],
                 addresses = data[type] || [];
             for (var i = 0, len = addresses.length; i < len; i++) {
-                ids.push(addresses[i]['address']);
+                ids.push(addresses[i]["address"]);
             }
             return ids;
         },
@@ -636,25 +635,25 @@ Ext.define('conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel', {
          *
          * @returns {Array}
          */
-        setAddressesForDraft : function(type, values) {
+        setAddressesForDraft: function (type, values) {
 
             var me     = this,
                 addresses = [],
-                store  = me.getStore('addressStore'),
+                store  = me.getStore("addressStore"),
                 ind,
                 rec;
 
             for (var i = 0, len = values.length; i < len; i++) {
-                ind = store.find('address', values[i], 0, false, false, true);
+                ind = store.find("address", values[i], 0, false, false, true);
                 if (ind !== -1) {
                     rec = store.getAt(ind);
-                    addresses.push(Ext.copy({}, rec.data, 'address,name'));
+                    addresses.push(Ext.copy({}, rec.data, "address,name"));
                 } else {
-                    addresses.push({address : values[i]});
+                    addresses.push({address: values[i]});
                 }
             }
 
-            this.set('messageDraft.' + type, addresses);
+            this.set("messageDraft." + type, addresses);
             return addresses;
         }
     }

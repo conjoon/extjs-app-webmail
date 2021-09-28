@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,28 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest', function(t) {
+StartTest(t => {
 
 
-    t.it("Should successfully create and test instance", function(t) {
+    t.it("Should successfully create and test instance", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader', {
+        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
 
         });
 
-        t.isInstanceOf(reader, 'Ext.data.reader.Json');
+        t.isInstanceOf(reader, "Ext.data.reader.Json");
 
-        t.expect(reader.mailFolderModelClass).toBe('conjoon.cn_mail.model.mail.folder.MailFolder');
+        t.expect(reader.mailFolderModelClass).toBe("conjoon.cn_mail.model.mail.folder.MailFolder");
 
-        t.expect(reader.alias).toContain('reader.cn_mail-mailfolderjsonreader');
+        t.expect(reader.alias).toContain("reader.cn_mail-mailfolderjsonreader");
 
     });
 
 
-    t.it("applyCompoundKey - exception", function(t) {
+    t.it("applyCompoundKey - exception", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader'),
-            exc, e, data;
+        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
+            exc, data;
 
         try{reader.applyCompoundKey(data);} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
@@ -52,43 +52,42 @@ describe('conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest', fun
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
         exc = undefined;
 
-        data = {data : ""};
+        data = {data: ""};
         try{reader.applyCompoundKey(data);} catch(e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("malformed");
-        exc = undefined;
 
     });
 
 
-    t.it("recurseChildren()", function(t) {
+    t.it("recurseChildren()", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader'),
+        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
             ret,
             data = {
-                data : [{
-                    mailAccountId : 'foo',
-                    id            : 'bar'
+                data: [{
+                    mailAccountId: "foo",
+                    id: "bar"
                 }, {
-                    mailAccountId : 'foo2',
-                    id            : 'bar2'
+                    mailAccountId: "foo2",
+                    id: "bar2"
                 }]
             }, result = {
-                data : [{
-                    modelType  : 'conjoon.cn_mail.model.mail.folder.MailFolder',
-                    localId : 'foo-bar',
-                    mailAccountId : 'foo',
-                    id            : 'bar'
+                data: [{
+                    modelType: "conjoon.cn_mail.model.mail.folder.MailFolder",
+                    localId: "foo-bar",
+                    mailAccountId: "foo",
+                    id: "bar"
                 }, {
-                    modelType  : 'conjoon.cn_mail.model.mail.folder.MailFolder',
-                    localId : 'foo2-bar2',
-                    mailAccountId : 'foo2',
-                    id            : 'bar2'
+                    modelType: "conjoon.cn_mail.model.mail.folder.MailFolder",
+                    localId: "foo2-bar2",
+                    mailAccountId: "foo2",
+                    id: "bar2"
                 }]
             };
 
-        t.isCalled('recurseChildren', reader);
+        t.isCalled("recurseChildren", reader);
 
         ret = reader.applyCompoundKey(data);
 
@@ -96,23 +95,25 @@ describe('conjoon.cn_mail.view.mail.folder.reader.MailFolderJsonReaderTest', fun
     });
 
 
-    t.it("applyCompoundKey() - success false", function(t) {
+    t.it("applyCompoundKey() - success false", t => {
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader');
-        ret = reader.applyCompoundKey({success : false});
-        t.expect(ret).toEqual({success : false})
+        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
+            ret = reader.applyCompoundKey({success: false});
+        t.expect(ret).toEqual({success: false});
     });
 
 
-    t.it("readRecords()", function(t){
+    t.it("readRecords()", function (t){
 
-        let reader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader');
+        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader");
 
-        t.isCalledNTimes('applyCompoundKey', reader, 1);
+        t.isCalledNTimes("applyCompoundKey", reader, 1);
 
         // exception is expected here and okay.
-        try {reader.readRecords();}catch(e){}
-    })
+        t.throwsOk(function () {
+            reader.readRecords();
+        }, "malformed");
+    });
 
 
 });

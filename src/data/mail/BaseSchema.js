@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,38 +24,38 @@
  */
 
 /**
- * Base schema for app-cn_mail.
+ * Base schema for extjs-app-webmail.
  *
  * This schema defines a default REST proxy which is used for all models.
  * The url created is as follows: cn_mail/{model.entityName}, except for
  * the DraftAttachment- and ItemAttachment-entities. (@see #constructProxy}.
  */
-Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
+Ext.define("conjoon.cn_mail.data.mail.BaseSchema", {
 
-    extend : 'coon.core.data.schema.BaseSchema',
+    extend: "coon.core.data.schema.BaseSchema",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy',
-        'conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy',
-        'conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy',
-        'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader',
-        'conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader'
+    requires: [
+        "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy",
+        "conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy",
+        "conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy",
+        "conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader",
+        "conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader"
     ],
 
-    alias : 'schema.cn_mail-mailbaseschema',
+    alias: "schema.cn_mail-mailbaseschema",
 
-    namespace : 'conjoon.cn_mail.model.mail',
+    namespace: "conjoon.cn_mail.model.mail",
 
-    id : 'cn_mail-baseschema',
+    id: "cn_mail-baseschema",
 
-    urlPrefix : 'cn_mail',
+    urlPrefix: "cn_mail",
 
-    proxy : {
-        type : 'rest',
-        url  : '{prefix}'
+    proxy: {
+        type: "rest",
+        url: "{prefix}"
     },
 
-    privates : {
+    privates: {
 
         /**
          * There seems to be no way to properly inject methods in ObjectTemplates.
@@ -75,35 +75,35 @@ Ext.define('conjoon.cn_mail.data.mail.BaseSchema', {
                 tmpData  = Ext.Object.chain(Model),
                 entityName = tmpData.entityName;
 
-            if (['MessageItem', 'MessageDraft', 'MessageBody'].indexOf(entityName) !== -1) {
+            if (["MessageItem", "MessageDraft", "MessageBody"].indexOf(entityName) !== -1) {
 
                 proxy.entityName = entityName;
                 proxy.prefix     = me.getUrlPrefix();
-                proxy.type       = 'cn_mail-mailmessageentityproxy';
+                proxy.type       = "cn_mail-mailmessageentityproxy";
 
-                if (entityName !== 'MessageBody')  {
-                    proxy.reader = 'cn_mail-mailmessageitemjsonreader';
+                if (entityName !== "MessageBody")  {
+                    proxy.reader = "cn_mail-mailmessageitemjsonreader";
                 } else {
-                    proxy.reader = 'cn_mail-mailmessagebodyjsonreader';
+                    proxy.reader = "cn_mail-mailmessagebodyjsonreader";
                 }
 
             } else if (["DraftAttachment", "ItemAttachment"].indexOf(entityName) !==  -1) {
 
                 proxy.entityName = entityName;
                 proxy.prefix     = me.getUrlPrefix();
-                proxy.type       = 'cn_mail-mailmessageattachmentproxy';
+                proxy.type       = "cn_mail-mailmessageattachmentproxy";
 
             } else if (["MailAccount"].indexOf(entityName) !==  -1) {
 
                 proxy.prefix     = me.getUrlPrefix();
-                proxy.type       = 'cn_mail-mailaccountproxy';
+                proxy.type       = "cn_mail-mailaccountproxy";
 
             } else {
-                proxy.url = me.getUrlPrefix() + '/' + tmpData.entityName;
+                proxy.url = me.getUrlPrefix() + "/" + tmpData.entityName;
             }
 
             return proxy;
         }
-}
+    }
 
 });

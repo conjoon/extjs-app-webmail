@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,19 +28,19 @@
  * could not be loaded.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
+Ext.define("conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog", {
 
 
-    requires : [
-        'coon.comp.component.MessageMask',
-        'coon.comp.window.Toast'
+    requires: [
+        "coon.comp.component.MessageMask",
+        "coon.comp.window.Toast"
     ],
 
 
     /**
      * @private
      */
-    loadingFailedMask : null,
+    loadingFailedMask: null,
 
 
     /**
@@ -59,7 +59,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
      *
      * @see updateTargetHeader
      */
-    showLoadingFailedDialog : function(allowClose = true) {
+    showLoadingFailedDialog: function (allowClose = true) {
 
         const me = this;
 
@@ -67,23 +67,23 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
             return me.loadingFailedMask;
         }
 
-        let mask = Ext.create('coon.comp.component.MessageMask', {
+        let mask = Ext.create("coon.comp.component.MessageMask", {
             /**
              * @i18n
              */
-            title    : "Loading failed",
-            message  : "I'm sorry, I could not load the message.",
-            buttons  : allowClose !== false
-                       ? coon.comp.component.MessageMask.OK
-                       : undefined,
-            target   : me,
-            callback : allowClose !== false ? function() {me.close();} : undefined,
-            scope    : me,
-            icon     : coon.comp.component.MessageMask.FAILURE,
-            dialogStyle : false,
+            title: "Loading failed",
+            message: "I'm sorry, I could not load the message.",
+            buttons: allowClose !== false
+                ? coon.comp.component.MessageMask.OK
+                : undefined,
+            target: me,
+            callback: allowClose !== false ? function () {me.close();} : undefined,
+            scope: me,
+            icon: coon.comp.component.MessageMask.FAILURE,
+            dialogStyle: false
         });
 
-        me.mon(mask, 'destroy', function() {this.loadingFailedMask = null}, me);
+        me.mon(mask, "destroy", function () {this.loadingFailedMask = null;}, me);
         mask.show();
 
         me.loadingFailedMask = mask;
@@ -100,14 +100,14 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
      *
      * @private
      */
-    updateTargetHeader : function() {
+    updateTargetHeader: function () {
         const me = this;
 
         /**
          * @i18n
          */
         me.setTitle("oops.");
-        me.setIconCls("fa fa-frown-o");
+        me.setIconCls("far fa-frown");
     },
 
 
@@ -115,7 +115,7 @@ Ext.define('conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog', {
      * Shows a Toast with an error message.
      * @private
      */
-    showToast : function() {
+    showToast: function () {
         return coon.Toast.fail(
             /**
              * @i18n

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,94 +23,94 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.BaseSchemaTest', function(t) {
+StartTest(t => {
 
-    t.requireOk('conjoon.cn_mail.model.mail.message.MessageItem', function(){
-    t.requireOk('conjoon.cn_mail.model.mail.account.MailAccount', function(){
-    t.requireOk('conjoon.cn_mail.model.mail.message.MessageDraft', function(){
+    t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", function (){
+        t.requireOk("conjoon.cn_mail.model.mail.account.MailAccount", function (){
+            t.requireOk("conjoon.cn_mail.model.mail.message.MessageDraft", function (){
 
-        t.it("Should properly create the schema and check for default config", function(t) {
+                t.it("Should properly create the schema and check for default config", t => {
 
-            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
+                    var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
 
-            t.expect(schema instanceof coon.core.data.schema.BaseSchema).toBe(true);
+                    t.expect(schema instanceof coon.core.data.schema.BaseSchema).toBe(true);
 
-            t.expect(schema.alias).toContain('schema.cn_mail-mailbaseschema');
+                    t.expect(schema.alias).toContain("schema.cn_mail-mailbaseschema");
 
-            t.expect(schema.getProxy() instanceof Ext.util.ObjectTemplate ).toBe(true);
-            t.expect(schema.getProxy().template.type).toBe('rest');
-            t.expect(schema.getNamespace()).toBe('conjoon.cn_mail.model.mail.');
+                    t.expect(schema.getProxy() instanceof Ext.util.ObjectTemplate ).toBe(true);
+                    t.expect(schema.getProxy().template.type).toBe("rest");
+                    t.expect(schema.getNamespace()).toBe("conjoon.cn_mail.model.mail.");
 
-            t.expect(schema.id).toBe('cn_mail-baseschema');
+                    t.expect(schema.id).toBe("cn_mail-baseschema");
 
-            t.expect(schema.getUrlPrefix()).toBe('cn_mail');
-        });
-
-
-        t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntityProxy", function(t) {
-
-            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
-
-            var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem);
-
-            t.expect(ret.type).toBe('cn_mail-mailmessageentityproxy');
-
-            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
-
-            t.expect(ret.type).toBe('cn_mail-mailmessageentityproxy');
+                    t.expect(schema.getUrlPrefix()).toBe("cn_mail");
+                });
 
 
-            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
+                t.it("Make sure proxy for MessageDraft and MessageItem is of type MessageEntityProxy", t => {
 
-            t.expect(ret.type).toBe('cn_mail-mailmessageentityproxy');
-        });
+                    var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
 
+                    var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem);
 
-        t.it("Make sure configured reader for MessageDraft and MessageItem is of type MessageItemJsonReader", function(t) {
+                    t.expect(ret.type).toBe("cn_mail-mailmessageentityproxy");
 
-            let schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema'),
-                ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem),
-                proxy;
+                    ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
 
-            proxy = Ext.Factory.proxy(ret);
-            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
-
-            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
-            proxy = Ext.Factory.proxy(ret);
-            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader');
+                    t.expect(ret.type).toBe("cn_mail-mailmessageentityproxy");
 
 
-            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
-            proxy = Ext.Factory.proxy(ret);
-            t.isInstanceOf(proxy.getReader(), 'conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader');
-            t.expect(proxy.getReader() instanceof conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader).toBe(true);
-        });
+                    ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
+
+                    t.expect(ret.type).toBe("cn_mail-mailmessageentityproxy");
+                });
 
 
-        t.it("Make sure proxy for DraftAttachment and ItemAttachment is of type MessageItemChildProxy", function(t) {
+                t.it("Make sure configured reader for MessageDraft and MessageItem is of type MessageItemJsonReader", t => {
 
-            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
+                    let schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema"),
+                        ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem),
+                        proxy;
 
-            var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.DraftAttachment);
+                    proxy = Ext.Factory.proxy(ret);
+                    t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader");
 
-            t.expect(ret.type).toBe('cn_mail-mailmessageattachmentproxy');
-
-            ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.ItemAttachment);
-
-            t.expect(ret.type).toBe('cn_mail-mailmessageattachmentproxy');
-        });
-
-
-        t.it("Make sure proxy for MailAccount is of type MailAccountdProxy", function(t) {
-
-            var schema = Ext.create('conjoon.cn_mail.data.mail.BaseSchema');
-
-            var ret = schema.constructProxy(conjoon.cn_mail.model.mail.account.MailAccount);
-
-            t.expect(ret.type).toBe('cn_mail-mailaccountproxy');
-        });
-
-    });
+                    ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
+                    proxy = Ext.Factory.proxy(ret);
+                    t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader");
 
 
-})})});
+                    ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
+                    proxy = Ext.Factory.proxy(ret);
+                    t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader");
+                    t.expect(proxy.getReader() instanceof conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader).toBe(true);
+                });
+
+
+                t.it("Make sure proxy for DraftAttachment and ItemAttachment is of type MessageItemChildProxy", t => {
+
+                    var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
+
+                    var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.DraftAttachment);
+
+                    t.expect(ret.type).toBe("cn_mail-mailmessageattachmentproxy");
+
+                    ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.ItemAttachment);
+
+                    t.expect(ret.type).toBe("cn_mail-mailmessageattachmentproxy");
+                });
+
+
+                t.it("Make sure proxy for MailAccount is of type MailAccountdProxy", t => {
+
+                    var schema = Ext.create("conjoon.cn_mail.data.mail.BaseSchema");
+
+                    var ret = schema.constructProxy(conjoon.cn_mail.model.mail.account.MailAccount);
+
+                    t.expect(ret.type).toBe("cn_mail-mailaccountproxy");
+                });
+
+            });
+
+
+        });});});

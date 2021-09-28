@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,28 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
+StartTest(t => {
 
-    let createModel = function() {
+    let createModel = function () {
 
-        return Ext.create('conjoon.cn_mail.model.mail.account.MailAccount', {
-            name     : 'name',
-            from     : {name : 'foo', address : 'from'},
-            replyTo  : {name : 'foo', address : 'replyTo'},
+        return Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
+            name: "name",
+            from: {name: "foo", address: "from"},
+            replyTo: {name: "foo", address: "replyTo"},
 
-            inbox_type     : 'inbox_type',
-            inbox_address  : 'inbox_address',
-            inbox_port     : 'inbox_port',
-            inbox_ssl      : true,
-            inbox_user     : 'inbox_user',
-            inbox_password : 'inbox_password',
+            inbox_type: "inbox_type",
+            inbox_address: "inbox_address",
+            inbox_port: "inbox_port",
+            inbox_ssl: true,
+            inbox_user: "inbox_user",
+            inbox_password: "inbox_password",
 
-            outbox_type     : 'outbox_type',
-            outbox_address  : 'outbox_address',
-            outbox_port     : 'outbox_port',
-            outbox_ssl      : true,
-            outbox_user     : 'outbox_user',
-            outbox_password : 'outbox_password'
+            outbox_type: "outbox_type",
+            outbox_address: "outbox_address",
+            outbox_port: "outbox_port",
+            outbox_ssl: true,
+            outbox_user: "outbox_user",
+            outbox_password: "outbox_password"
 
         });
 
@@ -53,8 +53,7 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
     var view;
 
 
-
-    t.afterEach(function() {
+    t.afterEach(function () {
         if (view) {
             view.destroy();
             view = null;
@@ -62,21 +61,20 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
     });
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
 
     });
 
 
-
-    t.it("Should create and show the MailAccountView along with default config checks", function(t) {
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView');
+    t.it("Should create and show the MailAccountView along with default config checks", t => {
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
         t.expect(view instanceof Ext.Panel).toBeTruthy();
 
-        t.expect(view.alias).toContain('widget.cn_mail-mailaccountview');
+        t.expect(view.alias).toContain("widget.cn_mail-mailaccountview");
 
-        t.expect(view.cls).toContain('cn_mail-mailaccountview');
+        t.expect(view.cls).toContain("cn_mail-mailaccountview");
 
         t.isInstanceOf(view.getViewModel(), conjoon.cn_mail.view.mail.account.MailAccountViewModel);
 
@@ -84,11 +82,11 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
     });
 
 
-    t.it("setMailAccount()", function(t) {
+    t.it("setMailAccount()", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView');
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
-        t.isCalled('setMailAccount', view.getViewModel());
+        t.isCalled("setMailAccount", view.getViewModel());
 
         t.expect(view.setMailAccount(null)).toBe(null);
 
@@ -102,29 +100,29 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
     });
 
 
-    t.it("hasPendingChanges()", function(t) {
+    t.it("hasPendingChanges()", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView');
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
         let ma = createModel();
 
         t.expect(view.hasPendingChanges()).toBe(false);
 
-        ma.set('name', 'foo');
+        ma.set("name", "foo");
         view.setMailAccount(ma);
 
         t.expect(view.hasPendingChanges()).toBe(true);
 
-        view.getViewModel().get('mailAccount').commit();
+        view.getViewModel().get("mailAccount").commit();
 
 
         t.expect(view.hasPendingChanges()).toBe(false);
     });
 
 
-    t.it("rejectPendingChanges()", function(t) {
+    t.it("rejectPendingChanges()", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView');
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView");
 
         let ma = createModel();
 
@@ -134,55 +132,55 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
 
         t.expect(view.rejectPendingChanges()).toBe(false);
 
-        view.getViewModel().get('mailAccount').set('name', 'foo');
+        view.getViewModel().get("mailAccount").set("name", "foo");
 
         t.expect(view.rejectPendingChanges()).toBe(true);
 
-        t.expect(view.getViewModel().get('mailAccount').get('name')).toBe('name');
+        t.expect(view.getViewModel().get("mailAccount").get("name")).toBe("name");
 
         t.expect(view.rejectPendingChanges()).toBe(false);
     });
 
 
-    t.it("setMailAccount() - view updated", function(t) {
+    t.it("setMailAccount() - view updated", t => {
 
-       view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-           renderTo : document.body,
-           height   : 600,
-           width    : 800
-       });
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            height: 600,
+            width: 800
+        });
 
         let ma = createModel();
 
         view.setMailAccount(ma);
 
-        t.waitForMs(250, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
-            let values = view.down('form').getValues(),
+            let values = view.down("form").getValues(),
                 data = ma.data;
 
             for (let i in values) {
-                if (!values.hasOwnProperty(i)) {
+                if (!Object.prototype.hasOwnProperty.call(values, i)) {
                     continue;
                 }
 
-               switch (i) {
-                    case 'userName':
-                        t.expect(data['from'].name).toBe(values[i]);
-                        t.expect(data['replyTo'].name).toBe(values[i]);
-                        break;
+                switch (i) {
+                case "userName":
+                    t.expect(data["from"].name).toBe(values[i]);
+                    t.expect(data["replyTo"].name).toBe(values[i]);
+                    break;
 
-                    case 'from':
-                        t.expect(data['from'].address).toBe(values[i]);
-                        break;
+                case "from":
+                    t.expect(data["from"].address).toBe(values[i]);
+                    break;
 
-                    case 'replyTo':
-                        t.expect(data['replyTo'].address).toBe(values[i]);
-                        break;
+                case "replyTo":
+                    t.expect(data["replyTo"].address).toBe(values[i]);
+                    break;
 
-                    default:
-                        t.expect(data[i]).toBe(values[i]);
-                        break;
+                default:
+                    t.expect(data[i]).toBe(values[i]);
+                    break;
                 }
 
             }
@@ -193,46 +191,46 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
     });
 
 
-    t.it("cancel button", function(t) {
+    t.it("cancel button", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
         });
 
-        t.isCalled('onCancelButtonClick', view.getController());
+        t.isCalled("onCancelButtonClick", view.getController());
 
-        t.click(view.down('#cancelButton'), function() {
-
-        });
-
-    });
-
-
-    t.it("save button", function(t) {
-
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
-        });
-
-        t.isCalled('onSaveButtonClick', view.getController());
-
-        t.click(view.down('#saveButton'), function() {
+        t.click(view.down("#cancelButton"), function () {
 
         });
 
     });
 
 
-    t.it("setBusy()", function(t) {
+    t.it("save button", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
+        });
+
+        t.isCalled("onSaveButtonClick", view.getController());
+
+        t.click(view.down("#saveButton"), function () {
+
+        });
+
+    });
+
+
+    t.it("setBusy()", t => {
+
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
         });
 
 
@@ -260,12 +258,12 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
     });
 
 
-    t.it("setMailAccount() - switch mailAccounts and check for busyMask", function(t) {
+    t.it("setMailAccount() - switch mailAccounts and check for busyMask", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
         });
 
         let maNo = createModel();
@@ -292,44 +290,44 @@ describe('conjoon.cn_mail.view.mail.account.MailAccountViewTest', function(t) {
     });
 
 
-    t.it("cn_mail-mailaccountbeforesave", function(t) {
+    t.it("cn_mail-mailaccountbeforesave", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
         });
 
-        t.isCalled('onBeforeMailAccountSave', view.getController());
+        t.isCalled("onBeforeMailAccountSave", view.getController());
 
-        view.fireEvent('cn_mail-mailaccountbeforesave', view);
+        view.fireEvent("cn_mail-mailaccountbeforesave", view);
     });
 
 
-    t.it("cn_mail-mailaccountsave", function(t) {
+    t.it("cn_mail-mailaccountsave", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
         });
 
-        t.isCalled('onMailAccountSaveCallback', view.getController());
+        t.isCalled("onMailAccountSaveCallback", view.getController());
 
-        view.fireEvent('cn_mail-mailaccountsave', view);
+        view.fireEvent("cn_mail-mailaccountsave", view);
     });
 
 
-    t.it("cn_mail-mailaccountsavefailure", function(t) {
+    t.it("cn_mail-mailaccountsavefailure", t => {
 
-        view = Ext.create('conjoon.cn_mail.view.mail.account.MailAccountView', {
-            renderTo : document.body,
-            width : 800,
-            height : 600
+        view = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountView", {
+            renderTo: document.body,
+            width: 800,
+            height: 600
         });
 
-        t.isCalled('onMailAccountSaveCallback', view.getController());
+        t.isCalled("onMailAccountSaveCallback", view.getController());
 
-        view.fireEvent('cn_mail-mailaccountsavefailure', view);
+        view.fireEvent("cn_mail-mailaccountsavefailure", view);
     });
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,140 +23,138 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.comp.grid.feature.LivegridTest', function(t) {
+StartTest(t => {
 
-    Ext.define('MockModel', {
-        extend : 'Ext.data.Model',
+    Ext.define("MockModel", {
+        extend: "Ext.data.Model",
 
-        fields : [{
-            name : 'testProp',
-            type : 'int'
+        fields: [{
+            name: "testProp",
+            type: "int"
         }]
     });
 
-    var createStore = function(cfg) {
+    var createStore = function (cfg) {
 
             cfg = cfg || {};
 
-            return Ext.create('Ext.data.BufferedStore', {
+            return Ext.create("Ext.data.BufferedStore", {
 
-                model : 'MockModel',
+                model: "MockModel",
 
-                type   : 'buffered',
-                fields : ['id', 'testProp'],
-                pageSize : 100,
-                autoLoad : cfg.autoLoad ? cfg.autoLoad : undefined,
-                sorters  : cfg.sorters
+                type: "buffered",
+                fields: ["id", "testProp"],
+                pageSize: 100,
+                autoLoad: cfg.autoLoad ? cfg.autoLoad : undefined,
+                sorters: cfg.sorters
                     ? cfg.sorters
                     : undefined,
-                proxy : {
-                    type : 'rest',
-                    url  : 'cn_comp/fixtures/Livegrid',
-                    reader : {
-                        type         : 'json',
-                        rootProperty : 'data'
+                proxy: {
+                    type: "rest",
+                    url: "cn_comp/fixtures/Livegrid",
+                    reader: {
+                        type: "json",
+                        rootProperty: "data"
                     }
                 }
             });
 
         },
-        getGrid = function(cfg) {
+        getGrid = function (cfg) {
 
             cfg = cfg || {};
 
             var featureCfg = {
-                ftype : 'cn_mail-mailmessagegridfeature-livegrid',
-                id    : 'livegrid'
+                ftype: "cn_mail-mailmessagegridfeature-livegrid",
+                id: "livegrid"
             };
 
 
-            return Ext.create('Ext.grid.Panel', {
+            return Ext.create("Ext.grid.Panel", {
 
-                renderTo : document.body,
+                renderTo: document.body,
 
-                width  : 510,
-                height : 550,
+                width: 510,
+                height: 550,
 
-                features : [featureCfg],
+                features: [featureCfg],
 
-                multiColumnSort :  cfg.multiColumnSort ? cfg.multiColumnSort : false,
+                multiColumnSort: cfg.multiColumnSort ? cfg.multiColumnSort : false,
 
-                store : createStore(cfg),
+                store: createStore(cfg),
 
 
-                columns : [{
-                    text      : 'id',
-                    dataIndex : 'id',
-                    flex      : 1
+                columns: [{
+                    text: "id",
+                    dataIndex: "id",
+                    flex: 1
                 }, {
-                    text      : 'subject',
-                    dataIndex : 'subject',
-                    flex      : 1
+                    text: "subject",
+                    dataIndex: "subject",
+                    flex: 1
                 }, {
-                    text      : 'date',
-                    dataIndex : 'date',
-                    flex      : 1
+                    text: "date",
+                    dataIndex: "date",
+                    flex: 1
                 }, {
-                    text      : 'from',
-                    dataIndex : 'from',
-                    flex      : 1
+                    text: "from",
+                    dataIndex: "from",
+                    flex: 1
                 }, {
-                    text      : 'testProp',
-                    dataIndex : 'testProp',
-                    flex      : 1
+                    text: "testProp",
+                    dataIndex: "testProp",
+                    flex: 1
                 }]
 
             });
         };
 
 
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
+
+    t.requireOk("coon.comp.grid.feature.Livegrid", () => {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+        t.it("constructor()", function (t){
 
-    t.requireOk('coon.comp.grid.feature.Livegrid', function() {
+            let feature = Ext.create("conjoon.cn_mail.view.mail.message.grid.feature.Livegrid");
 
+            t.isInstanceOf(feature, "coon.comp.grid.feature.Livegrid");
 
-            t.it("constructor()", function(t){
+            t.expect(feature.alias).toContain("feature.cn_mail-mailmessagegridfeature-livegrid");
 
-                let feature = Ext.create('conjoon.cn_mail.view.mail.message.grid.feature.Livegrid');
-
-                t.isInstanceOf(feature, 'coon.comp.grid.feature.Livegrid');
-
-                t.expect(feature.alias).toContain('feature.cn_mail-mailmessagegridfeature-livegrid');
-
-            });
+        });
 
 
-            t.it("getRecordByCompoundKey()", function(t) {
+        t.it("getRecordByCompoundKey()", t => {
 
-                let grid           = getGrid({sorters : {property : 'testProp', dir : 'ASC'}, autoLoad : true}),
-                    feature        = grid.view.getFeature('livegrid'),
-                    PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
+            let grid           = getGrid({sorters: {property: "testProp", dir: "ASC"}, autoLoad: true}),
+                feature        = grid.view.getFeature("livegrid"),
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                exc;
 
 
-                t.waitForMs(750, function() {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
-                    t.isCalledOnce('getRecordBy', PageMapUtil);
+                t.isCalledOnce("getRecordBy", PageMapUtil);
 
-                    try{feature.getRecordByCompoundKey('1');}catch(e){exc=e;}
-                    t.expect(exc.msg).toBeDefined();
-                    t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+                try{feature.getRecordByCompoundKey("1");}catch(e){exc=e;}
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
-                    let ck = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(1, 2, 3);
+                let ck = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(1, 2, 3);
 
-                    feature.getRecordByCompoundKey(ck);
+                feature.getRecordByCompoundKey(ck);
 
-                    t.waitForMs(750, function() {
-                        grid.destroy();
-                        grid = null;
-                    });
+                t.waitForMs(t.parent.TIMEOUT, () => {
+                    grid.destroy();
+                    grid = null;
                 });
             });
+        });
 
 
-
-});
+    });
 });

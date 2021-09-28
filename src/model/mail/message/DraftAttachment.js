@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,48 +24,48 @@
  */
 
 /**
- * Base model for app-cn_mail representing an attachment associated with a
+ * Base model for extjs-app-webmail representing an attachment associated with a
  * MessageDraft.
  * this model uses a proxy of the type {@link conjoon.cn_mail.data.mail.proxy.AttachmentUploadProxy}
  * to make sure that attachments can be uploaded to the server when saving.
  * See {@link conjoon.cn_mail.view.mail.message.AttachmentList} for
  * an implementation.
  */
-Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
+Ext.define("conjoon.cn_mail.model.mail.message.DraftAttachment", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.AbstractAttachment',
+    extend: "conjoon.cn_mail.model.mail.message.AbstractAttachment",
 
-    requires : [
-        'coon.core.data.proxy.RestForm',
-        'coon.core.data.field.Blob',
-        'conjoon.cn_mail.store.mail.message.MessageAttachmentStore'
+    requires: [
+        "coon.core.data.proxy.RestForm",
+        "coon.core.data.field.Blob",
+        "conjoon.cn_mail.store.mail.message.MessageAttachmentStore"
     ],
 
-    entityName : 'DraftAttachment',
+    entityName: "DraftAttachment",
 
-    fields : [{
-        persist : false,
-        name      : 'messageItemId',
-        type      : 'string',
-        reference : {
-            parent: 'MessageDraft',
+    fields: [{
+        persist: false,
+        name: "messageItemId",
+        type: "string",
+        reference: {
+            parent: "MessageDraft",
             inverse: {
-                role : 'attachments',
+                role: "attachments",
                 storeConfig: {
-                    type: 'cn_mail-mailmessageattachmentstore'
+                    type: "cn_mail-mailmessageattachmentstore"
                 }
             }
         }
     }, {
-        name : 'file',
-        type : 'cn_core-datafieldblob'
+        name: "file",
+        type: "cn_core-datafieldblob"
     }],
 
-    compoundKeyFields : {
-        MessageDraft : {
-            'mailAccountId'       : 'mailAccountId',
-            'mailFolderId'        : 'mailFolderId',
-            'parentMessageItemId' : 'id'
+    compoundKeyFields: {
+        MessageDraft: {
+            "mailAccountId": "mailAccountId",
+            "mailFolderId": "mailFolderId",
+            "parentMessageItemId": "id"
         }
 
     },
@@ -73,10 +73,10 @@ Ext.define('conjoon.cn_mail.model.mail.message.DraftAttachment', {
     /**
      * @inheritdoc
      */
-    getAssociatedCompoundKeyedData : function() {
+    getAssociatedCompoundKeyedData: function () {
         const me = this;
         return me.getMessageItem && me.getMessageItem() ? [me.getMessageItem()] : [];
-    },
+    }
 
 
 });

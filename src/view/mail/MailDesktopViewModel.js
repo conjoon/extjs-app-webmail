@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,22 +32,22 @@
  * id of the selection in the MailFolderTree.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.MailDesktopViewModel', {
+Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewModel", {
 
-    extend : 'Ext.app.ViewModel',
+    extend: "Ext.app.ViewModel",
 
-    requires : [
-        'conjoon.cn_mail.store.mail.folder.MailFolderTreeStore'
+    requires: [
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
-    alias : 'viewmodel.cn_mail-maildesktopviewmodel',
+    alias: "viewmodel.cn_mail-maildesktopviewmodel",
 
-    stores : {
-        'cn_mail_mailfoldertreestore' : {
-            type     : 'cn_mail-mailfoldertreestore',
-            autoLoad : true,
-            listeners : {
-                load : 'onMailFolderTreeStoreLoad'
+    stores: {
+        "cn_mail_mailfoldertreestore": {
+            type: "cn_mail-mailfoldertreestore",
+            autoLoad: true,
+            listeners: {
+                load: "onMailFolderTreeStoreLoad"
             }
         }
     }

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,44 +27,44 @@
  * TagField implementation for use as address field in the
  * {@link conjoon.cn_mail.view.mail.message.editor.MessageEditor}
  */
-Ext.define('conjoon.cn_mail.view.mail.message.editor.AddressField', {
+Ext.define("conjoon.cn_mail.view.mail.message.editor.AddressField", {
 
-    extend : 'Ext.form.field.Tag',
+    extend: "Ext.form.field.Tag",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.EmailAddress'
-     ],
+    requires: [
+        "conjoon.cn_mail.model.mail.message.EmailAddress"
+    ],
 
-    alias : 'widget.cn_mail-mailmessageeditoraddressfield',
+    alias: "widget.cn_mail-mailmessageeditoraddressfield",
 
-    cls : 'cn_mail-mailmessageeditoraddressfield',
+    cls: "cn_mail-mailmessageeditoraddressfield",
 
-    displayField     : 'name',
-    valueField       : 'address',
+    displayField: "name",
+    valueField: "address",
 
-    config : {
-        addressType : undefined
+    config: {
+        addressType: undefined
     },
 
     store: {
-        data  : [],
-        model : 'conjoon.cn_mail.model.mail.message.EmailAddress'
+        data: [],
+        model: "conjoon.cn_mail.model.mail.message.EmailAddress"
     },
 
-    queryMode        : 'local',
-    forceSelection   : false,
-    triggerOnClick   : false,
-    createNewOnEnter : true,
-    hideTrigger      : true,
-    createNewOnBlur  : false,
+    queryMode: "local",
+    forceSelection: false,
+    triggerOnClick: false,
+    createNewOnEnter: true,
+    hideTrigger: true,
+    createNewOnBlur: false,
 
-    initComponent : function() {
+    initComponent: function () {
         var me          = this,
             addressType = me.getAddressType();
 
-        if (addressType === 'cc' || addressType === 'bcc') {
+        if (addressType === "cc" || addressType === "bcc") {
             me.tagItemTextCls = Ext.baseCSSPrefix +
-                                'tagfield-item-text x-fa ' +
+                                "tagfield-item-text x-fa " +
                                 addressType;
         }
 

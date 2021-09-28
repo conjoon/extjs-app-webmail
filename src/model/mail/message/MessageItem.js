@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * Base model for app-cn_mail representing a message item.
+ * Base model for extjs-app-webmail representing a message item.
  * Message items should be used whenever contents of MailFolders should be inspected.
  * The data structure used for MessageItems does only need necessary (meta) data
  * for providing information about a message. Further data can be requested
@@ -36,56 +36,55 @@
  * previewText-field's "convert()"-method.
  *
  */
-Ext.define('conjoon.cn_mail.model.mail.message.MessageItem', {
+Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
 
-    extend : 'conjoon.cn_mail.model.mail.message.AbstractMessageItem',
+    extend: "conjoon.cn_mail.model.mail.message.AbstractMessageItem",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.ItemAttachment',
-        'coon.core.data.field.EmailAddressCollection',
-        'coon.core.data.field.FileSize'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.ItemAttachment",
+        "coon.core.data.field.EmailAddressCollection",
+        "coon.core.data.field.FileSize"
     ],
 
-    entityName : 'MessageItem',
+    entityName: "MessageItem",
 
-    fields : [{
+    fields: [{
         // field is required to indicate that attachments are available
         // ~before~ attachment associations are loaded
-        name : 'hasAttachments',
-        type : 'bool'
+        name: "hasAttachments",
+        type: "bool"
     }, {
-        name : 'to',
-        type : 'cn_core-datafieldemailaddresscollection'
+        name: "to",
+        type: "cn_core-datafieldemailaddresscollection"
     }, {
-        name    : 'previewText',
-        type    : 'string',
-        persist : false,
+        name: "previewText",
+        type: "string",
+        persist: false,
         /**
          * Makes sure the previewText is not longer than 200 characters.
          * @param {Mixed} v
          * @param {conjoon.cn_mail.model.mail.message.MessageItem} record
          * @return {string}
          */
-        convert : function(v, record) {
-            return (typeof v == 'string')
-                   ? v.substring(0, 200)
-                   : '';
+        convert: function (v, record) {
+            return (typeof v === "string")
+                ? v.substring(0, 200)
+                : "";
 
         }
     }, {
-        name    : 'size',
-        type    : 'int',
-        persist : false
+        name: "size",
+        type: "int",
+        persist: false
     }, {
-        name    : 'cn_deleted',
-        type    : 'bool',
-        persist : false
+        name: "cn_deleted",
+        type: "bool",
+        persist: false
     }, {
-        name    : 'cn_moved',
-        type    : 'bool',
-        persist : false
+        name: "cn_moved",
+        type: "bool",
+        persist: false
     }]
-
 
 
 });

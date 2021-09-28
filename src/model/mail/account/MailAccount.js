@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,75 +24,75 @@
  */
 
 /**
- * Base model for app-cn_mail representing a MailAccount.
+ * Base model for extjs-app-webmail representing a MailAccount.
  */
-Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
+Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
 
-    extend : 'conjoon.cn_mail.model.mail.BaseTreeModel',
+    extend: "conjoon.cn_mail.model.mail.BaseTreeModel",
 
-    entityName : 'MailAccount',
+    entityName: "MailAccount",
 
-    idProperty : 'id',
+    idProperty: "id",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes',
-        'coon.core.data.field.EmailAddress'
+    requires: [
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "coon.core.data.field.EmailAddress"
     ],
 
 
-    fields : [{
-        name : 'name',
-        type : 'string',
-        validators : [{
-            type : 'presence'
+    fields: [{
+        name: "name",
+        type: "string",
+        validators: [{
+            type: "presence"
         }]
     }, {
-        name : 'folderType',
-        type : 'string'
+        name: "folderType",
+        type: "string"
     }, {
-        name : 'from',
-        type : 'cn_core-datafieldemailaddress'
+        name: "from",
+        type: "cn_core-datafieldemailaddress"
     }, {
-        name : 'replyTo',
-        type : 'cn_core-datafieldemailaddress'
+        name: "replyTo",
+        type: "cn_core-datafieldemailaddress"
     },
 
     // INBOX CONFIGURATION
     {
-        name : 'inbox_type',
-        type : 'string'
+        name: "inbox_type",
+        type: "string"
     }, {
-        name : 'inbox_address',
-        type : 'string'
+        name: "inbox_address",
+        type: "string"
     }, {
-        name : 'inbox_port',
-        type : 'string'
+        name: "inbox_port",
+        type: "string"
     }, {
-        name : 'inbox_user',
-        type : 'string'
+        name: "inbox_user",
+        type: "string"
     }, {
-        name : 'inbox_password',
-        type : 'string'
+        name: "inbox_password",
+        type: "string"
     }, {
-        name : 'inbox_ssl',
-        type : 'boolean'
+        name: "inbox_ssl",
+        type: "boolean"
     },
     // OUTBOX CONFIGURATION
     {
-        name : 'outbox_address',
-        type : 'string'
+        name: "outbox_address",
+        type: "string"
     }, {
-        name : 'outbox_port',
-        type : 'string'
+        name: "outbox_port",
+        type: "string"
     }, {
-        name : 'outbox_user',
-        type : 'string'
+        name: "outbox_user",
+        type: "string"
     }, {
-        name : 'outbox_password',
-        type : 'string'
+        name: "outbox_password",
+        type: "string"
     }, {
-        name : 'outbox_ssl',
-        type : 'boolean'
+        name: "outbox_ssl",
+        type: "boolean"
     }],
 
     /**
@@ -101,14 +101,14 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
      *
      * @inheritdoc
      */
-    constructor : function() {
+    constructor: function () {
         const me = this;
 
         me.callParent(arguments);
 
-        me.getField('folderType').setModelValidators([{
-            type : 'inclusion',
-            list : [
+        me.getField("folderType").setModelValidators([{
+            type: "inclusion",
+            list: [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
             ]
         }]);
@@ -123,11 +123,11 @@ Ext.define('conjoon.cn_mail.model.mail.account.MailAccount', {
      *
      * @throws if no parentNode can be found
      */
-    toUrl : function() {
+    toUrl: function () {
         const me     = this,
-              prefix = 'cn_mail/account/';
+            prefix = "cn_mail/account/";
 
-            return prefix + me.get('id');
+        return prefix + me.get("id");
     }
 
 });

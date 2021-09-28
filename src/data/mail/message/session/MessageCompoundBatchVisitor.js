@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -42,12 +42,12 @@
  * By using this visitor, operations get changed during runtime. Do not rely
  * on the state of the operations when the visitor has created the batches.
  */
-Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor', {
+Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor", {
 
-    extend : 'coon.core.data.session.SplitBatchVisitor',
+    extend: "coon.core.data.session.SplitBatchVisitor",
 
-    config : {
-        messageDraft : undefined
+    config: {
+        messageDraft: undefined
     },
 
 
@@ -60,16 +60,16 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      * @throws if a messageDraft is already available for this session, or if the
      * messageDraft is not an instance of conjoon.cn_mail.model.mail.message.MessageDraft
      */
-    applyMessageDraft : function(messageDraft) {
+    applyMessageDraft: function (messageDraft) {
 
         const me = this;
 
         if (me.getMessageDraft()) {
-            Ext.raise("\"messageDraft\" was already set")
+            Ext.raise("\"messageDraft\" was already set");
         }
 
         if (messageDraft !== undefined && !(messageDraft instanceof conjoon.cn_mail.model.mail.message.MessageDraft)) {
-            Ext.raise("\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft")
+            Ext.raise("\"messageDraft\" must be an instance of conjoon.cn_mail.model.mail.message.MessageDraft");
         }
 
         return messageDraft;
@@ -94,15 +94,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
     getBatch: function (sort) {
 
         const me = this,
-              batch = me.callParent(arguments);
+            batch = me.callParent(arguments);
 
         // just in case...
-        batch.un('operationcomplete', me.onBatchOperationComplete, me);
-        batch.on('operationcomplete', me.onBatchOperationComplete, me);
+        batch.un("operationcomplete", me.onBatchOperationComplete, me);
+        batch.on("operationcomplete", me.onBatchOperationComplete, me);
 
-        batch.start = Ext.Function.createInterceptor(batch.start, function(){
+        batch.start = Ext.Function.createInterceptor(batch.start, function (){
             const me = this,
-                  md = me.getMessageDraft();
+                md = me.getMessageDraft();
 
             md.storePreBatchCompoundKey();
 
@@ -135,7 +135,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      * @see seedRetrievedKey
      * @see refreshKeyForDestroy
      */
-    onBatchOperationComplete : function(batch, operation) {
+    onBatchOperationComplete: function (batch, operation) {
 
         const me = this;
 
@@ -146,7 +146,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
         let next       = batch.current + 1,
             operations = batch.getOperations(),
             op         = operations[next],
-            rec, newOp, proxy, recs;
+            rec, newOp, proxy;
 
         if (!me.getMessageDraft()) {
             Ext.raise("Missing messageDraft configuration.");
@@ -169,7 +169,7 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
         }
 
         if (rec.length > 1) {
-            Ext.raise("Unexpected number of records. Need 1, got " + rec.length)
+            Ext.raise("Unexpected number of records. Need 1, got " + rec.length);
         }
 
         rec = rec[0];
@@ -181,10 +181,10 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
 
             proxy = rec.getProxy();
 
-            newOp = proxy.createOperation('update', {
-                records : [rec],
-                params  : {
-                    origin : op.getAction()
+            newOp = proxy.createOperation("update", {
+                records: [rec],
+                params: {
+                    origin: op.getAction()
                 }
             });
             newOp.entityType = Ext.getClass(rec);
@@ -210,21 +210,21 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      *
      * @private
      */
-    seedRetrievedKey : function(operation) {
+    seedRetrievedKey: function (operation) {
 
         if (!operation || !operation.getRecords()) {
             return false;
         }
 
         const me            = this,
-              rec           = operation.getRecords()[0],
-              messageDraft  = me.getMessageDraft(),
-              response      = operation.getResponse(),
-              responseType  = response.responseType,
-              resp          = responseType === "json" ? response.responseJson : Ext.decode(response.responseText);
+            rec           = operation.getRecords()[0],
+            messageDraft  = me.getMessageDraft(),
+            response      = operation.getResponse(),
+            responseType  = response.responseType,
+            resp          = responseType === "json" ? response.responseJson : Ext.decode(response.responseText);
 
         if (operation.getAction() === "destroy" && rec.entityName === "DraftAttachment") {
-            messageDraft.set('id', resp.data.parentMessageItemId);
+            messageDraft.set("id", resp.data.parentMessageItemId);
             messageDraft.commit();
 
             return true;
@@ -244,18 +244,18 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      *
      * @private
      */
-    refreshKeyForDestroy : function(operation) {
+    refreshKeyForDestroy: function (operation) {
 
-        if (!operation || operation.getAction() != "destroy") {
+        if (!operation || operation.getAction() !== "destroy") {
             return false;
         }
 
         const me           = this,
-              rec          = operation.getRecords()[0],
-              messageDraft = me.getMessageDraft();
+            rec          = operation.getRecords()[0],
+            messageDraft = me.getMessageDraft();
 
         if (rec.entityName !== "DraftAttachment") {
-            Ext.raise("no handler for \""  + rec.entityName + "\" found")
+            Ext.raise("no handler for \""  + rec.entityName + "\" found");
         }
 
         rec.set("parentMessageItemId", messageDraft.get("id"));
@@ -278,16 +278,15 @@ Ext.define('conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      *
      * @return {Boolean}
      */
-    isOperationSwappable : function(op) {
+    isOperationSwappable: function (op) {
 
         let rec = op.getRecords();
 
         rec = Ext.isArray(rec) ? rec[0] : rec;
 
-        return op.getAction() === 'create' && (rec.entityName === 'MessageDraft'
-                || rec.entityName === 'MessageItem') && rec.isCompoundKeyConfigured();
+        return op.getAction() === "create" && (rec.entityName === "MessageDraft"
+                || rec.entityName === "MessageItem") && rec.isCompoundKeyConfigured();
     }
-
 
 
 });

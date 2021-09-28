@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,22 +29,22 @@
  * This class uses internally a mailFolderJsonReader if THIS reader detects the
  * data to be a MailFolder (see peekFolder).
  */
-Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
+Ext.define("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader", {
 
-    extend : 'Ext.data.reader.Json',
+    extend: "Ext.data.reader.Json",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader',
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes'
+    requires: [
+        "conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader",
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
 
-    alias : 'reader.cn_mail-mailaccountjsonreader',
+    alias: "reader.cn_mail-mailaccountjsonreader",
 
-    rootProperty : 'data',
+    rootProperty: "data",
 
-    typeProperty : 'modelType',
+    typeProperty: "modelType",
 
-    mailAccountModelClass : 'conjoon.cn_mail.model.mail.account.MailAccount',
+    mailAccountModelClass: "conjoon.cn_mail.model.mail.account.MailAccount",
 
 
     /**
@@ -57,7 +57,7 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
      *
      * @see processHybridData
      */
-    readRecords : function(data, readOptions, internalReadOptions) {
+    readRecords: function (data, readOptions, internalReadOptions) {
 
         const me = this;
 
@@ -74,11 +74,11 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
      *
      * @return {Boolean|Object}
      */
-    applyModelTypes : function(data) {
+    applyModelTypes: function (data) {
 
         const me      = this,
-              ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT,
-              tp      = me.getTypeProperty();
+            ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT,
+            tp      = me.getTypeProperty();
 
         if (Ext.isObject(data)) {
 
@@ -111,8 +111,8 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
         }
 
         Ext.raise({
-            msg  : "The \"data\" property was malformed and could not be processed by this Reader",
-            data : data
+            msg: "The \"data\" property was malformed and could not be processed by this Reader",
+            data: data
         });
 
     },
@@ -121,13 +121,13 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
     /**
      * @private
      */
-    processHybridData : function(data) {
+    processHybridData: function (data) {
         const me = this;
 
         if (me.peekFolder(data)) {
 
             if (!me.mailFolderReader) {
-                me.mailFolderReader = Ext.create('conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader');
+                me.mailFolderReader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader");
             }
             data = me.mailFolderReader.applyCompoundKey(data);
         } else {
@@ -149,13 +149,13 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
      *
      * @private
      */
-    peekFolder : function(data) {
+    peekFolder: function (data) {
 
         if (Ext.isObject(data)) {
 
             let t = [].concat(data.data);
 
-            if (t[0] && t[0].hasOwnProperty('mailAccountId')) {
+            if (t[0] && Object.prototype.hasOwnProperty.call(t[0],"mailAccountId")) {
                 return true;
             }
 
@@ -164,7 +164,6 @@ Ext.define('conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader', {
         return false;
 
     }
-
 
 
 });

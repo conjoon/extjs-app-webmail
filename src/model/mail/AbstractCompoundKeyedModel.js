@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,14 +28,14 @@
  *
  * @abstract
  */
-Ext.define('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+Ext.define("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
 
-    requires : [
-        'conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator'
+    requires: [
+        "conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator"
     ],
 
-    extend : 'conjoon.cn_mail.model.mail.BaseModel',
+    extend: "conjoon.cn_mail.model.mail.BaseModel"
 
-}, function() {
+}, function () {
     conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator.decorate(this);
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,27 +24,27 @@
  */
 
 /**
- * Base model for app-cn_mail representing an email address.
+ * Base model for extjs-app-webmail representing an email address.
  *
  * Note:
  * In some cases we do not need two way associations between specific entities
  * and email addresses, thus, some models use fields of the type
  * {@link coon.core.data.field.EmailAddressCollection}.
  */
-Ext.define('conjoon.cn_mail.model.mail.message.EmailAddress', {
+Ext.define("conjoon.cn_mail.model.mail.message.EmailAddress", {
 
-    extend : 'conjoon.cn_mail.model.mail.BaseModel',
+    extend: "conjoon.cn_mail.model.mail.BaseModel",
 
-    entityName : 'EmailAddress',
+    entityName: "EmailAddress",
 
-    idProperty : 'id',
+    idProperty: "id",
 
-    fields : [{
-        name : 'name',
-        type : 'string'
+    fields: [{
+        name: "name",
+        type: "string"
     }, {
-        name : 'address',
-        type : 'string'
+        name: "address",
+        type: "string"
     }]
 
 });

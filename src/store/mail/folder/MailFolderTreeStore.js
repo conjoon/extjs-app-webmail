@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -44,28 +44,28 @@
  *
  * Model types will be set by the readers specified by the proxies et al.
  */
-Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
+Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
-    extend : 'Ext.data.TreeStore',
+    extend: "Ext.data.TreeStore",
 
-    requires : [
-        'conjoon.cn_mail.model.mail.folder.MailFolder',
-        'conjoon.cn_mail.model.mail.account.MailAccount'
+    requires: [
+        "conjoon.cn_mail.model.mail.folder.MailFolder",
+        "conjoon.cn_mail.model.mail.account.MailAccount"
     ],
 
-    alias : 'store.cn_mail-mailfoldertreestore',
+    alias: "store.cn_mail-mailfoldertreestore",
 
-    model : 'conjoon.cn_mail.model.mail.account.MailAccount',
+    model: "conjoon.cn_mail.model.mail.account.MailAccount",
 
-    autoLoad : false,
+    autoLoad: false,
 
-    nodeParam : 'mailAccountId',
+    nodeParam: "mailAccountId",
 
     root: {
         // set initially to false so no ugly fragments will blink when account node
         // was loaded and load mask is hidden / shown when mail folder loads.
-        expanded : true,
-        data     : []
+        expanded: true,
+        data: []
     },
 
 
@@ -75,7 +75,7 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
      *
      * @see onRootNodeAppend
      */
-    constructor : function() {
+    constructor: function () {
 
         const me = this;
 
@@ -83,7 +83,7 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
 
         let root = me.getRoot();
 
-        root.on('append', me.onRootNodeAppend, me);
+        root.on("append", me.onRootNodeAppend, me);
     },
 
 
@@ -92,24 +92,24 @@ Ext.define('conjoon.cn_mail.store.mail.folder.MailFolderTreeStore', {
      * furthermore expands the appended MailAccount-nodes to make sure they are loaded
      * with their MailFolder's.
      */
-    onRootNodeAppend : function(rootNode, node) {
+    onRootNodeAppend: function (rootNode, node) {
 
         const me   = this,
-              root = me.getRoot(),
-              cb   = function() {
-                  node.expand(false, function() {node.collapse();node.expand()});
-              };
+            root = me.getRoot(),
+            cb   = function () {
+                node.expand(false, function () {node.collapse();node.expand();});
+            };
 
         if (rootNode !== root) {
             return;
         }
 
         switch (rootNode.isExpanded()) {
-            case true:
-                rootNode.expand(false, cb);
-                break;
-            default:
-                cb();
+        case true:
+            rootNode.expand(false, cb);
+            break;
+        default:
+            cb();
         }
     }
 

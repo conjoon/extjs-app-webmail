@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,7 @@
  *
  *
  */
-Ext.define('conjoon.cn_mail.text.QueryStringParser', {
+Ext.define("conjoon.cn_mail.text.QueryStringParser", {
 
     /**
      * Parses a string and returns an object containing the query parameters
@@ -50,17 +50,18 @@ Ext.define('conjoon.cn_mail.text.QueryStringParser', {
      *
      * @throws if text does not start with a "?"
      */
-    parse : function(text) {
+    parse: function (text) {
 
-        var regex  = /(\?|\&)([^=]+)\=([^&|^#]+)/g;
-            text   = text + '',
+        text = text + "";
+
+        var regex  = /(\?|&)([^=]+)=([^&|^#]+)/g,
             result = null,
-            parts = {};
+            parts  = {};
 
-        if (!Ext.String.startsWith(text, '?')) {
+        if (!Ext.String.startsWith(text, "?")) {
             Ext.raise({
-                text : text,
-                msg  : "\"text\" must start with a \"?\""
+                text: text,
+                msg: "\"text\" must start with a \"?\""
             });
         }
 

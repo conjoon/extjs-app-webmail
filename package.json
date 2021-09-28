@@ -1,60 +1,127 @@
 {
-
-    "name": "app-cn_mail",
-
-    "sencha": {
-        "coon-js" : {"packageController" : true},
-        "namespace": "conjoon.cn_mail",
-        "type": "code",
-        "toolkit": "classic",
-        "creator": "conjoon Open Source Project",
-        "summary": "Basic UI providing email client functionality.",
-        "detailedDescription": "This package contains an email client to be used with the conjoon project. It heavily relies on the functionality of the legacy webmail client, here updated for ExtJS 6.*. Requires packages lib-cn_comp, ux.",
-        "version": "1.0.0",
-        "compatVersion": "1.0.0",
-        "format": "1",
-        "slicer": {
-            "js": [
-                {
-                    "path": "${package.dir}/sass/example/custom.js",
-                    "isWidgetManifest": true
-                }
-            ]
-        },
-        "output": {
-            "base" : "${package.dir}/build",
-            "js" : {
-                "version" : "ES6"
+  "name": "@conjoon/extjs-app-webmail",
+  "sencha": {
+    "name": "extjs-app-webmail",
+    "coon-js": {
+      "package": {
+        "controller": true,
+        "config": {
+          "resources": {
+            "templates": {
+              "html": {
+                "editor": "resources/templates/html/editor.html.tpl",
+                "reader": "resources/templates/html/reader.html.tpl"
+              }
             }
-        },
-        "compressor": {
-            "polyfills": "none"
-        },
-        "local": true,
-        "theme": "theme-cn_default",
-        "sass" : {
-            "namespace": "conjoon.cn_mail",
-            "etc": [
-                "${package.dir}/sass/etc/all.scss"
-            ],
-
-            "var": [
-                "${package.dir}/sass/var/"
-            ],
-
-            "src": [
-                "${package.dir}/sass/src/"
-            ]
-        },
-        "example": null,
-        "classpath": [
-            "${package.dir}/src",
-            "${package.dir}/${toolkit.name}/src"
-        ],
-        "overrides": null,
-        "framework": "ext",
-        "requires": [
-            "lib-cn_comp"
-        ]
-    }
+          }
+        }
+      }
+    },
+    "namespace": "conjoon.cn_mail",
+    "type": "code",
+    "toolkit": "classic",
+    "creator": "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>",
+    "summary": "JavaScript Sencha ExtJS Webmail client.",
+    "detailedDescription": "This package contains an email client to be used with the conjoon project.",
+    "version": "0.0.1",
+    "compatVersion": "0.0.1",
+    "format": "1",
+    "slicer": {
+      "js": [
+        {
+          "path": "${package.dir}/sass/example/custom.js",
+          "isWidgetManifest": true
+        }
+      ]
+    },
+    "output": {
+      "base": "${package.dir}/build",
+      "js": {
+        "version": "ES8"
+      }
+    },
+    "language": {
+      "js": {
+        "input": "ES8",
+        "output": "ES8"
+      }
+    },
+    "compressor": {
+      "type": "closure",
+      "polyfills": "none"
+    },
+    "local": true,
+    "theme": "extjs-theme-material",
+    "sass": {
+      "namespace": "conjoon.cn_mail",
+      "etc": [
+        "${package.dir}/sass/etc/all.scss"
+      ],
+      "var": [
+        "${package.dir}/sass/var/"
+      ],
+      "src": [
+        "${package.dir}/sass/src/"
+      ]
+    },
+    "example": null,
+    "classpath": [
+      "${package.dir}/src",
+      "${package.dir}/${toolkit.name}/src"
+    ],
+    "overrides": null,
+    "framework": "ext",
+    "requires": [
+      "extjs-lib-comp"
+    ]
+  },
+  "dependencies": {
+    "@coon-js/extjs-comp-navport": "^0.1.1",
+    "@coon-js/extjs-lib-comp": "^0.1.0",
+    "@coon-js/extjs-lib-core": "^0.6.0",
+    "@l8js/l8": "^0.3.9"
+  },
+  "devDependencies": {
+    "@conjoon/extjs-dev-webmailsim": "^0.1.0",
+    "@coon-js/extjs-link": "^0.1.4",
+    "@coon-js/siesta-lib-helper": "^0.1.9",
+    "eslint": "^7.28.0",
+    "local-web-server": "^4.2.1",
+    "node-git-hooks": "^1.0.6",
+    "siesta-lite": "^5.5.2"
+  },
+  "description": "This Sencha ExtJS NPM package provides a webmail client.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build:dev": "npm run build:deps && npm run build:test && npx node-git-hooks",
+    "build:deps": "npm explore @coon-js/siesta-lib-helper npm run build:dev",
+    "build:test": "npx extjs-link && npx siesta-lib-helper",
+    "postversion": "git push && git push --tags",
+    "test": "npx ws --port 8093 --static.index tests.redirect.html --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conjoon/extjs-app-webmail.git"
+  },
+  "keywords": [
+    "webmail",
+    "sencha",
+    "extjs",
+    "l8js",
+    "l8",
+    "coonjs",
+    "conjoon",
+    "imap",
+    "material"
+  ],
+  "author": "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/conjoon/extjs-extjs-app-webmail/issues"
+  },
+  "homepage": "https://github.com/conjoon/extjs-extjs-app-webmail#readme"
 }

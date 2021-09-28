@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,9 +27,9 @@
  * CompoundKey for AttachmentItems.
  *
  */
-Ext.define('conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey', {
+Ext.define("conjoon.cn_mail.data.mail.message.compoundKey.AttachmentItemCompoundKey", {
 
-    extend : 'conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey'
+    extend: "conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey"
 
 
 });

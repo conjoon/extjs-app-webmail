@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,26 +29,26 @@
  * Basically, a call to {@link #setMessageItem} should be used to provide
  * a {@link conjoon.cn_mail.model.mail.message.MessageItem} for this view directly.
  */
-Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
+Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
 
-    extend: 'Ext.Panel',
+    extend: "Ext.Panel",
 
-    mixins : [
-        'conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog',
-        'conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog'
+    mixins: [
+        "conjoon.cn_mail.view.mail.mixin.DeleteConfirmDialog",
+        "conjoon.cn_mail.view.mail.mixin.LoadingFailedDialog"
     ],
 
-    requires : [
-        'conjoon.cn_mail.model.mail.message.MessageItem',
-        'conjoon.cn_mail.view.mail.message.reader.MessageViewModel',
-        'conjoon.cn_mail.view.mail.message.reader.AttachmentList',
-        'conjoon.cn_mail.model.mail.message.MessageItem',
-        'conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey',
-        'conjoon.cn_mail.view.mail.message.reader.MessageViewIframe',
-        'conjoon.cn_mail.view.mail.message.reader.MessageViewController'
+    requires: [
+        "conjoon.cn_mail.model.mail.message.MessageItem",
+        "conjoon.cn_mail.view.mail.message.reader.MessageViewModel",
+        "conjoon.cn_mail.view.mail.message.reader.AttachmentList",
+        "conjoon.cn_mail.model.mail.message.MessageItem",
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+        "conjoon.cn_mail.view.mail.message.reader.MessageViewIframe",
+        "conjoon.cn_mail.view.mail.message.reader.MessageViewController"
     ],
 
-    alias : 'widget.cn_mail-mailmessagereadermessageview',
+    alias: "widget.cn_mail-mailmessagereadermessageview",
 
     /**
      * @event cn_mail-messageitemread
@@ -64,54 +64,54 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} item
      */
 
-    config : {
+    config: {
         /**
          * Whether the buttons in this MessageView (reply all, edit / delete draft)
          * should be enabled. Defaults to false.
          *
          * @cfg {Boolean}
          */
-        contextButtonsEnabled : false
+        contextButtonsEnabled: false
     },
 
 
     /**
      * @private
      */
-    isCnMessageView : true,
+    isCnMessageView: true,
 
-    layout : {
-        type : 'vbox',
-        align : 'stretch'
+    layout: {
+        type: "vbox",
+        align: "stretch"
     },
 
-    controller : 'cn_mail-mailmessagereadermessageviewcontroller',
+    controller: "cn_mail-mailmessagereadermessageviewcontroller",
 
-    viewModel : {
-        type : 'cn_mail-mailmessagereadermessageviewmodel'
+    viewModel: {
+        type: "cn_mail-mailmessagereadermessageviewmodel"
     },
 
     // needed to make sure embedded iframe can calculate its sizing
     // when messageview is hidden and message gets loaded
-    hideMode : 'offsets',
+    hideMode: "offsets",
 
-    split  : true,
-    cls    : 'cn_mail-mailmessagereadermessageview shadow-panel',
-    flex   : 1,
+    split: true,
+    cls: "cn_mail-mailmessagereadermessageview shadow-panel",
+    flex: 1,
 
     /**
      * @i18n
      */
-    title : 'Loading...',
+    title: "Loading...",
 
-    iconCls : 'fa fa-spin fa-spinner',
+    iconCls: "fa fa-spin fa-spinner",
 
-    bind : {
-        title   : '{isLoading ? "Loading..." : getSubject}',
-        iconCls : '{isLoading ? "fa fa-spin fa-spinner" : "fa fa-envelope-o"}'
+    bind: {
+        title: "{isLoading ? \"Loading...\" : getSubject}",
+        iconCls: "{isLoading ? \"fas fa-spin fa-spinner\" : \"far fa-envelope\"}"
     },
 
-    closable : true,
+    closable: true,
 
 
     /**
@@ -120,194 +120,223 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      * to the current record being loaded to be able to abort load operations
      * when needed.
      */
-    loadingItem : null,
+    loadingItem: null,
 
     /**
      * @type {Ext.LoadMask}
      * @private
      */
-    loadingMask : null,
+    loadingMask: null,
 
-    items : [{
-        xtype  : 'container',
-        itemId : 'msgHeaderContainer',
-        cls    : 'cn_mail-header',
-        height : 96,
-        layout : {
-            type  : 'hbox'
+    items: [{
+        xtype: "container",
+        itemId: "msgHeaderContainer",
+        cls: "cn_mail-header",
+        height: 82,
+        layout: {
+            type: "hbox",
+            align: "stretch"
         },
-        hidden : true,
-        bind   : {
-            hidden : '{!messageItem}'
+        hidden: true,
+        bind: {
+            hidden: "{!messageItem}"
         },
         items: [{
-            xtype  : 'box',
-            cls    : 'sender-img x-fa fa-user',
-            height : 80,
-            width  : 80
+            xtype: "box",
+            cls: "sender-img fas fa-user",
+            margin: "8 8 0 8"
         }, {
-           xtype : 'container',
-           flex : 1,
-           layout : { type : 'vbox', align : 'stretch'},
-           items : [{
-               xtype  : 'container',
-               margin : '5 5 0 0',
-               layout : { type : 'hbox'},
-               items  : [{
-                   xtype : 'component',
-                   flex  : 1,
-                   cls   : 'message-subject',
-                   bind  : {
-                       data : {
-                           date               : '{getFormattedDate}',
-                           displayToAddress   : '{getDisplayToAddress}',
-                           displayFromAddress : '{getDisplayFromAddress}'
-                       }
-                   },
-                   tpl: [
-                       '<div class="from">{displayFromAddress}</div>',
-                       '<div class="to">to {displayToAddress} on {date}</div>',
-                   ]
+            xtype: "container",
+            flex: 1,
+            layout: { type: "vbox", align: "stretch"},
+            items: [{
+                xtype: "container",
+                margin: "5 5 0 0",
+                layout: { type: "hbox"},
+                items: [{
+                    xtype: "component",
+                    flex: 1,
+                    cls: "message-subject",
+                    bind: {
+                        data: {
+                            date: "{getFormattedDate}",
+                            displayToAddress: "{getDisplayToAddress}",
+                            displayFromAddress: "{getDisplayFromAddress}"
+                        }
+                    },
+                    tpl: [
+                        "<div class=\"from\">{displayFromAddress}</div>",
+                        "<div class=\"to\">to {displayToAddress} on {date}</div>"
+                    ]
 
-               }, {
-                   xtype     : 'button',
-                   scale     : 'small',
-                   ui        : 'cn-btn-medium-base-color',
-                   iconCls   : 'x-fa fa-edit',
-                   tooltip  : {
-                       text  : "Edit this draft"
-                   },
-                   itemId    : 'btn-editdraft',
-                   visible    : false,
-                   bind      : {
-                       visible : '{messageItem.draft && contextButtonsEnabled}'
-                   }
-               }, {
-                   xtype     : 'button',
-                   scale     : 'small',
-                   ui        : 'cn-btn-medium-base-color',
-                   iconCls   : 'x-fa fa-trash',
-                   itemId    : 'btn-deletedraft',
-                   tooltip  : {
-                       text  : "Delete this draft"
-                   },
-                   visible   : false,
-                   bind      : {
-                       visible : '{messageItem.draft && contextButtonsEnabled}'
-                   }
-               }, {
-                   visible   : false,
-                   bind      : {
-                       visible : '{!messageItem.draft && contextButtonsEnabled}'
-                   },
-                   xtype     : 'splitbutton',
-                   scale     : 'small',
-                   ui        : 'cn-btn-medium-base-color',
-                   iconCls   : 'x-fa fa-mail-reply-all',
-                   text      : 'Reply all',
-                   itemId    : 'btn-replyall',
-                   menuAlign : 'tr-br',
-                   menu    : {
-                       items : [{
-                           text    : 'Reply',
-                           iconCls : 'x-fa fa-mail-reply',
-                           itemId  : 'btn-reply',
-                       }, {
-                           text    : 'Forward',
-                           iconCls : 'x-fa fa-mail-forward',
-                           itemId  : 'btn-forward'
-                       }, '-', {
-                           text    : 'Delete',
-                           iconCls : 'x-fa fa-trash',
-                           itemId  : 'btn-delete'
-                       }]
-                   }
-               }]
-           }, {
-               xtype : 'component',
-               flex  : 1,
-               cls   : 'message-subject',
-               bind  : {
-                   data : {
-                       subject            : '{getSubject}',
-                       hasAttachments     : '{messageItem.hasAttachments}',
-                       isDraft            : '{messageItem.draft}'
-                   }
-               },
-               tpl: [
-                   '<div class="subject">' +
-                   '<tpl if="isDraft"><span class="draft">[Draft]</span></tpl>' +
-                   '<tpl if="hasAttachments"><span class="fa fa-paperclip"></span></tpl>' +
-                   '{subject}',
-                   '</div>'
-               ]
+                }, {
+                    xtype: "segmentedbutton",
+                    hidden: true,
+                    disabled: true,
+                    bind: {
+                        disabled: "{!messageBody.textHtml || !messageBody.textPlain}",
+                        visible: "{messageBody.textHtml || messageBody.textPlain}"
+                    },
+                    items: [{
+                        xtype: "button",
+                        scale: "small",
+                        iconCls: "fas fa-code",
+                        itemId: "btn-showhtml",
+                        reference: "htmlplainButton",
+                        bind: {
+                            pressed: "{!!messageBody.textHtml}"
+                        },
+                        tooltip: {
+                            text: "Show text/html"
+                        }
+                    }, {
+                        xtype: "button",
+                        scale: "small",
+                        itemId: "btn-showplain",
+                        iconCls: "fas fa-align-left",
+                        bind: {
+                            pressed: "{!messageBody.textHtml}"
+                        },
+                        tooltip: {
+                            text: "Show text/plain"
+                        }
+                    }]
+                }, {
+                    xtype: "button",
+                    scale: "small",
+                    iconCls: "fas fa-edit",
+                    tooltip: {
+                        text: "Edit this draft"
+                    },
+                    itemId: "btn-editdraft",
+                    visible: false,
+                    bind: {
+                        visible: "{messageItem.draft && contextButtonsEnabled}"
+                    }
+                }, {
+                    xtype: "button",
+                    scale: "small",
+                    iconCls: "fas fa-trash",
+                    itemId: "btn-deletedraft",
+                    tooltip: {
+                        text: "Delete this draft"
+                    },
+                    visible: false,
+                    bind: {
+                        visible: "{messageItem.draft && contextButtonsEnabled}"
+                    }
+                }, {
+                    visible: false,
+                    bind: {
+                        visible: "{!messageItem.draft && contextButtonsEnabled}"
+                    },
+                    xtype: "splitbutton",
 
-           }]
+                    iconCls: "fas fa-reply-all",
+                    text: "Reply all",
+                    itemId: "btn-replyall",
+                    menuAlign: "tr-br",
+                    menu: {
+                        items: [{
+                            text: "Reply",
+                            iconCls: "fas fa-reply",
+                            itemId: "btn-reply"
+                        }, {
+                            text: "Forward",
+                            iconCls: "fas fa-share",
+                            itemId: "btn-forward"
+                        }, "-", {
+                            text: "Delete",
+                            iconCls: "fas fa-trash",
+                            itemId: "btn-delete"
+                        }]
+                    }
+                }]
+            }, {
+                xtype: "component",
+                flex: 1,
+                cls: "message-subject",
+                bind: {
+                    data: {
+                        subject: "{getSubject}",
+                        hasAttachments: "{messageItem.hasAttachments}",
+                        isDraft: "{messageItem.draft}"
+                    }
+                },
+                tpl: [
+                    "<div class=\"subject\">" +
+                   "<tpl if=\"isDraft\"><span class=\"draft\">[Draft]</span></tpl>" +
+                   "<tpl if=\"hasAttachments\"><span class=\"fa fa-paperclip\"></span></tpl>" +
+                   "{subject}",
+                    "</div>"
+                ]
+
+            }]
         }]
     }, {
-        xtype: 'component',
-        hidden : true,
-        bind : {
-            hidden : '{!hasImages || cn_mail_iframe.imagesAllowed || !iframeLoaded}',
+        xtype: "component",
+        hidden: true,
+        bind: {
+            hidden: "{!hasImages || cn_mail_iframe.imagesAllowed || !iframeLoaded}"
         },
-        itemId : 'remoteImageWarning',
+        itemId: "remoteImageWarning",
         autoEl: {
-            cls: 'cn_mail-reloadWithImages',
-            tag: 'div',
+            cls: "cn_mail-reloadWithImages",
+            tag: "div",
             /**
              * @i18n
              */
-            html: 'Remote images are blocked in this message to protect your privacy. <span class="loadImg">Display Images</span>'
+            html: "Remote images are blocked in this message to protect your privacy. <span class=\"loadImg\">Display Images</span>"
         }
     }, {
-        flex   : 1,
-        xtype  : 'box',
-        hidden : false,
-        bind : {
-            hidden : '{messageItem && messageBody && iframeLoaded}',
-            data   : {
-                indicatorText : '{getIndicatorText}',
-                indicatorIcon : '{getIndicatorIcon}'
+        flex: 1,
+        xtype: "box",
+        hidden: false,
+        bind: {
+            hidden: "{messageItem && messageBody && iframeLoaded}",
+            data: {
+                indicatorText: "{getIndicatorText}",
+                indicatorIcon: "{getIndicatorIcon}"
             }
         },
-        itemId : 'msgIndicatorBox',
+        itemId: "msgIndicatorBox",
         tpl: [
-            '<div class="messageIndicator">',
-            '<div class="fa {indicatorIcon} icon"></div>',
-            '<div>{indicatorText}</div>',
-            '</div>'
+            "<div class=\"messageIndicator\">",
+            "<div class=\"{indicatorIcon} icon\"></div>",
+            "<div>{indicatorText}</div>",
+            "</div>"
         ]
     },  {
-        xtype  : 'container',
-        hideMode : 'offsets',
-        flex   : 1,
-        cls   : 'cn_mail-body',
-        hidden : true,
-        bind   : {
-            hidden : '{!messageBody || !iframeLoaded}'
+        xtype: "container",
+        hideMode: "offsets",
+        flex: 1,
+        cls: "cn_mail-body",
+        hidden: true,
+        bind: {
+            hidden: "{!messageBody || !iframeLoaded}"
         },
-        itemId     : 'msgBodyContainer',
-        scrollable : true,
-        layout : 'auto',
-        items :[{
-            xtype  : 'cn_mail-mailmessagereaderattachmentlist',
+        itemId: "msgBodyContainer",
+        scrollable: true,
+        layout: "auto",
+        items: [{
+            xtype: "cn_mail-mailmessagereaderattachmentlist",
 
-            hidden : true,
-            bind : {
-                store  : '{attachmentStore}',
-                hidden : '{!messageItem.hasAttachments}'
+            hidden: true,
+            bind: {
+                store: "{attachmentStore}",
+                hidden: "{!messageItem.hasAttachments}"
             }
         }, {
-            reference : 'cn_mail_iframe',
-            cls       : 'cn_mail-mailmessagereadermessageviewiframe',
-            xtype     : 'cn_mail-mailmessagereadermessageviewiframe',
-            scrolling : "no",
-            sandbox : Ext.isGecko
-                      ? "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
-                      : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
-            src : "",
-            bind : {
-                srcDoc : '{messageBody.textHtml}',
+            reference: "cn_mail_iframe",
+            cls: "cn_mail-mailmessagereadermessageviewiframe",
+            xtype: "cn_mail-mailmessagereadermessageviewiframe",
+            scrolling: "no",
+            sandbox: Ext.isGecko
+                ? "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
+                : "allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
+            src: "",
+            bind: {
+                srcDoc: "{htmlplainButton.pressed ? messageBody.textHtml : textPlainToHtml}"
             }
         }]
     }],
@@ -316,20 +345,20 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     /**
      * @inheritdoc
      */
-    initComponent : function() {
+    initComponent: function () {
 
         var me = this;
 
-        me.on('afterrender', function() {
+        me.on("afterrender", function () {
             var me = this;
 
-            me.loadingMask = Ext.create('Ext.LoadMask', {
-                target : me,
-                bind   : {
-                    hidden : '{!isLoading}'
+            me.loadingMask = Ext.create("Ext.LoadMask", {
+                target: me,
+                bind: {
+                    hidden: "{!isLoading}"
                 },
-                listeners : {
-                    hide : function(mask) {
+                listeners: {
+                    hide: function (mask) {
                         mask.destroy();
                         me.loadingMask = null;
                     }
@@ -337,9 +366,9 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
             });
 
             me.loadingMask.show();
-        }, me, {single : true});
+        }, me, {single: true});
 
-        me.on('beforedestroy', function() {
+        me.on("beforedestroy", function () {
             var me = this,
                 vm = me.getViewModel();
 
@@ -367,17 +396,17 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
     },
 
 
-// -------- API
+    // -------- API
 
     /**
      * Returns the "messageItem" of this view's ViewModel.
      *
      * @return {null|conjoon.cn_mail.model.mail.message.MessageItem}
      */
-    getMessageItem : function() {
+    getMessageItem: function () {
         const me = this;
 
-        return me.getViewModel().get('messageItem');
+        return me.getViewModel().get("messageItem");
     },
 
 
@@ -389,7 +418,7 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      *
      * @see {conjoon.cn_amil.view.mail.message.reader.MessageViewModel}
      */
-    setMessageItem : function(messageItem) {
+    setMessageItem: function (messageItem) {
 
         var me = this;
 
@@ -413,28 +442,28 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      *
      * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
-    loadMessageItem : function(compoundKey) {
+    loadMessageItem: function (compoundKey) {
 
         var me = this,
             vm = me.getViewModel();
 
         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
             Ext.raise({
-               msg          : "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-                compoundKey : compoundKey
+                msg: "\"compoundKey\" must be an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+                compoundKey: compoundKey
             });
         }
 
-        vm.set('isLoading', true);
+        vm.set("isLoading", true);
 
         if (me.loadingItem) {
             me.loadingItem.abort();
         }
 
         me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
-            success : me.onMessageItemLoaded,
-            failure : me.onMessageItemLoadFailure,
-            scope   : me
+            success: me.onMessageItemLoaded,
+            failure: me.onMessageItemLoadFailure,
+            scope: me
         });
     },
 
@@ -452,14 +481,14 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      * not a messageItem available, or if the id of the
      * MessageDraft does not equal to the id of the messageItem.
      */
-    updateMessageItem : function(messageDraft) {
+    updateMessageItem: function (messageDraft) {
         var me = this;
 
         me.getViewModel().updateMessageItem(messageDraft);
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * Callback for the failed attempt to load a MessageItem, registered
@@ -470,12 +499,12 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
          *
          * @return {coon.comp.component.MessageMask}
          */
-        onMessageItemLoadFailure : function(messageItem, operation) {
+        onMessageItemLoadFailure: function (messageItem, operation) {
 
             const me               = this,
-                  vm               = me.getViewModel();
+                vm               = me.getViewModel();
 
-            vm.set('isLoading', false);
+            vm.set("isLoading", false);
             vm.notify();
 
             // do not show dialog if status of error is -1, which
@@ -494,15 +523,15 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
          * Callback for the load-event of a MessageItem, registered by #loadMessageItem
          * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
          */
-        onMessageItemLoaded : function(messageItem) {
+        onMessageItemLoaded: function (messageItem) {
 
             const me = this,
-                  vm = me.getViewModel();
+                vm = me.getViewModel();
 
             me.setMessageItem(messageItem);
-            vm.set('isLoading', false);
+            vm.set("isLoading", false);
             me.loadingItem = null;
-            me.fireEvent('cn_mail-messageitemload', me, messageItem);
+            me.fireEvent("cn_mail-messageitemload", me, messageItem);
         }
 
     },
@@ -516,11 +545,11 @@ Ext.define('conjoon.cn_mail.view.mail.message.reader.MessageView', {
      *
      * @private
      */
-    updateContextButtonsEnabled : function(value) {
+    updateContextButtonsEnabled: function (value) {
 
         const me = this;
 
-        me.getViewModel().set('contextButtonsEnabled', value);
+        me.getViewModel().set("contextButtonsEnabled", value);
 
     }
 

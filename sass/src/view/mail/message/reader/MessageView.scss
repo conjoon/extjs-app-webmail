@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,37 +25,39 @@
 
 .cn_mail-mailmessagereadermessageview {
 
-    background-color : $lightest-color;
+    background-color : var(--background-color);
 
     .cn_mail-attachment-list {
         display: flex;
+        margin: 0 0 18px 0;
     }
 
     .messageIndicator {
 
         .icon {
-            color         : lighten($base-color, 30%);
-            font-size     : 96px;
-            margin-bottom : 12px;
+            color         : var(--color);
+            font-size     : 38px;
+            margin-bottom : 4px;
         }
 
         position   : relative;
         text-align : center;
-        font-size  : 14px;
+        font-size  : 13px;
         top        : 50%;
         transform  : translateY(-50%);
     }
 
     .cn_mail-header {
-        border-bottom : 1px solid $mail-border-color;
+       border-bottom : 1px solid var(--divider-color);
+
+        background-color:var(--header-background-color);
 
         .sender-img {
 
             margin-left : 10px;
 
-            &.x-fa::before {
-                color     : lighten($color, 70%);
-                font-size : 86px;
+            &.fas::before {
+                font-size : 68px;
             }
         }
 
@@ -72,22 +74,27 @@
             padding : 0px;
 
             .fa-paperclip {
-                padding : 0 5px 0 0;
+                padding : 0 8px 0 0;
             }
 
             .draft {
                 padding : 0 5px 0 0;
-                color   : $cn-draft-color;
+                color   : var(--accent-color);
             }
 
             .from {
-                font-size : 16px;
+                font-size : 13px;
+            }
+
+            .to {
+                margin-top:4px
             }
 
             .subject {
-                font-size     : 22px;
+                font-size     : 13px;
                 max-width     : 95%;
-                padding       : 4px 0 2px 0;
+                padding       : 6px 0 2px 0;
+                color: var(--base-foreground-color);
             }
         }
 
@@ -104,8 +111,6 @@
 
     .cn_mail-top-toolbar {
 
-        background-color: $lightest-color;
-
         .x-btn-inner-default-toolbar-small {
             color: $color;
         }
@@ -116,11 +121,10 @@
     }
 
     .cn_mail-reloadWithImages {
-        background-color: #FFB242;
+        background-color: var(--alert-color);
         height: 26px;
-        color: #FFE9C9;
-        padding: 5px;
-        padding-left: 8px;
+        color: var(--base-foreground-color);
+        padding: 4px 0 0 8px;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -132,17 +136,12 @@
         }
 
         &:before {
-            font-family: FontAwesome;
+            font-family: $font-icon-font-family;
             content: "\f071";
             margin-right: 6px;
         }
     }
 
-    .cn_mail-action-button {
-        .mail-compose-save-button, .mail-compose-save-button .x-frame-mc{
-        }
-        .mail-compose-send-button, .mail-compose-send-button .x-frame-mc{
-        }
-    }
+
 
 }

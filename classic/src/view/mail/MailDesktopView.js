@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,45 +24,45 @@
  */
 
 /**
- * This is the main view for the app-cn_mail package.
+ * This is the main view for the extjs-app-webmail package.
  * The view consist of a {@link conjoon.cn_mail.view.mail.inbox.InboxView} and
  * various other helper views that provide mail editing/viewing functionality.
  *
  */
-Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
+Ext.define("conjoon.cn_mail.view.mail.MailDesktopView", {
 
-    extend : 'Ext.tab.Panel',
+    extend: "Ext.tab.Panel",
 
-    alias : 'widget.cn_mail-maildesktopview',
+    alias: "widget.cn_mail-maildesktopview",
 
-    requires : [
-        'conjoon.cn_mail.view.mail.inbox.InboxView',
-        'conjoon.cn_mail.view.mail.MailDesktopViewController',
-        'conjoon.cn_mail.view.mail.MailDesktopViewModel',
-        'conjoon.cn_mail.data.mail.BaseSchema',
-        'coon.comp.window.Toast'
+    requires: [
+        "conjoon.cn_mail.view.mail.inbox.InboxView",
+        "conjoon.cn_mail.view.mail.MailDesktopViewController",
+        "conjoon.cn_mail.view.mail.MailDesktopViewModel",
+        "conjoon.cn_mail.data.mail.BaseSchema",
+        "coon.comp.window.Toast"
     ],
 
-    controller : 'cn_mail-maildesktopviewcontroller',
+    controller: "cn_mail-maildesktopviewcontroller",
 
-    viewModel : 'cn_mail-maildesktopviewmodel',
+    viewModel: "cn_mail-maildesktopviewmodel",
 
-    layout : 'fit',
+    layout: "fit",
 
-    cls     : 'cn_mail-tab-panel',
+    cls: "cn_mail-tab-panel",
 
-    bodyCls : 'cn_mail-tab-body',
+    bodyCls: "cn_mail-tab-body",
 
-    flex : 1,
+    flex: 1,
 
-    margin: '20 20 20 20',
+    margin: "10 10 10 10",
 
-    maxTabWidth : 240,
+    maxTabWidth: 240,
 
-    items : [{
-        margin  : '12 0 0 0',
-        xtype   : 'cn_mail-mailinboxview',
-        cn_href : 'cn_mail/home'
+    items: [{
+        margin: "12 0 0 0",
+        xtype: "cn_mail-mailinboxview",
+        cn_href: "cn_mail/home"
     }],
 
     /**
@@ -74,7 +74,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailMessageViewFor}
      */
-    showMailMessageViewFor : function(compoundKey) {
+    showMailMessageViewFor: function (compoundKey) {
         var me = this;
 
         me.getController().showMailMessageViewFor(compoundKey);
@@ -93,7 +93,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailEditor}
      */
-    showMailEditor : function(id, type) {
+    showMailEditor: function (id, type) {
         var me = this;
 
         return me.getController().showMailEditor(id, type);
@@ -112,7 +112,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showInboxViewFor}
      */
-    showInboxViewFor : function(mailAccountId, mailFolderId) {
+    showInboxViewFor: function (mailAccountId, mailFolderId) {
         const me = this;
 
         return me.getController().showInboxViewFor(mailAccountId, mailFolderId);
@@ -128,13 +128,11 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @return {coon.comp.window.Toast}
      */
-    showMessageMovedInfo : function(messageItem, sourceFolder, targetFolder) {
-        const me = this;
-
+    showMessageMovedInfo: function (messageItem, sourceFolder, targetFolder) {
         return coon.Toast.info(
             Ext.String.format(
                 "The message was moved to the \"{0}\" folder.",
-                targetFolder.get('name')
+                targetFolder.get("name")
             )
         );
     },
@@ -147,7 +145,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @return {coon.comp.window.Toast}
      */
-    showMessageCannotBeDeletedWarning : function(messageItem) {
+    showMessageCannotBeDeletedWarning: function (messageItem) {
 
         return coon.Toast.warn(
             "Please close all related tabs to this message first.");
@@ -166,7 +164,7 @@ Ext.define('conjoon.cn_mail.view.mail.MailDesktopView', {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopViewController#showMailAccountFor}
      */
-    showMailAccountFor : function(mailAccountId) {
+    showMailAccountFor: function (mailAccountId) {
         const me = this;
 
         return me.getController().showMailAccountFor(mailAccountId);

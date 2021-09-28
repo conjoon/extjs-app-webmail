@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,51 +23,50 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t) {
+StartTest(t => {
 
     var model,
-        messageBody,
         TMPFUNC;
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
 
-        model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+        model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
         });
 
         TMPFUNC = conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.prototype.getRepresentingCompoundKeyClass;
 
-        conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.prototype.getRepresentingCompoundKeyClass = function() {
+        conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.prototype.getRepresentingCompoundKeyClass = function () {
             return conjoon.cn_mail.data.mail.AbstractCompoundKey;
         };
 
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         model       = null;
 
         conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.prototype.getRepresentingCompoundKeyClass = TMPFUNC;
     });
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", function(t) {
-        t.isInstanceOf(model, 'conjoon.cn_mail.model.mail.BaseModel');
+    t.it("Should create instance", t => {
+        t.isInstanceOf(model, "conjoon.cn_mail.model.mail.BaseModel");
 
         t.expect(model.callerEntityName).toBe("");
 
         t.expect(model.compoundKeyFields).toEqual([]);
 
-        t.expect(model.foreignKeyFields).toEqual(['mailAccountId', 'id']);
+        t.expect(model.foreignKeyFields).toEqual(["mailAccountId", "id"]);
     });
 
-    t.it("idProperty", function(t) {
+    t.it("idProperty", t => {
         t.expect(model.getIdProperty()).toBe("localId");
     });
 
-    t.it("Test fields", function(t) {
+    t.it("Test fields", t => {
 
         let fields = ["mailAccountId", "id"],
             field;
@@ -76,7 +75,7 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
 
             field = fields[i];
 
-            t.isInstanceOf(model.getField(field), 'coon.core.data.field.CompoundKeyField');
+            t.isInstanceOf(model.getField(field), "coon.core.data.field.CompoundKeyField");
 
             t.expect(model.getField(field)).toBeTruthy();
 
@@ -92,21 +91,19 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
             t.expect(model.get(field)).toBe("0");
         }
 
-        t.expect(model.getField('__id__')).toBeFalsy();
+        t.expect(model.getField("__id__")).toBeFalsy();
 
     });
 
 
-    t.it("load()", function(t) {
+    t.it("load()", t => {
 
-        let exc, e;
-
-        t.isCalledNTimes('checkForeignKeysForAction', model, 1);
+        t.isCalledNTimes("checkForeignKeysForAction", model, 1);
 
         model.load({
-            params : {
-                mailAccountId : 'foo',
-                id           : '1'
+            params: {
+                mailAccountId: "foo",
+                id: "1"
             }
         });
 
@@ -114,77 +111,70 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
     });
 
 
-    t.it("save()", function(t) {
+    t.it("save()", t => {
 
-        let exc, e;
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
 
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
-
-        t.isCalledNTimes('checkForeignKeysForAction', model, 1);
+        t.isCalledNTimes("checkForeignKeysForAction", model, 1);
         t.expect(model.save()).toBeTruthy();
     });
 
 
+    t.it("erase() - phantom", t => {
 
-    t.it("erase() - phantom", function(t) {
-
-        let exc, e;
-
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
 
         t.expect(model.phantom).toBe(true);
-        t.isntCalled('checkForeignKeysForAction', model);
+        t.isntCalled("checkForeignKeysForAction", model);
         t.expect(model.erase()).toBeTruthy();
     });
 
 
-    t.it("erase()", function(t) {
+    t.it("erase()", t => {
 
-        let exc, e;
-
-        model.set('localId', "abcd");
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
+        model.set("localId", "abcd");
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
         model.commit();
 
         t.expect(model.phantom).toBe(false);
-        t.isCalled('checkForeignKeysForAction', model);
+        t.isCalled("checkForeignKeysForAction", model);
         t.expect(model.erase()).toBeTruthy();
     });
 
 
-    t.it("loadEntity()", function(t) {
+    t.it("loadEntity()", t => {
 
-        let exc, e;
+        let exc;
 
-        try{conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.loadEntity('1');} catch(e){exc=e};
+        try{conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.loadEntity("1");} catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
         exc = undefined;
 
-        let key = Ext.create('conjoon.cn_mail.data.mail.AbstractCompoundKey', {
-                mailAccountId : 'foo',
-                id            : '1'
+        let key = Ext.create("conjoon.cn_mail.data.mail.AbstractCompoundKey", {
+                mailAccountId: "foo",
+                id: "1"
             }),
             options = {};
 
         t.isInstanceOf(conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.loadEntity(key, options),
-            'conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel');
+            "conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel");
 
         t.expect(options.params).toBeDefined();
 
         t.expect(options.params).toEqual({
-            mailAccountId : 'foo',
-            id            : '1'
+            mailAccountId: "foo",
+            id: "1"
         });
 
         options.params = {
-            mailAccountId : '8',
-            id            : '1',
-            foobar        : 'foo'
+            mailAccountId: "8",
+            id: "1",
+            foobar: "foo"
         };
 
         conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel.loadEntity(key, options);
@@ -192,69 +182,71 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
         t.expect(options.params).toBeDefined();
 
         t.expect(options.params).toEqual({
-            mailAccountId : 'foo',
-            id            : '1',
-            foobar        : 'foo'
+            mailAccountId: "foo",
+            id: "1",
+            foobar: "foo"
         });
 
     });
 
 
-    t.it("checkForeignKeysForAction()", function(t) {
+    t.it("checkForeignKeysForAction()", t => {
 
-         model.set('mailAccountId', "");
+        let exc;
 
-         try{model.checkForeignKeysForAction(model.data, 'save');} catch(e){exc=e};
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain("must be set");
-         t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
-         t.expect(exc.action).toBe("save");
-         exc = undefined;
+        model.set("mailAccountId", "");
+
+        try{model.checkForeignKeysForAction(model.data, "save");} catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be set");
+        t.expect(exc.msg.toLowerCase()).toContain("mailaccountid");
+        t.expect(exc.action).toBe("save");
+        exc = undefined;
 
 
-         model.set('mailAccountId', "foo");
-         model.set('mailFolderId', "INBOX.Drafts");
+        model.set("mailAccountId", "foo");
+        model.set("mailFolderId", "INBOX.Drafts");
 
-         t.expect(model.save()).toBeTruthy();
+        t.expect(model.save()).toBeTruthy();
 
-         model.commit();
-         t.expect(model.phantom).toBe(false);
+        model.commit();
+        t.expect(model.phantom).toBe(false);
 
-         try{model.checkForeignKeysForAction(model.data, 'save');} catch(e){exc=e};
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain("must be set");
-         t.expect(exc.msg.toLowerCase()).toContain("id");
-         t.expect(exc.action).toBe("save");
-         exc = undefined;
+        try{model.checkForeignKeysForAction(model.data, "save");} catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be set");
+        t.expect(exc.msg.toLowerCase()).toContain("id");
+        t.expect(exc.action).toBe("save");
+        exc = undefined;
 
         t.expect(model.checkForeignKeysForAction({
-            mailAccountId : 'foo',
-            id           : '1'
-        }, 'read')).toBe(true);
+            mailAccountId: "foo",
+            id: "1"
+        }, "read")).toBe(true);
 
     });
 
 
-    t.it("getAssociatedCompoundKeyedData()", function(t){
+    t.it("getAssociatedCompoundKeyedData()", function (t){
         t.expect(model.getAssociatedCompoundKeyedData()).toEqual([]);
 
     });
 
 
-    t.it("updateLocalId()", function(t) {
+    t.it("updateLocalId()", t => {
 
-        let m = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-                id            : "foo-1",
-                mailAccountId : "foo"
+        let m = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+                id: "foo-1",
+                mailAccountId: "foo"
             }),
             AbstractCompoundKey = conjoon.cn_mail.data.mail.AbstractCompoundKey;
 
         let expected =
             AbstractCompoundKey.createFor(
-                m.get('mailAccountId'),
-                m.get('id')
+                m.get("mailAccountId"),
+                m.get("id")
             ).toLocalId();
 
         t.expect(m.getId()).not.toBe(expected);
@@ -263,30 +255,29 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
         t.expect(m.getId()).toBe(expected);
 
 
-        m = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel');
+        m = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel");
         expected = m.updateLocalId();
         t.expect(null).toBe(expected);
 
     });
 
 
-
-    t.it("isCompoundKeySet()", function(t) {
+    t.it("isCompoundKeySet()", t => {
         let model;
 
-        model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+        model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
         });
 
         t.expect(model.isCompoundKeySet()).toBe(false);
 
-        model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-            id : 1
+        model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+            id: 1
         });
         t.expect(model.isCompoundKeySet()).toBe(false);
 
-        model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-            id : 1,
-            mailAccountId : 'foo'
+        model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+            id: 1,
+            mailAccountId: "foo"
         });
         t.expect(model.isCompoundKeySet()).toBe(true);
 
@@ -294,31 +285,31 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
     });
 
 
-    t.it("set() with mapping for compoundKeyFields", function(t) {
+    t.it("set() with mapping for compoundKeyFields", t => {
 
-        let modelLeft = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+        let modelLeft = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
             }),
-            modelRight = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+            modelRight = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
             }),
             fields = {
-                mailAccountId : 'foo',
-                id : 'snafu'
+                mailAccountId: "foo",
+                id: "snafu"
             },
             targets = {
-                mailAccountId : 'accountField',
-                id : 'idField'
+                mailAccountId: "accountField",
+                id: "idField"
             };
 
-        modelRight.entityName = 'testModel';
+        modelRight.entityName = "testModel";
 
         modelLeft.compoundKeyFields= {
-            'testModel' : {
-                mailAccountId : 'accountField',
-                    id : 'idField'
+            "testModel": {
+                mailAccountId: "accountField",
+                id: "idField"
             }
         };
 
-        modelLeft.getAssociatedCompoundKeyedData = function() {
+        modelLeft.getAssociatedCompoundKeyedData = function () {
             return [modelRight];
         };
 
@@ -329,32 +320,32 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
             t.expect(modelLeft.get(i)).toBe(fields[i]);
             t.expect(modelRight.modified).toBeFalsy();
             t.expect(modelLeft.modified).toBeTruthy();
-            t.expect(modelLeft.modified.hasOwnProperty(i)).toBe(true);
+            t.expect(Object.prototype.hasOwnProperty.call(modelLeft.modified, i)).toBe(true);
         }
     });
 
 
-    t.it("compareAndApplyCompoundKeys() with mapping for compoundFields", function(t) {
+    t.it("compareAndApplyCompoundKeys() with mapping for compoundFields", t => {
 
         let mapping = {
-            mailAccountId : 'accountField',
-            id : 'idField'
+            mailAccountId: "accountField",
+            id: "idField"
         };
 
-        let createModel = function(fields, isRight) {
+        let createModel = function (fields, isRight) {
 
-                let dir = isRight ? 'right' : 'left';
+                let dir = isRight ? "right" : "left";
 
-                if (dir === 'left') {
+                if (dir === "left") {
 
-                    let modelLeft = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel',
+                    let modelLeft = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel",
                         Ext.apply({}, fields)
                     );
 
                     modelLeft.compoundKeyFields= {
-                        'testModel' : {
-                            mailAccountId : 'accountField',
-                            id : 'idField'
+                        "testModel": {
+                            mailAccountId: "accountField",
+                            id: "idField"
                         }
                     };
 
@@ -362,47 +353,38 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
 
                 } else {
 
-                    let modelRight = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel',
+                    let modelRight = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel",
                         Ext.apply({}, fields)
                     );
-                    modelRight.entityName = 'testModel';
+                    modelRight.entityName = "testModel";
 
                     return modelRight;
                 }
 
             },
             field4 = {
-                mailAccountId : 'foo',
-                id : 'snafu',
-                localId : 'NEWID'
+                mailAccountId: "foo",
+                id: "snafu",
+                localId: "NEWID"
             },
             field4_r = {
-                accountField : 'foo',
-                idField : 'snafu',
-                localId : 'NEWID'
-            },
-            field3 = {
-                mailAccountId : 'foo',
-                localId : 'NEWID'
-            },
-            field3_r = {
-                accountField : 'foo',
-                localId : 'NEWID'
+                accountField: "foo",
+                idField: "snafu",
+                localId: "NEWID"
             },
             field2 = {
-                mailAccountId : 'ACCOUNT',
+                mailAccountId: "ACCOUNT"
             },
             field2_r = {
-                accountField : 'ACCOUNT',
+                accountField: "ACCOUNT"
             },
             field1 = {
-                id : 'ID'
+                id: "ID"
             },
             field1_r = {
-                id : 'ID'
+                id: "ID"
             },
-            field0 = {},
-            modelLeft, modelRight, newFields, exc, e;
+            modelLeft, modelRight;
 
         // left 4 right 4 fields same
         modelLeft = createModel(field4);
@@ -410,18 +392,17 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
         t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
 
 
-
         // left 4 right 4 fields same BUT localId
         modelLeft = createModel(field4);
-        modelRight = createModel(Ext.applyIf({localId : 'meh.'}, field4_r), true);
+        modelRight = createModel(Ext.applyIf({localId: "meh."}, field4_r), true);
         t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
 
         // left 2 right 2 not setting localId
-        modelLeft = createModel(Ext.apply({localId : 'mmm'}, field2));
-        modelRight = createModel(Ext.apply({localId : 'nnn'}, field2_r), true);
+        modelLeft = createModel(Ext.apply({localId: "mmm"}, field2));
+        modelRight = createModel(Ext.apply({localId: "nnn"}, field2_r), true);
         t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
-        t.expect(modelLeft.getId()).toBe('mmm');
-        t.expect(modelRight.getId()).toBe('nnn');
+        t.expect(modelLeft.getId()).toBe("mmm");
+        t.expect(modelRight.getId()).toBe("nnn");
 
         // left 2 right 1, presedence
         modelLeft = createModel(field2);
@@ -461,95 +442,93 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
         }
 
         modelLeft = createModel({});
-        modelRight = createModel({accountField : '5', idField : '6', localId : 'zzz'}, true);
+        modelRight = createModel({accountField: "5", idField: "6", localId: "zzz"}, true);
         modelLeft.compareAndApplyCompoundKeys(modelRight);
-        t.expect(modelLeft.get('mailAccountId')).toBe(modelRight.get('accountField'));
-        t.expect(modelLeft.get('id')).toBe(modelRight.get('idField'));
+        t.expect(modelLeft.get("mailAccountId")).toBe(modelRight.get("accountField"));
+        t.expect(modelLeft.get("id")).toBe(modelRight.get("idField"));
         t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
 
-        modelLeft = createModel({mailAccountId : '5', id : '6', localId : 'zzz'});
+        modelLeft = createModel({mailAccountId: "5", id: "6", localId: "zzz"});
         modelRight = createModel({}, true);
         modelLeft.compareAndApplyCompoundKeys(modelRight);
-        t.expect(modelLeft.get('mailAccountId')).toBe(modelRight.get('accountField'));
-        t.expect(modelLeft.get('id')).toBe(modelRight.get('idField'));
+        t.expect(modelLeft.get("mailAccountId")).toBe(modelRight.get("accountField"));
+        t.expect(modelLeft.get("id")).toBe(modelRight.get("idField"));
         t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
 
         modelLeft = createModel({});
-        modelRight = createModel({accountField : '5', idField : '6', localId : 'zzz'}, true);
+        modelRight = createModel({accountField: "5", idField: "6", localId: "zzz"}, true);
         modelLeft.compareAndApplyCompoundKeys(modelRight, false);
-        t.expect(modelLeft.get('mailAccountId')).not.toBe(modelRight.get('accountField'));
-        t.expect(modelLeft.get('id')).not.toBe(modelRight.get('idField'));
+        t.expect(modelLeft.get("mailAccountId")).not.toBe(modelRight.get("accountField"));
+        t.expect(modelLeft.get("id")).not.toBe(modelRight.get("idField"));
         t.expect(modelLeft.getId()).not.toBe(modelRight.getId());
 
 
     });
 
 
-    t.it("processRecordAssociation()", function(t) {
+    t.it("processRecordAssociation()", t => {
         t.expect(model.processRecordAssociation).toBe(Ext.emptyFn);
     });
 
 
-    t.it("compareAndApplyCompoundKeys() - entity mapping, but field is array", function(t) {
+    t.it("compareAndApplyCompoundKeys() - entity mapping, but field is array", t => {
 
-        let modelLeft = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+        let modelLeft = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
             // enforcing a bug that should be fixed with this test
-            '1' : 1
+            "1": 1
         });
 
         modelLeft.compoundKeyFields= {
-            'foo' : {
-                'bar' : 'x'
+            "foo": {
+                "bar": "x"
             },
-            'testModel' : [
-                'accountField',
-                'idField'
+            "testModel": [
+                "accountField",
+                "idField"
             ]
         };
 
-        let modelRight = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-            'accountField' : 'x',
-            'idField'      : 'z'
+        let modelRight = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+            "accountField": "x",
+            "idField": "z"
         });
-        modelRight.entityName = 'testModel';
+        modelRight.entityName = "testModel";
 
         t.expect(modelLeft.compareAndApplyCompoundKeys(modelRight, true)).toBe(true);
 
-        t.expect(modelRight.get('accountField')).toBe('x');
-        t.expect(modelRight.get('idField')).toBe('z');
+        t.expect(modelRight.get("accountField")).toBe("x");
+        t.expect(modelRight.get("idField")).toBe("z");
 
-        t.expect(modelLeft.get('accountField')).toBe('x');
-        t.expect(modelLeft.get('idField')).toBe('z');
+        t.expect(modelLeft.get("accountField")).toBe("x");
+        t.expect(modelLeft.get("idField")).toBe("z");
     });
 
 
-    t.it("getCompoundKey()", function(t) {
+    t.it("getCompoundKey()", t => {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-            'mailAccountId' : 'x',
-            'id'      : 'z'
+        let model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+            "mailAccountId": "x",
+            "id": "z"
         });
 
-        t.isCalledNTimes('checkForeignKeysModified', model, 1);
+        t.isCalledNTimes("checkForeignKeysModified", model, 1);
 
-        t.isInstanceOf(model.getCompoundKey(), 'conjoon.cn_mail.data.mail.AbstractCompoundKey');
+        t.isInstanceOf(model.getCompoundKey(), "conjoon.cn_mail.data.mail.AbstractCompoundKey");
     });
 
 
-    t.it("save() - consider modified (UPDATE)", function(t) {
+    t.it("save() - consider modified (UPDATE)", t => {
 
-        let exc, e;
-
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
 
         model.commit();
 
         t.expect(model.phantom).toBe(false);
 
         // will use modified for keys
-        model.set('mailAccountId', "meh.");
-        model.set('mailAccountId', undefined);
+        model.set("mailAccountId", "meh.");
+        model.set("mailAccountId", undefined);
 
 
         let ret = model.save();
@@ -558,94 +537,92 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
 
         let jsonData = ret.getRequest().getJsonData();
 
-        t.expect(jsonData.hasOwnProperty('mailAccountId')).toBe(true);
+        t.expect(Object.prototype.hasOwnProperty.call(jsonData, "mailAccountId")).toBe(true);
         t.expect(jsonData.mailFolderId).toBeUndefined();
 
-        t.waitForMs(500, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("save() - consider modified (CREATE)", function(t) {
+    t.it("save() - consider modified (CREATE)", t => {
 
-        let exc, e;
+        let exc;
 
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
 
 
         t.expect(model.phantom).toBe(true);
-        model.set('mailAccountId', undefined);
+        model.set("mailAccountId", undefined);
 
         try{model.save();}catch(e){exc = e;}
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg).toContain("must be set");
 
 
-        t.waitForMs(500, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("erase() - consider modified (NO PHANTOM)", function(t) {
+    t.it("erase() - consider modified (NO PHANTOM)", t => {
 
-        let exc, e;
-
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
 
         model.commit();
 
         t.expect(model.phantom).toBe(false);
 
         // will use modified for keys
-        model.set('mailAccountId', "meh.");
-        model.set('mailAccountId', undefined);
+        model.set("mailAccountId", "meh.");
+        model.set("mailAccountId", undefined);
 
 
         let ret = model.erase();
 
         t.expect(ret).toBeTruthy();
 
-        t.waitForMs(500, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("erase() - consider modified (PHANTOM) ", function(t) {
+    t.it("erase() - consider modified (PHANTOM) ", t => {
 
-        let exc, e;
+        let exc;
 
-        model.set('mailAccountId', "a");
-        model.set('id', "31424");
+        model.set("mailAccountId", "a");
+        model.set("id", "31424");
 
 
         t.expect(model.phantom).toBe(true);
-        model.set('mailAccountId', undefined);
+        model.set("mailAccountId", undefined);
 
         try{model.save();}catch(e){exc = e;}
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg).toContain("must be set");
 
 
-        t.waitForMs(500, function() {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
         });
     });
 
 
-    t.it("checkForeignKeysModified()", function(t) {
+    t.it("checkForeignKeysModified()", t => {
 
-        let exc, e,
-            model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-                mailAccountId : 'foo'
+        let exc,
+            model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+                mailAccountId: "foo"
             });
 
-        model.set('mailAccountId', '3');
-        t.expect(model.modified.hasOwnProperty('mailAccountId')).toBe(true);
+        model.set("mailAccountId", "3");
+        t.expect(Object.prototype.hasOwnProperty.call(model.modified, "mailAccountId")).toBe(true);
 
         try{model.checkForeignKeysModified();}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
@@ -655,13 +632,12 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
     });
 
 
-    t.it("getPreviousCompoundKey()", function(t) {
+    t.it("getPreviousCompoundKey()", t => {
 
-        let exc, e,
-            model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-                mailAccountId : 'foo',
-                id            : 'snafu'
-            });
+        let model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+            mailAccountId: "foo",
+            id: "snafu"
+        });
 
         let ck1 = model.getCompoundKey();
 
@@ -669,7 +645,7 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
         t.expect(ck1.equalTo(model.getCompoundKey())).toBe(true);
 
         model.commit();
-        model.set('mailAccountId', 'meh.');
+        model.set("mailAccountId", "meh.");
 
         model.save();
         model.commit();
@@ -679,75 +655,74 @@ describe('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModelTest', function(t
         t.expect(ck1.equalTo(model.getPreviousCompoundKey())).toBe(true);
 
 
-
     });
 
 
-    t.it("localId updated when compound key value changes", function(t) {
+    t.it("localId updated when compound key value changes", t => {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
-                localId : 'abc'
-            });
+        let model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
+            localId: "abc"
+        });
 
-        t.expect(model.getId()).toBe('abc');
+        t.expect(model.getId()).toBe("abc");
 
-        model.set('mailAccountId', 'foo');
+        model.set("mailAccountId", "foo");
 
-        t.expect(model.getId()).toBe('abc');
+        t.expect(model.getId()).toBe("abc");
 
-        model.set('id', 'snafu');
+        model.set("id", "snafu");
 
-        t.expect(model.getId()).toBe('foo-snafu');
+        t.expect(model.getId()).toBe("foo-snafu");
     });
 
 
-    t.it("previousCompoundKey available upon reject()", function(t) {
+    t.it("previousCompoundKey available upon reject()", t => {
 
-        let model = Ext.create('conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel', {
+        let model = Ext.create("conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel", {
 
         });
 
-        model.set('mailAccountId', 'foo');
-        model.set('id', 'snafu');
+        model.set("mailAccountId", "foo");
+        model.set("id", "snafu");
 
         model.commit();
 
-        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('foo-snafu');
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe("foo-snafu");
 
-        model.set('type', 'meh.');
+        model.set("type", "meh.");
         model.commit();
-        model.set('type2', 'meh.');
-        model.commit();
-
-        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('foo-snafu');
-
-        model.set('mailAccountId', 'bla');
-        model.commit();
-        model.set('type2', 'meh.');
-        model.commit();
+        model.set("type2", "meh.");
         model.commit();
 
-        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('foo-snafu');
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe("foo-snafu");
 
-        model.set('mailAccountId', 'test23');
+        model.set("mailAccountId", "bla");
+        model.commit();
+        model.set("type2", "meh.");
+        model.commit();
         model.commit();
 
-        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('bla-snafu');
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe("foo-snafu");
 
-        model.set('mailAccountId', 'sdfdgddggdsdg');
+        model.set("mailAccountId", "test23");
+        model.commit();
+
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe("bla-snafu");
+
+        model.set("mailAccountId", "sdfdgddggdsdg");
 
 
         model.reject();
 
-        t.expect(model.getCompoundKey().toLocalId()).toBe('test23-snafu');
-        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('bla-snafu');
+        t.expect(model.getCompoundKey().toLocalId()).toBe("test23-snafu");
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe("bla-snafu");
 
 
-        model.set('mailAccountId', 'bla1');
+        model.set("mailAccountId", "bla1");
         model.commit();
 
-        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe('test23-snafu');
-        t.expect(model.getCompoundKey().toLocalId()).toBe('bla1-snafu');
+        t.expect(model.getPreviousCompoundKey().toLocalId()).toBe("test23-snafu");
+        t.expect(model.getCompoundKey().toLocalId()).toBe("bla1-snafu");
 
 
     });

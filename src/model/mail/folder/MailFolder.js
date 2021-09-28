@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  */
 
 /**
- * Base model for app-cn_mail representing a remote mailbox folder
+ * Base model for extjs-app-webmail representing a remote mailbox folder
  * The following fields are available:
  *
  * - text (the display text of the folder)
@@ -32,37 +32,37 @@
  * - type (the type of the folder, any of INBOX, JUNK, TRASH, SENT, DRAFT, FOLDER)
  * - id (the id of the folder)
  */
-Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
+Ext.define("conjoon.cn_mail.model.mail.folder.MailFolder", {
 
-    extend : 'conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel',
+    extend: "conjoon.cn_mail.model.mail.AbstractCompoundKeyedTreeModel",
 
-    requires : [
-        'conjoon.cn_mail.data.mail.folder.MailFolderTypes',
-        'conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey'
+    requires: [
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey"
     ],
 
-    entityName : 'MailFolder',
+    entityName: "MailFolder",
 
-    fields : [{
-        name : 'name',
-        type : 'string',
-        validators : [{
-            type : 'presence'
+    fields: [{
+        name: "name",
+        type: "string",
+        validators: [{
+            type: "presence"
         }]
     }, {
-        name    : 'unreadCount',
-        type    : 'int',
-        persist : false
+        name: "unreadCount",
+        type: "int",
+        persist: false
     }, {
-        name : 'folderType',
-        type : 'string'
+        name: "folderType",
+        type: "string"
     }],
 
 
     /**
      * @private
      */
-    foreignKeyFields : ['mailAccountId', 'id'],
+    foreignKeyFields: ["mailAccountId", "id"],
 
 
     /**
@@ -70,7 +70,7 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
      *
      * @returns {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
      */
-    getRepresentingCompoundKeyClass : function() {
+    getRepresentingCompoundKeyClass: function () {
         return conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey;
     },
 
@@ -81,14 +81,14 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
      *
      * @inheritdoc
      */
-    constructor : function() {
+    constructor: function () {
         const me = this;
 
         me.callParent(arguments);
 
-        me.getField('folderType').setModelValidators([{
-            type : 'inclusion',
-            list : [
+        me.getField("folderType").setModelValidators([{
+            type: "inclusion",
+            list: [
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.INBOX,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.JUNK,
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.TRASH,
@@ -108,14 +108,14 @@ Ext.define('conjoon.cn_mail.model.mail.folder.MailFolder', {
      *
      * @throws if no parentNode can be found
      */
-    toUrl : function() {
+    toUrl: function () {
         const me     = this,
-              prefix = 'cn_mail/folder/';
+            prefix = "cn_mail/folder/";
 
         return prefix +
-               me.get('mailAccountId') +
-               '/' +
-               me.get('id')
+               me.get("mailAccountId") +
+               "/" +
+               me.get("id");
     }
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,39 +23,39 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.view.mail.folder.MailFolderTreeColumnTest', function(t) {
+StartTest(t => {
 
     var treeColumn;
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
         treeColumn = Ext.create(
-            'conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn'
+            "conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn"
         );
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
         treeColumn = null;
     });
 
 
-    t.it("Should create the column", function(t) {
+    t.it("Should create the column", t => {
         t.expect(treeColumn instanceof Ext.tree.Column).toBeTruthy();
-        t.expect(treeColumn.alias).toContain('widget.cn_mail-mailfoldertreecolumn');
+        t.expect(treeColumn.alias).toContain("widget.cn_mail-mailfoldertreecolumn");
     });
 
-    t.it("Should return proper iconCls based upon type", function(t) {
+    t.it("Should return proper iconCls based upon type", t => {
         var mapping = {
-            'INBOX'  : 'fa fa-inbox',
-            'DRAFT'  : 'fa fa-edit',
-            'JUNK'   : 'fa fa-recycle',
-            'TRASH'  : 'fa fa-trash',
-            'SENT'   : 'fa fa-send',
-            'FOLDER' : 'fa fa-folder',
-            'hklhkl' : 'fa fa-folder'
+            "INBOX": "fas fa-inbox",
+            "DRAFT": "fas fa-edit",
+            "JUNK": "fas fa-recycle",
+            "TRASH": "fas fa-trash",
+            "SENT": "fas fa-paper-plane",
+            "FOLDER": "fas fa-folder",
+            "hklhkl": "fas fa-folder"
         };
 
         for (var i in mapping) {
-            if (!mapping.hasOwnProperty(i)) {
+            if (!Object.prototype.hasOwnProperty.call(mapping, i)) {
                 continue;
             }
             t.expect(treeColumn.getIconClsForMailFolderType(i)).toBe(mapping[i]);

@@ -1,7 +1,7 @@
 /**
  * conjoon
- * app-cn_mail
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/conjoon/app-cn_mail
+ * extjs-app-webmail
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,55 +23,55 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
+StartTest(t => {
 
-    const create = function(cfg) {
-            return Ext.create('conjoon.cn_mail.data.mail.message.CompoundKey', cfg);
+    const create = function (cfg) {
+            return Ext.create("conjoon.cn_mail.data.mail.message.CompoundKey", cfg);
         },
         MAILACCOUNTID = "foo",
         MAILFOLDERID  = "bar",
         ID            = "foobar";
 
 
-    t.it("constructor() / apply*()", function(t) {
+    t.it("constructor() / apply*()", t => {
 
-        let exc, e;
-        try{create()}catch(e){exc=e;}
+        let exc;
+        try{create();}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an object containing the properties");
         exc = undefined;
 
 
-        try{create({mailAccountId : MAILACCOUNTID})}catch(e){exc=e;}
+        try{create({mailAccountId: MAILACCOUNTID});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an object containing the properties");
         exc = undefined;
 
 
-        try{create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID})}catch(e){exc=e;}
+        try{create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an object containing the properties");
         exc = undefined;
 
 
-        try{create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : 0})}catch(e){exc=e;}
+        try{create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: 0});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an object containing the properties");
         exc = undefined;
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
-        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.AbstractCompoundKey');
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
+        t.isInstanceOf(key, "conjoon.cn_mail.data.mail.AbstractCompoundKey");
         t.expect(key.getMailAccountId()).toBe(MAILACCOUNTID);
         t.expect(key.getMailFolderId()).toBe(MAILFOLDERID);
         t.expect(key.getId()).toBe(ID);
 
-        t.isInstanceOf(key, 'conjoon.cn_mail.data.mail.message.CompoundKey');
+        t.isInstanceOf(key, "conjoon.cn_mail.data.mail.message.CompoundKey");
 
-        try{key.setMailAccountId('bar')}catch(e){exc=e;}
+        try{key.setMailAccountId("bar");}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("already set");
@@ -79,7 +79,7 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
         exc = undefined;
 
 
-        try{key.setMailFolderId('foo')}catch(e){exc=e;}
+        try{key.setMailFolderId("foo");}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("already set");
@@ -87,7 +87,7 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
         exc = undefined;
 
 
-        try{key.setId('barfoo')}catch(e){exc=e;}
+        try{key.setId("barfoo");}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("already set");
@@ -97,21 +97,21 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
     });
 
 
-    t.it("toObject()", function(t) {
+    t.it("toObject()", t => {
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
 
         t.expect(key.toObject()).toEqual({
-            mailAccountId : MAILACCOUNTID,
-            mailFolderId  : MAILFOLDERID,
-            id            : ID
+            mailAccountId: MAILACCOUNTID,
+            mailFolderId: MAILFOLDERID,
+            id: ID
         });
     });
 
 
-    t.it("toArray()", function(t) {
+    t.it("toArray()", t => {
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
 
         t.expect(key.toArray()).toEqual([
             MAILACCOUNTID, MAILFOLDERID, ID
@@ -120,28 +120,29 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
     });
 
 
-    t.it("toLocalId()", function(t) {
+    t.it("toLocalId()", t => {
 
-        let key = create({mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID});
+        let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});
 
         t.expect(key.toLocalId()).toBe(
-            MAILACCOUNTID + "-" + MAILFOLDERID + '-' + ID
+            MAILACCOUNTID + "-" + MAILFOLDERID + "-" + ID
         );
 
     });
 
 
-    t.it("fromRecord()", function(t) {
+    t.it("fromRecord()", t => {
 
-        try{conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord({})}catch(e){exc=e;}
+        let exc = undefined;
+        try{conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord({});}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
         exc = undefined;
 
 
-        let key = conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord(Ext.create('Ext.data.Model', {
-            mailAccountId : MAILACCOUNTID, mailFolderId : MAILFOLDERID, id : ID
+        let key = conjoon.cn_mail.data.mail.message.CompoundKey.fromRecord(Ext.create("Ext.data.Model", {
+            mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID
         }));
 
         t.expect(key.getMailAccountId()).toBe(MAILACCOUNTID);
@@ -151,7 +152,7 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
     });
 
 
-    t.it("createFor()", function(t) {
+    t.it("createFor()", t => {
 
         let key = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID, ID
@@ -163,11 +164,12 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
     });
 
 
-    t.it("createFor() - exception", function(t) {
+    t.it("createFor() - exception", t => {
 
+        let exc = undefined;
         try{conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
             MAILACCOUNTID, MAILFOLDERID
-        )}catch(e){exc=e;}
+        );}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an object");
@@ -175,7 +177,7 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
     });
 
 
-    t.it("equalTo()", function(t) {
+    t.it("equalTo()", t => {
 
         let keyLeft = conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
                 MAILACCOUNTID, MAILFOLDERID, ID
@@ -187,13 +189,13 @@ describe('conjoon.cn_mail.data.mail.message.CompoundKeyTest', function(t) {
                 MAILACCOUNTID, Ext.id(), ID
             );
 
-        t.isCalled('toLocalId', keyLeft);
-        t.isCalled('toLocalId', keyRightOk);
-        t.isCalled('toLocalId', keyRightFalse);
+        t.isCalled("toLocalId", keyLeft);
+        t.isCalled("toLocalId", keyRightOk);
+        t.isCalled("toLocalId", keyRightFalse);
 
         t.expect(keyLeft.equalTo(keyRightOk)).toBe(true);
         t.expect(keyLeft.equalTo(keyRightFalse)).toBe(false);
         t.expect(keyLeft.equalTo({})).toBe(false);
-        t.expect(keyLeft.equalTo('a')).toBe(false);
+        t.expect(keyLeft.equalTo("a")).toBe(false);
     });
 });
