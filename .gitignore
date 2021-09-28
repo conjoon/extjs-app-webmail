@@ -6,5 +6,4 @@
 /node_modules/
 *.env
 /.githooks/
-/.github/
 /.extjs-link.conf.json

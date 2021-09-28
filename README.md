@@ -6,12 +6,15 @@ implementation for the [conjoon](https://github.com/conjoon/conjoon) application
 ```
 npm install --save-dev @conjoon/extjs-app-webmail
 ```
+If you want to develop with this package, run the `build:dev`-script afterwards:
+```bash
+npm run build:dev
+```
+Testing environment will then be available via
 
-## Post-Install
-[@coon-js/extjs-link](https://npmjs.org/coon-js/extjs-link) will start once the package was installed and guide you
-through the process of creating symlinks to an existing ExtJS sdk installation.
-This is only required if you want to run the tests (`./tests`), as [Siesta](https//npmjs.org/siesta-lite) relies on
-an existing ExtJS installation.
+```bash
+npm test
+```
 
 ## Usage
 When using this package without a backend implementation, make sure your app uses the [extjs-dev-webmailsim](https://github.com/conjoon/extjs-dev-webmailsim) package  of the [conjoon](https://github.com/conjoon) project.
