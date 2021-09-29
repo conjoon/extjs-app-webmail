@@ -91,7 +91,7 @@
     "siesta-lite": "^5.5.2"
   },
   "description": "This Sencha ExtJS NPM package provides a webmail client.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "directories": {
     "test": "tests"
