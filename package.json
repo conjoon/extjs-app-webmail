@@ -121,7 +121,7 @@
   "author": "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/conjoon/extjs-extjs-app-webmail/issues"
+    "url": "https://github.com/conjoon/extjs-app-webmail/issues"
   },
-  "homepage": "https://github.com/conjoon/extjs-extjs-app-webmail#readme"
+  "homepage": "https://github.com/conjoon/extjs-app-webmail#readme"
 }

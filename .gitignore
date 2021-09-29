@@ -5,5 +5,4 @@
 /.idea
 /node_modules/
 *.env
-/.githooks/
 /.extjs-link.conf.json
