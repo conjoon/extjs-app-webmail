@@ -23,23 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    const ACCOUNTID = "dev_sys_conjoon_org",
-        createHelper = function (store) {
+StartTest(async t => {
 
-            return Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                store: store === false ? undefined  : Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",{
-                    autoLoad: true
-                })
-            });
-        };
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+
+        const ACCOUNTID = "dev_sys_conjoon_org",
+            createHelper = function (store) {
+
+                return Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
+                    store: store === false ? undefined  : Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",{
+                        autoLoad: true
+                    })
+                });
+            };
 
 
-    // -----------------------------------------------------------------------------
-    // |   Tests
-    // -----------------------------------------------------------------------------
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        // -----------------------------------------------------------------------------
+        // |   Tests
+        // -----------------------------------------------------------------------------
+
 
         Ext.ux.ajax.SimManager.init({
             delay: 1

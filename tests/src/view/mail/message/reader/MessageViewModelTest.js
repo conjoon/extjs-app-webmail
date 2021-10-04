@@ -23,69 +23,73 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    var viewModel;
+StartTest(async t => {
 
-    var vm,
-        createKey = function (id1, id2, id3) {
-            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
-        },
-        getMessageItemAt = function (messageIndex) {
-            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
-        },
-        createKeyForExistingMessage = function (messageIndex){
-            let item = getMessageItemAt(messageIndex);
+    const helper =  l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
-            let key = createKey(
-                item.mailAccountId, item.mailFolderId, item.id
-            );
+        var viewModel;
 
-            return key;
-        },
-        createMessageItem = function () {
+        var vm,
+            createKey = function (id1, id2, id3) {
+                return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+            },
+            getMessageItemAt = function (messageIndex) {
+                return conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(messageIndex);
+            },
+            createKeyForExistingMessage = function (messageIndex){
+                let item = getMessageItemAt(messageIndex);
 
-            let len, item, index, messageItem;
+                let key = createKey(
+                    item.mailAccountId, item.mailFolderId, item.id
+                );
 
-            for (index = 0, len = 1000; index < len; index++) {
-                item = getMessageItemAt(index);
-                if (!item.seen && item.hasAttachments) {
-                    break;
+                return key;
+            },
+            createMessageItem = function () {
+
+                let len, item, index, messageItem;
+
+                for (index = 0, len = 1000; index < len; index++) {
+                    item = getMessageItemAt(index);
+                    if (!item.seen && item.hasAttachments) {
+                        break;
+                    }
                 }
+
+                item.messageBodyId = createKeyForExistingMessage(index).toLocalId();
+
+                messageItem = Ext.create(
+                    "conjoon.cn_mail.model.mail.message.MessageItem",
+                    item
+                );
+
+                return messageItem;
+            },
+            createMessageItemWoBody = function () {
+
+                var messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                    id: 2,
+                    mailFolderId: "INBOX",
+                    mailAccountId: "dev_sys_conjoon_org",
+                    subject: "SUBJECT",
+                    from: "FROM",
+                    date: "DATE"
+                });
+
+                return messageItem;
+            };
+
+        t.afterEach(function () {
+            if (vm) {
+                vm.destroy();
+                vm = null;
             }
-
-            item.messageBodyId = createKeyForExistingMessage(index).toLocalId();
-
-            messageItem = Ext.create(
-                "conjoon.cn_mail.model.mail.message.MessageItem",
-                item
-            );
-
-            return messageItem;
-        },
-        createMessageItemWoBody = function () {
-
-            var messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                id: 2,
-                mailFolderId: "INBOX",
-                mailAccountId: "dev_sys_conjoon_org",
-                subject: "SUBJECT",
-                from: "FROM",
-                date: "DATE"
-            });
-
-            return messageItem;
-        };
-
-    t.afterEach(function () {
-        if (vm) {
-            vm.destroy();
-            vm = null;
-        }
-    });
+        });
 
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
         t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", () => {
 
             t.it("1. Should create the ViewModel", t => {

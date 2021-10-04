@@ -23,66 +23,71 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
-
-    var createMessageItem = function () {
-
-            var messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                id: 1,
-                messageBodyId: "1",
-                size: 400,
-                subject: "SUBJECT",
-                from: {name: "foo", address: "bar"},
-                date: "DATE",
-                to: [{name: "foo", address: "bar"}],
-                hasAttachments: true,
-                seen: Math.random() >= 0.5 === true,
-                recent: Math.random() >= 0.5 === true,
-                flagged: Math.random() >= 0.5 === true,
-                answered: Math.random() >= 0.5 === true,
-                draft: Math.random() >= 0.5 === true
-            });
-
-            return messageItem;
-        },
-        createMessageDraft = function () {
-            var messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-                id: 3,
-                subject: "subject",
-                from: {name: "foo", address: "bar"},
-                date: "2017-07-30 23:45:00",
-                to: [{name: "foo", address: "bar"}],
-                seen: Math.random() >= 0.5 === true
-            });
-
-            messageDraft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
-                text: "myAttachment",
-                size: 20
-            }));
-
-            messageDraft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
-                text: "myAttachment2",
-                size: 40
-            }));
-
-            let mb = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
-                id: "3",
-                mailFolderId: "INBOX",
-                mailAccountId: "dev_sys_conjoon_org",
-                textHtml: "Html text",
-                textPlain: "Plain Text"
-            });
-
-            mb.setId(mb.getCompoundKey().toLocalId());
-            messageDraft.setMessageBody(mb);
-
-            return messageDraft;
-        };
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
 
-    t.requireOk("conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater", () => {
+StartTest(async t => {
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+
+        var createMessageItem = function () {
+
+                var messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                    id: 1,
+                    messageBodyId: "1",
+                    size: 400,
+                    subject: "SUBJECT",
+                    from: {name: "foo", address: "bar"},
+                    date: "DATE",
+                    to: [{name: "foo", address: "bar"}],
+                    hasAttachments: true,
+                    seen: Math.random() >= 0.5 === true,
+                    recent: Math.random() >= 0.5 === true,
+                    flagged: Math.random() >= 0.5 === true,
+                    answered: Math.random() >= 0.5 === true,
+                    draft: Math.random() >= 0.5 === true
+                });
+
+                return messageItem;
+            },
+            createMessageDraft = function () {
+                var messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                    id: 3,
+                    subject: "subject",
+                    from: {name: "foo", address: "bar"},
+                    date: "2017-07-30 23:45:00",
+                    to: [{name: "foo", address: "bar"}],
+                    seen: Math.random() >= 0.5 === true
+                });
+
+                messageDraft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                    text: "myAttachment",
+                    size: 20
+                }));
+
+                messageDraft.attachments().add(Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                    text: "myAttachment2",
+                    size: 40
+                }));
+
+                let mb = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+                    id: "3",
+                    mailFolderId: "INBOX",
+                    mailAccountId: "dev_sys_conjoon_org",
+                    textHtml: "Html text",
+                    textPlain: "Plain Text"
+                });
+
+                mb.setId(mb.getCompoundKey().toLocalId());
+                messageDraft.setMessageBody(mb);
+
+                return messageDraft;
+            };
+
+
+        t.requireOk("conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater", () => {
+
 
             t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", () => {
 

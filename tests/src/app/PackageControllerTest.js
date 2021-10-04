@@ -92,7 +92,7 @@ StartTest(t => {
                 exc = e;
             }
             t.expect(exc).toBeDefined();
-            t.expect(exc).toContain("no configured \"baseAddress\" found");
+            t.expect(exc).toContain("no configured \"base\"-address found");
 
             // since conjoon/extjs-app-webmail#140 the baseAddress of the service is used as the prefix for the
             // schema

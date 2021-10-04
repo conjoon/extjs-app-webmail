@@ -23,29 +23,32 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    var model;
+StartTest(async t => {
 
-    t.beforeEach(function () {
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+        var model;
 
-        model = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-            id: 1
+        t.beforeEach(function () {
+
+            model = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                id: 1
+            });
+
         });
 
-    });
-
-    t.afterEach(function () {
-        model = null;
-    });
+        t.afterEach(function () {
+            model = null;
+        });
 
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
+        // +----------------------------------------------------------------------------
+        // |                    =~. Unit Tests .~=
+        // +----------------------------------------------------------------------------
 
-    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
             t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", () => {
 
                 Ext.ux.ajax.SimManager.init({
@@ -136,7 +139,7 @@ StartTest(t => {
 
                 t.it("Test addresses load", t => {
 
-                    let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+                    let messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(0);
 
                     var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                         conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -157,7 +160,7 @@ StartTest(t => {
 
                 t.it("Test MessageBody load", t => {
 
-                    let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+                    let messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(0);
 
                     var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                         conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -186,7 +189,7 @@ StartTest(t => {
 
                 t.it("Test attachments load", t => {
 
-                    let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+                    let messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(0);
 
                     var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                         conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -475,7 +478,7 @@ StartTest(t => {
 
 
                 t.it("save() - phantom", t => {
-                    let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+                    let messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(0);
 
                     delete messageItem.localId;
 
@@ -501,7 +504,7 @@ StartTest(t => {
 
 
                 t.it("save() - consider modified", t => {
-                    let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+                    let messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(0);
 
                     var draft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                         conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
@@ -539,7 +542,7 @@ StartTest(t => {
                         session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
                     for (let i = 0, len = 1000; i < len; i++) {
-                        messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                        messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
 
                         if (messageItem.hasAttachments) {
                             break;
@@ -588,7 +591,7 @@ StartTest(t => {
                         session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
                     for (let i = 0, len = 1000; i < len; i++) {
-                        messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
+                        messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
 
                         if (messageItem.hasAttachments) {
                             break;
@@ -703,7 +706,7 @@ StartTest(t => {
                 t.it("Test MessageBody save", t => {
                     let session = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession");
 
-                    let messageItem = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(0);
+                    let messageItem = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(0);
 
                     var rec = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
                         conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(

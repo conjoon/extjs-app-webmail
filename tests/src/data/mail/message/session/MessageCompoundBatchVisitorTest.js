@@ -23,78 +23,82 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    const setupSession = function (withExistingDraft = false) {
+StartTest(async t => {
 
-            let session = Ext.create("coon.core.data.Session", {
-                schema: "cn_mail-mailbaseschema",
-                batchVisitorClassName: "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
-            });
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
-            let cfg = {
-                subject: "test",
-                mailFolderId: "1",
-                mailAccountId: "3"
-            };
+        const setupSession = function (withExistingDraft = false) {
 
-            if (withExistingDraft === true) {
-                cfg.id = "123";
-            }
+                let session = Ext.create("coon.core.data.Session", {
+                    schema: "cn_mail-mailbaseschema",
+                    batchVisitorClassName: "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
+                });
 
-            let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", cfg);
-
-            draft.setMessageBody(session.createRecord("MessageBody"));
-
-            session.adopt(draft);
-
-            session.createVisitor = function () {
-
-                let visitor = coon.core.data.Session.prototype.createVisitor.apply(session);
-
-                visitor.setMessageDraft(draft);
-
-                this.visitorForTesting = visitor;
-
-                return visitor;
-            };
-
-
-            return session;
-
-        },
-        createVisitor = function (setDraft = true) {
-            let visitor = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor");
-
-            if (setDraft !== false) {
-                let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                let cfg = {
                     subject: "test",
                     mailFolderId: "1",
                     mailAccountId: "3"
-                });
-
-                visitor.setMessageDraft(draft);
-            }
-
-            return visitor;
-        },
-        createOp = function () {
-            const op = Ext.create("Ext.data.operation.Operation");
-
-            op.getResponse = function () {
-                return {
-                    responseText: "{}"
                 };
+
+                if (withExistingDraft === true) {
+                    cfg.id = "123";
+                }
+
+                let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", cfg);
+
+                draft.setMessageBody(session.createRecord("MessageBody"));
+
+                session.adopt(draft);
+
+                session.createVisitor = function () {
+
+                    let visitor = coon.core.data.Session.prototype.createVisitor.apply(session);
+
+                    visitor.setMessageDraft(draft);
+
+                    this.visitorForTesting = visitor;
+
+                    return visitor;
+                };
+
+
+                return session;
+
+            },
+            createVisitor = function (setDraft = true) {
+                let visitor = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor");
+
+                if (setDraft !== false) {
+                    let draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        subject: "test",
+                        mailFolderId: "1",
+                        mailAccountId: "3"
+                    });
+
+                    visitor.setMessageDraft(draft);
+                }
+
+                return visitor;
+            },
+            createOp = function () {
+                const op = Ext.create("Ext.data.operation.Operation");
+
+                op.getResponse = function () {
+                    return {
+                        responseText: "{}"
+                    };
+                };
+
+                return op;
+            },
+            createBatch = function () {
+                return Ext.create("Ext.data.Batch");
             };
 
-            return op;
-        },
-        createBatch = function () {
-            return Ext.create("Ext.data.Batch");
-        };
-
-    t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
             t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor", () => {
 
 

@@ -254,7 +254,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
 
     /**
-     * Configures the urlPrefix from the baseAddress found in the package-configuration.
+     * Configures the urlPrefix from the base-address found in the package-configuration.
      *
      * @throws if no config for the baseAddress was found.
      */
@@ -267,7 +267,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             baseAddress = app.getPackageConfig(me, "service.rest-imap.base");
 
         if (!l8.isString(baseAddress)) {
-            throw("no configured \"baseAddress\" found in the Package Configuration for \"conjoon.cn_mail.data.mail.BaseSchema\"");
+            throw("no configured \"base\"-address found in the Package Configuration for \"conjoon.cn_mail.data.mail.BaseSchema\"");
         }
 
         Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(baseAddress);
