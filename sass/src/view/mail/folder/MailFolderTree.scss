@@ -86,6 +86,7 @@
         }
         .x-grid-tree-loading {
             .x-tree-icon {
+                line-height: 30px;
                 animation : fa-spin 2s infinite linear;
                 &:before {
                     content: "\f110";
