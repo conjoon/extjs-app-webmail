@@ -78,7 +78,7 @@ StartTest(async t => {
                 t.expect(exc).toContain("baseAddress");
 
                 t.expect(
-                    controller.getSendMessageDraftRequestConfig(messageDraft, "./cn_mail")
+                    controller.getSendMessageDraftRequestConfig(messageDraft, ".//cn_mail///")
                 ).toEqual({
                     url: "./cn_mail/SendMessage",
                     params: messageDraft.getCompoundKey().toObject()

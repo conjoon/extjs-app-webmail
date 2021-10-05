@@ -270,7 +270,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             throw("no configured \"base\"-address found in the Package Configuration for \"conjoon.cn_mail.data.mail.BaseSchema\"");
         }
 
-        Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(baseAddress);
+        Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(l8.unify(baseAddress, "/", "://"));
     },
 
     /**

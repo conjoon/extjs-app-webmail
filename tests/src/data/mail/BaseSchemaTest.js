@@ -44,6 +44,11 @@ StartTest(t => {
                     t.expect(schema.id).toBe("cn_mail-baseschema");
 
                     t.expect(schema.getUrlPrefix()).toBe("cn_mail");
+
+                    t.expect(schema.getUrlPrefix()).toBe("cn_mail");
+
+                    schema.setUrlPrefix("https:///LJlkhj/kjhkjhgb///");
+                    t.expect(schema.getUrlPrefix()).toBe("https://LJlkhj/kjhkjhgb/");
                 });
 
 
@@ -54,11 +59,12 @@ StartTest(t => {
                     var ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageItem);
 
                     t.expect(ret.type).toBe("cn_mail-mailmessageentityproxy");
+                    t.expect(ret.url).toBe(schema.getUrlPrefix());
 
                     ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
 
                     t.expect(ret.type).toBe("cn_mail-mailmessageentityproxy");
-
+                    t.expect(ret.url).toBe(schema.getUrlPrefix());
 
                     ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageBody);
 
@@ -73,10 +79,12 @@ StartTest(t => {
                         proxy;
 
                     proxy = Ext.Factory.proxy(ret);
+                    t.expect(ret.url).toBe(schema.getUrlPrefix());
                     t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader");
 
                     ret = schema.constructProxy(conjoon.cn_mail.model.mail.message.MessageDraft);
                     proxy = Ext.Factory.proxy(ret);
+                    t.expect(ret.url).toBe(schema.getUrlPrefix());
                     t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader");
 
 

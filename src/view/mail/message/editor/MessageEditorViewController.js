@@ -33,6 +33,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     extend: "Ext.app.ViewController",
 
     requires: [
+        // @define
+        "l8",
         "coon.core.ConfigManager",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
@@ -498,7 +500,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
 
             return {
-                url: baseAddress + "/SendMessage",
+                url: l8.unify(baseAddress + "/SendMessage", "/", "://"),
                 params: messageDraft.getCompoundKey().toObject()
             };
 

@@ -97,8 +97,8 @@ StartTest(t => {
             // since conjoon/extjs-app-webmail#140 the baseAddress of the service is used as the prefix for the
             // schema
             t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("cn_mail");
-            packageCtrl.init({getPackageConfig: (ctrl, path) => "host/endpoint"});
-            t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("host/endpoint");
+            packageCtrl.init({getPackageConfig: (ctrl, path) => "host:///endpoint//"});
+            t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("host://endpoint/");
         });
 
         t.it("postLaunchHook should return valid object", t => {

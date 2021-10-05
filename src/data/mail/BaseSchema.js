@@ -35,6 +35,8 @@ Ext.define("conjoon.cn_mail.data.mail.BaseSchema", {
     extend: "coon.core.data.schema.BaseSchema",
 
     requires: [
+        // @define
+        "l8",
         "conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy",
         "conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy",
         "conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy",
@@ -55,6 +57,18 @@ Ext.define("conjoon.cn_mail.data.mail.BaseSchema", {
         url: "{prefix}"
     },
 
+
+    /**
+     * Overridden to make sure prefix gets unified.
+     *
+     * @param prefix
+     * @returns {*}
+     */
+    applyUrlPrefix (prefix) {
+        return l8.isString(prefix) ? l8.unify(prefix, "/", "://") : undefined;
+    },
+
+
     privates: {
 
         /**
@@ -73,12 +87,13 @@ Ext.define("conjoon.cn_mail.data.mail.BaseSchema", {
 
             let proxy    = me.callParent(arguments),
                 tmpData  = Ext.Object.chain(Model),
-                entityName = tmpData.entityName;
+                entityName = tmpData.entityName,
+                prefix = me.getUrlPrefix();
 
             if (["MessageItem", "MessageDraft", "MessageBody"].indexOf(entityName) !== -1) {
 
                 proxy.entityName = entityName;
-                proxy.prefix     = me.getUrlPrefix();
+                proxy.prefix     = prefix;
                 proxy.type       = "cn_mail-mailmessageentityproxy";
 
                 if (entityName !== "MessageBody")  {
@@ -90,16 +105,16 @@ Ext.define("conjoon.cn_mail.data.mail.BaseSchema", {
             } else if (["DraftAttachment", "ItemAttachment"].indexOf(entityName) !==  -1) {
 
                 proxy.entityName = entityName;
-                proxy.prefix     = me.getUrlPrefix();
+                proxy.prefix     = prefix;
                 proxy.type       = "cn_mail-mailmessageattachmentproxy";
 
             } else if (["MailAccount"].indexOf(entityName) !==  -1) {
 
-                proxy.prefix     = me.getUrlPrefix();
+                proxy.prefix     = prefix;
                 proxy.type       = "cn_mail-mailaccountproxy";
 
             } else {
-                proxy.url = me.getUrlPrefix() + "/" + tmpData.entityName;
+                proxy.url = l8.unify(prefix + "/" + tmpData.entityName, "/", "://");
             }
 
             return proxy;
