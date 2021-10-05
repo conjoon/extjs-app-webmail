@@ -23,65 +23,70 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    const
-        ACCOUNTID = "dev_sys_conjoon_org",
-        createService = function (helper) {
+StartTest(async t => {
 
-            return Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
-                mailFolderHelper: helper === false ? undefined : Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                    store: Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",{
-                        autoLoad: true
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+
+        const
+            ACCOUNTID = "dev_sys_conjoon_org",
+            createService = function (helper) {
+
+                return Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
+                    mailFolderHelper: helper === false ? undefined : Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
+                        store: Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",{
+                            autoLoad: true
+                        })
                     })
-                })
-            });
-        },
-        checkArgMessageItem = function (t, service) {
-            t.isCalled("filterMessageItemValue", service);
-        },
-        createDummyItem = function () {
-            return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                localId: "foo",
-                id: "meh",
-                mailAccountId: "bla",
-                mailFolderId: "INBOX"
-            });
-        },
-        createMessageItem = function (index, mailFolderId) {
+                });
+            },
+            checkArgMessageItem = function (t, service) {
+                t.isCalled("filterMessageItemValue", service);
+            },
+            createDummyItem = function () {
+                return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                    localId: "foo",
+                    id: "meh",
+                    mailAccountId: "bla",
+                    mailFolderId: "INBOX"
+                });
+            },
+            createMessageItem = function (index, mailFolderId) {
 
-            index = index === undefined ? 1 : index;
+                index = index === undefined ? 1 : index;
 
-            let mi = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(index);
+                let mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(index);
 
-            if (mailFolderId) {
-                let i = index >= 0 ? index : 0, upper = 10000;
+                if (mailFolderId) {
+                    let i = index >= 0 ? index : 0, upper = 10000;
 
-                for (; i <= upper; i++) {
-                    mi = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(i);
-                    if (mi.mailFolderId === mailFolderId) {
-                        break;
+                    for (; i <= upper; i++) {
+                        mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
+                        if (mi.mailFolderId === mailFolderId) {
+                            break;
+                        }
                     }
+
                 }
 
-            }
-
-            return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                localId: [mi.mailAccountId, mi.mailFolderId, mi.id].join("-"),
-                id: mi.id,
-                mailAccountId: mi.mailAccountId,
-                mailFolderId: mi.mailFolderId
-            });
-        },
-        expectOp = function (t, op) {
-            t.isInstanceOf(op, "conjoon.cn_mail.data.mail.service.mailbox.Operation");
-        };
+                return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                    localId: [mi.mailAccountId, mi.mailFolderId, mi.id].join("-"),
+                    id: mi.id,
+                    mailAccountId: mi.mailAccountId,
+                    mailFolderId: mi.mailFolderId
+                });
+            },
+            expectOp = function (t, op) {
+                t.isInstanceOf(op, "conjoon.cn_mail.data.mail.service.mailbox.Operation");
+            };
 
 
-    // -----------------------------------------------------------------------------
-    // |   Tests
-    // -----------------------------------------------------------------------------
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        // -----------------------------------------------------------------------------
+        // |   Tests
+        // -----------------------------------------------------------------------------
+
 
         Ext.ux.ajax.SimManager.init({
             delay: 1

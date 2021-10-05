@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import TestHelper from "../../../../../../lib/mail/TestHelper.js";
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
 StartTest(async t => {
 

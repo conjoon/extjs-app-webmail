@@ -23,96 +23,99 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    let createModel = function (id) {
+StartTest(async t => {
 
-            return Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
-                id: id ? id : undefined,
-                name: "name",
-                from: "from",
-                replyTo: "replyTo",
+    const helper =  l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
-                inbox_type: "inbox_type",
-                inbox_address: "inbox_address",
-                inbox_port: "inbox_port",
-                inbox_ssl: true,
-                inbox_user: "inbox_user",
-                inbox_password: "inbox_password",
+        let createModel = function (id) {
 
-                outbox_type: "outbox_type",
-                outbox_address: "outbox_address",
-                outbox_port: "outbox_port",
-                outbox_ssl: true,
-                outbox_user: "outbox_user",
-                outbox_password: "outbox_password"
-            });
+                return Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
+                    id: id ? id : undefined,
+                    name: "name",
+                    from: "from",
+                    replyTo: "replyTo",
 
-        }, decorateViewModel = function (viewModel) {
+                    inbox_type: "inbox_type",
+                    inbox_address: "inbox_address",
+                    inbox_port: "inbox_port",
+                    inbox_ssl: true,
+                    inbox_user: "inbox_user",
+                    inbox_password: "inbox_password",
 
-            let ma = {
-                    from: {name: "fromfoo", address: "frombar"},
-                    replyTo: {name: "foo", address: "bar"},
-                    get: function (key) {
-                        switch (key) {
-                        case "from":
-                            return this.from;
+                    outbox_type: "outbox_type",
+                    outbox_address: "outbox_address",
+                    outbox_port: "outbox_port",
+                    outbox_ssl: true,
+                    outbox_user: "outbox_user",
+                    outbox_password: "outbox_password"
+                });
 
-                        case "replyTo":
-                            return this.replyTo;
+            }, decorateViewModel = function (viewModel) {
 
-                        }
-                        Ext.raise("Invalid key " + key);
-                    },
-                    set: function (key, val) {
-                        switch (key) {
-                        case "mailAccount.from":
-                        case "from":
-                            this.from = val;
-                            break;
-                        case "mailAccount.replyTo":
-                        case "replyTo":
-                            this.replyTo = val;
-                            break;
-                        default:
+                let ma = {
+                        from: {name: "fromfoo", address: "frombar"},
+                        replyTo: {name: "foo", address: "bar"},
+                        get: function (key) {
+                            switch (key) {
+                            case "from":
+                                return this.from;
+
+                            case "replyTo":
+                                return this.replyTo;
+
+                            }
                             Ext.raise("Invalid key " + key);
+                        },
+                        set: function (key, val) {
+                            switch (key) {
+                            case "mailAccount.from":
+                            case "from":
+                                this.from = val;
+                                break;
+                            case "mailAccount.replyTo":
+                            case "replyTo":
+                                this.replyTo = val;
+                                break;
+                            default:
+                                Ext.raise("Invalid key " + key);
+                            }
+
+                        }
+                    },
+                    get = function (key) {
+                        switch (key) {
+                        case "mailAccount.replyTo":
+                            return ma.get("replyTo");
+                        case "mailAccount.from":
+                            return ma.get("from");
+                        case "mailAccount":
+                            return ma;
                         }
 
-                    }
-                },
-                get = function (key) {
-                    switch (key) {
-                    case "mailAccount.replyTo":
-                        return ma.get("replyTo");
-                    case "mailAccount.from":
-                        return ma.get("from");
-                    case "mailAccount":
-                        return ma;
-                    }
+                        Ext.raise("Invalid key " + key);
+                    };
 
-                    Ext.raise("Invalid key " + key);
-                };
+                viewModel.get = get;
+            };
 
-            viewModel.get = get;
-        };
-
-    let viewModel;
+        let viewModel;
 
 
-    t.afterEach(function () {
-        if (viewModel) {
-            viewModel.destroy();
-            viewModel = null;
-        }
+        t.afterEach(function () {
+            if (viewModel) {
+                viewModel.destroy();
+                viewModel = null;
+            }
 
-    });
+        });
 
-    t.beforeEach(function () {
+        t.beforeEach(function () {
 
 
-    });
-
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+        });
 
         t.it("Should create and show the MailAccountViewModel along with default config checks", t => {
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");

@@ -23,30 +23,34 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    var model;
+StartTest(async t => {
 
-    t.beforeEach(function () {
-        model = Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
-            localId: 1,
-            mailFolderId: 4,
-            mailAccountId: 5,
-            id: 1,
-            parentMessageItemId: 1
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+
+        var model;
+
+        t.beforeEach(function () {
+            model = Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                localId: 1,
+                mailFolderId: 4,
+                mailAccountId: 5,
+                id: 1,
+                parentMessageItemId: 1
+            });
         });
-    });
 
-    t.afterEach(function () {
-        model = null;
-    });
+        t.afterEach(function () {
+            model = null;
+        });
 
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
+        // +----------------------------------------------------------------------------
+        // |                    =~. Unit Tests .~=
+        // +----------------------------------------------------------------------------
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
         t.requireOk("conjoon.cn_mail.data.mail.message.session.MessageDraftSession", () => {
 
 

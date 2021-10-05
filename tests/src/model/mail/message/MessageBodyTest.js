@@ -23,51 +23,55 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    var model;
+StartTest(async t => {
 
-    t.beforeEach(function () {
-        model = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
-            id: 1,
-            mailFolderId: 4,
-            mailAccountId: 5
-        });
-    });
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
-    t.afterEach(function () {
-        model = null;
-    });
+        var model;
 
-    var createKey = function (id1, id2, id3) {
-            return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
-        },
-        getMessageItemAt = function (messageIndex) {
-            return conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
-        },
-        createKeyForExistingMessage = function (messageIndex){
-            let item = conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.getMessageItemAt(messageIndex);
-
-            let key = createKey(
-                item.mailAccountId, item.mailFolderId, item.id
-            );
-
-            return key;
-        },
-        createSession = function () {
-            return Ext.create("coon.core.data.Session", {
-                schema: "cn_mail-mailbaseschema",
-                batchVisitorClassName: "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
+        t.beforeEach(function () {
+            model = Ext.create("conjoon.cn_mail.model.mail.message.MessageBody", {
+                id: 1,
+                mailFolderId: 4,
+                mailAccountId: 5
             });
-        };
+        });
+
+        t.afterEach(function () {
+            model = null;
+        });
+
+        var createKey = function (id1, id2, id3) {
+                return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+            },
+            getMessageItemAt = function (messageIndex) {
+                return conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(messageIndex);
+            },
+            createKeyForExistingMessage = function (messageIndex){
+                let item = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(messageIndex);
+
+                let key = createKey(
+                    item.mailAccountId, item.mailFolderId, item.id
+                );
+
+                return key;
+            },
+            createSession = function () {
+                return Ext.create("coon.core.data.Session", {
+                    schema: "cn_mail-mailbaseschema",
+                    batchVisitorClassName: "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
+                });
+            };
 
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
+        // +----------------------------------------------------------------------------
+        // |                    =~. Unit Tests .~=
+        // +----------------------------------------------------------------------------
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable", function (){
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", function (){
+        t.requireOk("conjoon.dev.cn_mailsim.data.table.MessageTable", function (){
             t.requireOk("conjoon.cn_mail.data.mail.BaseSchema", () => {
                 t.requireOk("conjoon.cn_mail.model.mail.message.MessageDraft", () => {
                     t.requireOk("conjoon.cn_mail.model.mail.message.MessageBody", () => {

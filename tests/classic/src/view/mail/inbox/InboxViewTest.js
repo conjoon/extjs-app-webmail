@@ -23,15 +23,15 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import TestHelper from "../../../../../lib/mail/TestHelper.js";
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         t.requireOk(
-            "conjoon.dev.cn_mailsim.data.mail.PackageSim", "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", () => {
+            "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", () => {
 
                 let viewConfig;
 
@@ -114,7 +114,7 @@ StartTest(async t => {
                 });
 
 
-                conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
+                conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 1000;
 
 
                 t.it("Should create and show the inbox view along with default config checks", t => {
@@ -280,7 +280,7 @@ StartTest(async t => {
 
                             t.waitForMs(t.parent.TIMEOUT, () => {
                                 // need at least 1000 items in the mock message Tabe
-                                t.expect(conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
+                                t.expect(conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
                                 grid.getStore().getData().removeAtKey(1);
                                 t.expect(grid.getStore().getData().map[1]).toBeUndefined();
 

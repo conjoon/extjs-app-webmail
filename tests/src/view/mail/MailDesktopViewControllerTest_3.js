@@ -23,12 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import TestHelper from "../../../lib/mail/TestHelper.js";
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         const selectMailFolder = function (panel, storeAt, shouldBeId, t) {
 
@@ -74,7 +74,7 @@ StartTest(async t => {
             };
 
         t.beforeEach(function () {
-            conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.resetAll();
+            conjoon.dev.cn_mailsim.data.table.MessageTable.resetAll();
         });
 
         t.afterEach(function () {
@@ -83,212 +83,208 @@ StartTest(async t => {
             });
         });
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
-            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
-                t.requireOk("conjoon.cn_mail.view.mail.MailDesktopView", function (){
+        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
+            t.requireOk("conjoon.cn_mail.view.mail.MailDesktopView", function (){
 
-                    t.it("extjs-app-webmail#83 - showMailAccountFor()", t => {
+                t.it("extjs-app-webmail#83 - showMailAccountFor()", t => {
 
-                        let panel     = createMailDesktopView(),
-                            ctrl      = panel.getController(),
-                            accountId = "dev_sys_conjoon_org",
-                            accountView;
+                    let panel     = createMailDesktopView(),
+                        ctrl      = panel.getController(),
+                        accountId = "dev_sys_conjoon_org",
+                        accountView;
 
-                        accountView = ctrl.showMailAccountFor(accountId);
+                    accountView = ctrl.showMailAccountFor(accountId);
 
-                        t.isInstanceOf(accountView, "conjoon.cn_mail.view.mail.account.MailAccountView");
+                    t.isInstanceOf(accountView, "conjoon.cn_mail.view.mail.account.MailAccountView");
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                        let mailFolder = panel.down("cn_mail-mailfoldertree");
+
+                        t.expect(mailFolder.getSelectionModel().getSelection()[0].getId()).toBe(accountId);
+
+                        t.expect(ctrl.showMailAccountFor("mail_account")).toBe(accountView);
+
+                        t.expect(mailFolder.getSelectionModel().getSelection()[0].getId()).toBe("mail_account");
+
+                        panel.destroy();
+
+                        panel = null;
+                    });
+
+                });
+
+
+                t.it("onMailMessageGridRefreshClick()", t => {
+
+                    let panel = createMailDesktopView(),
+                        ctrl  = panel.getController();
+
+                    let CALLED = false,
+                        ISAVAILABLE = true;
+
+                    let tmp = ctrl.getView;
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                        ctrl.getView = function () {
+                            return {
+                                down: function () {
+                                    return {
+                                        getStore: function () {
+                                            return ISAVAILABLE ? {
+                                                reload: function () {
+                                                    CALLED = true;
+                                                }
+                                            } : null;
+                                        }
+                                    };
+                                }
+                            };
+                        };
+
+                        t.expect(CALLED).toBe(false);
+                        ctrl.onMailMessageGridRefreshClick();
+                        t.expect(CALLED).toBe(true);
+
+                        CALLED = false;
+                        ISAVAILABLE = false;
+
+                        ctrl.onMailMessageGridRefreshClick();
+                        t.expect(CALLED).toBe(false);
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
 
-                            let mailFolder = panel.down("cn_mail-mailfoldertree");
-
-                            t.expect(mailFolder.getSelectionModel().getSelection()[0].getId()).toBe(accountId);
-
-                            t.expect(ctrl.showMailAccountFor("mail_account")).toBe(accountView);
-
-                            t.expect(mailFolder.getSelectionModel().getSelection()[0].getId()).toBe("mail_account");
+                            ctrl.getView = tmp;
 
                             panel.destroy();
-
                             panel = null;
                         });
 
                     });
 
 
-                    t.it("onMailMessageGridRefreshClick()", t => {
+                });
 
-                        let panel = createMailDesktopView(),
-                            ctrl  = panel.getController();
 
-                        let CALLED = false,
-                            ISAVAILABLE = true;
+                t.it("onMailMessageGridRefreshClick() - click event observed", t => {
 
-                        let tmp = ctrl.getView;
+                    let panel     = createMailDesktopView(),
+                        ctrl      = panel.getController();
+
+                    t.isCalledOnce("onMailMessageGridRefreshClick", ctrl);
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                        selectMailFolder(panel, 3);
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
 
-                            ctrl.getView = function () {
-                                return {
-                                    down: function () {
-                                        return {
-                                            getStore: function () {
-                                                return ISAVAILABLE ? {
-                                                    reload: function () {
-                                                        CALLED = true;
-                                                    }
-                                                } : null;
-                                            }
-                                        };
-                                    }
-                                };
-                            };
+                            let el = panel.down("cn_mail-mailmessagegrid #cn_mail-mailmessagegrid-refresh");
 
-                            t.expect(CALLED).toBe(false);
-                            ctrl.onMailMessageGridRefreshClick();
-                            t.expect(CALLED).toBe(true);
-
-                            CALLED = false;
-                            ISAVAILABLE = false;
-
-                            ctrl.onMailMessageGridRefreshClick();
-                            t.expect(CALLED).toBe(false);
-
-                            t.waitForMs(t.parent.TIMEOUT, () => {
-
-                                ctrl.getView = tmp;
+                            t.click(el, function () {
 
                                 panel.destroy();
                                 panel = null;
+
                             });
 
                         });
 
 
                     });
+                });
 
 
-                    t.it("onMailMessageGridRefreshClick() - click event observed", t => {
+                t.it("changes in attachments are reflected across all MessageViews", t => {
 
-                        let panel     = createMailDesktopView(),
-                            ctrl      = panel.getController();
-
-                        t.isCalledOnce("onMailMessageGridRefreshClick", ctrl);
-
-                        t.waitForMs(t.parent.TIMEOUT, () => {
-
-                            selectMailFolder(panel, 3);
-
-                            t.waitForMs(t.parent.TIMEOUT, () => {
-
-                                let el = panel.down("cn_mail-mailmessagegrid #cn_mail-mailmessagegrid-refresh");
-
-                                t.click(el, function () {
-
-                                    panel.destroy();
-                                    panel = null;
-
-                                });
-
-                            });
+                    let panel            = createMailDesktopView(),
+                        ctrl             = panel.getController(),
+                        inboxView        = panel.down("cn_mail-mailinboxview"),
+                        inboxMessageView = inboxView.down("cn_mail-mailmessagereadermessageview"),
+                        grid             = panel.down("cn_mail-mailmessagegrid");
 
 
-                        });
-                    });
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
-
-                    t.it("changes in attachments are reflected across all MessageViews", t => {
-
-                        let panel            = createMailDesktopView(),
-                            ctrl             = panel.getController(),
-                            inboxView        = panel.down("cn_mail-mailinboxview"),
-                            inboxMessageView = inboxView.down("cn_mail-mailmessagereadermessageview"),
-                            grid             = panel.down("cn_mail-mailmessagegrid");
-
+                        selectMailFolder(panel, 4, "INBOX.Drafts", t);
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
 
-                            selectMailFolder(panel, 4, "INBOX.Drafts", t);
+                            // create editor and draft and save it.
+                            let editor = ctrl.showMailEditor("foobar", "compose");
 
-                            t.waitForMs(t.parent.TIMEOUT, () => {
+                            editor.down("#subjectField").setValue("Test");
+                            t.click(editor.down("#saveButton"), function () {
 
-                                // create editor and draft and save it.
-                                let editor = ctrl.showMailEditor("foobar", "compose");
+                                // wait until the message is saved...
+                                t.waitForMs(t.parent.TIMEOUT, () => {
 
-                                editor.down("#subjectField").setValue("Test");
-                                t.click(editor.down("#saveButton"), function () {
+                                    // go back to messagedraft and make sure newly created message is available
+                                    // and selected and viewable in the MessageView
+                                    panel.setActiveItem(inboxView);
 
-                                    // wait until the message is saved...
-                                    t.waitForMs(t.parent.TIMEOUT, () => {
+                                    let compoundKey = editor.getViewModel().get("messageDraft").getCompoundKey();
+                                    doubleClickMessage(grid, 0, compoundKey, t,function () {
 
-                                        // go back to messagedraft and make sure newly created message is available
-                                        // and selected and viewable in the MessageView
-                                        panel.setActiveItem(inboxView);
+                                        ctrl.showMailMessageViewFor(compoundKey);
 
-                                        let compoundKey = editor.getViewModel().get("messageDraft").getCompoundKey();
-                                        doubleClickMessage(grid, 0, compoundKey, t,function () {
+                                        // wait for the MessageView to properly initialize
+                                        t.waitForMs(t.parent.TIMEOUT, () => {
 
-                                            ctrl.showMailMessageViewFor(compoundKey);
+                                            panel.setActiveItem(editor);
 
-                                            // wait for the MessageView to properly initialize
-                                            t.waitForMs(t.parent.TIMEOUT, () => {
+                                            editor.down("#subjectField").setValue("foobar");
 
-                                                panel.setActiveItem(editor);
+                                            t.click(editor.down("#saveButton"), function () {
 
-                                                editor.down("#subjectField").setValue("foobar");
+                                                // wait until the message is saved...
+                                                t.waitForMs(t.parent.TIMEOUT, () => {
 
-                                                t.click(editor.down("#saveButton"), function () {
+                                                    panel.setActiveItem(inboxView);
+                                                    t.expect(grid.getSelectionModel().getSelection().length).toBeTruthy();
+                                                    t.expect(grid.getSelectionModel().getSelection()[0].getCompoundKey().toLocalId()).toEqual(
+                                                        editor.getViewModel().get("messageDraft").getCompoundKey().toLocalId()
+                                                    );
 
-                                                    // wait until the message is saved...
-                                                    t.waitForMs(t.parent.TIMEOUT, () => {
+                                                    t.expect(
+                                                        grid.view.getRow(grid.getSelectionModel().getSelection()[0]
+                                                        ).parentNode.parentNode.className).toContain("selected");
 
-                                                        panel.setActiveItem(inboxView);
-                                                        t.expect(grid.getSelectionModel().getSelection().length).toBeTruthy();
-                                                        t.expect(grid.getSelectionModel().getSelection()[0].getCompoundKey().toLocalId()).toEqual(
-                                                            editor.getViewModel().get("messageDraft").getCompoundKey().toLocalId()
-                                                        );
+                                                    panel.setActiveItem(editor);
 
-                                                        t.expect(
-                                                            grid.view.getRow(grid.getSelectionModel().getSelection()[0]
-                                                            ).parentNode.parentNode.className).toContain("selected");
+                                                    editor.getViewModel().get("messageDraft").attachments().add(
+                                                        Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {text: "foo", type: "image/jpg", size: 5000})
+                                                    );
 
-                                                        panel.setActiveItem(editor);
+                                                    t.click(editor.down("#saveButton"), function () {
 
-                                                        editor.getViewModel().get("messageDraft").attachments().add(
-                                                            Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {text: "foo", type: "image/jpg", size: 5000})
-                                                        );
+                                                        // wait until the message is saved...
+                                                        t.waitForMs(t.parent.TIMEOUT, () => {
 
-                                                        t.click(editor.down("#saveButton"), function () {
+                                                            panel.setActiveItem(inboxView);
 
-                                                            // wait until the message is saved...
-                                                            t.waitForMs(t.parent.TIMEOUT, () => {
-
-                                                                panel.setActiveItem(inboxView);
-
-                                                                t.expect(
-                                                                    inboxMessageView.getViewModel().get("attachmentStore").getRange()[0].getId()
-                                                                ).toBe(
-                                                                    editor.getViewModel().get("messageDraft").attachments().getRange()[0].getId()
-                                                                );
-
-                                                            });
+                                                            t.expect(
+                                                                inboxMessageView.getViewModel().get("attachmentStore").getRange()[0].getId()
+                                                            ).toBe(
+                                                                editor.getViewModel().get("messageDraft").attachments().getRange()[0].getId()
+                                                            );
 
                                                         });
+
                                                     });
-
                                                 });
+
                                             });
-
-
                                         });
+
 
                                     });
 
-
                                 });
 
-                            });
 
+                            });
 
                         });
 
@@ -296,4 +292,7 @@ StartTest(async t => {
                     });
 
 
-                });});});});});
+                });
+
+
+            });});});});

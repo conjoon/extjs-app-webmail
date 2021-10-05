@@ -51,11 +51,14 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     extend: "coon.core.app.PackageController",
 
     requires: [
+        // @define
+        "l8",
         "conjoon.cn_mail.view.mail.MailDesktopView",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditor",
         "conjoon.cn_mail.view.mail.message.reader.MessageView",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.BaseSchema"
     ],
 
     routes: {
@@ -248,6 +251,27 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @private
      */
     observedMessageEditor: null,
+
+
+    /**
+     * Configures the urlPrefix from the base-address found in the package-configuration.
+     *
+     * @throws if no config for the baseAddress was found.
+     */
+    init (app) {
+
+        "use strict";
+
+        const
+            me = this,
+            baseAddress = app.getPackageConfig(me, "service.rest-imap.base");
+
+        if (!l8.isString(baseAddress)) {
+            throw("no configured \"base\"-address found in the Package Configuration for \"conjoon.cn_mail.data.mail.BaseSchema\"");
+        }
+
+        Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(baseAddress);
+    },
 
     /**
      * Callback for the MailDesktopView's tabchange event. Makes sure the

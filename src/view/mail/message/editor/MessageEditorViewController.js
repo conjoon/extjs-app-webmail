@@ -33,6 +33,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     extend: "Ext.app.ViewController",
 
     requires: [
+        "coon.core.ConfigManager",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
@@ -92,6 +93,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * editor was rendered.
      */
     init: function () {
+
         var me   = this,
             view = me.getView();
 
@@ -482,14 +484,21 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          * Returns a configuration object to pass to the request being send to the server
          * for sending a MessageDraft.
          *
-         * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+         * @param {!conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+         * @param {!String} baseAddress The base address that should be used for the SendMessage-endpoint
          *
          * @returns {Object}
+         *
+         * @throws if baseAddress is undefined or null
          */
-        getSendMessageDraftRequestConfig: function (messageDraft) {
+        getSendMessageDraftRequestConfig: function (messageDraft, baseAddress) {
+
+            if (!l8.isString(baseAddress)) {
+                throw("\"baseAddress\" must be a string");
+            }
 
             return {
-                url: "./cn_mail/SendMessage",
+                url: baseAddress + "/SendMessage",
                 params: messageDraft.getCompoundKey().toObject()
             };
 
@@ -510,7 +519,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         sendMessage: function () {
 
-            var me           = this,
+            "use strict";
+
+            const
+                me           = this,
                 view         = me.getView(),
                 vm           = view.getViewModel(),
                 messageDraft = vm.get("messageDraft");
@@ -526,7 +538,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             }
 
-            Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft)).then(
+            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-imap.base");
+
+            Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft, baseAddress)).then(
                 function (response, opts) {
                     view.fireEvent("cn_mail-mailmessagesendcomplete", view, messageDraft);
                 },

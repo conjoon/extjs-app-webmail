@@ -23,44 +23,48 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    var viewModel,
-        decorateMockView = function (viewModel) {
+StartTest(async t => {
 
-            let splitter = {
-                visible: true,
-                isVisible: function () {
-                    return this.visible;
-                },
-                splitter: {
-                    orientation: {
+    const helper =  l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
+        var viewModel,
+            decorateMockView = function (viewModel) {
+
+                let splitter = {
+                    visible: true,
+                    isVisible: function () {
+                        return this.visible;
+                    },
+                    splitter: {
+                        orientation: {
+
+                        }
                     }
-                }
+                };
+
+                let view = {
+                    down: function () {
+                        return splitter;
+                    }
+                };
+
+                viewModel.getView = function () {
+                    return view;
+                };
+
+
             };
 
-            let view = {
-                down: function () {
-                    return splitter;
-                }
-            };
+        t.afterEach(function () {
+            if (viewModel) {
+                viewModel.destroy();
+                viewModel = null;
+            }
+        });
 
-            viewModel.getView = function () {
-                return view;
-            };
-
-
-        };
-
-    t.afterEach(function () {
-        if (viewModel) {
-            viewModel.destroy();
-            viewModel = null;
-        }
-    });
-
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1

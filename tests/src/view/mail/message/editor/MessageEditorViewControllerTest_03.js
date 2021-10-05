@@ -23,12 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import TestHelper from "../../../../../lib/mail/TestHelper.js";
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         var view,
             controller;
@@ -47,69 +47,76 @@ StartTest(async t => {
 
         });
 
-        t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim",
-            "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
+        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
-
-
-                // +----------------------------------------------------------------------------
-                // | SENDING
-                // +----------------------------------------------------------------------------
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
 
 
-                t.it("getSendMessageDraftRequestConfig()", t => {
-                    controller = Ext.create(
-                        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
-                        });
+            // +----------------------------------------------------------------------------
+            // | SENDING
+            // +----------------------------------------------------------------------------
 
-                    let messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-                        mailAccountId: 1, mailFolderId: 1, id: 1
-                    });
-                    messageDraft.dirty = messageDraft.phantom = false;
 
-                    t.expect(
-                        controller.getSendMessageDraftRequestConfig(messageDraft)
-                    ).toEqual({
-                        url: "./cn_mail/SendMessage",
-                        params: messageDraft.getCompoundKey().toObject()
+            t.it("getSendMessageDraftRequestConfig()", t => {
+                controller = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                     });
 
-                    let tmp = Ext.Ajax.request;
+                let messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                    mailAccountId: 1, mailFolderId: 1, id: 1
+                });
+                messageDraft.dirty = messageDraft.phantom = false;
 
-                    controller.getView = function () {
-                        return {
-                            getViewModel: function () {
-                                return {
-                                    get: function () {
-                                        return messageDraft;
-                                    }
-                                };
-                            },
-                            fireEvent: function () {
+                let exc;
+                try {
+                    controller.getSendMessageDraftRequestConfig(messageDraft);
+                } catch (e) {
+                    exc = e;
+                }
+                t.expect(exc).toContain("baseAddress");
 
-                            }
-                        };
-                    };
-
-                    controller.getSendMessageDraftRequestConfig = function () {
-                        return {CALLED: true};
-                    };
-
-                    let REQUEST = false;
-                    Ext.Ajax.request = function (cfg) {
-                        REQUEST = true;
-                        t.expect(cfg).toEqual({CALLED: true});
-                        return Ext.Promise.resolve();
-                    };
-
-                    controller.sendMessage();
-
-                    t.expect(REQUEST).toBe(true);
-                    Ext.Ajax.request = tmp;
+                t.expect(
+                    controller.getSendMessageDraftRequestConfig(messageDraft, "./cn_mail")
+                ).toEqual({
+                    url: "./cn_mail/SendMessage",
+                    params: messageDraft.getCompoundKey().toObject()
                 });
 
+                let tmp = Ext.Ajax.request;
 
-            });});});
+                controller.getView = function () {
+                    return {
+                        getViewModel: function () {
+                            return {
+                                get: function () {
+                                    return messageDraft;
+                                }
+                            };
+                        },
+                        fireEvent: function () {
+
+                        }
+                    };
+                };
+
+                controller.getSendMessageDraftRequestConfig = function () {
+                    return {CALLED: true};
+                };
+
+                let REQUEST = false;
+                Ext.Ajax.request = function (cfg) {
+                    REQUEST = true;
+                    t.expect(cfg).toEqual({CALLED: true});
+                    return Ext.Promise.resolve();
+                };
+
+                controller.sendMessage();
+
+                t.expect(REQUEST).toBe(true);
+                Ext.Ajax.request = tmp;
+            });
+
+
+        });});});

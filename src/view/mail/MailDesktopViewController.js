@@ -1253,13 +1253,13 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      *
      * @throws if no suitable draftNode was found
      */
-    onMailFolderTreeStoreLoad: function (store, records) {
+    onMailFolderTreeStoreLoad: function (store, records, success, operation) {
 
         const me           = this,
             view         = me.getView(),
             TYPES        = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (records[0].get("folderType") === TYPES.ACCOUNT) {
+        if (!success || (records && records[0].get("folderType") === TYPES.ACCOUNT)) {
             return null;
         }
 

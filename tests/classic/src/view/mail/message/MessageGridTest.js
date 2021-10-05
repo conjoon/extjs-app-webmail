@@ -61,7 +61,7 @@ StartTest(t => {
         t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", () => {
             t.requireOk("conjoon.cn_mail.store.mail.message.MessageItemStore", () => {
 
-                conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH = 1000;
+                conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 1000;
 
                 t.it("Should create and show the grid along with default config checks", t => {
                     grid = Ext.create(
@@ -259,7 +259,7 @@ StartTest(t => {
                 t.it("selection still available after pageremove", t => {
                     let store;
 
-                    t.expect(conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
+                    t.expect(conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH).toBeGreaterThan(999);
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,

@@ -81,12 +81,25 @@ StartTest(t => {
 
         const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
-        t.it("Should create the Controller", t => {
+        t.it("constructor / init()", t => {
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
             t.expect(packageCtrl instanceof coon.core.app.PackageController).toBe(true);
 
-        });
+            let exc;
+            try {
+                packageCtrl.init({getPackageConfig: (ctrl, path) => {}});
+            } catch (e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc).toContain("no configured \"base\"-address found");
 
+            // since conjoon/extjs-app-webmail#140 the baseAddress of the service is used as the prefix for the
+            // schema
+            t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("cn_mail");
+            packageCtrl.init({getPackageConfig: (ctrl, path) => "host/endpoint"});
+            t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("host/endpoint");
+        });
 
         t.it("postLaunchHook should return valid object", t => {
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");

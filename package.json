@@ -13,6 +13,11 @@
                 "reader": "resources/templates/html/reader.html.tpl"
               }
             }
+          },
+          "service": {
+            "rest-imap" :  {
+              "base" : "https://php-ms-imapuser.ddev.site/rest-imap/api/v0.1/"
+            }
           }
         }
       }
@@ -91,7 +96,7 @@
     "siesta-lite": "^5.5.2"
   },
   "description": "This Sencha ExtJS NPM package provides a webmail client.",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -121,7 +126,7 @@
   "author": "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/conjoon/extjs-extjs-app-webmail/issues"
+    "url": "https://github.com/conjoon/extjs-app-webmail/issues"
   },
-  "homepage": "https://github.com/conjoon/extjs-extjs-app-webmail#readme"
+  "homepage": "https://github.com/conjoon/extjs-app-webmail#readme"
 }

@@ -23,10 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.PackageSim", () => {
+StartTest(async t => {
+
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         Ext.ux.ajax.SimManager.init({
             delay: 1
