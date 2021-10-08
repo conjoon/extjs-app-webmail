@@ -84,7 +84,7 @@
     "@coon-js/extjs-comp-navport": "^0.1.1",
     "@coon-js/extjs-lib-comp": "^0.1.0",
     "@coon-js/extjs-lib-core": "^0.6.0",
-    "@l8js/l8": "^0.3.9"
+    "@l8js/l8": "^0.5.2"
   },
   "devDependencies": {
     "@conjoon/extjs-dev-webmailsim": "^0.1.0",

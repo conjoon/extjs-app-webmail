@@ -88,10 +88,9 @@ export default class TestHelper {
 
         const
             me = this,
-            t = me.siestaTest,
-            fl = new l8.request.FileLoader;
+            t = me.siestaTest;
 
-        let config = await fl.load(
+        let config = await l8.load(
             "../../../../../node_modules/@conjoon/extjs-dev-webmailsim/package.json"
         );
 

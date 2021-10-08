@@ -34,35 +34,8 @@ StartTest(t => {
     });
 
 
-    t.it("getter for transformers", t => {
-
-        let strategy = Ext.create("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
-
-        t.expect(strategy.blockquoteTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getBlockquoteTransformer(), "l8.text.transformer.html.BlockquoteTransformer");
-        t.expect(strategy.blockquoteTransformer).toBe(strategy.getBlockquoteTransformer());
-
-        t.expect(strategy.hyperlinkTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getHyperlinkTransformer(), "l8.text.transformer.html.HyperlinkTransformer");
-        t.expect(strategy.hyperlinkTransformer).toBe(strategy.getHyperlinkTransformer());
-
-        t.expect(strategy.emailAddressTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getEmailAddressTransformer(), "l8.text.transformer.html.EmailAddressTransformer");
-        t.expect(strategy.emailAddressTransformer).toBe(strategy.getEmailAddressTransformer());
-
-        t.expect(strategy.lineBreakTransformer).toBeFalsy();
-        t.isInstanceOf(strategy.getLineBreakTransformer(), "l8.text.transformer.html.LineBreakTransformer");
-        t.expect(strategy.lineBreakTransformer).toBe(strategy.getLineBreakTransformer());
-
-    });
-
     t.it("process()", t => {
         let strategy = Ext.create("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy");
-
-        t.isCalled("getBlockquoteTransformer", strategy);
-        t.isCalled("getHyperlinkTransformer", strategy);
-        t.isCalled("getEmailAddressTransformer", strategy);
-        t.isCalled("getLineBreakTransformer", strategy);
 
         let text = "> We will send \n to \n info@conjoon.com \n(https://conjoon.org)\n>> suddenly, a quoted text appears\n> a message";
 

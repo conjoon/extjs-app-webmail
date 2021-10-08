@@ -49,40 +49,15 @@
 Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
 
     requires: [
-        // @define l8.text.transformer.html.BlockquoteTransformer
-        "l8.text.transformer.html.BlockquoteTransformer",
-        // @define l8.text.transformer.html.HyperlinkTransformer
-        "l8.text.transformer.html.HyperlinkTransformer",
-        // @define l8.text.transformer.html.EmailAddressTransformer
-        "l8.text.transformer.html.EmailAddressTransformer",
-        // @define l8.text.transformer.html.LineBreakTransformer
-        "l8.text.transformer.html.LineBreakTransformer"
+        // @define l8.text.toBlockquote
+        "l8.text.toBlockquote",
+        // @define l8.text.toHyperlink
+        "l8.text.toHyperlink",
+        // @define l8.text.toEmailLink
+        "l8.text.toEmailLink",
+        // @define l8.text.toLineBreak
+        "l8.text.toLineBreak"
     ],
-
-    /**
-     * @type l8.text.transformer.html.BlockquoteTransformer
-     * @private
-     */
-    blockquoteTransformer: null,
-
-    /**
-     * @type l8.text.transformer.html.HyperlinkTransformer
-     * @private
-     */
-    hyperlinkTransformer: null,
-
-    /**
-     * @type l8.text.transformer.html.EmailAddressTransformer
-     * @private
-     */
-    emailAddressTransformer: null,
-
-    /**
-     * @type l8.text.transformer.html.LineBreakTransformer
-     * @private
-     */
-    lineBreakTransformer: null,
-
 
     /**
      * Processes the specified text and returns a text with HTML-elements representing
@@ -91,86 +66,17 @@ Ext.define("conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy", {
      * @param {String} text
      *
      * @returns {string}
-     *
-     * @see #setupTransformers()
      */
     process: function (text) {
 
-        const me = this;
-
-
-        return me.getLineBreakTransformer().transform(
-            me.getHyperlinkTransformer().transform(
-                me.getEmailAddressTransformer().transform(
-                    me.getBlockquoteTransformer().transform(
+        return l8.text.toLineBreak(
+            l8.text.toHyperlink(
+                l8.text.toEmailLink(
+                    l8.text.toBlockquote(
                         text
                     )
                 )
             )
         );
-    },
-
-
-    /**
-     * Returns the BlockquoteTransformer used by this strategy.
-     *
-     * @return {l8.text.transformer.html.BlockquoteTransformer}
-     */
-    getBlockquoteTransformer: function () {
-        const me = this;
-
-        if (!me.blockquoteTransformer) {
-            me.blockquoteTransformer = Ext.create("l8.text.transformer.html.BlockquoteTransformer");
-        }
-
-        return me.blockquoteTransformer;
-    },
-
-
-    /**
-     * Returns the EmailAddressTransformer used by this strategy.
-     *
-     * @return {l8.text.transformer.html.EmailAddressTransformer}
-     */
-    getEmailAddressTransformer: function () {
-        const me = this;
-
-        if (!me.emailAddressTransformer) {
-            me.emailAddressTransformer = Ext.create("l8.text.transformer.html.EmailAddressTransformer");
-        }
-
-        return me.emailAddressTransformer;
-    },
-
-
-    /**
-     * Returns the HyperlinkTransformer used by this strategy.
-     *
-     * @return {l8.text.transformer.html.HyperlinkTransformer}
-     */
-    getHyperlinkTransformer: function () {
-        const me = this;
-
-        if (!me.hyperlinkTransformer) {
-            me.hyperlinkTransformer = Ext.create("l8.text.transformer.html.HyperlinkTransformer");
-        }
-
-        return me.hyperlinkTransformer;
-    },
-
-
-    /**
-     * Returns the LineBreakTransformer used by this strategy.
-     *
-     * @return {l8.text.transformer.html.LineBreakTransformer}
-     */
-    getLineBreakTransformer: function () {
-        const me = this;
-
-        if (!me.lineBreakTransformer) {
-            me.lineBreakTransformer = Ext.create("l8.text.transformer.html.LineBreakTransformer");
-        }
-
-        return me.lineBreakTransformer;
     }
 });
