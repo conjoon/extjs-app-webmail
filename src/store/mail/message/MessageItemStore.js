@@ -122,7 +122,8 @@ Ext.define("conjoon.cn_mail.store.mail.message.MessageItemStore", {
         if (!modifiedFieldNames ||
              (modifiedFieldNames.indexOf("cn_moved") === -1 &&
               modifiedFieldNames.indexOf("cn_deleted") === -1 &&
-              modifiedFieldNames.indexOf("answered") === -1
+              modifiedFieldNames.indexOf("answered") === -1 &&
+              modifiedFieldNames.indexOf("previewText") === -1
              )) {
             return;
         }
@@ -132,6 +133,19 @@ Ext.define("conjoon.cn_mail.store.mail.message.MessageItemStore", {
         if (me.contains(record)) {
             me.fireEvent("update", me, record, "edit", modifiedFieldNames);
         }
-    }
+    },
 
+
+    /**
+     * Sets the "excludeFields"-property of the Proxy to "previewText".
+     *
+     * @param {Ext.data.proxy.Proxy} proxy
+     *
+     * @returns {Ext.data.proxy.Proxy}
+     */
+    applyProxy: function (proxy) {
+        proxy =  this.callParent(arguments);
+        proxy.extraParams.excludeFields = "previewText";
+        return proxy;
+    }
 });

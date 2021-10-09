@@ -34,6 +34,8 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     extend: "Ext.app.ViewController",
 
     requires: [
+        // @define
+        "l8",
         "conjoon.cn_mail.view.mail.message.reader.MessageView",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditor",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel",
@@ -42,7 +44,8 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.message.CompoundKey"
     ],
 
     alias: "controller.cn_mail-maildesktopviewcontroller",
@@ -124,6 +127,18 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         me.messageViewIdMap = {};
 
         me.callParent(arguments);
+    },
+
+
+    init () {
+        "use strict";
+
+        const
+            me      = this,
+            view    = me.getView(),
+            msgGrid = view.down("cn_mail-mailmessagegrid");
+
+        me.mon(msgGrid.view.getScrollable(), "scroll", me.onMessageGridScroll, me, {buffer: 500});
     },
 
 
@@ -1337,6 +1352,122 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         if (store) {
             store.reload();
         }
+    },
+
+    pendingLazies: null,
+    onMessageGridScroll () {
+        "use strict";
+
+        const
+            me = this,
+            grid = me.getView().down("cn_mail-mailmessagegrid"),
+            livegrid = grid.view.getFeature("cn_mail-mailMessageFeature-livegrid"),
+            proxy = grid.getStore().getProxy(),
+            pageMap = livegrid.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            range = livegrid.getCurrentViewRange(),
+            pages = l8.createRange(range.getStart().getPage(), range.getEnd().getPage()),
+            startIndex = range.getStart().getIndex(),
+            endIndex = range.getEnd().getIndex(),
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
+            browse = [],
+            urls = Object.create(null),
+            requestTemplate = Ext.create("Ext.data.Request", {
+                action: "read"
+            });
+
+        if (!me.pendingLazies) {
+            me.pendingLazies = {};
+        }
+
+        pages.forEach ((page, index, pages) => {
+            browse.push([
+                page,
+                index === 0 ? startIndex : 0,
+                index === pages.length - 1 ? endIndex : pageSize - 1
+            ]);
+        });
+
+        let rec, url, ck, groups = Object.create(null);
+        browse.forEach(pageConf => {
+            for (let i = pageConf[1], len = pageConf[2]; i <= len; i++) {
+                rec = PageMapUtil.getRecordAt(
+                    RecordPosition.create(pageConf[0], i),
+                    pageMap
+                );
+
+                if (rec.data.previewText === undefined) {
+                    ck = rec.getCompoundKey().toArray();
+                    if (!groups[ck[0]]) {
+                        groups[ck[0]] = {};
+                    }
+                    if (!groups[ck[0]][ck[1]]) {
+                        groups[ck[0]][ck[1]] = [];
+                    }
+                    groups[ck[0]][ck[1]].push(ck[2]);
+                }
+            }
+        });
+
+
+        // returns all ids that are unique.
+        // [1, 3, 4, 2, 1, 4, 5] -> [2, 5]
+        const removeDuplicateIds = (ids) => ids.filter(
+                (item, index, arr) => arr.indexOf(item) === arr.lastIndexOf(item)
+            ), toLoad = {};
+        let idsToLoad;
+
+        Object.keys(groups).forEach(mailAccountId => {
+            Object.keys(groups[mailAccountId]).forEach(mailFolderId => {
+                requestTemplate.setParams({
+                    mailAccountId,
+                    mailFolderId
+                });
+                url = proxy.assembleUrl(requestTemplate);
+
+                urls[url] = groups[mailAccountId][mailFolderId];
+            });
+        });
+
+        Object.keys(urls).forEach(url => {
+            me.pendingLazies[url] = me.pendingLazies[url] ? me.pendingLazies[url] :  [];
+
+            idsToLoad = removeDuplicateIds(me.pendingLazies[url].concat(urls[url]));
+            me.pendingLazies[url] = me.pendingLazies[url].concat(idsToLoad);
+            toLoad[url] = idsToLoad;
+
+            if (!idsToLoad.length) {
+                return;
+            }
+            Ext.Ajax.request({
+                method: "get",
+                url,
+                params: {
+                    fields: "previewText",
+                    previewTextLength: 200,
+                    target: "MessageItem",
+                    messageItemIds: idsToLoad.join(",")
+                }
+            }).then(response => {
+
+                const
+                    url = response.request.url,
+                    loadedIds = response.request.params.messageItemIds.split(",");
+
+                removeDuplicateIds(me.pendingLazies[url].concat(loadedIds));
+
+                let data = JSON.parse(response.responseText);
+
+                data.forEach(item => {
+                    let rec = livegrid.getRecordByCompoundKey(conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
+                        item.mailAccountId, item.mailFolderId, item.id
+                    ));
+
+                    rec.set("previewText", item.previewText);
+                });
+            });
+        });
 
     }
 

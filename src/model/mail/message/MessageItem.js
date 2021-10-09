@@ -67,9 +67,7 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
          * @return {string}
          */
         convert: function (v, record) {
-            return (typeof v === "string")
-                ? v.substring(0, 200)
-                : "";
+            return (typeof v === "string") ? v : (v === undefined ? undefined : "");
 
         }
     }, {
