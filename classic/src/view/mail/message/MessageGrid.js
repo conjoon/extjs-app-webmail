@@ -133,7 +133,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
                           "</div>" +
                           "<div class=\"date\">" + CnDate.getHumanReadableDate(record.get("date")) + "</div>" +
                           "</div>" +
-                           "<div class=\"previewText\">" + Format.nbsp(record.get("previewText")) + "</div>",
+                           "<div class='previewText " + (record.get("previewText") === undefined ? "loading" : "") + "'>" + Format.nbsp(record.get("previewText")) + "</div>",
                 rowBodyCls: "cn_mail-mailmessagepreviewfeature"
             };
         },
@@ -158,7 +158,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         }, {
             cls: "fa fa-envelope",
             "data-qtip": "Mark as Unread",
-            action: "markunread",
+            action: " ",
             id: "cn_mail-mailMessageFeature-rowFlyMenu-markUnread"
         }, {
             cls: "fa fa-flag",
@@ -192,7 +192,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         text: "<span class=\"x-fa fa-circle\"></span>",
         /**
          * @bug
-         * BufferedStore omly triggeres update of cell if at least metaData and
+         * BufferedStore only triggeres update of cell if at least metaData and
          * record are specified in its arguments. might be an issue with the
          * needsUpdate computing and considering argument values?
          */
