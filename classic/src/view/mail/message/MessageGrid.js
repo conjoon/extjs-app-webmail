@@ -158,7 +158,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         }, {
             cls: "fa fa-envelope",
             "data-qtip": "Mark as Unread",
-            action: " ",
+            action: "markunread",
             id: "cn_mail-mailMessageFeature-rowFlyMenu-markUnread"
         }, {
             cls: "fa fa-flag",
