@@ -1460,7 +1460,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
                 let data = JSON.parse(response.responseText);
 
-                data.forEach(item => {
+                data.data.forEach(item => {
                     let rec = livegrid.getRecordByCompoundKey(conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
                         item.mailAccountId, item.mailFolderId, item.id
                     ));
