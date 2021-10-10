@@ -1443,6 +1443,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             Ext.Ajax.request({
                 method: "get",
                 url,
+                headers: proxy.headers,
                 params: {
                     fields: "previewText",
                     previewTextLength: 200,
