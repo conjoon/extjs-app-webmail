@@ -28,13 +28,13 @@
     "creator": "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>",
     "summary": "JavaScript Sencha ExtJS Webmail client.",
     "detailedDescription": "This package contains an email client to be used with the conjoon project.",
-    "version": "0.0.1",
-    "compatVersion": "0.0.1",
+    "version": "0.1.1",
+    "compatVersion": "0.1.1",
     "format": "1",
     "slicer": {
       "js": [
         {
-          "path": "${package.dir}/sass/example/custom.js",
+          "path": "${package.dir}/sass/${theme.name}/example/custom.js",
           "isWidgetManifest": true
         }
       ]
@@ -56,17 +56,16 @@
       "polyfills": "none"
     },
     "local": true,
-    "theme": "extjs-theme-material",
     "sass": {
       "namespace": "conjoon.cn_mail",
       "etc": [
-        "${package.dir}/sass/etc/all.scss"
+        "${package.dir}/sass/${theme.name}/etc/all.scss"
       ],
       "var": [
-        "${package.dir}/sass/var/"
+        "${package.dir}/sass/${theme.name}/var/"
       ],
       "src": [
-        "${package.dir}/sass/src/"
+        "${package.dir}/sass/${theme.name}/src/"
       ]
     },
     "example": null,
