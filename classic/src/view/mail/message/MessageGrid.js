@@ -37,6 +37,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     requires: [
         "coon.comp.grid.feature.RowBodySwitch",
         "conjoon.cn_mail.view.mail.message.grid.feature.Livegrid",
+        "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         "conjoon.cn_mail.store.mail.message.MessageItemStore",
         "coon.comp.grid.feature.RowFlyMenu",
         "coon.core.util.Date"
@@ -99,6 +100,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         ftype: "cn_mail-mailmessagegridfeature-livegrid",
         id: "cn_mail-mailMessageFeature-livegrid"
     }, {
+        ftype: "cn_webmailplug-previewtextlazyload",
+        id: "cn_webmailplug-previewtextlazyload"
+    }, {
         ftype: "cn_comp-gridfeature-rowbodyswitch",
         variableRowHeight: false,
         enableCls: "previewEnabled",
@@ -110,12 +114,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
          * @private
          */
         emptySubjectText: "(No subject)",
+        getPreviewTextRow: record => `<div class="previewText">${Ext.util.Format.nbsp(record.get("previewText"))}</div>`,
         getAdditionalData: function (data, idx, record, orig) {
 
             const
                 me     = this,
-                CnDate = coon.core.util.Date,
-                Format = Ext.util.Format;
+                CnDate = coon.core.util.Date;
 
             if (me.disabled) {
                 return undefined;
@@ -133,7 +137,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
                           "</div>" +
                           "<div class=\"date\">" + CnDate.getHumanReadableDate(record.get("date")) + "</div>" +
                           "</div>" +
-                          "<div class=\"previewText\">" + Format.nbsp(record.get("previewText")) + "</div>",
+                          me.getPreviewTextRow(record),
                 rowBodyCls: "cn_mail-mailmessagepreviewfeature"
             };
         },
