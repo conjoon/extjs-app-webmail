@@ -133,7 +133,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
                           "</div>" +
                           "<div class=\"date\">" + CnDate.getHumanReadableDate(record.get("date")) + "</div>" +
                           "</div>" +
-                           "<div class='previewText " + (record.get("previewText") === undefined ? "loading" : "") + "'>" + Format.nbsp(record.get("previewText")) + "</div>",
+                          "<div class=\"previewText\">" + Format.nbsp(record.get("previewText")) + "</div>",
                 rowBodyCls: "cn_mail-mailmessagepreviewfeature"
             };
         },
@@ -393,7 +393,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         }
 
         if (store && me.getStore() !== store) {
-            me.myStoreRelayers = me.relayEvents(store, ["beforeload", "load"], "cn_mail-mailmessagegrid");
+            me.myStoreRelayers = me.relayEvents(store, ["beforeload", "load", "prefetch"], "cn_mail-mailmessagegrid");
         }
 
         return me.callParent(arguments);

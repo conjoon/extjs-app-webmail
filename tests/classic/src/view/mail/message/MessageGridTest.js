@@ -23,40 +23,42 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    var grid,
-        gridConfig,
-        prop = function (value, subject) {
-            return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                testProp: value,
-                subject: subject,
-                date: new Date(),
-                previewText: "Random Text"
-            });
-        };
+StartTest(async t => {
 
-    t.afterEach(function () {
-        if (grid) {
-            grid.destroy();
-            grid = null;
-        }
-    });
+    const helper = l8.liquify(TestHelper.get(t, window));
+    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
-    t.beforeEach(function () {
+        var grid,
+            gridConfig,
+            prop = function (value, subject) {
+                return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                    testProp: value,
+                    subject: subject,
+                    date: new Date(),
+                    previewText: "Random Text"
+                });
+            };
 
-        Ext.ux.ajax.SimManager.init({
-            delay: 1
+        t.afterEach(function () {
+            if (grid) {
+                grid.destroy();
+                grid = null;
+            }
         });
 
-        gridConfig = {
-            renderTo: document.body
-        };
-    });
+        t.beforeEach(function () {
 
-    t.requireOk("conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim", () => {
+            Ext.ux.ajax.SimManager.init({
+                delay: 1
+            });
 
-        conjoon.dev.cn_mailsim.data.mail.ajax.sim.message.MessageItemSim.init();
+            gridConfig = {
+                renderTo: document.body
+            };
+        });
+
 
         t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", () => {
             t.requireOk("conjoon.cn_mail.store.mail.message.MessageItemStore", () => {
@@ -213,7 +215,7 @@ StartTest(t => {
 
                     t.diag("downing SimManager delay to 1");
 
-                    let ULOAD = 0, UBEFORELOAD = 0, store;
+                    let ULOAD = 0, UBEFORELOAD = 0, UPREFETCH = 0, store;
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -229,9 +231,11 @@ StartTest(t => {
 
                     grid.on("cn_mail-mailmessagegridbeforeload", function () {UBEFORELOAD++;});
                     grid.on("cn_mail-mailmessagegridload",       function () {ULOAD++;});
+                    grid.on("cn_mail-mailmessagegridprefetch",   function () {UPREFETCH++;});
 
                     t.expect(ULOAD).toBe(0);
                     t.expect(UBEFORELOAD).toBe(0);
+                    t.expect(UPREFETCH).toBe(0);
 
                     store.filter([
                         {property: "mailAccountId", value: "dev_sys_conjoon_org"},
@@ -241,6 +245,7 @@ StartTest(t => {
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(ULOAD).toBe(1);
                         t.expect(UBEFORELOAD).toBe(1);
+                        t.expect(UPREFETCH).toBeGreaterThan(1);
 
                         grid.unbindStore(store);
 
@@ -249,6 +254,7 @@ StartTest(t => {
                         t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(ULOAD).toBe(1);
                             t.expect(UBEFORELOAD).toBe(1);
+                            t.expect(UPREFETCH).toBeGreaterThan(1);
 
                         });
 
