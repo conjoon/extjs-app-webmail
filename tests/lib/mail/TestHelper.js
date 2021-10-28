@@ -115,6 +115,8 @@ export default class TestHelper {
                 "conjoon.dev.cn_mailsim.data.MessageItemSim",
                 "conjoon.dev.cn_mailsim.data.SendMessageSim", () => {
 
+                    conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 100;
+
                     Object.entries({
                         "conjoon.dev.cn_mailsim.data.AttachmentSim": Object.assign(
                             config.attachment, {url: "cn_mail/MailAccounts/(.+)/MailFolders/(.+)/MessageItems/(.+)/Attachments(/.*)?"}),
