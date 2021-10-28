@@ -41,7 +41,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         "conjoon.cn_mail.store.mail.message.MessageItemStore",
         "coon.comp.grid.feature.RowFlyMenu",
         "coon.core.util.Date"
-
     ],
 
     alias: "widget.cn_mail-mailmessagegrid",

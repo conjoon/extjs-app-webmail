@@ -88,7 +88,11 @@ StartTest(async t => {
                     t.isInstanceOf(feature, "coon.comp.grid.feature.RowBodySwitch");
                     t.expect(feature.disabled).toBeFalsy();
 
+                    let lazyLoad = grid.view.getFeature("cn_webmailplug-previewtextlazyload");
+                    t.isInstanceOf(lazyLoad, "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad");
+
                     t.isCalled("getHumanReadableDate", coon.core.util.Date);
+                    t.isCalled("getPreviewTextRow", feature);
                     feature.getAdditionalData(null, null, {get: function () {}}, null);
 
                     feature = grid.view.getFeature("cn_mail-mailMessageFeature-livegrid");

@@ -279,7 +279,8 @@ export default [{
                         items: [{
                             group: "feature",
                             items: [
-                                "classic/src/view/mail/message/grid/feature/LivegridTest.js"
+                                "classic/src/view/mail/message/grid/feature/LivegridTest.js",
+                                "classic/src/view/mail/message/grid/feature/PreviewTextLazyLoadTest.js"
                             ]}]}, {
                         group: "reader",
                         items: [
