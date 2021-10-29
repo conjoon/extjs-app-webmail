@@ -37,10 +37,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     requires: [
         "coon.comp.grid.feature.RowBodySwitch",
         "conjoon.cn_mail.view.mail.message.grid.feature.Livegrid",
+        "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         "conjoon.cn_mail.store.mail.message.MessageItemStore",
         "coon.comp.grid.feature.RowFlyMenu",
         "coon.core.util.Date"
-
     ],
 
     alias: "widget.cn_mail-mailmessagegrid",
@@ -99,6 +99,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         ftype: "cn_mail-mailmessagegridfeature-livegrid",
         id: "cn_mail-mailMessageFeature-livegrid"
     }, {
+        ftype: "cn_webmailplug-previewtextlazyload",
+        id: "cn_webmailplug-previewtextlazyload"
+    }, {
         ftype: "cn_comp-gridfeature-rowbodyswitch",
         variableRowHeight: false,
         enableCls: "previewEnabled",
@@ -110,12 +113,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
          * @private
          */
         emptySubjectText: "(No subject)",
+        getPreviewTextRow: record => `<div class="previewText">${Ext.util.Format.nbsp(record.get("previewText"))}</div>`,
         getAdditionalData: function (data, idx, record, orig) {
 
             const
                 me     = this,
-                CnDate = coon.core.util.Date,
-                Format = Ext.util.Format;
+                CnDate = coon.core.util.Date;
 
             if (me.disabled) {
                 return undefined;
@@ -133,7 +136,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
                           "</div>" +
                           "<div class=\"date\">" + CnDate.getHumanReadableDate(record.get("date")) + "</div>" +
                           "</div>" +
-                           "<div class=\"previewText\">" + Format.nbsp(record.get("previewText")) + "</div>",
+                          me.getPreviewTextRow(record),
                 rowBodyCls: "cn_mail-mailmessagepreviewfeature"
             };
         },
@@ -192,7 +195,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         text: "<span class=\"x-fa fa-circle\"></span>",
         /**
          * @bug
-         * BufferedStore omly triggeres update of cell if at least metaData and
+         * BufferedStore only triggeres update of cell if at least metaData and
          * record are specified in its arguments. might be an issue with the
          * needsUpdate computing and considering argument values?
          */
@@ -393,7 +396,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         }
 
         if (store && me.getStore() !== store) {
-            me.myStoreRelayers = me.relayEvents(store, ["beforeload", "load"], "cn_mail-mailmessagegrid");
+            me.myStoreRelayers = me.relayEvents(store, ["beforeload", "load", "prefetch"], "cn_mail-mailmessagegrid");
         }
 
         return me.callParent(arguments);

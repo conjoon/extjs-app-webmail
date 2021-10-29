@@ -68,7 +68,9 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
 
     /**
-     * @inheritdoc
+     * Assembles the url in preparation for #buildUrl.
+     * Provides convenient access for external APIs to query resource-locations
+     * based on passed arguments
      *
      * @param {Ext.data.Request} request
      *
@@ -76,7 +78,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
      *
      * @throws if #entityName is not in the list of #validEntityNames
      */
-    buildUrl: function (request) {
+    assembleUrl: function (request) {
 
         if (request.getRecords() && request.getRecords().length > 1) {
             Ext.raise({
@@ -85,7 +87,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             });
         }
 
-        const me     = this,
+        const me = this,
             params = request.getParams();
 
         if (me.validEntityNames.indexOf(me.entityName) === -1) {
@@ -131,7 +133,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             "MessageItems";
 
         // switch target parameter to MessageBodyDraft if applicable
-        let target      = me.entityName,
+        let target = me.entityName,
             finalParams;
 
         if ((action === "create" || action === "update") && target === "MessageBody") {
@@ -147,7 +149,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         request.setParams(Ext.apply(request.getParams() || {}, finalParams));
 
         if (action !== "create") {
-            if (Object.prototype.hasOwnProperty.call(source,"id")) {
+            if (Object.prototype.hasOwnProperty.call(source, "id")) {
                 url += "/" + source.id;
             }
         }
@@ -159,6 +161,22 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             delete params.localId;
         }
 
+        return url;
+    },
+
+
+    /**
+     * @inheritdoc
+     *
+     * @param {Ext.data.Request} request
+     *
+     * @return {Object}
+     */
+    buildUrl: function (request) {
+
+        const
+            me = this,
+            url = me.assembleUrl(request);
 
         request.setUrl(url);
 

@@ -161,6 +161,43 @@ StartTest(t => {
     });
 
 
+    t.it("buildUrl() calls assembleUrl()", t => {
+
+        let recs = [Ext.create("Ext.data.Model", {
+                mailAccountId: "a",
+                mailFolderId: "b"
+            })],
+            proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
+                entityName: "MessageItem"
+            }),
+            request = Ext.create("Ext.data.Request", {
+                action: "create",
+                operation: Ext.create("Ext.data.operation.Create", {
+                    records: recs
+                }),
+                records: recs
+            }),
+            targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems";
+
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+
+        t.expect(proxy.assembleUrl(request)).toBe(targetUrl);
+
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+
+        let spy = t.spyOn(proxy, "assembleUrl").callFake(() => "fooUrl"),
+            urlSpy = t.spyOn(request, "setUrl");
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe("fooUrl");
+        t.expect(spy).toHaveBeenCalledWith(request);
+        t.expect(urlSpy).toHaveBeenCalledWith("fooUrl");
+
+        spy.remove();
+        urlSpy.remove();
+    });
+
+
     t.it("buildUrl() - action \"create\"", t => {
 
         let recs = [Ext.create("Ext.data.Model", {

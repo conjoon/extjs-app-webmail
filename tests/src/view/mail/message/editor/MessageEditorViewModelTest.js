@@ -79,7 +79,7 @@ StartTest(async t => {
                 view = Ext.create("Ext.Panel");
                 let messageIndex = 1;
                 var draft;
-                for (let i = 1, len = 100; i < len; i++) {
+                for (let i = 1, len = conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH; i < len; i++) {
                     let item = getMessageItemAt(i);
                     if (item.hasAttachments) {
                         messageIndex = i;
@@ -943,5 +943,3 @@ StartTest(async t => {
 
 
                         });});});});});});});
-
-

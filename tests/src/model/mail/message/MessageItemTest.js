@@ -154,19 +154,19 @@ StartTest(t => {
         t.expect(longString.length).toBe(4000);
 
         model.set("previewText", longString);
-        t.expect(model.data.previewText.length).toBe(200);
-        t.expect(model.get("previewText").length).toBe(200);
+        t.expect(model.data.previewText.length).toBe(4000);
+        t.expect(model.get("previewText").length).toBe(4000);
 
         model.set("previewText", "u" + longString);
-        t.expect(model.previousValues.previewText.length).toBe(200);
+        t.expect(model.previousValues.previewText.length).toBe(4000);
         t.expect(model.data.previewText[0]).toBe("u");
-        t.expect(model.data.previewText.length).toBe(200);
-        t.expect(model.get("previewText").length).toBe(200);
+        t.expect(model.data.previewText.length).toBe(4001);
+        t.expect(model.get("previewText").length).toBe(4001);
 
         model.set("previewText", 0);
-        t.expect(model.get("previewText")).toBe("");
+        t.expect(model.get("previewText")).toBe("0");
         model.set("previewText", undefined);
-        t.expect(model.get("previewText")).toBe("");
+        t.expect(model.get("previewText")).toBeUndefined();
         model.set("previewText", null);
         t.expect(model.get("previewText")).toBe("");
         model.set("previewText", true);

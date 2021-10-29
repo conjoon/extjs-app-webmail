@@ -41,6 +41,8 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
     extend: "conjoon.cn_mail.model.mail.message.AbstractMessageItem",
 
     requires: [
+        // @define
+        "l8",
         "conjoon.cn_mail.model.mail.message.ItemAttachment",
         "coon.core.data.field.EmailAddressCollection",
         "coon.core.data.field.FileSize"
@@ -61,16 +63,14 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
         type: "string",
         persist: false,
         /**
-         * Makes sure the previewText is not longer than 200 characters.
+         * Makes sure the previewText is left undefined if undefined is passed to the method.
+         * Will return the value converted to string if it is an int, otherwise the string itself.
          * @param {Mixed} v
          * @param {conjoon.cn_mail.model.mail.message.MessageItem} record
          * @return {string}
          */
         convert: function (v, record) {
-            return (typeof v === "string")
-                ? v.substring(0, 200)
-                : "";
-
+            return v === undefined ? undefined : (l8.isNumber(v) || l8.isString(v) ? "" + v : "");
         }
     }, {
         name: "size",
