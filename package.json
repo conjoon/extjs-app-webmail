@@ -16,7 +16,7 @@
           },
           "service": {
             "rest-imap" :  {
-              "base" : "https://php-ms-imapuser.ddev.site/rest-imap/api/v0.1/"
+              "base" : "https://php-ms-imapuser.ddev.site/rest-api-email/api/v0/"
             }
           }
         }
