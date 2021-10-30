@@ -1309,6 +1309,9 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     /**
      * Seeds mailAccountId and mailFolderId amongst the editors for composing a message.
      * Sets defaultAccountInformations used by this controller.
+     * MailAccount-nodes get loaded first, subsequent calls will then call the load-
+     * operations for the children. Those calls have to be considered since the method need the folder
+     * information from the children.
      *
      * @param {Array} records
      *
