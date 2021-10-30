@@ -85,6 +85,7 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
     root: {
         // set initially to false so no ugly fragments will blink when account node
         // was loaded and load mask is hidden / shown when mail folder loads.
+        // this will  set the loadCount of the store to +1
         expanded: true,
         data: []
     },
