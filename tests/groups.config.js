@@ -35,91 +35,93 @@ export default [{
         items: [{
             group: "mail",
 
-            items: [{
-                group: "account",
-                items: [{
-                    group: "reader",
-                    items: [
-                        "src/data/mail/account/reader/MailAccountJsonReaderTest.js"
-                    ]
-                }, {
-                    group: "proxy",
-                    items: [
-                        "src/data/mail/account/proxy/MailAccountProxyTest.js"
-                    ]
-                }]
-            }, {
-                group: "folder",
-                items: [{
-                    group: "compoundKey",
-                    items: [
-                        "src/data/mail/folder/compoundKey/MailFolderCompoundKeyTest.js"
-                    ]
-                }, {
-                    group: "reader",
-                    items: [
-                        "src/data/mail/folder/reader/MailFolderJsonReaderTest.js"
-                    ]
-                },
-                "src/data/mail/folder/MailFolderTypesTest.js"
-                ]
-            }, {
-                group: "message",
-                items: [{
-                    group: "compoundKey",
-                    items: [
-                        "src/data/mail/message/compoundKey/MessageEntityCompoundKeyTest.js",
-                        "src/data/mail/message/compoundKey/MessageItemChildCompoundKeyTest.js",
-                        "src/data/mail/message/compoundKey/AttachmentItemCompoundKeyTest.js"
-                    ]
-                }, {
-                    group: "editor",
-                    items: [
-                        "src/data/mail/message/editor/MessageDraftConfigTest.js",
-                        "src/data/mail/message/editor/MessageDraftCopierTest.js",
-                        "src/data/mail/message/editor/MessageDraftCopyRequestTest.js"
-                    ]
-                },{
-                    group: "proxy",
-                    items: [
-                        "src/data/mail/message/proxy/MessageEntityProxyTest.js",
-                        "src/data/mail/message/proxy/AttachmentProxyTest.js",
-                        "src/data/mail/message/proxy/UtilityMixinTest.js"
-                    ]
-                },
+            items: [
+                "src/data/mail/MailboxRunnerTest.js",
                 {
-                    group: "reader",
-                    items: [
-                        "src/data/mail/message/reader/MessageItemJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageBodyJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageItemChildJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageEntityJsonReaderTest.js",
-                        "src/data/mail/message/reader/MessageItemUpdaterTest.js"
+                    group: "account",
+                    items: [{
+                        group: "reader",
+                        items: [
+                            "src/data/mail/account/reader/MailAccountJsonReaderTest.js"
+                        ]
+                    }, {
+                        group: "proxy",
+                        items: [
+                            "src/data/mail/account/proxy/MailAccountProxyTest.js"
+                        ]
+                    }]
+                }, {
+                    group: "folder",
+                    items: [{
+                        group: "compoundKey",
+                        items: [
+                            "src/data/mail/folder/compoundKey/MailFolderCompoundKeyTest.js"
+                        ]
+                    }, {
+                        group: "reader",
+                        items: [
+                            "src/data/mail/folder/reader/MailFolderJsonReaderTest.js"
+                        ]
+                    },
+                    "src/data/mail/folder/MailFolderTypesTest.js"
+                    ]
+                }, {
+                    group: "message",
+                    items: [{
+                        group: "compoundKey",
+                        items: [
+                            "src/data/mail/message/compoundKey/MessageEntityCompoundKeyTest.js",
+                            "src/data/mail/message/compoundKey/MessageItemChildCompoundKeyTest.js",
+                            "src/data/mail/message/compoundKey/AttachmentItemCompoundKeyTest.js"
+                        ]
+                    }, {
+                        group: "editor",
+                        items: [
+                            "src/data/mail/message/editor/MessageDraftConfigTest.js",
+                            "src/data/mail/message/editor/MessageDraftCopierTest.js",
+                            "src/data/mail/message/editor/MessageDraftCopyRequestTest.js"
+                        ]
+                    },{
+                        group: "proxy",
+                        items: [
+                            "src/data/mail/message/proxy/MessageEntityProxyTest.js",
+                            "src/data/mail/message/proxy/AttachmentProxyTest.js",
+                            "src/data/mail/message/proxy/UtilityMixinTest.js"
+                        ]
+                    },
+                    {
+                        group: "reader",
+                        items: [
+                            "src/data/mail/message/reader/MessageItemJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageBodyJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageItemChildJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageEntityJsonReaderTest.js",
+                            "src/data/mail/message/reader/MessageItemUpdaterTest.js"
+                        ]
+                    },
+                    {
+                        group: "session",
+                        items: [
+                            "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",
+                            "src/data/mail/message/session/MessageDraftSessionTest.js"
+                        ]
+                    },
+                    "src/data/mail/message/CompoundKeyTest.js",
+                    "src/data/mail/message/EditingModesTest.js"
+                    ]
+                }, {
+                    group: "service",
+                    items: [{
+                        group: "mailbox",
+                        items: [
+                            "src/data/mail/service/mailbox/OperationTest.js"
+                        ]
+                    },
+                    "src/data/mail/service/MailFolderHelperTest.js",
+                    "src/data/mail/service/MailboxServiceTest.js"
                     ]
                 },
-                {
-                    group: "session",
-                    items: [
-                        "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",
-                        "src/data/mail/message/session/MessageDraftSessionTest.js"
-                    ]
-                },
-                "src/data/mail/message/CompoundKeyTest.js",
-                "src/data/mail/message/EditingModesTest.js"
-                ]
-            }, {
-                group: "service",
-                items: [{
-                    group: "mailbox",
-                    items: [
-                        "src/data/mail/service/mailbox/OperationTest.js"
-                    ]
-                },
-                "src/data/mail/service/MailFolderHelperTest.js",
-                "src/data/mail/service/MailboxServiceTest.js"
-                ]
-            },
-            "src/data/mail/BaseSchemaTest.js"
+                "src/data/mail/BaseSchemaTest.js"
             ]
         }]
     }, {

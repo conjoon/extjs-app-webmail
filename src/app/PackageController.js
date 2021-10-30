@@ -63,7 +63,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
         "conjoon.cn_mail.data.mail.BaseSchema",
-        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
+        "conjoon.cn_mail.data.mail.MailboxRunner"
     ],
 
     routes: {
@@ -256,6 +257,10 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @private
      */
     observedMessageEditor: null,
+
+    /**
+     * @var {conjoon.cn_mail.data.mail.MailboxRunner} mailboxRunner
+     */
 
 
     /**
@@ -906,7 +911,13 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      */
     postLaunchHook: function () {
 
-        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+        const
+            me = this,
+            treeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+        me.mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner");
+        me.mailboxRunner.init(treeStore);
+        treeStore.load();
 
         return {
             navigation: [{

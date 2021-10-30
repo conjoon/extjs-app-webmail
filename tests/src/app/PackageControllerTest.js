@@ -131,6 +131,16 @@ StartTest(t => {
         });
 
 
+        t.it("postLaunchHook should configure MailboxRunner with MailFolderTreeStore", t => {
+
+            packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+            packageCtrl.postLaunchHook();
+            t.isInstanceOf(packageCtrl.mailboxRunner, "conjoon.cn_mail.data.mail.MailboxRunner");
+            t.expect(packageCtrl.mailboxRunner.mailFolderTreeStore).toBe(
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance());
+        });
+
+
         t.it("showMailEditor()", t => {
 
             let CN_HREF = "foo";
