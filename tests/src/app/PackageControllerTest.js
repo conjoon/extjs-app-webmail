@@ -73,6 +73,9 @@ StartTest(t => {
             };
 
         t.afterEach(function () {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
+
             if (packageCtrl) {
                 packageCtrl.destroy();
                 packageCtrl = null;
@@ -101,21 +104,37 @@ StartTest(t => {
             t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("host://endpoint/");
         });
 
-        t.it("postLaunchHook should return valid object", t => {
+        t.it("postLaunchHook should create MailFolderTreeStore and return valid object", t => {
+
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
-            var ret = packageCtrl.postLaunchHook();
-
-
+            t.expect(Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore")).toBeUndefined();
+            const  ret = packageCtrl.postLaunchHook();
             t.isObject(ret);
+            t.expect(Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore")).toBeDefined();
+            t.expect(Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore")).toBe(
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+            );
+        });
 
+
+        t.it("postLaunchHook should load MailFolderTreeStore", t => {
+
+            const loadSpy = t.spyOn(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(), "load");
+
+            packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+            t.expect(loadSpy.calls.count()).toBe(0);
+            packageCtrl.postLaunchHook();
+            t.expect(loadSpy.calls.count()).toBe(1);
+
+            loadSpy.remove();
         });
 
 
         t.it("showMailEditor()", t => {
 
             let CN_HREF = "foo";
-            
+
             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
             let mvp = {
                 getActiveTab: function () {
@@ -1562,7 +1581,7 @@ StartTest(t => {
 
 
         });
-    
+
 
         t.it("extjs-app-webmail#83 - mailaccount route", t => {
 

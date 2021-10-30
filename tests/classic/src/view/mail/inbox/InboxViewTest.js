@@ -85,6 +85,8 @@ StartTest(async t => {
                 let view;
 
                 t.afterEach(() => {
+                    Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+                    Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
 
                 });
 

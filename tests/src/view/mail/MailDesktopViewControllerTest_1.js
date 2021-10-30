@@ -116,6 +116,8 @@ StartTest(async t => {
         });
 
         t.beforeEach(function () {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
             Ext.ux.ajax.SimManager.init({
                 delay: 1
             });
@@ -1236,7 +1238,7 @@ StartTest(async t => {
                         ctrl.showMailEditor(13232, "compose");
                         ctrl.showMailEditor(recs[0].getCompoundKey(), "forward");
                         ctrl.showMailEditor(recs[2].getCompoundKey(), "edit");
-                            
+
                         let mailView = ctrl.showMailMessageViewFor(recs[0].getCompoundKey());
 
                         t.waitForMs(1750, function () {
@@ -1316,7 +1318,7 @@ StartTest(async t => {
 
                         let recs = getRecordCollection(),
                             ck   = recs[0].getCompoundKey();
-                            
+
                         ctrl.showMailEditor(ck, "edit");
                         ctrl.showMailEditor(ck, "replyTo");
                         ctrl.showMailEditor(ck, "replyAll");

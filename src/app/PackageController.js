@@ -45,6 +45,10 @@
  *
  *      });
  *
+ * Additionally, this app controller will create and register a singleton instance of
+ *  {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} to make sure MailAccount-information
+ *  can be accessed given one uniquely identifyable data source.
+ *
  */
 Ext.define("conjoon.cn_mail.app.PackageController", {
 
@@ -58,7 +62,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.view.mail.message.reader.MessageView",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
-        "conjoon.cn_mail.data.mail.BaseSchema"
+        "conjoon.cn_mail.data.mail.BaseSchema",
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
     routes: {
@@ -900,6 +905,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @inheritdoc
      */
     postLaunchHook: function () {
+
+        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+
         return {
             navigation: [{
                 text: "Email",

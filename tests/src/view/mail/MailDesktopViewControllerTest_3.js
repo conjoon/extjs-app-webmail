@@ -78,6 +78,8 @@ StartTest(async t => {
         });
 
         t.afterEach(function () {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
             Ext.ux.ajax.SimManager.init({
                 delay: 1
             });

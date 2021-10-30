@@ -27,6 +27,10 @@
  * This is the view controller for {@link conjoon.cn_mail.view.mail.MailDesktopView}.
  * It mainly provides and delegates event handling between the embedded views.
  *
+ * The controller uses a singleton instance of the {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}
+ * to make sure the same MailAccount-data is used throughout the package.
+ * See also {conjoon.cn_mail.app.PackageController}#postLaunchHook().
+ *
  * The routes configuration used here can be found in the PackageController.
  */
 Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
@@ -42,7 +46,8 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
     alias: "controller.cn_mail-maildesktopviewcontroller",
@@ -124,6 +129,42 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         me.messageViewIdMap = {};
 
         me.callParent(arguments);
+    },
+
+
+    /**
+     * Inits this controller.
+     *
+     *
+     * @see configureWithMailFolderTreeStore
+     */
+    init () {
+        this.configureWithMailFolderTreeStore();
+    },
+
+
+    /**
+     * Configures this controller and the associated ViewModel with a singleton instance
+     * of {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}.
+     * Makes sure that for each load operation (e.g. MailAccount-nodes get expanded -> load folders)
+     * a callback is registered that processes the loaded folders and configures
+     * #defaultAccountInformations.
+     *
+     * @see onMailFolderTreeStoreLoad
+     */
+    configureWithMailFolderTreeStore () {
+        const
+            me = this,
+            treeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+        treeStore.on("load", me.onMailFolderTreeStoreLoad, this);
+
+        // run with available data
+        if (treeStore.isLoaded()) {
+            treeStore.getRootNode().childNodes.forEach(accountNode => {
+                me.seedFolders(accountNode.childNodes);
+            });
+        }
     },
 
 
@@ -1241,30 +1282,56 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
 
     /**
-     * Registered by this view's ViewModel to make sure the controller is notified
-     * of the  load of the MailFolderTreeStore to seed mailAccountId and
-     * mailFolderId amongst the editors when composing a message.
+     * Makes sure the controller is notified of the  load of the MailFolderTreeStore.
+     * Delegates to #seedFolders()
      *
      * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {Array} records
+     *
+     * @return null if the node being loaded was of type ACCOUNT or no records where submitted,
+     * otherwise the defaultAccountInformations fetched by this operation.
+     *
+     * @see seedFolders
+     */
+    onMailFolderTreeStoreLoad: function (store, records, success, operation) {
+
+        const
+            me = this;
+
+        if (!success || !records) {
+            return null;
+        }
+
+        return me.seedFolders(records);
+    },
+
+
+    /**
+     * Seeds mailAccountId and mailFolderId amongst the editors for composing a message.
+     * Sets defaultAccountInformations used by this controller.
+     *
      * @param {Array} records
      *
      * @return null if the node being loaded was of type ACCOUNT,
      * otherwise the defaultAccountInformations fetched by this operation.
      *
      * @throws if no suitable draftNode was found
+     *
+     * @private
      */
-    onMailFolderTreeStoreLoad: function (store, records, success, operation) {
+    seedFolders (folders) {
 
-        const me           = this,
-            view         = me.getView(),
-            TYPES        = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+        const
+            me    = this,
+            view  = me.getView(),
+            TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (!success || (records && records[0].get("folderType") === TYPES.ACCOUNT)) {
+        if (folders[0].get("folderType") === TYPES.ACCOUNT) {
             return null;
         }
 
         if (!me.defaultAccountInformations) {
-            let accountNode = records[0].parentNode,
+            let accountNode = folders[0].parentNode,
                 draftNode   = accountNode.findChild("folderType", TYPES.DRAFT, false);
 
             if (!draftNode) {
@@ -1315,6 +1382,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
         return me.defaultAccountInformations;
     },
+
 
     /**
      * @private
