@@ -272,7 +272,8 @@ StartTest(async t => {
                         mailFolderId: "INBOX",
                         mailAccountId: "dev_sys_conjoon_org",
                         seen: true,
-                        flagged: false
+                        flagged: false,
+                        recent: true
                     }),
                     CALLED = 0;
 
@@ -281,13 +282,19 @@ StartTest(async t => {
                 };
 
                 t.expect(rec.get("seen")).toBe(true);
+                t.expect(rec.get("recent")).toBe(true);
                 t.expect(rec.get("flagged")).toBe(false);
                 t.expect(CALLED).toBe(0);
 
                 viewController.onRowFlyMenuItemClick(null, null, "flag", rec);
                 t.expect(rec.get("flagged")).toBe(true);
+                t.expect(rec.get("recent")).toBe(false);
+
+                rec.set("recent", true);
 
                 viewController.onRowFlyMenuItemClick(null, null, "markunread", rec);
+
+                t.expect(rec.get("recent")).toBe(false);
 
                 t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(rec.get("seen")).toBe(false);
