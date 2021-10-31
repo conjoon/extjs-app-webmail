@@ -54,8 +54,9 @@ StartTest(async t => {
 
         t.it("constructor() - no arg", t => {
 
-            let spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
-            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner"),
+            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner");
+
+            const spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
 
             t.expect(spy.calls.count()).toBe(0);
 
@@ -251,20 +252,68 @@ StartTest(async t => {
             t.expect(created.extjsTask.stopped).toBe(false);
             t.expect(created.extjsTask.pending).toBe(true);
 
-            t.expect(mailboxRunner.subscriptions["foo"]).toBeDefined();
+            t.expect(mailboxRunner.subscriptions.foo).toBeDefined();
 
             t.expect(startSpy.calls.all()[0].args[0]).toBe(mailAccountMock);
 
             startSpy.remove();
         });
 
-        t.it("visitSubscription()", t => {
 
-            let requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => {});
+        t.it("onSubscriptionResponseAvailable", t => {
 
             mailboxRunner = createMailboxRunner();
 
-            mailboxRunner.visitSubscription(1, 2, 3);
+            const
+                mailFolder = {},
+                responseMock = {},
+                record = {},
+                recordMock = [],
+                resultSetMock = {
+                    getRecords: () => recordMock
+                },
+                readSpy = t.spyOn(
+                    conjoon.cn_mail.model.mail.message.MessageItem.getProxy().getReader(), "read"
+                ).and.returnValue(resultSetMock),
+                fireSpy = t.spyOn(Ext, "fireEvent");
+
+            t.expect(mailboxRunner.onSubscriptionResponseAvailable(mailFolder, responseMock)).toBe(false);
+            t.expect(readSpy.calls.all()[0].args[0]).toBe(responseMock);
+            t.expect(fireSpy.calls.count()).toBe(0);
+
+            recordMock.push(record);
+            t.expect(mailboxRunner.onSubscriptionResponseAvailable(mailFolder, responseMock)).toBe(recordMock);
+            t.expect(fireSpy.calls.count()).toBe(1);
+            t.expect(fireSpy.calls.all()[0].args[0]).toBe("conjoon.cn_mail.event.NewMessagesAvailable");
+            t.expect(fireSpy.calls.all()[0].args[1]).toBe(mailFolder);
+            t.expect(fireSpy.calls.all()[0].args[2]).toBe(recordMock);
+
+            readSpy.remove();
+            fireSpy.remove();
+        });
+
+
+        t.it("visitSubscription()", async t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const
+                requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("response")),
+                responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {});
+
+            const FOLDER = {
+                props: {
+                    mailAccountId: 1,
+                    id: 2,
+                    uidNext: 3
+                },
+                get: function (key) {
+                    return this.props[key];
+                }
+            };
+
+
+            await mailboxRunner.visitSubscription(FOLDER);
 
             const options =  JSON.stringify(
                 conjoon.cn_mail.model.mail.message.MessageItem.getProxy().getDefaultParameters("ListMessageItem.options")
@@ -272,19 +321,26 @@ StartTest(async t => {
 
             t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
                 method: "get",
+                action: "read",
                 headers: undefined,
                 params: {
-                    filter: "[{\"property\":\"recent\",\"value\":true},{\"property\":\"uidNext\",\"value\":3,\"operator\":\">\"}]",
+                    filter: "[{\"property\":\"recent\",\"value\":true},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]",
                     options: options,
                     target: "MessageItem"
                 },
                 url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems"
             });
 
-            mailboxRunner.visitSubscription(1, 2);
+            t.expect(responseSpy.calls.count()).toBe(1);
+            t.expect(responseSpy.calls.mostRecent().args[0]).toBe(FOLDER);
+            t.expect(responseSpy.calls.mostRecent().args[1]).toBe("response");
+
+            delete FOLDER.props.uidNext;
+            mailboxRunner.visitSubscription(FOLDER);
 
             t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
                 method: "get",
+                action: "read",
                 headers: undefined,
                 params: {
                     filter: "[{\"property\":\"recent\",\"value\":true}]",
@@ -295,8 +351,10 @@ StartTest(async t => {
             });
 
             requestSpy.remove();
+            responseSpy.remove();
 
         });
+
 
         t.it("start()", t => {
 
@@ -323,6 +381,7 @@ StartTest(async t => {
             const extjsTask = task.extjsTask;
             t.expect(extjsTask.interval).toBe(mailboxRunner.interval);
             t.expect(extjsTask.pending).toBe(true);
+            t.expect(extjsTask.fireOnStart).toBe(false);
             t.expect(extjsTask.stopped).toBe(false);
             t.expect(extjsTask.scope).toBe(mailboxRunner);
             t.expect(extjsTask.args[0]).toBe(FOLDER);
@@ -331,9 +390,7 @@ StartTest(async t => {
             t.expect(subscriptionSpy.calls.count()).toBe(0);
             extjsTask.run(task.folder);
             t.expect(subscriptionSpy.calls.count()).toBe(1);
-            t.expect(subscriptionSpy.calls.all()[0].args[0]).toBe(1);
-            t.expect(subscriptionSpy.calls.all()[0].args[1]).toBe(2);
-            t.expect(subscriptionSpy.calls.all()[0].args[2]).toBe(3);
+            t.expect(subscriptionSpy.calls.all()[0].args[0]).toBe(FOLDER);
 
             t.expect(task.folder).toBe(FOLDER);
 

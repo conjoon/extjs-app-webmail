@@ -29,7 +29,10 @@
  * the MailFolderTreeStore the runner is configured with, and work with these
  * references.
  *
- * @example
+ * A MailboxRunner will fire the global event "conjoon.cn_mail.event.NewMessagesAvailable"
+ * along with the mailFolder for which the MessageItems are available, which will
+ * be available as the second argument.
+ *
  */
 Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
@@ -164,16 +167,18 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * or, if available, > than a given uidNext that was recently set
      * for the folder.
      *
-     * @param {String} mailAccountId
-     * @param {String} mailFolderId
-     * @param {String} uidNext
+     * @param {conjoon.cn_mail.model.mail.folder.MailFolder} mailFolder
      *
      * @private
      */
-    visitSubscription (mailAccountId, mailFolderId, uidNext) {
+    async visitSubscription (mailFolder) {
         "use strict";
 
         const
+            me = this,
+            mailAccountId = mailFolder.get("mailAccountId"),
+            mailFolderId = mailFolder.get("id"),
+            uidNext = mailFolder.get("uidNext"),
             proxy = conjoon.cn_mail.model.mail.message.MessageItem.getProxy(),
             keyFilter = [{
                 property: "mailAccountId",
@@ -189,9 +194,9 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
         if (uidNext) {
             latestFilter.push({
-                property: "uidNext",
+                property: "id",
                 value: uidNext,
-                operator: ">"
+                operator: ">="
             });
         }
 
@@ -204,6 +209,8 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
         Ext.Ajax.request({
             method: "get",
+            // required by the custom Reader used by teh messageEntityProxy
+            action: "read",
             url,
             headers: proxy.headers,
             params: {
@@ -211,7 +218,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
                 options: JSON.stringify(proxy.getDefaultParameters("ListMessageItem.options")),
                 target: "MessageItem"
             }
-        });
+        }).then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
 
     },
 
@@ -238,11 +245,8 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
         if (!sub.extjsTask) {
             sub.extjsTask = Ext.TaskManager.start({
-                run: (folder) => me.visitSubscription(
-                    folder.get("mailAccountId"),
-                    folder.get("id"),
-                    folder.get("uidNext")
-                ),
+                run: me.visitSubscription,
+                fireOnStart: false,
                 scope: me,
                 // pass folder as reference to make sure
                 // changes to any of it (UIDNEXT, mailFolderId etc)
@@ -465,6 +469,38 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         delete me.subscriptions;
 
         me.callParent(arguments);
+    },
+
+
+    /**
+     * Callback for the request to fetch latest messages.
+     * If messages are available the global event "conjoon.cn_mail.event.NewMessagesAvailable"
+     * will be fired with the owning mailFolder as its first argument, and an array of
+     * recent messages as the second argument.
+     *
+     * @param {Object} response
+     *
+     * @return {Boolean} false if no records where fetched in the recent run, otherwise
+     * an array with the fetched records.
+     */
+    onSubscriptionResponseAvailable (mailFolder, response) {
+
+        const
+            proxy = conjoon.cn_mail.model.mail.message.MessageItem.getProxy(),
+            reader = proxy.getReader();
+
+        const resultSet = reader.read(response);
+
+        if (resultSet.getRecords().length) {
+            Ext.fireEvent(
+                "conjoon.cn_mail.event.NewMessagesAvailable",
+                mailFolder,
+                resultSet.getRecords()
+            );
+            return resultSet.getRecords();
+        }
+
+        return false;
     }
 
 });
