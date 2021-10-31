@@ -322,13 +322,13 @@ StartTest(async t => {
             t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
                 method: "get",
                 action: "read",
+                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
                 headers: undefined,
                 params: {
-                    filter: "[{\"property\":\"recent\",\"value\":true},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]",
+                    filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]",
                     options: options,
                     target: "MessageItem"
-                },
-                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems"
+                }
             });
 
             t.expect(responseSpy.calls.count()).toBe(1);
@@ -341,13 +341,13 @@ StartTest(async t => {
             t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
                 method: "get",
                 action: "read",
+                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
                 headers: undefined,
                 params: {
-                    filter: "[{\"property\":\"recent\",\"value\":true}]",
+                    filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"}]",
                     options: options,
                     target: "MessageItem"
-                },
-                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems"
+                }
             });
 
             requestSpy.remove();

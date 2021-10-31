@@ -48,7 +48,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * The intrerval in ms, in which a runner should be called
      * @var {Number} interval
      */
-    interval: 12000,
+    interval: 120000,
 
     /**
      * A key value pair with the key being the mail account, and
@@ -189,7 +189,8 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             }],
             latestFilter = [{
                 property: "recent",
-                value: true
+                value: true,
+                operator: "="
             }];
 
         if (uidNext) {
