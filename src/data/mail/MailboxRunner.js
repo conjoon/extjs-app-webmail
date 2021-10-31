@@ -123,7 +123,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      *
      * @param {String|Ext.data.TreeModel} mailAccount
      *
-     * @return {Object} the subscription object created
+     * @return {Boolean|Object} the subscription object created, or false if the subscription already exists
      * @return {Object.folder} the folder that was subscripbed to
      *
      * throws if a subscription for the mailAccount already exists,
@@ -136,7 +136,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         const me = this;
 
         if (me.getSubscription(mailAccount)) {
-            throw new Error(`subscription for ${me.getSubscriptionId(mailAccount)} already exists`);
+            return false;
         }
 
         const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;

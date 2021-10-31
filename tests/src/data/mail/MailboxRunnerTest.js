@@ -203,19 +203,11 @@ StartTest(async t => {
         });
 
 
-        t.it("createSubscription() - exception subscription exists", t => {
+        t.it("createSubscription() - subscription exists", t => {
 
             mailboxRunner = createMailboxRunner();
-            let exc;
-            try {
-                mailboxRunner.subscriptions = {"foo": {}};
-                mailboxRunner.createSubscription({get: () => "foo"});
-            } catch (e) {
-                exc = e;
-            }
-
-            t.expect(exc.message).toContain("subscription");
-            t.expect(exc.message).toContain("already exists");
+            mailboxRunner.subscriptions = {"foo": {}};
+            t.expect(mailboxRunner.createSubscription({get: () => "foo"})).toBe(false);
         });
 
 
