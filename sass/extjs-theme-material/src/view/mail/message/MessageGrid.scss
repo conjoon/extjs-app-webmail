@@ -108,6 +108,7 @@
 
     },
 
+    tr.recent,
     tr.boldFont {
         .x-grid-cell.previewLarge::before {
             content  : "";
@@ -116,6 +117,13 @@
             width    : 2px;
             position : absolute;
             background-color : var(--base-color);
+        }
+
+    }
+
+    tr.recent {
+        .x-grid-cell.previewLarge::before {
+            background-color: var(--signal-color)
         }
     }
 
@@ -137,6 +145,15 @@
                     color : var(--base-color);
                 }
             }
+
+            &.recent {
+                .subject,
+                .date {
+                    color : var(--signal-color);
+                }
+            }
+
+
 
             .draft,
             .fa-mail-reply,

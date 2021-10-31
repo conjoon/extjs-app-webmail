@@ -60,13 +60,13 @@
     "sass": {
       "namespace": "conjoon.cn_mail",
       "etc": [
-        "${package.dir}/sass/etc/all.scss"
+        "${package.dir}/sass/${theme.name}/etc/all.scss"
       ],
       "var": [
-        "${package.dir}/sass/var/"
+        "${package.dir}/sass/${theme.name}/var/"
       ],
       "src": [
-        "${package.dir}/sass/src/"
+        "${package.dir}/sass/${theme.name}/src/"
       ]
     },
     "example": null,
