@@ -456,7 +456,10 @@ StartTest(t => {
 
                 const
                     feature = createFeature(),
-                    proxyMock = {headers: "bar"},
+                    proxyMock = {
+                        headers: "bar",
+                        getDefaultParameters: (key) => ( key === "ListMessageItem.options" ? {"foo": "bar"} : {})
+                    },
                     storeMock = {getProxy: () => proxyMock},
                     grid = getGrid();
 
@@ -479,17 +482,7 @@ StartTest(t => {
                     headers: proxyMock.headers,
                     params: {
                         attributes: "previewText",
-                        options: JSON.stringify({
-                            previewText: {
-                                plain: {
-                                    precedence: true,
-                                    length: 200
-                                },
-                                html: {
-                                    length: 200
-                                }
-                            }
-                        }),
+                        options: JSON.stringify({"foo": "bar"}),
                         target: "MessageItem",
                         ids: [1,2].join(",")
                     }

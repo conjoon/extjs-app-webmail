@@ -510,7 +510,26 @@ StartTest(t => {
 
     });
 
+    t.it("getDefaultParameters()", t => {
+        "use strict";
+        const proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
+            entityName: "MessageItem"
+        });
+
+        t.expect(proxy.getDefaultParameters("ListMessageItem.options")).toEqual({
+            previewText: {
+                plain: {
+                    precedence: true,
+                    length: 200
+                },
+                html: {
+                    length: 200
+                }
+            }
+        });
+
+        t.expect(proxy.getDefaultParameters("notthere")).toEqual({});
+    });
+
 
 });
-
-
