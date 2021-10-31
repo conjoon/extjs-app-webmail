@@ -423,8 +423,7 @@ StartTest(t => {
                 let mockRec = {
                     sets: [],
                     commits: 0,
-                    set: function (field, value) {this.sets.push([field, value]);},
-                    commit: function () {this.commits++;}
+                    set: function (field, value) {this.sets.push([field, value]);}
                 };
                 let getRecordByCompoundKeySpy = t.spyOn(livegridMock, "getRecordByCompoundKey").and.callFake(() => mockRec);
 
@@ -444,7 +443,6 @@ StartTest(t => {
                 t.expect(getRecordByCompoundKeySpy.calls.count()).toBe(2);
 
                 t.expect(mockRec.sets).toEqual([["previewText", 1], ["previewText", 2]]);
-                t.expect(mockRec.commits).toBe(2);
 
                 t.expect(feature.pendingLazies["foo"]).toEqual(["100", "1", "3"]);
 
