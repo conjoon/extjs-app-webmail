@@ -126,8 +126,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
 
             return {
                 rowBody:
-                          "<div class=\"head" + (!record.get("seen") ? " unread" : "")+"\">" +
-                          "<div class=\"subject"+ (!record.get("seen") ? " unread" : "")+"\">" +
+                          "<div class=\"head" + (!record.get("seen") ? " unread" : "") +
+                                                (record.get("recent") ? " recent" : "")+"\">" +
+                          "<div class=\"subject"+ (!record.get("seen") ? " seen" : "") +
+                                                  (record.get("recent") ? " recent" : "")+"\">" +
                              (record.get("answered") ? "<span class=\"fa fa-mail-reply\"></span>" : "")+
                              (record.get("flagged") ? "<span class=\"fa fa-flag\"></span>" : "")+
                              (record.get("draft") ? "<span class=\"draft\">[Draft]</span>" : "") +
@@ -175,9 +177,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     viewConfig: {
         markDirty: false,
         getRowClass: function (record, rowIndex, rowParams, store){
-            let cls = record.get("seen")
-                ? ""
-                : "boldFont";
+            let cls = record.get("recent") ? "recent" : "";
+            cls  += record.get("seen") ? "" : " boldFont";
 
             if (record.get("cn_deleted")) {
                 cls += " cn-deleted";

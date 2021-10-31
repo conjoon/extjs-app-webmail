@@ -400,21 +400,33 @@ StartTest(async t => {
 
                     messageItem.set("seen", true);
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
+
+                    messageItem.set("recent", true);
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
                     messageItem.set("seen", false);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
+                    messageItem.set("recent", false);
+
                     messageItem.set("cn_deleted", true);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
                     messageItem.set("cn_moved", true);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
@@ -422,6 +434,7 @@ StartTest(async t => {
 
                     messageItem.set("cn_moved", true);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).toContain("cn-moved");
 
