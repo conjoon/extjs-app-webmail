@@ -34,10 +34,18 @@
 Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
     requires: [
+        // @define
+        "l8",
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.model.mail.message.MessageItem"
     ],
 
+    /**
+     * The intrerval in ms, in which a runner should be called
+     * @var {Number} interval
+     */
+    interval: 12000,
 
     /**
      * A key value pair with the key being the mail account, and
@@ -54,6 +62,21 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
     /**
      * @var {conjoon.cn_mail.data.mail.service.MailFolderHelper} mailFolderHelper
      */
+
+
+    /**
+     * Constructor.
+     *
+     * @param mailFolderTreeStore
+     *
+     * @see init
+     */
+    constructor (mailFolderTreeStore) {
+        if (mailFolderTreeStore) {
+            this.init(mailFolderTreeStore);
+        }
+    },
+
 
     /**
      * Inits this MailboxRunner by registering itself to the load-event of the treeStore.
@@ -95,9 +118,10 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * Only the node with the type INBOX is considered as mailbox for which a subscription
      * is created.
      *
-     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     * @param {String|Ext.data.TreeModel} mailAccount
      *
-     * @return {Ext.data.TreeModel} the node for which a subscription was created.
+     * @return {Object} the subscription object created
+     * @return {Object.folder} the folder that was subscripbed to
      *
      * throws if a subscription for the mailAccount already exists,
      * no ACCOUNT-node was passed to the method, the node has no child nodes
@@ -106,16 +130,10 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
     createSubscription  (mailAccount) {
         "use strict";
 
-        const
-            me = this,
-            mailAccountId = mailAccount.get("id");
+        const me = this;
 
-        if (!me.subscriptions) {
-            me.subscriptions = {};
-        }
-
-        if (me.subscriptions[mailAccountId]) {
-            throw new Error(`subscription for ${mailAccountId} already exists`);
+        if (me.getSubscription(mailAccount)) {
+            throw new Error(`subscription for ${me.getSubscriptionId(mailAccount)} already exists`);
         }
 
         const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
@@ -134,37 +152,196 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             throw new Error("no INBOX node found for creating a subscription");
         }
 
-        me.subscriptions[mailAccountId] = inboxNode;
 
-        return inboxNode;
+        const sub = me.addSubscription(mailAccount, {folder: inboxNode});
+        me.start(mailAccount);
+        return sub;
     },
 
+
     /**
+     * Sends a request for latest messages, i.e. messages flagged as "recent",
+     * or, if available, > than a given uidNext that was recently set
+     * for the folder.
      *
-     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     * @param {String} mailAccountId
+     * @param {String} mailFolderId
+     * @param {String} uidNext
+     *
+     * @private
+     */
+    visitSubscription (mailAccountId, mailFolderId, uidNext) {
+        "use strict";
+
+        const
+            proxy = conjoon.cn_mail.model.mail.message.MessageItem.getProxy(),
+            keyFilter = [{
+                property: "mailAccountId",
+                value: mailAccountId
+            }, {
+                property: "mailFolderId",
+                value: mailFolderId
+            }],
+            latestFilter = [{
+                property: "recent",
+                value: true
+            }];
+
+        if (uidNext) {
+            latestFilter.push({
+                property: "uidNext",
+                value: uidNext,
+                operator: ">"
+            });
+        }
+
+        const url = proxy.assembleUrl(Ext.create("Ext.data.Request", {
+            action: "read",
+            params: {
+                filter: JSON.stringify(keyFilter)
+            }
+        }));
+
+        Ext.Ajax.request({
+            method: "get",
+            url,
+            headers: proxy.headers,
+            params: {
+                filter: JSON.stringify(latestFilter),
+                options: JSON.stringify(proxy.getDefaultParameters("ListMessageItem.options")),
+                target: "MessageItem"
+            }
+        });
+
+    },
+
+
+    /**
+     * Spawns and starts the runner for the specified mail account.
+     *
+     * @param {String|Ext.data.TreeModel} mailAccount The
+     * node of the mail account for which the subscription should start, or  the id of it.
+     *
+     * @return {Boolean} false if the subscription does not exist, otherwise
+     * the spawned subscription runner, even if it already existed
      */
     start (mailAccount) {
         "use strict";
+
+        const
+            me = this,
+            sub = me.getSubscription(mailAccount);
+
+        if (!sub) {
+            return false;
+        }
+
+        if (!sub.extjsTask) {
+            sub.extjsTask = Ext.TaskManager.start({
+                run: (folder) => me.visitSubscription(
+                    folder.get("mailAccountId"),
+                    folder.get("id"),
+                    folder.get("uidNext")
+                ),
+                scope: me,
+                // pass folder as reference to make sure
+                // changes to any of it (UIDNEXT, mailFolderId etc)
+                // can be taken into account
+                args: [sub.folder],
+                interval: me.interval
+            });
+        }
+
+        return sub;
     },
 
 
     /**
+     * Stops the runner for the specified subscription and removes
+     * the subscription completely.
      *
-     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     * @param {String|Ext.data.TreeModel} mailAccount
+     *
+     * @return {Boolean|Object} false if thge subscription was not found,
+     * otherwise the removed subscription.
      */
     stop (mailAccount) {
         "use strict";
+
+        const
+            me = this,
+            sub = me.getSubscription(mailAccount);
+
+        if (!sub) {
+            return false;
+        }
+        if (sub.extjsTask) {
+            Ext.TaskManager.stop(sub.extjsTask, true);
+            delete sub.extjsTask;
+        }
+        delete me.subscriptions[me.getSubscriptionId(mailAccount)];
+        return sub;
     },
 
 
     /**
+     * Pauses a runner for the subscriptions of the mailAccount.
      *
-     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     * @param {String|Ext.data.TreeModel} mailAccount
+     *
+     * @return {Boolean|Object}  Returns false if no subscription
+     * was available to be paused, or if the runner was not started yet,
+     * otherwise  the paused subscription object.
      */
     pause (mailAccount) {
         "use strict";
+
+        const
+            me = this,
+            sub = me.getSubscription(mailAccount);
+
+        if (!sub || !sub.extjsTask) {
+            return false;
+        }
+
+        if (sub.extjsTask) {
+            Ext.TaskManager.stop(sub.extjsTask, false);
+        }
+
+        return sub;
     },
 
+
+    /**
+     * Resumes a paused runner.
+     *
+     * @param {String|Ext.data.TreeModel} mailAccount
+     *
+     * @return {Boolean|Object} Returns false if no subscription
+     * was available to be resumed,  otherwise the resumed subscription object.
+     */
+    resume (mailAccount) {
+        "use strict";
+
+        const
+            me = this,
+            sub = me.getSubscription(mailAccount);
+
+        if (!sub || !sub.extjsTask) {
+            return false;
+        }
+
+        if (sub.extjsTask && sub.extjsTask.stopped) {
+            Ext.TaskManager.start(sub.extjsTask, false);
+        }
+
+        return sub;
+    },
+
+
+    // +------------------------------
+    // | Helper
+    // +------------------------------
 
     /**
      * Callback for the "load"-event of the mailFolderTreeStore this runner was
@@ -202,6 +379,77 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
 
     /**
+     * @private
+     */
+    initSubscriptions () {
+        "use strict";
+        const me = this;
+
+        if (!me.subscriptions) {
+            me.subscriptions = {};
+        }
+    },
+
+
+    /**
+     * @param {String|Ext.data.TreeModel}
+     *
+     * @private
+     */
+    getSubscription (mailAccount) {
+        "use strict";
+        const me = this;
+
+        me.initSubscriptions();
+
+        const id = me.getSubscriptionId(mailAccount);
+
+        return me.subscriptions[id];
+    },
+
+
+    /**
+     * @param {String|Ext.data.TreeModel}
+     * @param {Object}
+     *
+     * @private
+     */
+    addSubscription (mailAccount, subscription) {
+        "use strict";
+        const me = this;
+
+        me.initSubscriptions();
+
+        const id = me.getSubscriptionId(mailAccount);
+
+        me.subscriptions[id] = subscription;
+
+        return subscription;
+    },
+
+
+    /**
+     *
+     * @param {String|Ext.data.TreeModel}
+     *
+     * @private
+     */
+    getSubscriptionId (mailAccount) {
+        "use strict";
+
+        if (l8.isObject(mailAccount) && l8.isFunction(mailAccount.get)) {
+            return mailAccount.get("id");
+        }
+
+        if (!l8.isString(mailAccount)) {
+            throw new Error("Unexpected type for \"mailAccount\" submitted");
+        }
+
+        return mailAccount;
+    },
+
+
+    /**
      * @inheritdoc
      */
     destroy () {
@@ -209,6 +457,14 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         if (me.mailFolderTreeStore) {
             me.mailFolderTreeStore.un("load", me.onMailFolderTreeStoreLoad, me);
         }
+
+        if (me.subscriptions) {
+            Object.keys(me.subscriptions).forEach(mailAccount => me.stop(mailAccount));
+        }
+
+        delete me.subscriptions;
+
         me.callParent(arguments);
     }
+
 });

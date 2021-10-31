@@ -915,8 +915,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             me = this,
             treeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
-        me.mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner");
-        me.mailboxRunner.init(treeStore);
+        me.mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", treeStore);
         treeStore.load();
 
         return {
