@@ -31,7 +31,8 @@
  *
  * A MailboxRunner will fire the global event "conjoon.cn_mail.event.NewMessagesAvailable"
  * along with the mailFolder for which the MessageItems are available, which will
- * be available as the second argument.
+ * be available as the second argument. The MailboxRunner will guarantee to not include any
+ * messages for which the event was already fired in a subsequent event.
  *
  */
 Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
@@ -41,7 +42,8 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         "l8",
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
-        "conjoon.cn_mail.model.mail.message.MessageItem"
+        "conjoon.cn_mail.model.mail.message.MessageItem",
+        "conjoon.cn_mail.data.mail.service.MailboxService"
     ],
 
     /**
@@ -208,17 +210,17 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             }
         }));
 
+        const parameters = proxy.getDefaultParameters("ListMessageItem");
+
         Ext.Ajax.request({
             method: "get",
             // required by the custom Reader used by teh messageEntityProxy
             action: "read",
             url,
             headers: proxy.headers,
-            params: {
-                filter: JSON.stringify(latestFilter),
-                options: JSON.stringify(proxy.getDefaultParameters("ListMessageItem.options")),
-                target: "MessageItem"
-            }
+            params: Object.assign(parameters, {
+                filter: JSON.stringify(latestFilter)
+            })
         }).then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
 
     },
@@ -493,12 +495,27 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         const resultSet = reader.read(response);
 
         if (resultSet.getRecords().length) {
-            Ext.fireEvent(
-                "conjoon.cn_mail.event.NewMessagesAvailable",
-                mailFolder,
-                resultSet.getRecords()
-            );
-            return resultSet.getRecords();
+            const recentMessageItemKeys = conjoon.cn_mail.data.mail.service.MailboxService.recentMessageItemKeys;
+
+            const itemBag = resultSet.getRecords().filter((item) => {
+                const key = item.getCompoundKey().toString();
+                if (!recentMessageItemKeys.has(key)) {
+                    recentMessageItemKeys.add(key);
+                    item.set("recent", true, {dirty: false});
+                    return true;
+                }
+                return false;
+            });
+
+            if (itemBag.length) {
+                Ext.fireEvent(
+                    "conjoon.cn_mail.event.NewMessagesAvailable",
+                    mailFolder,
+                    itemBag
+                );
+                return itemBag;
+            }
+
         }
 
         return false;
