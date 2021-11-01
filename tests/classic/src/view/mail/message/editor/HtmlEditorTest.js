@@ -103,6 +103,9 @@ StartTest(async t => {
 
             await view.initFrameDoc();
             t.expect(view.editorHtmlTemplateTxt).toBeTruthy();
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                // intentionally left empty
+            });
         });
 
 
@@ -110,11 +113,14 @@ StartTest(async t => {
             view = Ext.create(
                 "conjoon.cn_mail.view.mail.message.editor.HtmlEditor", viewConfig);
 
+
             let res = await view.loadMarkup();
             t.expect(res).toBeDefined();
             t.expect(t.TPL_SPY.calls.mostRecent().args[0].theme).toBe(coon.core.ThemeManager.getTheme());
 
-
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                // intentionally left empty
+            });
         });
 
     });});
