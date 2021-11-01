@@ -92,6 +92,18 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
     ],
 
 
+    statics: {
+
+        /**
+         * A static set to keep track of all recent message item keys that have been processed
+         * during the current session of the webmail client.
+         * Recent messages are messages that were either flagged as "RECENT" by the server or by the client.
+         *
+         * @type {Set} recentMessageItems
+         */
+        recentMessageItemKeys: new Set()
+    },
+
     /**
      * @cfg {conjoon.cn_mail.data.mail.service.MailFolderHelper} mailFolderHelper
      * @private

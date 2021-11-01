@@ -93,6 +93,13 @@ StartTest(async t => {
         });
 
 
+        t.it("statics", t => {
+            t.requireOk("conjoon.cn_mail.data.mail.service.MailboxService", () => {
+                t.isInstanceOf(conjoon.cn_mail.data.mail.service.MailboxService.recentMessageItemKeys, "Set");
+            });
+        });
+
+
         t.it("constructor()", t => {
             let exc,
                 service;
