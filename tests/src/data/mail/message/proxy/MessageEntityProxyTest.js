@@ -516,7 +516,7 @@ StartTest(t => {
             entityName: "MessageItem"
         });
 
-        t.expect(proxy.getDefaultParameters("ListMessageItem.options")).toEqual({
+        t.expect(proxy.getDefaultParameters("ListMessageItem.options")).toEqual(JSON.stringify({
             previewText: {
                 plain: {
                     precedence: true,
@@ -526,7 +526,13 @@ StartTest(t => {
                     length: 200
                 }
             }
-        });
+        }));
+
+        t.expect(proxy.getDefaultParameters("ListMessageItem.limit")).toBe(-1);
+        t.expect(proxy.getDefaultParameters("ListMessageItem.target")).toBe("MessageItem");
+        t.expect(Object.keys(proxy.getDefaultParameters("ListMessageItem"))).toEqual([
+            "target", "options", "limit"
+        ]);
 
         t.expect(proxy.getDefaultParameters("notthere")).toEqual({});
     });

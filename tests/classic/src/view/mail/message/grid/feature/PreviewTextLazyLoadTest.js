@@ -480,7 +480,7 @@ StartTest(t => {
                     headers: proxyMock.headers,
                     params: {
                         attributes: "previewText",
-                        options: JSON.stringify({"foo": "bar"}),
+                        options: {"foo": "bar"},
                         target: "MessageItem",
                         ids: [1,2].join(",")
                     }

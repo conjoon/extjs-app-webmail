@@ -421,7 +421,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             headers: proxy.headers,
             params: {
                 attributes: "previewText",
-                options: JSON.stringify(proxy.getDefaultParameters("ListMessageItem.options")),
+                options: proxy.getDefaultParameters("ListMessageItem.options"),
                 target: "MessageItem",
                 ids: idsToLoad.join(",")
             }
