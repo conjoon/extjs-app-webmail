@@ -43,6 +43,12 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
         "conjoon.cn_mail.model.mail.message.MessageDraft"
     ],
 
+    listen: {
+        global: {
+            "conjoon.cn_mail.event.NewMessagesAvailable": "onNewMessagesAvailable"
+        }
+    },
+
     control: {
         "cn_mail-mailmessagereadermessageview": {
             "cn_mail-mailmessageitemread": "onMessageItemRead"
@@ -81,6 +87,41 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
      * @private
      */
     mailFolderTree: null,
+
+
+    /**
+     * Callback for the global "conjoon.cn_mail.event.NewMessagesAvailable" event
+     * if new messages are available.
+     * If the selected mail folder is the source for the event, records will be
+     * added to the grid if they are not already part of it.
+     *
+     * @param {conjoon.cn_mail.model.mail.folder.MailFolder} mailFolder
+     * @param {Array<conjoon.cn_mail.model.mail.message.MessageItem>} messageItems
+     *
+     * @return {Boolean} false if the selected mail folder was not the folder for
+     * which the event was triggered
+     */
+    onNewMessagesAvailable (mailFolder, messageItems) {
+
+        const
+            me = this,
+            livegrid = me.getLivegrid();
+
+        if (me.getSelectedMailFolder() !== mailFolder) {
+            return false;
+        }
+
+        messageItems.forEach(item => {
+            if (livegrid.getRecordByCompoundKey(item.getCompoundKey())) {
+                return;
+            }
+            livegrid.add(item);
+            item.join(me.getMessageGrid().getStore());
+        });
+
+        return true;
+    },
+
 
     /**
      * Delegates to the mailmessagegrid's #updateRowFlyMenu method.

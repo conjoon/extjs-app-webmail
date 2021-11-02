@@ -210,6 +210,62 @@ StartTest(async t => {
             });
 
 
+            t.it("onNewMessagesAvailable()", t => {
+                let viewController = Ext.create(
+                    "conjoon.cn_mail.view.mail.inbox.InboxViewController"
+                );
+
+                t.expect(viewController.getListen().global["conjoon.cn_mail.event.NewMessagesAvailable"])
+                    .toBe("onNewMessagesAvailable");
+
+                let selectedMailFolder = {},
+                    recordFound = false;
+
+                const
+                    storeMock = {},
+                    livegridMock = {
+                        getRecordByCompoundKey: function () {
+                            return recordFound;
+                        },
+                        add: function () {
+
+                        }
+                    },
+                    recordMock = {
+                        join: function () {},
+                        getCompoundKey: function () {}
+                    },
+                    newMessages = [recordMock],
+                    livegridAddSpy = t.spyOn(livegridMock, "add"),
+                    joinSpy = t.spyOn(recordMock, "join");
+
+                viewController.getSelectedMailFolder = () => selectedMailFolder;
+                viewController.getMessageGrid = () => ({
+                    getStore: () => storeMock
+                });
+                viewController.getLivegrid = () => livegridMock;
+
+                t.expect(viewController.onNewMessagesAvailable({}, newMessages)).toBe(false);
+                recordFound = true;
+                t.expect(viewController.onNewMessagesAvailable(selectedMailFolder, newMessages)).toBe(true);
+                t.expect(livegridAddSpy.calls.count()).toBe(0);
+                t.expect(joinSpy.calls.count()).toBe(0);
+
+                recordFound = false;
+                t.expect(viewController.onNewMessagesAvailable(selectedMailFolder, newMessages)).toBe(true);
+                t.expect(livegridAddSpy.calls.count()).toBe(1);
+                t.expect(joinSpy.calls.count()).toBe(1);
+                t.expect(livegridAddSpy.calls.all()[0].args[0]).toBe(recordMock);
+                t.expect(joinSpy.calls.all()[0].args[0]).toBe(storeMock);
+
+                joinSpy.remove();
+                livegridAddSpy.remove();
+
+                viewController.destroy();
+                viewController = null;
+            });
+
+
             t.it("onMailFolderTreeSelect", t => {
 
                 const viewController = Ext.create(
