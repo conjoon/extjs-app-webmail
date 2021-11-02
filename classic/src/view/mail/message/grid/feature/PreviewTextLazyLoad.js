@@ -287,7 +287,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
                     pageMap
                 );
 
-                if (rec.get("previewText") === undefined) {
+                if (rec && rec.get("previewText") === undefined) {
                     let ck = rec.getCompoundKey().toArray();
                     if (!groups[ck[0]]) {
                         groups[ck[0]] = {};

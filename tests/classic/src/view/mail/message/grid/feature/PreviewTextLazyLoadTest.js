@@ -362,19 +362,30 @@ StartTest(t => {
 
                 let indexCount = 0;
 
+                let noRecord = true;
+
                 const
                     feature = createFeature(),
                     browse = [[3, 4, 21], [4, 0, 21]],
-                    getRecordAtSpy = t.spyOn(coon.core.data.pageMap.PageMapUtil, "getRecordAt").and.callFake(() => ({
-                        get: () => indexCount++ % 2 === 0 ? undefined : "foo",
-                        getCompoundKey: () => ({toArray: () => ["account", "folder", indexCount]})
-                    })),
+                    getRecordAtSpy = t.spyOn(coon.core.data.pageMap.PageMapUtil, "getRecordAt").and.callFake(() => {
+                        if (noRecord) {
+                            return;
+                        }
+                        return {
+                            get: () => indexCount++ % 2 === 0 ? undefined : "foo",
+                            getCompoundKey: () => ({toArray: () => ["account", "folder", indexCount]})
+                        };
+                    }),
                     createSpy = t.spyOn(coon.core.data.pageMap.RecordPosition, "create").and.callFake(() => ({}));
 
+                noRecord = true;
+                feature.getUrlGroups(browse, {});
+
+                noRecord = false;
                 const groups = feature.getUrlGroups(browse, {});
 
-                t.expect(getRecordAtSpy.calls.count()).toBe(40);
-                t.expect(createSpy.calls.count()).toBe(40);
+                t.expect(getRecordAtSpy.calls.count()).toBe(80);
+                t.expect(createSpy.calls.count()).toBe(80);
 
                 t.expect(groups.account.folder.length).toBe(20);
 
