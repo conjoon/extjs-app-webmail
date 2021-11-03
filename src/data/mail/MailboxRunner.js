@@ -118,7 +118,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
 
     /**
-     * Creates subscribtions for the mailboxes from the root mail account node
+     * Creates subscriptions for the mailboxes from the root mail account node
      * that was passed.
      * Only the node with the type INBOX is considered as mailbox for which a subscription
      * is created.
@@ -126,7 +126,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * @param {String|Ext.data.TreeModel} mailAccount
      *
      * @return {Boolean|Object} the subscription object created, or false if the subscription already exists
-     * @return {Object.folder} the folder that was subscripbed to
+     * @return {Object.folder} the folder that was subscribed to
      *
      * throws if a subscription for the mailAccount already exists,
      * no ACCOUNT-node was passed to the method, the node has no child nodes
@@ -399,7 +399,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
 
     /**
-     * @param {String|Ext.data.TreeModel}
+     * @param {String|Ext.data.TreeModel} mailAccount
      *
      * @private
      */
