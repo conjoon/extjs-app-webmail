@@ -38,7 +38,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         "coon.core.ConfigManager",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.service.MailboxService"
     ],
 
     alias: "controller.cn_mail-mailmessageeditorviewcontroller",
@@ -676,15 +677,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         getMailboxService: function () {
 
-            const me = this,
-                vm = me.getView().getViewModel();
+            const me = this;
 
             if (!me.mailboxService) {
-                me.mailboxService = Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
-                    mailFolderHelper: Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                        store: vm.get("cn_mail_mailfoldertreestore")
-                    })
-                });
+                me.mailboxService = conjoon.cn_mail.MailboxService.getInstance();
             }
 
             return me.mailboxService;

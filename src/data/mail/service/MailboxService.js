@@ -85,10 +85,12 @@
  */
 Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
+    alternateClassName: ["conjoon.cn_mail.MailboxService"],
 
     requires: [
         "conjoon.cn_mail.model.mail.message.AbstractMessageItem",
-        "conjoon.cn_mail.data.mail.service.mailbox.Operation"
+        "conjoon.cn_mail.data.mail.service.mailbox.Operation",
+        "conjoon.cn_mail.data.mail.service.MailFolderHelper"
     ],
 
 
@@ -101,7 +103,27 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
          *
          * @type {Set} recentMessageItems
          */
-        recentMessageItemKeys: new Set()
+        recentMessageItemKeys: new Set(),
+
+
+        /**
+         * Returns a singleton instance for this helper.
+         *
+         * @returns {conjoon.cn_mail.data.mail.service.MailFolderHelper}
+         */
+        getInstance () {
+
+            let inst = this.__inst;
+            if (!inst) {
+                inst = Ext.create(this, {
+                    mailFolderHelper: conjoon.cn_mail.MailFolderHelper.getInstance()
+                });
+                this.__inst = inst;
+            }
+
+            return inst;
+        }
+
     },
 
     /**

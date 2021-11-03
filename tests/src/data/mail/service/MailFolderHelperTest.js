@@ -63,6 +63,14 @@ StartTest(async t => {
             t.isInstanceOf(helper, "conjoon.cn_mail.data.mail.service.MailFolderHelper");
             t.expect(helper.getStore()).toBeDefined();
             t.isInstanceOf(helper.getStore(), "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore");
+
+            t.isInstanceOf(conjoon.cn_mail.MailFolderHelper.getInstance(), "conjoon.cn_mail.data.mail.service.MailFolderHelper");
+            t.expect(conjoon.cn_mail.MailFolderHelper.getInstance().getStore()).toBe(
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+            );
+            t.expect(conjoon.cn_mail.MailFolderHelper.getInstance()).toBe(
+                conjoon.cn_mail.MailFolderHelper.getInstance()
+            );
         });
 
 

@@ -319,11 +319,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
         const me = this;
 
         if (!me.mailboxService) {
-            me.mailboxService = Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
-                mailFolderHelper: Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                    store: me.getMailFolderTree().getStore()
-                })
-            });
+            me.mailboxService = conjoon.cn_mail.MailboxService.getInstance();
         }
 
         return me.mailboxService;

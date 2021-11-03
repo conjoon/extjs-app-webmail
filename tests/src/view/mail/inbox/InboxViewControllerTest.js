@@ -36,15 +36,15 @@ StartTest(async t => {
         const
             createPanelWithViewModel = function () {
 
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+
                 return Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", {
 
                     viewModel: {
                         type: "cn_mail-mailinboxviewmodel",
                         stores: {
-                            "cn_mail_mailfoldertreestore": {
-                                type: "cn_mail-mailfoldertreestore",
-                                autoLoad: true
-                            }
+                            "cn_mail_mailfoldertreestore":
+                                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
                         }
                     },
 
@@ -979,16 +979,11 @@ StartTest(async t => {
 
                 panel = createPanelWithViewModel();
 
-                const viewController = panel.getController();
+                const
+                    viewController = panel.getController(),
+                    moveMessageSpy = t.spyOn(viewController.getMailboxService(), "moveMessage").and.callFake(() => {});
 
                 t.waitForMs(t.parent.TIMEOUT, () => {
-
-                    let oldM = conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage,
-                        CALLED = 0;
-
-                    conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = function () {
-                        CALLED++;
-                    };
 
                     let md = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                         mailAccountId: "foo",
@@ -999,9 +994,9 @@ StartTest(async t => {
                     md.setMessageBody(Ext.create("conjoon.cn_mail.model.mail.message.MessageBody"));
 
                     viewController.updateViewForSentDraft(md);
-                    t.expect(CALLED).toBe(1);
+                    t.expect(moveMessageSpy.calls.count()).toBe(1);
 
-                    conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = oldM;
+                    moveMessageSpy.remove();
                 });
             });
 
