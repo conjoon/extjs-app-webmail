@@ -64,8 +64,19 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
         "conjoon.cn_mail.data.mail.BaseSchema",
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
-        "conjoon.cn_mail.data.mail.MailboxRunner"
+        "conjoon.cn_mail.data.mail.MailboxRunner",
+        "coon.comp.window.Toast",
+        "coon.core.Environment",
+        "conjoon.cn_mail.MailFolderHelper"
     ],
+
+
+    listen: {
+        global: {
+            "conjoon.cn_mail.event.NewMessagesAvailable": "onNewMessagesAvailable"
+        }
+    },
+
 
     routes: {
 
@@ -282,6 +293,51 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(l8.unify(baseAddress, "/", "://"));
     },
+
+
+    /**
+     * Callback for the global conjoon.cn_mail.event.NewMessagesAvailable event.
+     *
+     * @param {} mailFolder
+     * @param messages
+     */
+    onNewMessagesAvailable (mailFolder, messages) {
+
+        const
+            Environment = coon.core.Environment,
+            len = messages.length,
+            /**
+             * @i18n
+             */
+            message =
+                `${conjoon.cn_mail.MailFolderHelper.getInstance()
+                    .getAccountNode(mailFolder.get("mailAccountId"))
+                    .get("name")} has ${len} new message${len > 1 ? "s" : ""}`;
+
+        coon.Toast.info(message);
+
+        if (Notification.permission !== "denied") {
+            new Notification(`${this.getApplication().getName()} - new email`, {
+                body: message,
+                icon: Environment.getPathForResource("resources/images/notification/newmail.png", "extjs-app-webmail")
+            });
+        }
+
+        const
+            snd = Environment.getPathForResource(
+                "resources/sounds/notification/newmail.wav", "extjs-app-webmail"),
+            audio = new Audio(snd);
+
+        audio.addEventListener("loadeddata", () => {
+            //@see https://developer.chrome.com/blog/autoplay/
+            const promise = audio.play();
+            if (promise !== undefined) {
+                promise.then(() => {}).catch(err => {});
+            }
+        });
+
+    },
+
 
     /**
      * Callback for the MailDesktopView's tabchange event. Makes sure the
