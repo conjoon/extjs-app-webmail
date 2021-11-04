@@ -114,10 +114,13 @@ StartTest(t => {
 
                 packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
-                let notice = 0, audio = 0;
+                let notice = 0, audio = 0, close = 0;
                 window.Notification = class {
                     constructor () {
                         notice++;
+                    }
+                    close () {
+                        close++;
                     }
                 };
                 window.Audio = class {
@@ -135,29 +138,45 @@ StartTest(t => {
                 window.Notification.permission = undefined;
 
                 const
+                    url = {},
+                    focusSpy = t.spyOn(window, "focus").and.callFake(() => ""),
                     envSpy = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake(() => ""),
                     accountNodeSpy = t.spyOn(conjoon.cn_mail.MailFolderHelper.getInstance(), "getAccountNode").and.callFake(
                         () => ({get: () => "conjoon"})
                     ),
                     toastSpy = t.spyOn(coon.Toast, "info").and.callFake(() => {}),
-                    mailFolder = {get: () => "inbox"};
+                    mailFolder = {get: () => "inbox", toUrl: () => url},
+                    appMock = {getName: () => "conjoon"};
 
-                packageCtrl.getApplication = () => ({getName: () => "conjoon"});
-                packageCtrl.onNewMessagesAvailable(mailFolder, [1, 2, 3]);
+                packageCtrl.getApplication = () => appMock;
+
+                const redirectToSpy = t.spyOn(packageCtrl, "redirectTo").and.callFake(() => {});
+
+                const notification = packageCtrl.onNewMessagesAvailable(mailFolder, [1, 2, 3]);
+                t.isInstanceOf(notification, window.Notification);
+                notification.onclick();
 
                 t.expect(audio).toBe(1);
+                t.expect(close).toBe(1);
                 t.expect(notice).toBe(1);
                 t.expect(toastSpy.calls.count()).toBe(1);
+                t.expect(focusSpy.calls.count()).toBe(1);
+                t.expect(redirectToSpy.calls.count()).toBe(1);
+                t.expect(redirectToSpy.calls.all()[0].args[0]).toBe(url);
+
 
                 window.Notification.permission = "denied";
                 packageCtrl.onNewMessagesAvailable(mailFolder, [1, 2, 3]);
                 t.expect(audio).toBe(2);
+                t.expect(close).toBe(1);
                 t.expect(notice).toBe(1);
                 t.expect(toastSpy.calls.count()).toBe(2);
 
                 toastSpy.remove();
+                redirectToSpy.remove();
                 accountNodeSpy.remove();
                 envSpy.remove();
+                focusSpy.remove();
             });
 
 

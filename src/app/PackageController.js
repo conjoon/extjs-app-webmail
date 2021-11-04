@@ -67,7 +67,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.data.mail.MailboxRunner",
         "coon.comp.window.Toast",
         "coon.core.Environment",
-        "conjoon.cn_mail.MailFolderHelper"
+        "conjoon.cn_mail.data.mail.service.MailFolderHelper"
     ],
 
 
@@ -300,10 +300,14 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {} mailFolder
      * @param messages
+     *
+     * @return {null|Notification} The notification that was created. Returns null if the
+     * permissions for Notifications were not granted yet.
      */
     onNewMessagesAvailable (mailFolder, messages) {
 
         const
+            me = this,
             Environment = coon.core.Environment,
             len = messages.length,
             /**
@@ -316,11 +320,18 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         coon.Toast.info(message);
 
+
+        let notification;
         if (Notification.permission !== "denied") {
-            new Notification(`${this.getApplication().getName()} - new email`, {
+            notification = new Notification(`${this.getApplication().getName()} - new email`, {
                 body: message,
                 icon: Environment.getPathForResource("resources/images/notification/newmail.png", "extjs-app-webmail")
             });
+            notification.onclick = function () {
+                window.focus();
+                me.redirectTo(mailFolder.toUrl());
+                this.close();
+            };
         }
 
         const
@@ -336,6 +347,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             }
         });
 
+        return notification;
     },
 
 
