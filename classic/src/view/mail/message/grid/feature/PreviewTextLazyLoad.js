@@ -241,8 +241,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         Object.keys(urlGroups).forEach(mailAccountId => {
             Object.keys(urlGroups[mailAccountId]).forEach(mailFolderId => {
                 requestTemplate.setParams({
-                    mailAccountId,
-                    mailFolderId
+                    mailAccountId: mailAccountId,
+                    mailFolderId: mailFolderId
                 });
                 url = proxy.assembleUrl(requestTemplate);
 
@@ -417,7 +417,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         Ext.Ajax.request({
             method: "get",
-            url,
+            url: url,
             headers: proxy.headers,
             params: {
                 attributes: "previewText",
