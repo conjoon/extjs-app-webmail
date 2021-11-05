@@ -46,6 +46,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     alias: "widget.cn_mail-mailmessagegrid",
 
     /**
+     * Gets fired with initComponent to signal that the component is about to get initialized.
+     * @event cn_init
+     * @param {conjoon.cn_mail.view.mail.message.MessageGrid} this
+     */
+
+    /**
      * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
      * beforeload-event fires. This relay is needed due to the late binding behavior
      * of the two-way-databinding. This event is not canceable.
@@ -98,9 +104,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     features: [{
         ftype: "cn_mail-mailmessagegridfeature-livegrid",
         id: "cn_mail-mailMessageFeature-livegrid"
-    }, {
-        ftype: "cn_webmailplug-previewtextlazyload",
-        id: "cn_webmailplug-previewtextlazyload"
     }, {
         ftype: "cn_comp-gridfeature-rowbodyswitch",
         variableRowHeight: false,
@@ -286,6 +289,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     initComponent: function () {
 
         const me = this;
+
+        me.fireEvent("cn_init", me);
 
         // apply Renderer to draftDisplayAddress columns
         for (let i = 0, len = me.columns.length; i < len; i++) {
