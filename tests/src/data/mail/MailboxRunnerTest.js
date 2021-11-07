@@ -60,14 +60,21 @@ StartTest(async t => {
 
             t.expect(spy.calls.count()).toBe(0);
 
+            t.expect(mailboxRunner.interval).toBe(120000);
+
             spy.remove();
         });
 
 
-        t.it("constructor() - mailFolderTreeStore arg", t => {
+        t.it("constructor() - cfg", t => {
 
             let spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
-            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", MailFolderTreeStore().getInstance()),
+            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", {
+                mailFolderTreeStore: MailFolderTreeStore().getInstance(),
+                interval: 1000
+            });
+
+            t.expect(mailboxRunner.interval).toBe(1000);
 
             t.expect(spy.calls.count()).toBe(1);
             t.expect(spy.calls.mostRecent().args[0]).toBe(MailFolderTreeStore().getInstance());
