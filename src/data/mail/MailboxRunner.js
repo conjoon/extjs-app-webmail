@@ -72,11 +72,22 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
     /**
      * Constructor.
      *
-     * @param mailFolderTreeStore
+     * @param {Object} mailFolderTreeStore
      *
      * @see init
      */
-    constructor (mailFolderTreeStore) {
+    constructor (cfg) {
+
+        cfg = cfg || {};
+
+        const
+            me = this,
+            mailFolderTreeStore = cfg.mailFolderTreeStore;
+
+        delete cfg.mailFolderTreeStore;
+
+        Object.assign(me, cfg);
+
         if (mailFolderTreeStore) {
             this.init(mailFolderTreeStore);
         }
