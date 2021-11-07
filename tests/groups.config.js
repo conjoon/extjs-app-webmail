@@ -28,7 +28,13 @@ export default [{
     items: [{
         group: "app",
         items: [
-            "src/app/PackageControllerTest.js"
+            "src/app/PackageControllerTest.js",
+            {
+                group: "plugin",
+                items: [
+                    "src/app/plugin/NewMessagesNotificationPluginTest.js"
+                ]
+            }
         ]
     }, {
         group: "data",
@@ -81,7 +87,7 @@ export default [{
                             "src/data/mail/message/editor/MessageDraftCopierTest.js",
                             "src/data/mail/message/editor/MessageDraftCopyRequestTest.js"
                         ]
-                    },{
+                    }, {
                         group: "proxy",
                         items: [
                             "src/data/mail/message/proxy/MessageEntityProxyTest.js",
@@ -156,7 +162,8 @@ export default [{
                         "src/model/mail/message/MessageItemTest.js",
                         "src/model/mail/message/MessageItemChildModelTest.js",
                         "src/model/mail/message/MessageDraftTest.js"
-                    ]}]
+                    ]
+                }]
         }]
     }, {
         group: "store",
@@ -239,7 +246,8 @@ export default [{
                                 "src/view/mail/message/reader/MessageViewModelTest.js"
                             ]
                         }
-                    ]}]
+                    ]
+                }]
         }]
     }]
 }, {
@@ -254,7 +262,7 @@ export default [{
                     "classic/src/view/mail/account/MailAccountViewTest.js",
                     "classic/src/view/mail/folder/MailFolderTreeTest.js"
                 ]
-            },{
+            }, {
                 group: "folder",
                 items: [
                     "classic/src/view/mail/folder/MailFolderTreeColumnTest.js",
@@ -276,21 +284,25 @@ export default [{
                             "classic/src/view/mail/message/editor/AttachmentListTest.js",
                             "classic/src/view/mail/message/editor/HtmlEditorTest.js",
                             "classic/src/view/mail/message/editor/MessageEditorTest.js"
-                        ]}, {
+                        ]
+                    }, {
                         group: "grid",
                         items: [{
                             group: "feature",
                             items: [
                                 "classic/src/view/mail/message/grid/feature/LivegridTest.js",
                                 "classic/src/view/mail/message/grid/feature/PreviewTextLazyLoadTest.js"
-                            ]}]}, {
+                            ]
+                        }]
+                    }, {
                         group: "reader",
                         items: [
                             "classic/src/view/mail/message/reader/AttachmentListTest.js",
                             "classic/src/view/mail/message/reader/MessageViewIframeTest.js",
                             "classic/src/view/mail/message/reader/MessageViewTest.js"
 
-                        ]}
+                        ]
+                    }
                 ]
             }, {
                 group: "mixin",
