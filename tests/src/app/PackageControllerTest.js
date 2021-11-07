@@ -105,78 +105,6 @@ StartTest(t => {
                 packageCtrl.init({getPackageConfig: (ctrl, path) => "host:///endpoint//"});
                 t.expect(Ext.data.schema.Schema.get("cn_mail-mailbaseschema").getUrlPrefix()).toBe("host://endpoint/");
 
-                t.expect(packageCtrl.getListen().global["conjoon.cn_mail.event.NewMessagesAvailable"]).toBe(
-                    "onNewMessagesAvailable");
-            });
-
-
-            t.it("onNewMessagesAvailable()", t => {
-
-                packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
-
-                let notice = 0, audio = 0, close = 0;
-                window.Notification = class {
-                    constructor () {
-                        notice++;
-                    }
-                    close () {
-                        close++;
-                    }
-                };
-                window.Audio = class {
-                    constructor () {
-
-                    }
-                    async play () {
-                        audio++;
-                    }
-                    addEventListener (evt, cb){
-                        cb();
-                    }
-                };
-
-                window.Notification.permission = undefined;
-
-                const
-                    url = {},
-                    focusSpy = t.spyOn(window, "focus").and.callFake(() => ""),
-                    envSpy = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake(() => ""),
-                    accountNodeSpy = t.spyOn(conjoon.cn_mail.MailFolderHelper.getInstance(), "getAccountNode").and.callFake(
-                        () => ({get: () => "conjoon"})
-                    ),
-                    toastSpy = t.spyOn(coon.Toast, "info").and.callFake(() => {}),
-                    mailFolder = {get: () => "inbox", toUrl: () => url},
-                    appMock = {getName: () => "conjoon"};
-
-                packageCtrl.getApplication = () => appMock;
-
-                const redirectToSpy = t.spyOn(packageCtrl, "redirectTo").and.callFake(() => {});
-
-                const notification = packageCtrl.onNewMessagesAvailable(mailFolder, [1, 2, 3]);
-                t.isInstanceOf(notification, window.Notification);
-                notification.onclick();
-
-                t.expect(audio).toBe(1);
-                t.expect(close).toBe(1);
-                t.expect(notice).toBe(1);
-                t.expect(toastSpy.calls.count()).toBe(1);
-                t.expect(focusSpy.calls.count()).toBe(1);
-                t.expect(redirectToSpy.calls.count()).toBe(1);
-                t.expect(redirectToSpy.calls.all()[0].args[0]).toBe(url);
-
-
-                window.Notification.permission = "denied";
-                packageCtrl.onNewMessagesAvailable(mailFolder, [1, 2, 3]);
-                t.expect(audio).toBe(2);
-                t.expect(close).toBe(1);
-                t.expect(notice).toBe(1);
-                t.expect(toastSpy.calls.count()).toBe(2);
-
-                toastSpy.remove();
-                redirectToSpy.remove();
-                accountNodeSpy.remove();
-                envSpy.remove();
-                focusSpy.remove();
             });
 
 
@@ -204,16 +132,6 @@ StartTest(t => {
                 t.expect(loadSpy.calls.count()).toBe(1);
 
                 loadSpy.remove();
-            });
-
-
-            t.it("postLaunchHook should configure MailboxRunner with MailFolderTreeStore", t => {
-
-                packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
-                packageCtrl.postLaunchHook();
-                t.isInstanceOf(packageCtrl.mailboxRunner, "conjoon.cn_mail.data.mail.MailboxRunner");
-                t.expect(packageCtrl.mailboxRunner.mailFolderTreeStore).toBe(
-                    conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance());
             });
 
 

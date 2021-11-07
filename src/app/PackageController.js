@@ -63,19 +63,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
         "conjoon.cn_mail.data.mail.BaseSchema",
-        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
-        "conjoon.cn_mail.data.mail.MailboxRunner",
-        "coon.comp.window.Toast",
-        "coon.core.Environment",
-        "conjoon.cn_mail.data.mail.service.MailFolderHelper"
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
-
-
-    listen: {
-        global: {
-            "conjoon.cn_mail.event.NewMessagesAvailable": "onNewMessagesAvailable"
-        }
-    },
 
 
     routes: {
@@ -269,10 +258,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      */
     observedMessageEditor: null,
 
-    /**
-     * @var {conjoon.cn_mail.data.mail.MailboxRunner} mailboxRunner
-     */
-
 
     /**
      * Configures the urlPrefix from the base-address found in the package-configuration.
@@ -292,62 +277,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         }
 
         Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(l8.unify(baseAddress, "/", "://"));
-    },
-
-
-    /**
-     * Callback for the global conjoon.cn_mail.event.NewMessagesAvailable event.
-     *
-     * @param {} mailFolder
-     * @param messages
-     *
-     * @return {null|Notification} The notification that was created. Returns null if the
-     * permissions for Notifications were not granted yet.
-     */
-    onNewMessagesAvailable (mailFolder, messages) {
-
-        const
-            me = this,
-            Environment = coon.core.Environment,
-            len = messages.length,
-            /**
-             * @i18n
-             */
-            message =
-                `${conjoon.cn_mail.MailFolderHelper.getInstance()
-                    .getAccountNode(mailFolder.get("mailAccountId"))
-                    .get("name")} has ${len} new message${len > 1 ? "s" : ""}`;
-
-        coon.Toast.info(message);
-
-
-        let notification;
-        if (Notification.permission !== "denied") {
-            notification = new Notification(`${this.getApplication().getName()} - new email`, {
-                body: message,
-                icon: Environment.getPathForResource("resources/images/notification/newmail.png", "extjs-app-webmail")
-            });
-            notification.onclick = function () {
-                window.focus();
-                me.redirectTo(mailFolder.toUrl());
-                this.close();
-            };
-        }
-
-        const
-            snd = Environment.getPathForResource(
-                "resources/sounds/notification/newmail.wav", "extjs-app-webmail"),
-            audio = new Audio(snd);
-
-        audio.addEventListener("loadeddata", () => {
-            //@see https://developer.chrome.com/blog/autoplay/
-            const promise = audio.play();
-            if (promise !== undefined) {
-                promise.then(() => {}).catch(err => {});
-            }
-        });
-
-        return notification;
     },
 
 
@@ -979,12 +908,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      */
     postLaunchHook: function () {
 
-        const
-            me = this,
-            treeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
-
-        me.mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", treeStore);
-        treeStore.load();
+        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
 
         return {
             navigation: [{
