@@ -106,7 +106,8 @@
         "overrides": null,
         "framework": "ext",
         "requires": [
-            "extjs-lib-comp"
+            "extjs-lib-comp",
+            "extjs-app-user"
         ]
     },
     "dependencies": {
