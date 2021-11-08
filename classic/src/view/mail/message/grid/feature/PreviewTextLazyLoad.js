@@ -381,6 +381,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         const
             me = this,
+            CompoundKey = conjoon.cn_mail.data.mail.message.CompoundKey,
             url = response.request.url,
             loadedIds = response.request.params.ids.split(","),
             livegrid = me.grid.view.getFeature("cn_mail-mailMessageFeature-livegrid");
@@ -390,11 +391,17 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         let data = JSON.parse(response.responseText);
 
         data.data.forEach(item => {
-            let rec = livegrid.getRecordByCompoundKey(conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
-                item.mailAccountId, item.mailFolderId, item.id
-            ));
 
-            rec.set("previewText", item.previewText ? item.previewText : "");
+            setTimeout(() => {
+                let rec = livegrid.getRecordByCompoundKey(CompoundKey.createFor(
+                    item.mailAccountId, item.mailFolderId, item.id
+                ));
+
+                if (rec) {
+                    rec.set("previewText", item.previewText ? item.previewText : "");
+                }
+            }, 1);
+
         });
     },
 
