@@ -416,10 +416,12 @@ StartTest(t => {
 
 
             t.it("processLoadedPreviewText()", t => {
+
                 const
                     feature = createFeature(),
                     livegridMock = {getRecordByCompoundKey: function () {}},
-                    grid = getGrid();
+                    grid = getGrid(),
+                    timeoutSpy = t.spyOn(window, "setTimeout").and.callFake((fn, timeout) => fn());
 
                 grid.view.getFeature = () => livegridMock;
 
@@ -450,6 +452,10 @@ StartTest(t => {
                     }
                 });
 
+                t.expect(timeoutSpy.calls.count()).toBe(2);
+                t.expect(l8.isFunction(timeoutSpy.calls.all()[0].args[0])).toBe(true);
+                t.expect(timeoutSpy.calls.all()[0].args[1]).toBe(1);
+
                 t.expect(compoundKeySpy.calls.count()).toBe(2);
                 t.expect(getRecordByCompoundKeySpy.calls.count()).toBe(2);
 
@@ -457,7 +463,7 @@ StartTest(t => {
 
                 t.expect(feature.pendingLazies["foo"]).toEqual(["100", "1", "3"]);
 
-                [getRecordByCompoundKeySpy, compoundKeySpy].map(spy => spy.remove());
+                [getRecordByCompoundKeySpy, compoundKeySpy, timeoutSpy].map(spy => spy.remove());
             });
 
 
