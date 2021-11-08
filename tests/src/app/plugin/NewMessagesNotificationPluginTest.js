@@ -362,7 +362,7 @@ StartTest(t => {
             messageItems = [record];
 
         conjoon.cn_mail.MailboxService.recentMessageItemKeys.add(record.getCompoundKey().toString());
-        t.expect(plugin.onMessageGridLoad(store, messageItems)).toBe(false);
+        t.expect(plugin.onMessageGridLoad(store, messageItems)).toBe(null);
 
         conjoon.cn_mail.MailboxService.recentMessageItemKeys.clear();
 
@@ -392,7 +392,7 @@ StartTest(t => {
             notificationSpy = t.spyOn(plugin, "showNotification").and.callFake(() => {}),
             updateGridSpy = t.spyOn(plugin, "updateMessageGridWithRecentMessages").and.callFake(() => {});
 
-        t.expect(plugin.onNewMessagesAvailable(mailFolder, [])).toBe(false);
+        t.expect(plugin.onNewMessagesAvailable(mailFolder, [])).toBe(null);
         t.expect(plugin.onNewMessagesAvailable(mailFolder, messageItems)).toBe(true);
 
         t.expect(textSpy.calls.mostRecent().args).toEqual([mailFolder, 1]);

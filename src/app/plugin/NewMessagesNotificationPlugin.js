@@ -123,7 +123,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
      * @param {conjoon.cn_mail.model.mail.folder.MailFolder} mailFolder
      * @param {Array<conjoon.cn_mail.model.mail.message.MessageItem>} messageItems
      *
-     * @return {Boolean} false if no notification as initiated, otherwise true
+     * @return {null|Boolean=true} true if notification process was initiated, otehrwise null
      */
     onNewMessagesAvailable (mailFolder, messageItems) {
 
@@ -132,7 +132,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
             len = messageItems.length;
 
         if (!len) {
-            return false;
+            return null;
         }
 
         const notificationTxt = me.getNotificationText(mailFolder, len);
@@ -156,8 +156,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      * @param {Array<conjoon.cn_mail.model.mail.message.MessageItem>} messageItems
      *
-     * @return {Boolean} false if no messages where available for showing a Notification,
-     * otherwise true
+     * @return {null|Boolean=true} true for notifications that were sent, otherwise null
      */
     onMessageGridLoad (store, messageItems) {
 
@@ -172,7 +171,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
             );
 
         if (!recentMessages.length) {
-            return false;
+            return null;
         }
 
         recentMessages.forEach(recentMessage => {
