@@ -279,11 +279,17 @@ export default [{
                     "classic/src/view/mail/message/AbstractAttachmentListTest.js",
                     "classic/src/view/mail/message/MessageGridTest.js", {
                         group: "editor",
-                        items: [
-                            "classic/src/view/mail/message/editor/AddressFieldTest.js",
-                            "classic/src/view/mail/message/editor/AttachmentListTest.js",
-                            "classic/src/view/mail/message/editor/HtmlEditorTest.js",
-                            "classic/src/view/mail/message/editor/MessageEditorTest.js"
+                        items: [{
+                            group: "feat",
+                            items: [{
+                                name: "conjoon/extjs-app-webmail#112",
+                                url: "classic/src/view/mail/message/editor/feat/extjs-app-webmail%23112.js"
+                            }]
+                        },
+                        "classic/src/view/mail/message/editor/AddressFieldTest.js",
+                        "classic/src/view/mail/message/editor/AttachmentListTest.js",
+                        "classic/src/view/mail/message/editor/HtmlEditorTest.js",
+                        "classic/src/view/mail/message/editor/MessageEditorTest.js"
                         ]
                     }, {
                         group: "grid",
