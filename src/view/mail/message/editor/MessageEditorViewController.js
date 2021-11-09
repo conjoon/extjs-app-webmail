@@ -61,7 +61,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             click: "onSaveButtonClick"
         },
         "cn_mail-mailmessageeditor": {
-            beforedestroy: "onMailMessageEditorBeforeDestroy",
+            "beforeclose": "onMailEditorBeforeClose",
+            "beforedestroy": "onMailMessageEditorBeforeDestroy",
             "cn_mail-mailmessagesaveoperationcomplete": "onMailMessageSaveOperationComplete",
             "cn_mail-mailmessagesaveoperationexception": "onMailMessageSaveOperationException",
             "cn_mail-mailmessagesavecomplete": "onMailMessageSaveComplete",
@@ -136,6 +137,26 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
         }
 
+    },
+
+
+    /**
+     * Callback for the "beforeclose"-event of the MessageEditor.
+     * Routes to the cn_href of the editor and calls {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showConfirmCloseDialog}
+     * afterwards.
+     *
+     * @return {Boolean=false} returns false to prevent closing the dialog
+     */
+    onMailEditorBeforeClose () {
+
+        const
+            me = this,
+            editor = me.getView();
+
+        me.redirectTo(editor.cn_href);
+        editor.showConfirmCloseDialog();
+
+        return false;
     },
 
 
