@@ -26,6 +26,16 @@
 export default [{
     group: "universal",
     items: [{
+        group: "_issues_",
+        items: [{
+            group: "refactor",
+            items: [{
+                name: "conjoon/extjs-app-webmail#167",
+                url: "src/_issues_/refactor/extjs-app-webmail%23167.js"
+            }]
+        }]
+
+    }, {
         group: "app",
         items: [
             "src/app/PackageControllerTest.js",
@@ -253,6 +263,15 @@ export default [{
 }, {
     group: "classic",
     items: [{
+        group: "_issues_",
+        items: [{
+            group: "feat",
+            items: [{
+                name: "conjoon/extjs-app-webmail#112",
+                url: "classic/_issues_/feat/extjs-app-webmail%23112.js"
+            }]
+        }]
+    }, {
         group: "view",
         items: [{
             group: "mail",
@@ -279,17 +298,11 @@ export default [{
                     "classic/src/view/mail/message/AbstractAttachmentListTest.js",
                     "classic/src/view/mail/message/MessageGridTest.js", {
                         group: "editor",
-                        items: [{
-                            group: "feat",
-                            items: [{
-                                name: "conjoon/extjs-app-webmail#112",
-                                url: "classic/src/view/mail/message/editor/feat/extjs-app-webmail%23112.js"
-                            }]
-                        },
-                        "classic/src/view/mail/message/editor/AddressFieldTest.js",
-                        "classic/src/view/mail/message/editor/AttachmentListTest.js",
-                        "classic/src/view/mail/message/editor/HtmlEditorTest.js",
-                        "classic/src/view/mail/message/editor/MessageEditorTest.js"
+                        items: [
+                            "classic/src/view/mail/message/editor/AddressFieldTest.js",
+                            "classic/src/view/mail/message/editor/AttachmentListTest.js",
+                            "classic/src/view/mail/message/editor/HtmlEditorTest.js",
+                            "classic/src/view/mail/message/editor/MessageEditorTest.js"
                         ]
                     }, {
                         group: "grid",
