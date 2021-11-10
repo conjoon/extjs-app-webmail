@@ -1133,28 +1133,24 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      */
     getMessageItemsFromOpenedViews: function (compoundKey = null, skipInbox = false) {
 
-        const me           = this,
+        const
+            me           = this,
             view         = me.getView(),
-            inboxMsgView = skipInbox !== true
-                ? view.down("cn_mail-mailinboxview")
-                    .down("cn_mail-mailmessagereadermessageview")
-                : null;
+            inboxMsgView = skipInbox !== true ?
+                view.down("cn_mail-mailinboxview").down("cn_mail-mailmessagereadermessageview") :
+                null;
 
         let collection = [],
-            add        = function (view, messageItem) {
-                collection.push({
-                    view: view,
-                    messageItem: messageItem
-                });
-            },
-            msgItem = inboxMsgView
-                ? inboxMsgView.getMessageItem()
-                : null;
+            add = (view, messageItem) => collection.push({
+                view: view,
+                messageItem: messageItem
+            }),
+            msgItem = inboxMsgView ?  inboxMsgView.getMessageItem() : null;
 
         if (inboxMsgView && msgItem) {
             if (compoundKey === null) {
                 add(inboxMsgView, msgItem);
-            } else if (msgItem.getCompoundKey().equalTo(compoundKey)) {
+            } else if (!msgItem.hasKeysModified() && msgItem.getCompoundKey().equalTo(compoundKey)) {
                 add(inboxMsgView, msgItem);
             }
         }
