@@ -711,7 +711,7 @@ StartTest(t => {
             "id": "z"
         });
 
-        t.isCalledNTimes("checkForeignKeysModified", model, 1);
+        t.isCalledNTimes("hasKeysModified", model, 1);
 
         t.isInstanceOf(model.getCompoundKey(), "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey");
     });
@@ -846,7 +846,7 @@ StartTest(t => {
     });
 
 
-    t.it("checkForeignKeysModified()", t => {
+    t.it("hasKeysModified()", t => {
 
         let exc,
             model = Ext.create("conjoon.cn_mail.model.mail.message.CompoundKeyedModel", {
@@ -856,7 +856,7 @@ StartTest(t => {
         model.set("mailFolderId", "3");
         t.expect(Object.prototype.hasOwnProperty.call(model.modified, "mailFolderId")).toBe(true);
 
-        try{model.checkForeignKeysModified();}catch(e){exc=e;}
+        try{model.hasKeysModified(true);}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toContain("can not use current information");
 
