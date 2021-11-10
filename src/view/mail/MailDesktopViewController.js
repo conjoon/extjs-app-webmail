@@ -162,7 +162,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         // run with available data
         if (treeStore.isLoaded()) {
             treeStore.getRootNode().childNodes.forEach(accountNode => {
-                me.seedFolders(accountNode.childNodes);
+                accountNode.childNodes && me.seedFolders(accountNode.childNodes);
             });
         }
     },

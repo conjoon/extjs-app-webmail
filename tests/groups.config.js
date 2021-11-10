@@ -33,6 +33,12 @@ export default [{
                 name: "conjoon/extjs-app-webmail#167",
                 url: "src/_issues_/refactor/extjs-app-webmail%23167.js"
             }]
+        }, {
+            group: "fix",
+            items: [{
+                name: "conjoon/extjs-app-webmail#157",
+                url: "src/_issues_/fix/extjs-app-webmail%23157.js"
+            }]
         }]
 
     }, {
