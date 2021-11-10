@@ -161,7 +161,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.AbstractAttachmentList", {
             return "fa-file-pdf";
 
         case "text/plain":
-            return  "fa-file-alt";
+            return "fa-file-alt";
 
         case "text/html":
         case "application/json":
@@ -170,11 +170,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.AbstractAttachmentList", {
         case "application/gzip":
         case "application/zip":
         case "application/x-rar-compressed":
+        case "application/x-zip-compressed":
             return "fa-file-archive";
 
         }
 
-        return "fa-file-o";
+        return "fa-file";
     }
 
 

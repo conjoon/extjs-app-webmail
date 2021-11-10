@@ -270,6 +270,12 @@ export default [{
                 name: "conjoon/extjs-app-webmail#112",
                 url: "classic/_issues_/feat/extjs-app-webmail%23112.js"
             }]
+        }, {
+            group: "fix",
+            items: [{
+                name: "conjoon/extjs-app-webmail#135",
+                url: "classic/_issues_/fix/extjs-app-webmail%23135.js"
+            }]
         }]
     }, {
         group: "view",
