@@ -766,7 +766,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param {Ext.Button} btn
      */
     onMessageComposeButtonClick: function (btn) {
-        this.showMailEditor(Ext.id().split("-").pop(), "compose");
+        this.showMailEditor(Date.now(), "compose");
     },
 
 
