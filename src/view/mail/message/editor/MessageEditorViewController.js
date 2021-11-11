@@ -107,7 +107,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view: view
         });
 
-        view.on("afterrender", me.onMessageEditorAfterrender, me ,{single: true});
+        view.on("afterrender", me.onMessageEditorAfterrender, me, {single: true});
 
         me.ddListener.init();
     },
@@ -143,15 +143,24 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     /**
      * Callback for the "beforeclose"-event of the MessageEditor.
      * Routes to the cn_href of the editor and calls {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showConfirmCloseDialog}
-     * afterwards.
+     * afterwards, only if the MessageDraft of the ViewModel is found to be dirty.
      *
      * @return {Boolean=false} returns false to prevent closing the dialog
+     *
+     * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel#isDraftDirty}
      */
     onMailEditorBeforeClose () {
 
         const
             me = this,
+            vm = me.getViewModel(),
             editor = me.getView();
+
+        if (!editor.getMessageDraft() ||
+            !vm.isDraftDirty()
+        ) {
+            return true;
+        }
 
         me.redirectTo(editor.cn_href);
         editor.showConfirmCloseDialog();
@@ -467,16 +476,21 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      */
-    onMailMessageSendComplete: function (editor, messagDraft) {
-        var me   = this,
+    onMailMessageSendComplete (editor, messageDraft) {
+        const
+            me   = this,
             view = me.getView();
 
         /**
          * @i18n
          */
         view.setBusy({msgAction: "Message sent successfully.", progress: 1});
-        me.deferTimers["sendcomplete"] = Ext.Function.defer(
-            view.close, 1000, view);
+
+        me.deferTimers.sendcomplete = Ext.Function.defer(
+            view.close,
+            1000,
+            view
+        );
     },
 
     /**
