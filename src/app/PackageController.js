@@ -225,9 +225,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         ref: "toggleGridListButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavToggleList"
     }, {
-        ref: "toggleMailFolderButton",
-        selector: "cn_navport-tbar > #cn_mail-nodeNavToggleFolder"
-    }, {
         ref: "switchReadingPaneButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
     }, {
@@ -454,15 +451,13 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         const me      = this,
             ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
-        let treeDisabled    = false,
-            paneDisabled    = false,
+        let paneDisabled    = false,
             toggleDisabled  = false,
             sel             = me.getMailFolderTree().getSelection(),
             type            = sel.length && sel[0].get("folderType"),
             accountSelected = type === ACCOUNT;
 
         if (sel.length === 0 || accountSelected) {
-            treeDisabled   = !accountSelected;
             paneDisabled   = true;
             toggleDisabled = true;
 
@@ -480,8 +475,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         me.getToggleGridListButton().setDisabled(toggleDisabled);
         me.getSwitchReadingPaneButton().setDisabled(paneDisabled);
-        me.getToggleMailFolderButton().setDisabled(treeDisabled);
-
     },
 
 
@@ -496,7 +489,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         me.getToggleGridListButton().setDisabled(true);
         me.getSwitchReadingPaneButton().setDisabled(true);
-        me.getToggleMailFolderButton().setDisabled(true);
     },
 
 
@@ -628,7 +620,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         me.getSwitchReadingPaneButton().setDisabled(accountSelected);
         me.getToggleGridListButton().setDisabled(accountSelected);
-        me.getToggleMailFolderButton().setDisabled(records.length === 0);
 
         if (accountSelected) {
             me.disableEmailActionButtons(true);
