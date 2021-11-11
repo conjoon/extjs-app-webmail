@@ -1373,8 +1373,10 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
                         });
                     }
 
-                    md.set("mailAccountId", defInfo.mailAccountId);
-                    md.set("mailFolderId",  defInfo.mailFolderId);
+                    md.set({
+                        "mailAccountId": defInfo.mailAccountId,
+                        "mailFolderId": defInfo.mailFolderId
+                    }, {dirty: false});
                 }
             }
         }

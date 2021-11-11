@@ -48,6 +48,7 @@ StartTest(async t => {
         });
 
         t.afterEach(t => {
+            editor?.getViewModel()?.getSession()?.destroy();
             editor.destroy();
             editor = null;
         });
@@ -57,21 +58,124 @@ StartTest(async t => {
         // +-----------------------------------------
         t.diag("feat: add confirm dialog before message editor is closed (conjoon/extjs-app-webmail#112)");
 
-        t.it("onMailEditorBeforeClose()", t => {
+
+        t.it("MailboxService.moveCallback()", t => {
+
+            const
+                messageBody = {
+                    commit: function () {}
+                },
+                record = {
+                    entityName: "MessageDraft",
+                    set: () => {},
+                    getId: () => "id",
+                    get: (key) => key === "seen",
+                    getMessageBody: () => messageBody
+                },
+                service = conjoon.cn_mail.MailboxService.getInstance(),
+                op = {
+                    getRequest: () => ({
+                        record: record
+                    }),
+                    getResult: () => ({
+                        success: true
+                    })
+                },
+                commitSpy = t.spyOn(messageBody, "commit");
+
+            t.expect(service.moveCallback(op)).toBe(true);
+            t.expect(commitSpy.calls.count()).toBe(1);
+
+            record.entityName = "MessageItem";
+            t.expect(service.moveCallback(op)).toBe(true);
+            t.expect(commitSpy.calls.count()).toBe(1);
+
+        });
+
+
+        t.it("MessageEditorViewModel.isDraftDirty()", t => {
+
+            let attachmentMock = {};
+
+            const
+                vm    = editor.getViewModel(),
+                draft = editor.getMessageDraft() ;
+
+            t.expect(vm.isDraftDirty()).toBe(false);
+
+            draft.set("subject", "Subject");
+            t.expect(vm.isDraftDirty()).toBe(true);
+            draft.commit();
+            t.expect(vm.isDraftDirty()).toBe(false);
+
+            draft.getMessageBody().set("textHtml", "text");
+            t.expect(vm.isDraftDirty()).toBe(true);
+            draft.getMessageBody().commit();
+            t.expect(vm.isDraftDirty()).toBe(false);
+
+            attachmentMock = draft.attachments().add(attachmentMock)[0];
+            t.expect(vm.isDraftDirty()).toBe(true);
+            draft.attachments().commitChanges();
+            attachmentMock.phantom = false;
+            t.expect(vm.isDraftDirty()).toBe(false);
+
+            attachmentMock.set("text", "attachment");
+            t.expect(vm.isDraftDirty()).toBe(true);
+            attachmentMock.commit();
+            t.expect(vm.isDraftDirty()).toBe(false);
+
+            const remSpy = t.spyOn(draft.attachments(), "getRemovedRecords").and.returnValue([attachmentMock]);
+            draft.attachments().remove(attachmentMock);
+            t.expect(vm.isDraftDirty()).toBe(true);
+
+            remSpy.remove();
+        });
+
+
+        t.it("MessageEditorViewController.onMailEditorBeforeClose() - draft clean", t => {
+            let
+                dialogSpy = t.spyOn(editor, "showConfirmCloseDialog").and.callFake(() => ({})),
+                dirtySpy = t.spyOn(editor.getViewModel(), "isDraftDirty").and.returnValue(false);
+
+            editor.close();
+            t.expect(editor.destroyed).toBe(true);
+            t.expect(dialogSpy.calls.count()).toBe(0);
+            t.expect(dirtySpy.calls.count()).toBe(1);
+
+            [dialogSpy, dirtySpy].map(spy => spy.remove());
+        });
+
+
+        t.it("MessageEditorViewController.onMailEditorBeforeClose() - draft dirty", t => {
             let redirectToSpy = t.spyOn(editor.getController(), "redirectTo").and.callFake(() => ({})),
-                dialogSpy = t.spyOn(editor, "showConfirmCloseDialog").and.callFake(() => ({}));
+                dialogSpy = t.spyOn(editor, "showConfirmCloseDialog").and.callFake(() => ({})),
+                dirtySpy = t.spyOn(editor.getViewModel(), "isDraftDirty").and.returnValue(true);
 
             editor.close();
             t.expect(editor.destroyed).toBe(false);
             t.expect(redirectToSpy.calls.mostRecent().args).toEqual([cn_href]);
             t.expect(dialogSpy.calls.count()).toBe(1);
 
-            redirectToSpy.remove();
-            dialogSpy.remove();
+            [redirectToSpy, dialogSpy, dirtySpy].map(spy => spy.remove());
         });
 
 
-        t.it("showConfirmCloseDialog()", t => {
+        t.it("MessageEditorViewController.onMailEditorBeforeClose() - no messagedraft loaded", t => {
+            let dialogSpy = t.spyOn(editor, "showConfirmCloseDialog").and.callFake(() => ({})),
+                dirtySpy = t.spyOn(editor.getViewModel(), "isDraftDirty");
+
+            editor.getViewModel().set("messageDraft", null);
+
+            editor.close();
+            t.expect(dialogSpy.calls.count()).toBe(0);
+            t.expect(dirtySpy.calls.count()).toBe(0);
+            t.expect(editor.destroyed).toBe(true);
+
+            [dialogSpy, dirtySpy].map(spy => spy.remove());
+        });
+
+
+        t.it("MessageEditor.showConfirmCloseDialog()", t => {
 
             const
                 dom = editor.el.dom,
@@ -105,6 +209,41 @@ StartTest(async t => {
                     t.expect(editor.destroyed).toBe(true);
                 });
             });
+        });
+
+
+        t.it("MailDesktopViewController.seedFolders()", t => {
+
+            const
+                ctrl = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewController"),
+                folders = [
+                    Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder")
+                ],
+                messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft"),
+                messageDraftSpy = t.spyOn(messageDraft, "set");
+
+            Object.assign(ctrl, {
+                defaultAccountInformations: {
+                    mailAccountId: "dev",
+                    mailFolderId: "INBOX"
+                },
+                starvingEditors: ["itemid"],
+                view: {
+                    down: () => ({
+                        editMode: "CREATE",
+                        getViewModel: () => ({
+                            hasPendingCopyRequest: () => false,
+                            get: () => messageDraft
+                        })
+                    })
+                }
+            });
+
+
+            ctrl.seedFolders(folders);
+            t.expect(messageDraftSpy.calls.count()).toBe(1);
+            t.expect(Object.keys(messageDraftSpy.calls.all()[0].args[0])).toEqual(["mailAccountId", "mailFolderId"]);
+            t.expect(messageDraft.dirty).toBe(false);
         });
 
 

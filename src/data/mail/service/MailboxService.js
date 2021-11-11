@@ -502,7 +502,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      */
     moveCallback: function (op) {
 
-        const me               = this,
+        const
+            me               = this,
             request          = op.getRequest(),
             sourceFolderId   = request.sourceFolderId,
             targetFolderId   = request.targetFolderId,
@@ -510,17 +511,23 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             mailAccountId    = record.get("mailAccountId"),
             mailFolderHelper = me.getMailFolderHelper();
 
+        if (op.getResult().success !== true) {
+            return false;
+        }
+
         // just like MessageItemUpdater#updateItemWithDraft, we're setting the
         // messageBodyId here
         // @see conjoon/extjs-app-webmail#116
         record.set("messageBodyId", record.getId());
 
-        if (op.getResult().success !== true) {
-            return false;
+        // we are not interested in tracking the changes made to the mailFolderId
+        // of the MessageBody, so silently commit this here
+        if (record.entityName === "MessageDraft") {
+            record.getMessageBody().commit(true);
         }
 
         if (record.get("seen")) {
-            return;
+            return true;
         }
 
         let sourceFolder = mailFolderHelper.getMailFolder(mailAccountId, sourceFolderId),
@@ -571,7 +578,6 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         if (mailFolder) {
             mailFolder.set("unreadCount", Math.max(0, mailFolder.get("unreadCount") - 1), {dirty: false});
         }
-
 
         return true;
     }
