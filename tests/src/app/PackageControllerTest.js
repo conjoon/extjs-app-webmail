@@ -389,10 +389,10 @@ StartTest(t => {
                 packageCtrl.onMailFolderTreeSelectionChange(null, []);
                 t.expect(READINGPANEDISABLED).toBe(true);
                 t.expect(TOGGLEGRIDDISABLED).toBe(true);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(true);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 packageCtrl.onMailFolderTreeSelectionChange(null, [rec1]);
                 t.expect(DESELECTED).toBe(0);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(READINGPANEDISABLED).toBe(false);
                 t.expect(TOGGLEGRIDDISABLED).toBe(false);
                 t.expect(REPLYTODISABLED).toBe(true);
@@ -790,21 +790,21 @@ StartTest(t => {
 
                 // test with activating
                 packageCtrl.onMailInboxViewActivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
                 t.expect(TOGGLEGRIDDISABLED).toBe(false);
                 t.expect(MESSAGEGRIDBUTTONSACTIVATED).toBe(true);
 
                 // deactivating
                 packageCtrl.onMailInboxViewDeactivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(true);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
                 t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
                 // test with loading
                 ISLOADING = true;
                 packageCtrl.onMailInboxViewActivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
                 t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
@@ -816,21 +816,21 @@ StartTest(t => {
                 SELECTION = SELECTIONEMPTY;
                 ISLOADING = false;
                 packageCtrl.onMailInboxViewActivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(true);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
                 t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
                 SELECTION = SELECTIONDEFAULT;
                 ISLOADING = true;
                 packageCtrl.onMailInboxViewActivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
                 t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
                 SELECTION = SELECTIONDEFAULT;
                 ISLOADING = false;
                 packageCtrl.onMailInboxViewActivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(false);
                 t.expect(TOGGLEGRIDDISABLED).toBe(false);
 
@@ -838,7 +838,7 @@ StartTest(t => {
                 SELECTION = SELECTIONDEFAULT;
                 ISLOADING = false;
                 packageCtrl.onMailInboxViewActivate(null);
-                t.expect(TOGGLEMAILFOLDERDISABLED).toBe(false);
+                t.expect(TOGGLEMAILFOLDERDISABLED).toBeUndefined();
                 t.expect(SWITCHREADINGPANEDISABLED).toBe(true);
                 t.expect(TOGGLEGRIDDISABLED).toBe(true);
                 t.expect(EMAILACTIONBUTTONSDISABLED).toBe(true);
