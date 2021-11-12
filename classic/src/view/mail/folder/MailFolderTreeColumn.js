@@ -55,7 +55,6 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
         "<div class=\"{parent.childCls} {parent.elbowCls}-img ",
         "{parent.elbowCls}-<tpl if=\".\">line<tpl else>empty</tpl>\" role=\"presentation\"></div>",
         "</tpl>",
-
         "<tpl if=\"glyph\">",
         "<span class=\"{baseIconCls}\" ",
         "<tpl if=\"glyphFontFamily\">",
@@ -63,6 +62,8 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
         "</tpl>",
         ">{glyph}</span>",
         "<tpl else>",
+
+        "<tpl if=\"iconCls\">",
         "<tpl if=\"icon\">",
         "<img src=\"{blankUrl}\"",
         "<tpl else>",
@@ -71,8 +72,9 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
         " role=\"presentation\" class=\"{childCls} {baseIconCls} {customIconCls} ",
         "{baseIconCls}-<tpl if=\"leaf\">leaf<tpl else><tpl if=\"expanded\">parent-expanded<tpl else>parent</tpl></tpl> {iconCls}\" ",
         "<tpl if=\"icon\">style=\"background-image:url({icon})\"/>" +
-        "<tpl else>" +
-        "></div>" +
+            "<tpl else>" +
+            "></div>" +
+        "</tpl>",
         "</tpl>",
         "</tpl>",
         "<tpl if=\"href\">",
@@ -80,11 +82,9 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
         "<tpl else>",
         "<span class=\"{textCls} {childCls}\">{value}</span>",
         "</tpl>",
-
         "<div class=\"{childCls} {elbowCls}-img {elbowCls}",
         "<tpl if=\"isLast\">-end</tpl>" +
         "<tpl if=\"expandable\">-plus {expanderCls}</tpl>\" role=\"presentation\"></div>"
-
     ],
 
 
@@ -104,18 +104,17 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
 
         // do not set record data via set() as it seems to trigger
         // immediate update which calls this method in return (?)
-        if (ret.lines.length === 1) {
-            record.data.iconCls = me.getIconClsForMailFolderType(type);
+        if (ret.lines.length <= 1) {
+            // we could also assign a type-property to ret, but a blank space will do
+            // to properly render ACCOUNT nodes with the given template
+            record.data.iconCls = ret.lines.length === 0 ? " " : me.getIconClsForMailFolderType(type);
         } else {
             record.data.iconCls = "";
         }
 
         if (ret.lines && ret.lines.length < 2) {
             ret.lines = [];
-        } else {
-            ret.lines.pop();
         }
-
 
         return ret;
     },
