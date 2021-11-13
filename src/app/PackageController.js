@@ -267,7 +267,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         const
             me = this,
-            baseAddress = app.getPackageConfig(me, "service.rest-imap.base");
+            baseAddress = app.getPackageConfig(me, "service.rest-api-email.base");
 
         if (!l8.isString(baseAddress)) {
             throw("no configured \"base\"-address found in the Package Configuration for \"conjoon.cn_mail.data.mail.BaseSchema\"");

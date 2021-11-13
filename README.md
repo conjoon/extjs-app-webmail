@@ -39,7 +39,7 @@ Example (`workspace.json`) :
 When using this package without a backend implementation, make sure your app uses the [extjs-dev-webmailsim](https://github.com/conjoon/extjs-dev-webmailsim) package  of the [conjoon](https://github.com/conjoon) project.
 
 ### Required Services
-This package requires a service that complies with the REST API described in `rest-imap` which can be found
+This package requires a service that complies with the REST API described in `rest-api-email` which can be found
 in the [REST API description](https://github.com/conjoon/rest-api-description) of the **conjoon**-project.
 
 The url of this service can be configured in the configuration file for this package.
@@ -47,8 +47,8 @@ The url of this service can be configured in the configuration file for this pac
 ```json
 {
     "service": {
-        "rest-imap": {
-            "base" : "https://localhost/rest-imap/api/v1"
+        "rest-api-email": {
+            "base" : "https://localhost/rest-api-email/api/v1"
         }
     }
 } 

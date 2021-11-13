@@ -197,7 +197,7 @@ export default class TestHelper {
 
                 let val;
 
-                if (config === "service.rest-imap.base") {
+                if (config === "service.rest-api-email.base") {
                     val = "./cn_mail";
                 } else if (config.indexOf("editor") !== -1) {
                     val = "../resources/resources/templates/html/editor.html.tpl";
