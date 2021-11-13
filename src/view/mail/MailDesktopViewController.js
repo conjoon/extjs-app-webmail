@@ -1325,7 +1325,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             view  = me.getView(),
             TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (folders[0].get("folderType") === TYPES.ACCOUNT) {
+        if (!folders.length || folders[0].get("folderType") === TYPES.ACCOUNT) {
             return null;
         }
 
