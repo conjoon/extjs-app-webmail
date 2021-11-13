@@ -284,6 +284,9 @@ export default [{
             }, {
                 name: "conjoon/extjs-app-webmail#147",
                 url: "classic/_issues_/fix/extjs-app-webmail%23147.js"
+            }, {
+                name: "conjoon/extjs-app-webmail#186",
+                url: "classic/_issues_/fix/extjs-app-webmail%23186.js"
             }]
         }]
     }, {
