@@ -576,7 +576,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             }
 
-            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-imap.base");
+            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-api-email.base");
 
             Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft, baseAddress)).then(
                 function (response, opts) {
