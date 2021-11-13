@@ -68,4 +68,11 @@ StartTest(async t => {
         [loadedSpy, seedSpy, rootNodeSpy].map(spy => spy.remove());
     });
 
+
+    t.it("seedFolders()", t => {
+
+        t.expect(cmp.seedFolders([])).toBe(null);
+
+    });
+
 });
