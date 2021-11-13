@@ -35,6 +35,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     extend: "Ext.grid.Panel",
 
     requires: [
+        // @see conjoon/extjs-app-webmail#178
+        "Ext.grid.column.Date",
         "coon.comp.grid.feature.RowBodySwitch",
         "conjoon.cn_mail.view.mail.message.grid.feature.Livegrid",
         "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
