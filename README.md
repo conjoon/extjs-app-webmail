@@ -35,10 +35,21 @@ Example (`workspace.json`) :
 }
 ```
 
+## Configuration options
+
+### Package related resources
+- `resources.images.notifications.newEmail` - an icon to show with the desktop notifications for new email messages
+- `resources.sounds.notifications.newEmail` - a notification sound to play for new email messages
+- `templates.html.editor` - an html-template to use with the message editor 
+- `templates.html.reader` - an html-template to use with the message reader
+  
+### Rest API
+- `service.rest-api-email.base` - the base url to the [service](#required_services) providing endpoints for the [rest-api-email](https://github.com/conjoon/rest-api-description)-API
+
 ## Usage
 When using this package without a backend implementation, make sure your app uses the [extjs-dev-webmailsim](https://github.com/conjoon/extjs-dev-webmailsim) package  of the [conjoon](https://github.com/conjoon) project.
 
-### Required Services
+### Required Services <a name="required_services"></a>
 This package requires a service that complies with the REST API described in `rest-api-email` which can be found
 in the [REST API description](https://github.com/conjoon/rest-api-description) of the **conjoon**-project.
 
