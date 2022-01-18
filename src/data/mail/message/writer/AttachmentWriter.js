@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -74,9 +74,16 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.AttachmentWriter", {
 
         const
             me = this,
-            formData = me.callParent(arguments).getFormData();
+            pCall = me.callParent(arguments);
 
-        const files = [];
+        if (!(pCall instanceof coon.core.data.FormDataRequest)) {
+            return pCall;
+        }
+
+        const
+            formData = pCall.getFormData(),
+            files = [];
+
         for(let pair of formData.entries()) {
             let key = pair[0],
                 value = pair[1];

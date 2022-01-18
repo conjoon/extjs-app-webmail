@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -58,7 +58,11 @@ StartTest(t => {
         formData.set("data[1][size]", 123);
         formData.set("data[1][fileName]", "snafu2");
         formData.set("file[1][0]", blob2);
-        const parentSpy = t.spyOn(writer, "callParent").and.callFake(() => ({getFormData: () => formData}));
+        const parentSpy = t.spyOn(writer, "callParent").and.callFake(() =>  {
+            const req = Ext.create("coon.core.data.FormDataRequest");
+            req.getFormData = () => formData;
+            return req;
+        });
 
         // spy takes care of the result
         const formDataResult = writer.writeRecords({
