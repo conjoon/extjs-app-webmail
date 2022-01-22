@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -258,8 +258,16 @@ Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
             Ext.raise("no handler for \""  + rec.entityName + "\" found");
         }
 
+        /**
+         * Attachments are already marked as dropped at this point - the session needs this information to
+         * create the Batch which is being sent to the server. We need to reject() the changes before we update
+         * the parentMessageItemId, so that a subsequent commit() does not mark the record as erased. In this case,
+         * rejecting changes would be impossible. @see conjoon/extjs-app-webmail#196
+         */
+        rec.reject();
         rec.set("parentMessageItemId", messageDraft.get("id"));
         rec.commit();
+        rec.drop();
 
         return true;
     },
