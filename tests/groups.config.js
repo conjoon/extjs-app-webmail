@@ -50,6 +50,9 @@ export default [{
             items: [{
                 name: "conjoon/extjs-app-webmail#157",
                 url: "src/_issues_/fix/extjs-app-webmail%23157.js"
+            }, {
+                name: "conjoon/extjs-app-webmail#196",
+                url: "src/_issues_/fix/extjs-app-webmail%23196.js"
             }]
         }]
 
