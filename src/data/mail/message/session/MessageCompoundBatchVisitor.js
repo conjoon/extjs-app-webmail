@@ -203,6 +203,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      * Checks whether this operation is a destroy-operation of a DraftAttachment
      * and seeds the new parentMessageItemId that was returned by this operation
      * among the MessageDraft of this instance.
+     * This method expects for a destroyed DraftAttachment the response to be the MessageKey
+     * of the owning MessageItem for which the attachment was removed.
      *
      * @param {Ext.data.operation.Operation} operation
      *
@@ -216,15 +218,16 @@ Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
             return false;
         }
 
-        const me            = this,
-            rec           = operation.getRecords()[0],
-            messageDraft  = me.getMessageDraft(),
-            response      = operation.getResponse(),
-            responseType  = response.responseType,
-            resp          = responseType === "json" ? response.responseJson : Ext.decode(response.responseText);
+        const
+            me = this,
+            rec = operation.getRecords()[0],
+            messageDraft = me.getMessageDraft(),
+            response = operation.getResponse(),
+            responseType = response.responseType,
+            resp = responseType === "json" ? response.responseJson : Ext.decode(response.responseText);
 
         if (operation.getAction() === "destroy" && rec.entityName === "DraftAttachment") {
-            messageDraft.set("id", resp.data.parentMessageItemId);
+            messageDraft.set("id", resp.data.id);
             messageDraft.commit();
 
             return true;

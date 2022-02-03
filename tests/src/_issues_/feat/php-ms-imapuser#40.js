@@ -44,4 +44,32 @@ StartTest(t => {
         t.expect(writer.writeRecords(request, []) instanceof coon.core.data.FormDataRequest).toBe(false);
     });
 
+
+    t.it("MessageCompoundBatchVisitor.seedRetrievedKey() expects MessageKey instead of MessageItemChildCompoundKey ", t => {
+
+        const
+            messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                subject: "test",
+                mailFolderId: "1",
+                mailAccountId: "3"
+            }),
+            visitor = Ext.create("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"),
+            operation = Ext.create("Ext.data.operation.Operation", {
+                action: "destroy",
+                response: {
+                    responseType: "json",
+                    responseJson: {
+                        data: {
+                            id: "newId"
+                        }
+                    }
+                },
+                records: [{entityName: "DraftAttachment"}]
+            });
+
+        visitor.setMessageDraft(messageDraft);
+        t.expect(visitor.seedRetrievedKey(operation)).toBe(true);
+        t.expect(messageDraft.get("id")).toBe("newId");
+    });
+
 });
