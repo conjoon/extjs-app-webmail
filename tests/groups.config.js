@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,16 +28,31 @@ export default [{
     items: [{
         group: "_issues_",
         items: [{
+            group: "feat",
+            items: [{
+                name: "conjoon/php-ms-imapuser#40",
+                url: "src/_issues_/feat/php-ms-imapuser%2340.js"
+            }, {
+                name: "conjoon/extjs-app-webmail#194",
+                url: "src/_issues_/refactor/extjs-app-webmail%23194.js"
+            }]
+        }, {
             group: "refactor",
             items: [{
                 name: "conjoon/extjs-app-webmail#167",
                 url: "src/_issues_/refactor/extjs-app-webmail%23167.js"
+            }, {
+                name: "conjoon/extjs-app-webmail#194",
+                url: "src/_issues_/refactor/extjs-app-webmail%23194.js"
             }]
         }, {
             group: "fix",
             items: [{
                 name: "conjoon/extjs-app-webmail#157",
                 url: "src/_issues_/fix/extjs-app-webmail%23157.js"
+            }, {
+                name: "conjoon/extjs-app-webmail#196",
+                url: "src/_issues_/fix/extjs-app-webmail%23196.js"
             }]
         }]
 

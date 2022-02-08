@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -314,7 +314,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
                 if (buttonId !== "yesButton" ||
                     view.fireEvent("cn_mail-mailmessagebeforesave", view, messageDraft, isSending, isCreated, true) === false) {
-                    // mailmessagessagebforesave listener called which sets the
+
+                    if (buttonId !== "yesButton") {
+                        // reset attachment store if the operation should not be retried.
+                        // This means that even in the case of a failed message(body) operation,
+                        // the attachment list's store gets reset to its last known state
+                        view.getViewModel().get("messageDraft.attachments").rejectChanges();
+                    }
+
+                    // mailmessagessagebeforesave listener called which sets the
                     // busy state again - cancel it here.
                     // a better way would we to have a "start" event in the
                     // Ext.data.Batch class which gets fired upon start/retry.
@@ -628,6 +636,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 exception: {
                     fn: function (batch, operation) {
+                        //  view.down("cn_mail-mailmessageeditorattachmentlist").getStore().rejectChanges();
                         view.fireEvent("cn_mail-mailmessagesaveoperationexception",
                             view, messageDraft, operation, isSend === true, isCreated === true, batch);
                     },
@@ -635,6 +644,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 complete: {
                     fn: function (batch, operation) {
+
                         messageDraft.set("savedAt", new Date());
                         view.fireEvent(
                             "cn_mail-mailmessagesavecomplete",
@@ -643,6 +653,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                             isSend === true,
                             isCreated === true
                         );
+
                     },
                     scope: view,
                     single: true
