@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -447,7 +447,7 @@ StartTest(t => {
                     request: {
                         url: "foo",
                         params: {
-                            ids: "1,2,3,4"
+                            filter: JSON.stringify([{property: "id", operator: "in", value: ["1", "2", "3", "4"]}])
                         }
                     }
                 });
@@ -499,7 +499,7 @@ StartTest(t => {
                         attributes: "previewText",
                         options: {"foo": "bar"},
                         target: "MessageItem",
-                        ids: [1,2].join(",")
+                        filter: JSON.stringify([{property: "id", operator: "in", value: [1, 2]}])
                     }
                 });
 
