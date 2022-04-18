@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -383,7 +383,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             me = this,
             CompoundKey = conjoon.cn_mail.data.mail.message.CompoundKey,
             url = response.request.url,
-            loadedIds = response.request.params.ids.split(","),
+            // filter[0] represents the id-IN filter
+            loadedIds = JSON.parse(response.request.params.filter)[0].value,
             livegrid = me.grid.view.getFeature("cn_mail-mailMessageFeature-livegrid");
 
         me.pendingLazies[url] = l8.extract(me.pendingLazies[url].concat(loadedIds));
@@ -430,9 +431,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
                 attributes: "previewText",
                 options: proxy.getDefaultParameters("ListMessageItem.options"),
                 target: "MessageItem",
-                ids: idsToLoad.join(",")
+                filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
             }
         }).then(me.processLoadedPreviewText.bind(me));
     }
 
 });
+
+
