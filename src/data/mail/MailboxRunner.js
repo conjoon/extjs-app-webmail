@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -227,7 +227,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             method: "get",
             // required by the custom Reader used by teh messageEntityProxy
             action: "read",
-            url,
+            url: url,
             headers: proxy.headers,
             params: Object.assign(parameters, {
                 filter: JSON.stringify(latestFilter)
