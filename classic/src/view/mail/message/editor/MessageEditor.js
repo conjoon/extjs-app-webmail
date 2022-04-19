@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -282,13 +282,29 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
                 }
             },
             displayTpl: "<tpl for=\".\">{name}</tpl>"
-        }, "->", {
+        }, "->",
+        {
+            xtype: "button",
+            iconCls: "fa fa-envelope",
+            cls: "seenButton",
+            enableToggle: true,
+            bind: {
+                pressed: "{messageDraft.seen}"
+            }
+        }, {
+            xtype: "button",
+            iconCls: "fa fa-flag",
+            cls: "flagButton",
+            enableToggle: true,
+            bind: {
+                pressed: "{messageDraft.flagged}"
+            }
+        }, {
             width: 213,
             xtype: "displayfield",
             cls: "lastSavedDateField",
             bind: {
-                hidden: "{!messageDraft.savedAt}",
-                value: "Last saved at {messageDraft.savedAt:date(\"d.m.Y H:i:s\")}"
+                value: "{lastSavedMessage}"
             }
         }, {
             scale: "small",

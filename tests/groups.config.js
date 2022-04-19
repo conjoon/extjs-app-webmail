@@ -302,6 +302,9 @@ export default [{
             }, {
                 name: "conjoon/extjs-app-webmail#186",
                 url: "classic/_issues_/fix/extjs-app-webmail%23186.js"
+            }, {
+                name: "conjoon/php-ms-imapuser#49",
+                url: "classic/_issues_/fix/php-ms-imapuser%2349.js"
             }]
         }]
     }, {
