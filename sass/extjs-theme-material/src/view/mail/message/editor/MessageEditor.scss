@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -93,6 +93,57 @@
 
     .showCcBccButton {
         border-left : none;
+    }
+
+    .flagButton.x-btn-default-toolbar-small,
+    .seenButton.x-btn-default-toolbar-small {
+        padding:8px 8px 8px 8px;
+        border: none;
+        background:none!important;
+        &.x-btn-focus {
+            box-shadow:none;
+            border: none;
+        }
+    }
+
+    .flagButton {
+        .x-btn-icon-el {
+            color:var(--accent-dark-color);
+        }
+        &.x-btn-focus {
+            .x-btn-icon-el {
+                color:var(--accent-dark-color)!important;
+            }
+        }
+    }
+
+    .seenButton {
+        &.x-btn-over.x-btn-default-toolbar-small,
+        .x-btn-icon-el {
+            color:var(--base-color);
+        }
+        &.x-btn-focus {
+            .x-btn-icon-el {
+                color:var(--base-color)!important;
+            }
+        }
+    }
+
+    .seenButton {
+        &.x-btn-pressed.x-btn-default-toolbar-small {
+            .x-btn-icon-el {
+                color:var(--accent-dark-color)!important;
+            }
+        }
+    }
+
+    .flagButton {
+        &.x-btn-over.x-btn-default-toolbar-small,
+        &.x-btn-pressed.x-btn-default-toolbar-small {
+            .x-btn-icon-el {
+                color:var(--signal-color-alt)!important;
+            }
+        }
     }
 
     .lastSavedDateField {
