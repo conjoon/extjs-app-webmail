@@ -53,6 +53,9 @@ export default [{
             }, {
                 name: "conjoon/extjs-app-webmail#196",
                 url: "src/_issues_/fix/extjs-app-webmail%23196.js"
+            }, {
+                name: "conjoon/extjs-app-webmail#206",
+                url: "src/_issues_/fix/extjs-app-webmail%23206.js"
             }]
         }]
 

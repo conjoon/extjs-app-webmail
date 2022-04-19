@@ -61,7 +61,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             click: "onSaveButtonClick"
         },
         "cn_mail-mailmessageeditor": {
-            "beforeclose": "onMailEditorBeforeClose",
             "beforedestroy": "onMailMessageEditorBeforeDestroy",
             "cn_mail-mailmessagesaveoperationcomplete": "onMailMessageSaveOperationComplete",
             "cn_mail-mailmessagesaveoperationexception": "onMailMessageSaveOperationException",
@@ -91,6 +90,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     mailboxService: null,
 
     /**
+     * Internal ms value for deferring call to close() after message was sent
+     * @type {Number}
+     * @private
+     */
+    closeAfterMs: 1000,
+
+    /**
      * Makes sure
      * conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener#installDragDropListeners
      * is called as soon as the controller's
@@ -107,7 +113,23 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view: view
         });
 
-        view.on("afterrender", me.onMessageEditorAfterrender, me, {single: true});
+        view.on({
+            "afterrender": {
+                fn: me.onMessageEditorAfterrender,
+                scope: me,
+                single: true
+            },
+            /**
+             * moved from control-config here since event and listener must be maiontained on
+             * the view for later detaching if mail was sent, instead of maintaed by eventbus
+             * of controller
+             * @see conjoon/php-ms-imapuser#206
+             */
+            "beforeclose": {
+                fn: me.onMailEditorBeforeClose,
+                scope: me
+            }
+        });
 
         me.ddListener.init();
     },
@@ -494,9 +516,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         view.setBusy({msgAction: "Message sent successfully.", progress: 1});
 
+        /**
+         * @see conjoon/extjs-app-webmail#206
+         */
+        view.un("beforeclose", me.onMailEditorBeforeClose, me);
         me.deferTimers.sendcomplete = Ext.Function.defer(
             view.close,
-            1000,
+            me.closeAfterMs,
             view
         );
     },
