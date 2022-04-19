@@ -505,7 +505,7 @@ StartTest(async t => {
                 t.expect(formulas.getFormattedDate(get)).toBe(expected);
             });
 
-    
+
             t.it("formula.getDisplayToAddress", t => {
                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
 
@@ -677,5 +677,27 @@ StartTest(async t => {
             });
 
 
-        });});});
+            t.it("messageBodyLoaded() - recent", t => {
 
+                const mockItem = {
+                    set: function (key, value) {
+                        this[key] = value;
+                    } ,
+                    get: function (key) {
+                        return this[key];
+                    },
+                    save: () => {}
+                };
+
+                vm = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
+                vm.get = () => mockItem;
+                vm.abortedRequestMap = {};
+
+                t.expect(mockItem.get("recent")).toBeUndefined();
+                vm.messageBodyLoaded({getId: () => 1});
+                t.expect(mockItem.get("recent")).toBe(false);
+
+            });
+
+
+        });});});

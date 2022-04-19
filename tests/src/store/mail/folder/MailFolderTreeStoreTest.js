@@ -34,11 +34,20 @@ StartTest(async t => {
             delay: 1
         });
 
+
+        t.afterEach(() => {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
+        });
+
+
         t.it("Should properly create the store and check for default config, and initial load", t => {
 
             var store = Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
                 asynchronousLoad: false
             });
+
+            t.expect(store.getStoreId()).toBe("cn_mail-mailfoldertreestore");
 
             t.expect(store instanceof Ext.data.TreeStore).toBe(true);
 
@@ -78,7 +87,18 @@ StartTest(async t => {
 
                 t.expect(store.getRoot().childNodes[1].isExpanded()).toBe(true);
             });
+        });
 
+
+        t.it("getInstance()", t => {
+
+            t.expect(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()).toBe(
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+            );
+
+            t.expect(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()).toBe(
+                Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore")
+            );
 
         });
 

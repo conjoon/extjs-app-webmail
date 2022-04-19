@@ -93,6 +93,24 @@ StartTest(async t => {
         });
 
 
+        t.it("statics", t => {
+            t.requireOk("conjoon.cn_mail.data.mail.service.MailboxService", () => {
+                t.isInstanceOf(conjoon.cn_mail.data.mail.service.MailboxService.recentMessageItemKeys, "Set");
+
+
+                t.isInstanceOf(conjoon.cn_mail.MailboxService.getInstance(), "conjoon.cn_mail.data.mail.service.MailboxService");
+                t.expect(conjoon.cn_mail.MailboxService.getInstance().getMailFolderHelper()).toBe(
+                    conjoon.cn_mail.MailFolderHelper.getInstance()
+                );
+                t.expect(conjoon.cn_mail.MailboxService.getInstance()).toBe(
+                    conjoon.cn_mail.MailboxService.getInstance()
+                );
+            });
+
+
+        });
+
+
         t.it("constructor()", t => {
             let exc,
                 service;

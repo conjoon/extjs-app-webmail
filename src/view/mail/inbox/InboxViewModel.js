@@ -37,8 +37,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewModel", {
     extend: "Ext.app.ViewModel",
 
     requires: [
-        "conjoon.cn_mail.store.mail.message.MessageItemStore",
-        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
+        "conjoon.cn_mail.store.mail.message.MessageItemStore"
     ],
 
     alias: "viewmodel.cn_mail-mailinboxviewmodel",

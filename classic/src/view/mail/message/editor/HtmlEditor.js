@@ -68,6 +68,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
             }
         });
 
+        let overflowHandler = tbar.getLayout().overflowHandler;
+
+        overflowHandler.addComponentToMenu = me.createOverflowHandlerInterceptor(overflowHandler.addComponentToMenu);
+
         return tbar;
     },
 
@@ -149,6 +153,29 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
             "<style type=\"text/css\">",
             "</style></head><body></body></html>"
         ].join("");
+    },
+
+
+    /**
+     * Used to hide the Attachment-Button in the menu that gets rendered with the overflow-handler
+     * of this editor's toolbar.
+     * Creates an interceptor for the passed func that will not call the
+     * passed func if teh component passed to it is of the type
+     * coon.comp.form.field.FileButton.
+     *
+     * @private
+     *
+     * returns function
+     */
+    createOverflowHandlerInterceptor (func) {
+        "use strict";
+
+        return Ext.Function.createInterceptor(func, function (menu, component) {
+            if (component instanceof coon.comp.form.field.FileButton) {
+                return false;
+            }
+        });
     }
+
 
 });

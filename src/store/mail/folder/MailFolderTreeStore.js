@@ -61,9 +61,31 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
     nodeParam: "mailAccountId",
 
+    storeId: "cn_mail-mailfoldertreestore",
+
+    statics: {
+
+        /**
+         * Returns the instance from the StoreManager. If not available, creates exactly this instance.
+         *
+         * @returns {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}
+         */
+        getInstance () {
+
+            let treeStore = Ext.StoreManager.get("cn_mail-mailfoldertreestore");
+            if (!treeStore){
+                treeStore = Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore");
+            }
+
+            return Ext.StoreManager.get("cn_mail-mailfoldertreestore");
+        }
+
+    },
+
     root: {
         // set initially to false so no ugly fragments will blink when account node
         // was loaded and load mask is hidden / shown when mail folder loads.
+        // this will  set the loadCount of the store to +1
         expanded: true,
         data: []
     },

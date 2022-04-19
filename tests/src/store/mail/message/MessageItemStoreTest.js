@@ -175,12 +175,14 @@ StartTest(async t => {
 
             };
 
-            testFor(t, ["cn_deleted"]);
+            testFor(t, ["cn_deleted", "previewText"]);
+            testFor(t, ["recent"]);
+            testFor(t, ["previewText"]);
             testFor(t, ["cn_moved"]);
 
             testFor(t, ["cn_moved", "cn_deleted"]);
-
-            testFor(t, ["answered"]);
+            testFor(t, ["cn_moved", "recent", "amswered"]);
+            testFor(t, ["answered", "recent"]);
 
             testFor(t, ["cn_moved", "cn_deleted", "amswered"]);
         });

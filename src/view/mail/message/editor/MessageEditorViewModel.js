@@ -492,10 +492,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
          * @throws if messageDraftConfig is not of type
          * conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
          */
-        createDraftFromData: function (messageDraftConfig) {
+        createDraftFromData (messageDraftConfig) {
+            "use strict";
 
-            var me = this,
-                messageBody,
+            const me = this;
+
+            let messageBody,
                 attachments,
                 data;
 
@@ -521,7 +523,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                 create: data
             });
 
-            me.getSession().setMessageDraft(me.get("messageDraft"));
+            const session = me.getSession();
+            session.setMessageDraft(me.get("messageDraft"));
 
             /**
              * @bug
@@ -534,7 +537,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
             // in the constructor's config-argument
             me.set(
                 "messageDraft.messageBody",
-                me.getSession().createRecord("MessageBody", messageBody || {})
+                session.createRecord("MessageBody", messageBody || {})
             );
 
             me.get("messageDraft").attachments().add(
@@ -655,6 +658,30 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
 
             this.set("messageDraft." + type, addresses);
             return addresses;
+        },
+
+
+        /**
+         * Returns true if the MessageDraft is dirty, i.e. has pending changes in either the MessageBody,
+         * the attachment-store or the draft itself.
+         * This is required since the initial setup of composed messages will already mark the session as dirty
+         * which does not reflect the desired behavior, which is a clean unedited draft that gets marked dirty when the
+         * first data input is recognized.
+         *
+         * @returns {boolean}
+         */
+        isDraftDirty () {
+            const
+                me = this,
+                draft = me.get("messageDraft"),
+                attachments = draft.attachments();
+
+            return !!draft.modified ||
+                !!draft.getMessageBody().modified ||
+                !!attachments.getRemovedRecords().length ||
+                // modified checks only "valid()" records
+                !!attachments.getRange().filter(item => item.dirty === true).length ||
+                !!attachments.getRange().filter(item => item.phantom === true).length;
         }
     }
 

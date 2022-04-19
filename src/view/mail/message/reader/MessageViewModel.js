@@ -578,6 +578,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
             delete  me.abortedRequestMap[record.getId()];
             me.set("messageBody", record);
 
+            item.set("recent", false);
+
             if (item.get("seen") !== true) {
                 item.set("seen", true);
                 item.save({

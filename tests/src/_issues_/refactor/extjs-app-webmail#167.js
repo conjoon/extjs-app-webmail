@@ -23,28 +23,40 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-.cn_mail-mailmessagepreviewfeature {
-  .previewText {
-    &.loading {
-      background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 14%) 50%, rgba(255, 255, 255, 0) 100%);
-      background-repeat: no-repeat;
-      background-size: 50% 100px;
-      -webkit-animation-duration: 2s;
-      -webkit-animation-fill-mode: forwards;
-      -webkit-animation-iteration-count: infinite;
-      -webkit-animation-name: placeholderShimmer;
-      -webkit-animation-timing-function: linear;
-    }
-  }
-}
+StartTest(async t => {
 
-@-webkit-keyframes placeholderShimmer {
-  0% {
-    background-position: -800px 0;
-  }
+    let packageCtrl;
 
-  100% {
-    background-position: 800px 0;
-  }
-}
+    t.beforeEach(t => {
+        packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+    });
 
+    t.afterEach(t => {
+        if (packageCtrl) {
+            packageCtrl.destroy();
+            packageCtrl = null;
+        }
+    });
+
+    // +-----------------------------------------
+    // | Tests
+    // +-----------------------------------------
+    t.diag("refactor: prevent re-usability of ids for composing messages (conjoon/extjs-app-webmail#167)");
+
+
+    t.it("onMessageComposeButtonClick()", t => {
+
+        const
+            dateSpy = t.spyOn(Date, "now").and.returnValue("NOW"),
+            editorSpy = t.spyOn(packageCtrl, "showMailEditor").and.callFake(() => ({}));
+
+        packageCtrl.onMessageComposeButtonClick();
+
+        t.expect(editorSpy.calls.mostRecent().args).toEqual(["NOW", "compose"]);
+
+        [dateSpy, editorSpy].map(spy => spy.remove());
+
+    });
+
+
+});

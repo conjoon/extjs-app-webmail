@@ -32,6 +32,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
     extend: "Ext.data.proxy.Rest",
 
     requires: [
+        // @define
+        "l8",
         "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
         "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     ],
@@ -88,7 +90,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         }
 
         const me = this,
-            params = request.getParams();
+            params = request.getParams() ||{};
 
         if (me.validEntityNames.indexOf(me.entityName) === -1) {
             Ext.raise({
@@ -181,6 +183,36 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         request.setUrl(url);
 
         return me.callParent([request]);
+    },
+
+
+    /**
+     * Returns default parameters to be used with requests for the specified
+     * parameter type, according to conjoon/rest-api-email.
+     *
+     * @return {Object}
+     */
+    getDefaultParameters (type) {
+
+        const defs = {
+            ListMessageItem: {
+                target: "MessageItem",
+                options: JSON.stringify({
+                    previewText: {
+                        plain: {
+                            precedence: true,
+                            length: 200
+                        },
+                        html: {
+                            length: 200
+                        }
+                    }
+                }),
+                limit: -1
+            }
+        };
+
+        return l8.unchain(type, defs, {});
     }
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         "coon.core.ConfigManager",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.service.MailboxService"
     ],
 
     alias: "controller.cn_mail-mailmessageeditorviewcontroller",
@@ -60,7 +61,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             click: "onSaveButtonClick"
         },
         "cn_mail-mailmessageeditor": {
-            beforedestroy: "onMailMessageEditorBeforeDestroy",
+            "beforeclose": "onMailEditorBeforeClose",
+            "beforedestroy": "onMailMessageEditorBeforeDestroy",
             "cn_mail-mailmessagesaveoperationcomplete": "onMailMessageSaveOperationComplete",
             "cn_mail-mailmessagesaveoperationexception": "onMailMessageSaveOperationException",
             "cn_mail-mailmessagesavecomplete": "onMailMessageSaveComplete",
@@ -105,7 +107,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view: view
         });
 
-        view.on("afterrender", me.onMessageEditorAfterrender, me ,{single: true});
+        view.on("afterrender", me.onMessageEditorAfterrender, me, {single: true});
 
         me.ddListener.init();
     },
@@ -135,6 +137,35 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
         }
 
+    },
+
+
+    /**
+     * Callback for the "beforeclose"-event of the MessageEditor.
+     * Routes to the cn_href of the editor and calls {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showConfirmCloseDialog}
+     * afterwards, only if the MessageDraft of the ViewModel is found to be dirty.
+     *
+     * @return {Boolean=false} returns false to prevent closing the dialog
+     *
+     * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel#isDraftDirty}
+     */
+    onMailEditorBeforeClose () {
+
+        const
+            me = this,
+            vm = me.getViewModel(),
+            editor = me.getView();
+
+        if (!editor.getMessageDraft() ||
+            !vm.isDraftDirty()
+        ) {
+            return true;
+        }
+
+        me.redirectTo(editor.cn_href);
+        editor.showConfirmCloseDialog();
+
+        return false;
     },
 
 
@@ -283,7 +314,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
                 if (buttonId !== "yesButton" ||
                     view.fireEvent("cn_mail-mailmessagebeforesave", view, messageDraft, isSending, isCreated, true) === false) {
-                    // mailmessagessagebforesave listener called which sets the
+
+                    if (buttonId !== "yesButton") {
+                        // reset attachment store if the operation should not be retried.
+                        // This means that even in the case of a failed message(body) operation,
+                        // the attachment list's store gets reset to its last known state
+                        view.getViewModel().get("messageDraft.attachments").rejectChanges();
+                    }
+
+                    // mailmessagessagebeforesave listener called which sets the
                     // busy state again - cancel it here.
                     // a better way would we to have a "start" event in the
                     // Ext.data.Batch class which gets fired upon start/retry.
@@ -445,16 +484,21 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      */
-    onMailMessageSendComplete: function (editor, messagDraft) {
-        var me   = this,
+    onMailMessageSendComplete (editor, messageDraft) {
+        const
+            me   = this,
             view = me.getView();
 
         /**
          * @i18n
          */
         view.setBusy({msgAction: "Message sent successfully.", progress: 1});
-        me.deferTimers["sendcomplete"] = Ext.Function.defer(
-            view.close, 1000, view);
+
+        me.deferTimers.sendcomplete = Ext.Function.defer(
+            view.close,
+            1000,
+            view
+        );
     },
 
     /**
@@ -540,7 +584,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             }
 
-            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-imap.base");
+            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-api-email.base");
 
             Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft, baseAddress)).then(
                 function (response, opts) {
@@ -592,6 +636,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 exception: {
                     fn: function (batch, operation) {
+                        //  view.down("cn_mail-mailmessageeditorattachmentlist").getStore().rejectChanges();
                         view.fireEvent("cn_mail-mailmessagesaveoperationexception",
                             view, messageDraft, operation, isSend === true, isCreated === true, batch);
                     },
@@ -599,6 +644,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 complete: {
                     fn: function (batch, operation) {
+
                         messageDraft.set("savedAt", new Date());
                         view.fireEvent(
                             "cn_mail-mailmessagesavecomplete",
@@ -607,6 +653,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                             isSend === true,
                             isCreated === true
                         );
+
                     },
                     scope: view,
                     single: true
@@ -676,15 +723,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         getMailboxService: function () {
 
-            const me = this,
-                vm = me.getView().getViewModel();
+            const me = this;
 
             if (!me.mailboxService) {
-                me.mailboxService = Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
-                    mailFolderHelper: Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                        store: vm.get("cn_mail_mailfoldertreestore")
-                    })
-                });
+                me.mailboxService = conjoon.cn_mail.MailboxService.getInstance();
             }
 
             return me.mailboxService;

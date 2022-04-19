@@ -88,8 +88,6 @@ StartTest(async t => {
                     t.isInstanceOf(feature, "coon.comp.grid.feature.RowBodySwitch");
                     t.expect(feature.disabled).toBeFalsy();
 
-                    let lazyLoad = grid.view.getFeature("cn_webmailplug-previewtextlazyload");
-                    t.isInstanceOf(lazyLoad, "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad");
 
                     t.isCalled("getHumanReadableDate", coon.core.util.Date);
                     t.isCalled("getPreviewTextRow", feature);
@@ -107,6 +105,23 @@ StartTest(async t => {
                         }
                     }
                     t.expect(MARKUNREAD).toBe(true);
+                });
+
+
+                t.it("fires cn_init", t => {
+                    grid = Ext.create(
+                        "conjoon.cn_mail.view.mail.message.MessageGrid"
+                    );
+
+                    const fireSpy = t.spyOn(grid, "fireEvent").and.callFake(() => {});
+
+                    grid.initComponent();
+
+                    t.expect(fireSpy.calls.count()).toBe(1);
+                    t.expect(fireSpy.calls.mostRecent().args[0]).toBe("cn_init");
+                    t.expect(fireSpy.calls.mostRecent().args[1]).toBe(grid);
+
+                    fireSpy.remove();
                 });
 
 
@@ -400,21 +415,33 @@ StartTest(async t => {
 
                     messageItem.set("seen", true);
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
+
+                    messageItem.set("recent", true);
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
                     messageItem.set("seen", false);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
+                    messageItem.set("recent", false);
+
                     messageItem.set("cn_deleted", true);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
                     messageItem.set("cn_moved", true);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-moved");
 
@@ -422,6 +449,7 @@ StartTest(async t => {
 
                     messageItem.set("cn_moved", true);
                     t.expect(grid.view.getRowClass(messageItem)).toContain("boldFont");
+                    t.expect(grid.view.getRowClass(messageItem)).not.toContain("recent");
                     t.expect(grid.view.getRowClass(messageItem)).not.toContain("cn-deleted");
                     t.expect(grid.view.getRowClass(messageItem)).toContain("cn-moved");
 

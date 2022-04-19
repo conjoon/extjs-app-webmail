@@ -33,6 +33,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
 
     requires: [
         "conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader",
+        "conjoon.cn_mail.data.mail.message.writer.AttachmentWriter",
         "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     ],
 
@@ -41,6 +42,11 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
     },
 
     alias: "proxy.cn_mail-mailmessageattachmentproxy",
+
+    writer: {
+        type: "cn_mail-mailmessageattachmentwriter"
+    },
+
 
     reader: {
         type: "cn_mail-mailmessageitemchildjsonreader"

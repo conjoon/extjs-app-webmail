@@ -43,6 +43,20 @@ Ext.define("conjoon.cn_mail.data.mail.AbstractCompoundKey", {
     inheritableStatics: {
 
         /**
+         * Returns the object representation of a previously with toString encoded
+         * key, if decoding is possible.
+         *
+         * @param {String} key
+         *
+         * @return {Object|null} The decoded object representation of this string,
+         * or null if the string could not be decoded
+         */
+        decode (key){
+            return JSON.parse(atob(decodeURIComponent(key)));
+        },
+
+
+        /**
          * Creates a new CompoundKey based on the data found in fromRecord.
          *
          * @param {conjoon.cn_mail.model.mail.AbstractCompoundKeyedModel} rec
@@ -157,6 +171,17 @@ Ext.define("conjoon.cn_mail.data.mail.AbstractCompoundKey", {
             id: me.getId()
         };
 
+    },
+
+
+    /**
+     * Returns a string representation of this key.
+     * The string representation is guaranteed to be url-safe and can be decoded into its object-
+     * representation by calling the static method decode().
+     * @return {String}
+     */
+    toString () {
+        return encodeURIComponent(btoa(JSON.stringify(this.toObject())));
     },
 
 

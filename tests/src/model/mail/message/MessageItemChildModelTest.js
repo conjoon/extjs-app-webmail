@@ -161,7 +161,7 @@ StartTest(t => {
             "id": "z"
         });
 
-        t.isCalledNTimes("checkForeignKeysModified", model, 1);
+        t.isCalledNTimes("hasKeysModified", model, 1);
         t.isInstanceOf(model.getCompoundKey(), "conjoon.cn_mail.data.mail.message.compoundKey.MessageItemChildCompoundKey");
     });
 
