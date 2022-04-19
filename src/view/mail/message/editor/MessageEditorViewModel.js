@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -100,6 +100,25 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
     },
 
     formulas: {
+
+        /**
+         * Returns an informational line regarding last saved date of the message,
+         * if "date" of the maintained messageDraft is valid, otherwise a default
+         * message.
+         */
+        lastSavedMessage: {
+            bind: {
+                date: "{messageDraft.savedAt}"
+            },
+            get (data) {
+                /**
+                 * @i18n
+                 */
+                return data.date ?
+                    `Last saved at ${Ext.Date.format(data.date, "d.m.Y H:i:s")}` :
+                    "Opened for editing";
+            }
+        },
 
         /**
          * Returns true if the MessageDraft is still marked as phantom and the

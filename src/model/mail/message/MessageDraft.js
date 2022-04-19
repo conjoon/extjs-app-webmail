@@ -100,6 +100,7 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
          */
         name: "seen",
         type: "bool",
+        critical: true,
         defaultValue: true
     }, {
         /**
@@ -107,6 +108,7 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
          */
         name: "flagged",
         type: "bool",
+        critical: true,
         defaultValue: false
     }, {
         /**
