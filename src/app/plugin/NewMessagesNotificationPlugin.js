@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,6 +43,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
         "conjoon.cn_mail.data.mail.MailboxRunner",
         "coon.comp.window.Toast",
         "coon.core.Environment",
+        "coon.core.ConfigManager",
         "conjoon.cn_mail.data.mail.service.MailFolderHelper",
         "conjoon.cn_mail.app.PackageController"
     ],
@@ -259,6 +260,8 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
     /**
      * Shows a Notification with the specified messageText. Will redirect to
      * the mailFolder`s toUrl()-return value on click.
+     * The title for the notification will either be the value found in the application's configured
+     * "title"-property, or the application's name itself if no configured title was found.
      *
      * @param {conjoon.cn_mail.model.mail.folder.MailFolder} mailFolder
      * @param {String} message
@@ -278,14 +281,16 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
         const
             me = this,
             file = me.getResource("iconFile"),
-            cfg = {};
+            cfg = {},
+            appName = coon.core.Environment.getManifest("name"),
+            title = coon.core.ConfigManager.get(appName, "title");
 
         if (file) {
             cfg.icon = file;
         }
 
         let notification = new Notification(
-            `${me.controller.getApplication().getName()} - new email`,
+            `${title || me.controller.getApplication().getName()} - new email`,
             Object.assign({
                 body: messageTxt
             }, cfg)
