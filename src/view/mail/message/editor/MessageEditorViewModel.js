@@ -693,10 +693,22 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
             const
                 me = this,
                 draft = me.get("messageDraft"),
-                attachments = draft.attachments();
+                attachments = draft.attachments(),
+                /**
+                 * we assume the following keys have been changed during saving the (associated) model(s)
+                 * and will ignore them in this case.
+                 * @type {string[]}
+                 */
+                ignore = ["id", "localId", "mailAccountId", "mailFolderId", "messageBodyId", "messageDraftId"];
+
+            const messageBodyModified = Object.entries(draft.getMessageBody().modified || {})
+                .map(entry => entry[0])
+                .filter(key => {
+                    return !ignore.includes(key);
+                });
 
             return !!draft.modified ||
-                !!draft.getMessageBody().modified ||
+                !!messageBodyModified.length ||
                 !!attachments.getRemovedRecords().length ||
                 // modified checks only "valid()" records
                 !!attachments.getRange().filter(item => item.dirty === true).length ||
