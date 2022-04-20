@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,7 +25,7 @@
 
 StartTest(t => {
 
-    let mailFolderHelperSpy, environmentSpy, plugin, packageConfig = {};
+    let mailFolderHelperSpy, environmentSpy, configSpy, appNameSpy, plugin, packageConfig = {};
 
     class AudioMock {
 
@@ -132,7 +132,11 @@ StartTest(t => {
             mailFolderHelper
         );
 
-        environmentSpy = t.spyOn(coon.core.Environment, "getPathForResource"). and.callFake(
+        appNameSpy = t.spyOn(coon.core.Environment, "getManifest").and.callFake(
+            () => "AppName"
+        );
+
+        environmentSpy = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake(
             (resource, pckg) => {
                 if (pckg !== packageName) {
                     return null;
@@ -146,6 +150,8 @@ StartTest(t => {
     t.afterEach(() => {
         packageConfig = {};
         environmentSpy.remove();
+        appNameSpy.remove();
+        configSpy && configSpy.remove();
         mailFolderHelperSpy.remove();
         conjoon.cn_mail.MailboxService.recentMessageItemKeys.clear();
         if (plugin) {
@@ -235,13 +241,22 @@ StartTest(t => {
         t.expect(notification).toBe(null);
 
         NotificationMock.permission = "granted";
+
+        configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake(
+            (domain, key) => null
+        );
         notification = plugin.showNotification(mailFolder, messageText);
+        t.expect(notification.title).toBe(`${applicationName} - new email`);
 
+        configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake(
+            (domain, key) => domain === "AppName" && key === "title" ? "ConfigTitle" : null
+        );
+        notification = plugin.showNotification(mailFolder, messageText);
         const closeSpy = t.spyOn(notification, "close");
-
         t.isInstanceOf(notification, NotificationMock);
         t.expect(resourceSpy.calls.mostRecent().args[0]).toBe("iconFile");
-        t.expect(notification.title).toBe(`${applicationName} - new email`);
+        t.expect(notification.title).toBe("ConfigTitle - new email");
+
         t.expect(notification.cfg).toEqual({
             body: messageText,
             icon: "icon.png"
