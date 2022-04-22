@@ -103,7 +103,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         // set store's extraParams to all attributes excluding previewText (see conjoon/rest-api-email)
         grid.on(
             "cn_mail-mailmessagegridbeforeload",
-            store => store.getProxy().extraParams.attributes = "*,previewText",
+            store => {
+                store.getProxy().extraParams.attributes = "*,previewText";
+
+                /**
+                 * @see conjoon/extjs-app-webmail#216
+                 */
+                store.on("filterchange", me.onStoreFilterChange, me);
+            },
             null,
             {single: true}
         );
@@ -408,6 +415,23 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
 
     /**
+     * When the store's filter changes, it's an indicator that the resource location is
+     * about to change. In this case, pendingLazies get invalidated since the store completely
+     * refills with new data. The pendingLazies need a refresh then.
+     *
+     * @param {Ext.data.Store} store
+     * @param  {Array} filter
+     */
+    onStoreFilterChange (store, filter) {
+        "use strict";
+
+        const me = this;
+
+        me.pendingLazies = {};
+    },
+
+
+    /**
      * Sends a request to the backend to load the previewTexts for the specified ids.
      *
      * @param {Array} idsToLoad
@@ -437,5 +461,3 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
     }
 
 });
-
-

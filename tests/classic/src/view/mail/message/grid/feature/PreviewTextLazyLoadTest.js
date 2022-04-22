@@ -182,9 +182,17 @@ StartTest(t => {
                 t.expect(onSpy.calls.mostRecent().args[3]).toEqual({single: true});
                 let extraParamCall = onSpy.calls.mostRecent().args[1],
                     proxyMock = {extraParams: {}},
-                    storeMock = {getProxy: () => proxyMock};
+                    storeMock = {getProxy: () => proxyMock, on () {}},
+                    filterChangeListenerSpy = t.spyOn(storeMock, "on").and.callThrough();
                 extraParamCall(storeMock);
                 t.expect(proxyMock.extraParams.attributes).toBe("*,previewText");
+
+                /**
+                 * @see conjoon/extjs-app-webmail#216
+                 */
+                t.expect(filterChangeListenerSpy.calls.mostRecent().args[0]).toBe("filterchange");
+                t.expect(filterChangeListenerSpy.calls.mostRecent().args[1]).toBe(feature.onStoreFilterChange);
+                t.expect(filterChangeListenerSpy.calls.mostRecent().args[2]).toBe(feature);
 
                 // scrolable on scroll, load for store, prefetch for store observers
                 t.expect(monSpy.calls.count()).toBe(3);
@@ -199,7 +207,7 @@ StartTest(t => {
                     t.expect(call.args[4]).toEqual({buffer: 500});
                 });
 
-                [getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
+                [filterChangeListenerSpy, getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
 
                 t.expect(feature.installed).toBe(true);
             });
@@ -504,7 +512,19 @@ StartTest(t => {
                 });
 
                 [requestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
+            });
 
+
+            t.it("fix: feature PreviewTextLazyLoad must empty pendingLazies if store gets reloaded for folder (conjoon/extjs-app-webmail#216)", t => {
+
+                const
+                    feature = createFeature();
+
+                feature.pendingLazies = null;
+
+                feature.onStoreFilterChange();
+
+                t.expect(feature.pendingLazies).toEqual({});
 
             });
 
