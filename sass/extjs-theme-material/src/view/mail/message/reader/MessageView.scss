@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -123,7 +123,7 @@
     .cn_mail-reloadWithImages {
         background-color: var(--alert-color);
         height: 26px;
-        color: var(--base-foreground-color);
+        color: var(--info-color);
         padding: 4px 0 0 8px;
         white-space: nowrap;
         text-overflow: ellipsis;
