@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,21 +26,29 @@
 .cn_mail-mailmessagepreviewfeature {
   .previewText {
     &.loading {
-      &:after {
-        overflow: hidden;
-        display: inline-block;
-        vertical-align: bottom;
-        animation: ellipsis steps(25, end) 1200ms infinite;
-        content: "\2026";
-        width: 0px;
-      }
+        background-image: linear-gradient(90deg,
+                var(--lazyload-grad-color1) 0%,
+                var(--lazyload-grad-color2) 50%,
+                var(--lazyload-grad-color1) 100%);
+        background-repeat: no-repeat;
+        background-size: 50% 100px;
+        -webkit-animation-duration: 2s;
+        -webkit-animation-fill-mode: forwards;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-name: placeholderShimmer;
+        -webkit-animation-timing-function: linear;
 
     }
   }
 }
 
-@keyframes ellipsis {
-  to {
-    width: 3.25em;
+@-webkit-keyframes placeholderShimmer {
+  0% {
+    background-position: -800px 0;
+  }
+
+  100% {
+    background-position: 800px 0;
   }
 }
+
