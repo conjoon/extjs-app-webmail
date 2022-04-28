@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -136,13 +136,24 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         // switch target parameter to MessageBodyDraft if applicable
         let target = me.entityName,
-            finalParams;
+            appendUrl = "",
+            finalParams = {target: target};
 
-        if ((action === "create" || action === "update") && target === "MessageBody") {
-            target = "MessageBodyDraft";
+        switch (action) {
+        case "create":
+        case "update":
+            if (target === "MessageBody") {
+                finalParams.target = "MessageBodyDraft";
+            }
+            break; 
+        case "read":
+            if (["MessageBody", "MessageItem", "MessageDraft"].includes(target)) {
+                appendUrl = (target === "MessageBody" ? "MessageBody" : "");
+                finalParams = Object.assign({}, me.getDefaultParameters(target));
+            } 
+            break;
         }
 
-        finalParams = {target: target};
 
         if (target === "MessageItem" && action === "update" && source.mailFolderId !== rec.get("mailFolderId")) {
             finalParams.action = "move";
@@ -152,7 +163,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         if (action !== "create") {
             if (Object.prototype.hasOwnProperty.call(source, "id")) {
-                url += "/" + source.id;
+                url += "/" + source.id + (appendUrl ? "/" + appendUrl : "");
             }
         }
 
@@ -195,8 +206,13 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
     getDefaultParameters (type) {
 
         const defs = {
+            MessageItem: {
+                attributes: "*,previewText,replyTo,cc,bcc"
+            },
+            MessageDraft: {
+                attributes: "*,previewText,hasAttachments,size"
+            },
             ListMessageItem: {
-                target: "MessageItem",
                 options: JSON.stringify({
                     previewText: {
                         plain: {

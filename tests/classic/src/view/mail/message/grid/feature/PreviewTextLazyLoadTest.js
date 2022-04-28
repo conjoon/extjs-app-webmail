@@ -506,7 +506,6 @@ StartTest(t => {
                     params: {
                         attributes: "previewText",
                         options: {"foo": "bar"},
-                        target: "MessageItem",
                         filter: JSON.stringify([{property: "id", operator: "in", value: [1, 2]}])
                     }
                 });

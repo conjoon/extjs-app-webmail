@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -405,6 +405,8 @@ StartTest(t => {
                 t.expect(request.getParams().localId).toBeUndefined();
             };
 
+        let paramSpy = t.spyOn(proxy, "getDefaultParameters").and.callThrough();
+
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
 
@@ -418,25 +420,29 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
+        t.expect(request.getParams().attributes).toBe(proxy.getDefaultParameters("MessageDraft").attributes);
         t.expect(request.getUrl()).toBe(targetUrl);
         keysUndefined();
-
+        t.expect(paramSpy.calls.mostRecent().args[0]).toBe("MessageDraft");
 
         targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/c";
         proxy.entityName = "MessageBody";
         request.setParams(copyParams());
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageBody");
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams().target).toBe("MessageBody");
+        t.expect(request.getParams().target).toBeUndefined();
         keysUndefined();
+
+
+        paramSpy.remove();
     });
 
 
-    t.it("buildUrl() - consider filters in params", t => {
+    t.it("buildUrl() - consider filter and attributes in params", t => {
 
         let filters = [{
                 property: "mailAccountId",
@@ -463,14 +469,20 @@ StartTest(t => {
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
+        let paramSpy = t.spyOn(proxy, "getDefaultParameters").and.callThrough();
+
         proxy.buildUrl(request);
+
+        t.expect(paramSpy.calls.mostRecent().args[0]).toBe("MessageItem");
 
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({
             filter: "[{\"property\":\"id\",\"value\":\"c\"}]",
-            target: "MessageItem"
+            attributes: "*,previewText,replyTo,cc,bcc"
         });
+
+        paramSpy.remove();
 
 
     });
@@ -529,12 +541,15 @@ StartTest(t => {
         }));
 
         t.expect(proxy.getDefaultParameters("ListMessageItem.limit")).toBe(-1);
-        t.expect(proxy.getDefaultParameters("ListMessageItem.target")).toBe("MessageItem");
+        t.expect(proxy.getDefaultParameters("ListMessageItem.target")).toEqual({});
         t.expect(Object.keys(proxy.getDefaultParameters("ListMessageItem"))).toEqual([
-            "target", "options", "limit"
+            "options", "limit"
         ]);
 
         t.expect(proxy.getDefaultParameters("notthere")).toEqual({});
+
+        t.expect(proxy.getDefaultParameters("MessageDraft").attributes).toBe("*,previewText,hasAttachments,size");
+        t.expect(proxy.getDefaultParameters("MessageItem").attributes).toBe("*,previewText,replyTo,cc,bcc");
     });
 
 
