@@ -144,9 +144,14 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             delete finalParams.target;
             break;
         case "create":
-        case "update":
             if (target === "MessageBody") {
                 finalParams.target = "MessageBodyDraft";
+            }
+            break;
+        case "update":
+            if (target === "MessageBody") {
+                appendUrl = (target === "MessageBody" ? "MessageBody" : "");
+                delete finalParams.target;
             }
             break; 
         case "read":

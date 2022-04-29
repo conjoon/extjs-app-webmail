@@ -283,6 +283,8 @@ StartTest(t => {
 
         t.expect(request.getUrl()).toBe(targetUrl);
 
+
+        request.setParams({});
         targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d";
         request.setUrl("");
         proxy.entityName = "MessageDraft";
@@ -292,15 +294,17 @@ StartTest(t => {
         t.expect(request.getUrl()).toBe(targetUrl);
 
 
+        request.setParams({});
         targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d";
         proxy.entityName = "MessageBody";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageBody");
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams().target).toBe("MessageBodyDraft");
+        t.expect(request.getParams().target).toBeUndefined();
 
         // modified
+        request.setParams({});
         t.expect(request.getRecords()[0].phantom).toBe(false);
         request.getRecords()[0].set("mailFolderId", "xyz");
         t.expect(request.getRecords()[0].get("mailFolderId")).toBe("xyz");
