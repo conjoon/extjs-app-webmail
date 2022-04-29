@@ -140,6 +140,9 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             finalParams = {target: target};
 
         switch (action) {
+        case "destroy":
+            delete finalParams.target;
+            break;
         case "create":
         case "update":
             if (target === "MessageBody") {

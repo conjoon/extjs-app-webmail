@@ -345,7 +345,7 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
@@ -355,7 +355,7 @@ StartTest(t => {
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams().target).toBe("MessageBody");
+        t.expect(request.getParams().target).toBeUndefined();
 
 
         // modified
@@ -367,7 +367,7 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
     });
