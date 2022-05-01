@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -334,8 +334,11 @@ StartTest(async t => {
                 t.it("field - recent", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
-
                     t.expect(rec.get("recent")).toBe(false);
+
+                    t.expect(
+                        conjoon.cn_mail.model.mail.message.MessageDraft.getField("recent").getPersist()
+                    ).toBe(false);
                 });
 
 

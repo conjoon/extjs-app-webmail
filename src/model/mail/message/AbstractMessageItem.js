@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,7 +73,8 @@ Ext.define("conjoon.cn_mail.model.mail.message.AbstractMessageItem", {
         type: "bool"
     }, {
         name: "answered",
-        type: "bool"
+        type: "bool",
+        persist: false
     }, {
         name: "flagged",
         type: "bool"
