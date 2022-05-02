@@ -143,6 +143,12 @@ export default [{
                         ]
                     },
                     {
+                        group: "writer",
+                        items: [
+                            "src/data/mail/message/writer/MessageEntityWriterTest.js"
+                        ]
+                    },
+                    {
                         group: "session",
                         items: [
                             "src/data/mail/message/session/MessageCompoundBatchVisitorTest.js",

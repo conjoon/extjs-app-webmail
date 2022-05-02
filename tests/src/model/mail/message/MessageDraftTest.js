@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -231,6 +231,7 @@ StartTest(async t => {
                         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec);
 
                         t.expect(rec.get("id")).not.toBeFalsy();
+
                         t.expect(rec.getId()).toBe(key.toLocalId());
                     });
 
@@ -334,8 +335,11 @@ StartTest(async t => {
                 t.it("field - recent", t => {
 
                     var rec = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
-
                     t.expect(rec.get("recent")).toBe(false);
+
+                    t.expect(
+                        conjoon.cn_mail.model.mail.message.MessageDraft.getField("recent").getPersist()
+                    ).toBe(false);
                 });
 
 
@@ -522,7 +526,7 @@ StartTest(async t => {
 
                         let ret = draft.save();
 
-                        t.expect(ret.request.getJsonData().mailFolderId).toBe("foo");
+                        t.expect(ret.request.getJsonData().data.mailFolderId).toBe("foo");
                         t.expect(ret.request.getUrl()).toContain("MailFolders/" + encodeURIComponent(messageItem.mailFolderId) + "/");
 
                         t.waitForMs(t.parent.TIMEOUT, () => {

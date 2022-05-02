@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -42,11 +42,13 @@ StartTest(t => {
             "MessageBody"
         ]);
 
+
         t.expect(proxy.alias).toContain("proxy.cn_mail-mailmessageentityproxy");
 
         t.expect(proxy.mixins.utilityMixin).toBe(conjoon.cn_mail.data.mail.message.proxy.UtilityMixin.prototype);
 
         t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader");
+        t.isInstanceOf(proxy.getWriter(), "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter");
 
 
     });
@@ -281,26 +283,30 @@ StartTest(t => {
 
         proxy.buildUrl(request);
 
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageItem");
 
+
+        request.setParams({});
         targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d";
         request.setUrl("");
         proxy.entityName = "MessageDraft";
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageDraft");
 
 
+        request.setParams({});
         targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d";
         proxy.entityName = "MessageBody";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageBody");
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams().target).toBe("MessageBodyDraft");
+        t.expect(request.getParams().target).toBeUndefined();
 
         // modified
+        request.setParams({});
         t.expect(request.getRecords()[0].phantom).toBe(false);
         request.getRecords()[0].set("mailFolderId", "xyz");
         t.expect(request.getRecords()[0].get("mailFolderId")).toBe("xyz");
@@ -309,9 +315,9 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageDraft");
     });
 
 
@@ -345,7 +351,7 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
@@ -355,7 +361,7 @@ StartTest(t => {
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams().target).toBe("MessageBody");
+        t.expect(request.getParams().target).toBeUndefined();
 
 
         // modified
@@ -367,7 +373,7 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
     });
@@ -405,6 +411,8 @@ StartTest(t => {
                 t.expect(request.getParams().localId).toBeUndefined();
             };
 
+        let paramSpy = t.spyOn(proxy, "getDefaultParameters").and.callThrough();
+
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
 
@@ -418,25 +426,29 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
+        t.expect(request.getParams().attributes).toBe(proxy.getDefaultParameters("MessageDraft").attributes);
         t.expect(request.getUrl()).toBe(targetUrl);
         keysUndefined();
-
+        t.expect(paramSpy.calls.mostRecent().args[0]).toBe("MessageDraft");
 
         targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/c";
         proxy.entityName = "MessageBody";
         request.setParams(copyParams());
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageBody");
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams().target).toBe("MessageBody");
+        t.expect(request.getParams().target).toBeUndefined();
         keysUndefined();
+
+
+        paramSpy.remove();
     });
 
 
-    t.it("buildUrl() - consider filters in params", t => {
+    t.it("buildUrl() - consider filter and attributes in params", t => {
 
         let filters = [{
                 property: "mailAccountId",
@@ -463,14 +475,20 @@ StartTest(t => {
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
+        let paramSpy = t.spyOn(proxy, "getDefaultParameters").and.callThrough();
+
         proxy.buildUrl(request);
+
+        t.expect(paramSpy.calls.mostRecent().args[0]).toBe("MessageItem");
 
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({
             filter: "[{\"property\":\"id\",\"value\":\"c\"}]",
-            target: "MessageItem"
+            attributes: "*,previewText,replyTo,cc,bcc"
         });
+
+        paramSpy.remove();
 
 
     });
@@ -494,7 +512,7 @@ StartTest(t => {
                 }),
                 records: recs
             }),
-            targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d";
+            targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d/MessageItem";
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
@@ -504,7 +522,7 @@ StartTest(t => {
         proxy.buildUrl(request);
 
         // modified
-        t.expect(request.getParams().target).toBe("MessageItem");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBe("move");
         t.expect(request.getUrl()).toBe(targetUrl);
 
@@ -529,13 +547,37 @@ StartTest(t => {
         }));
 
         t.expect(proxy.getDefaultParameters("ListMessageItem.limit")).toBe(-1);
-        t.expect(proxy.getDefaultParameters("ListMessageItem.target")).toBe("MessageItem");
+        t.expect(proxy.getDefaultParameters("ListMessageItem.target")).toEqual({});
         t.expect(Object.keys(proxy.getDefaultParameters("ListMessageItem"))).toEqual([
-            "target", "options", "limit"
+            "options", "limit"
         ]);
 
         t.expect(proxy.getDefaultParameters("notthere")).toEqual({});
+
+        t.expect(proxy.getDefaultParameters("MessageDraft").attributes).toBe("*,previewText,hasAttachments,size");
+        t.expect(proxy.getDefaultParameters("MessageItem").attributes).toBe("*,previewText,replyTo,cc,bcc");
     });
 
+
+    t.it("getMethod()", t => {
+
+        const
+            proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy"),
+            actions = {
+                create: "POST",
+                read: "GET",
+                update: "PATCH",
+                destroy: "DELETE"
+            },
+            request = new Ext.data.Request;
+
+        Object.entries(actions).forEach(([action, method]) => {
+            let spy = t.spyOn(request, "getAction").and.callFake(() => action);
+            t.expect(proxy.getMethod(request)).toBe(method);
+            spy.remove();
+        });
+
+
+    });
 
 });

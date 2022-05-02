@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,15 +35,19 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         // @define
         "l8",
         "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
-        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
+        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
+        "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter"
     ],
 
     mixins: {
         utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     },
 
-
     alias: "proxy.cn_mail-mailmessageentityproxy",
+
+    writer: {
+        type: "cn_mail-mailmessageentitywriter"
+    },
 
     // default reader, gets set by BaseSchema for MessageItem and MessageDraft individually
     reader: {
@@ -59,7 +63,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         "MessageItem",
         "MessageBody"
     ],
-
 
     /**
      * The entity being used with this Proxy. Can be any of MessageItem,
@@ -136,13 +139,30 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         // switch target parameter to MessageBodyDraft if applicable
         let target = me.entityName,
-            finalParams;
+            appendUrl = "",
+            finalParams = {target: target};
 
-        if ((action === "create" || action === "update") && target === "MessageBody") {
-            target = "MessageBodyDraft";
+        switch (action) {
+        case "destroy":
+            delete finalParams.target;
+            break;
+        case "create":
+            if (target === "MessageBody") {
+                finalParams.target = "MessageBodyDraft";
+            }
+            break;
+        case "update":
+            delete finalParams.target;
+            appendUrl = me.entityName;
+            break; 
+        case "read":
+            if (["MessageBody", "MessageItem", "MessageDraft"].includes(target)) {
+                appendUrl = (target === "MessageBody" ? "MessageBody" : "");
+                finalParams = Object.assign({}, me.getDefaultParameters(target));
+            } 
+            break;
         }
 
-        finalParams = {target: target};
 
         if (target === "MessageItem" && action === "update" && source.mailFolderId !== rec.get("mailFolderId")) {
             finalParams.action = "move";
@@ -152,7 +172,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         if (action !== "create") {
             if (Object.prototype.hasOwnProperty.call(source, "id")) {
-                url += "/" + source.id;
+                url += "/" + source.id + (appendUrl ? "/" + appendUrl : "");
             }
         }
 
@@ -195,8 +215,13 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
     getDefaultParameters (type) {
 
         const defs = {
+            MessageItem: {
+                attributes: "*,previewText,replyTo,cc,bcc"
+            },
+            MessageDraft: {
+                attributes: "*,previewText,hasAttachments,size"
+            },
             ListMessageItem: {
-                target: "MessageItem",
                 options: JSON.stringify({
                     previewText: {
                         plain: {
@@ -213,6 +238,26 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         };
 
         return l8.unchain(type, defs, {});
+    },
+
+
+    /**
+     * https://jsonapi.org/faq/ - "Where's PUT?"
+     *
+     * @param {Ext.data.Request} request
+     *
+     * @return {String}
+     */
+    getMethod (request) {
+
+        const actionMethods = {
+            create: "POST",
+            read: "GET",
+            update: "PATCH",
+            destroy: "DELETE"
+        };
+
+        return actionMethods[request.getAction()];
     }
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -113,7 +113,7 @@ StartTest(t => {
 
         m.set("foo", "bar");
         op = m.save();
-        t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a2/MailFolders/b2/MessageItems/c2?");
+        t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a2/MailFolders/b2/MessageItems/c2/MessageItem?");
 
         // CREATE
         m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
