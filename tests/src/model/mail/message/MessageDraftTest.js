@@ -231,6 +231,7 @@ StartTest(async t => {
                         let key = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.fromRecord(rec);
 
                         t.expect(rec.get("id")).not.toBeFalsy();
+
                         t.expect(rec.getId()).toBe(key.toLocalId());
                     });
 
@@ -525,7 +526,7 @@ StartTest(async t => {
 
                         let ret = draft.save();
 
-                        t.expect(ret.request.getJsonData().mailFolderId).toBe("foo");
+                        t.expect(ret.request.getJsonData().data.mailFolderId).toBe("foo");
                         t.expect(ret.request.getUrl()).toContain("MailFolders/" + encodeURIComponent(messageItem.mailFolderId) + "/");
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
