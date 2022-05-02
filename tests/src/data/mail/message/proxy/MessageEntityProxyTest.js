@@ -42,11 +42,13 @@ StartTest(t => {
             "MessageBody"
         ]);
 
+
         t.expect(proxy.alias).toContain("proxy.cn_mail-mailmessageentityproxy");
 
         t.expect(proxy.mixins.utilityMixin).toBe(conjoon.cn_mail.data.mail.message.proxy.UtilityMixin.prototype);
 
         t.isInstanceOf(proxy.getReader(), "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader");
+        t.isInstanceOf(proxy.getWriter(), "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter");
 
 
     });
@@ -281,7 +283,7 @@ StartTest(t => {
 
         proxy.buildUrl(request);
 
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageItem");
 
 
         request.setParams({});
@@ -289,9 +291,9 @@ StartTest(t => {
         request.setUrl("");
         proxy.entityName = "MessageDraft";
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageDraft");
 
 
         request.setParams({});
@@ -313,9 +315,9 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams().target).toBe("MessageDraft");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getUrl()).toBe(targetUrl + "/MessageDraft");
     });
 
 
@@ -510,7 +512,7 @@ StartTest(t => {
                 }),
                 records: recs
             }),
-            targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d";
+            targetUrl = "/MailAccounts/a/MailFolders/b/MessageItems/d/MessageItem";
 
         t.expect(request.getUrl()).not.toBe(targetUrl);
 
@@ -520,7 +522,7 @@ StartTest(t => {
         proxy.buildUrl(request);
 
         // modified
-        t.expect(request.getParams().target).toBe("MessageItem");
+        t.expect(request.getParams().target).toBeUndefined();
         t.expect(request.getParams().action).toBe("move");
         t.expect(request.getUrl()).toBe(targetUrl);
 
@@ -556,5 +558,26 @@ StartTest(t => {
         t.expect(proxy.getDefaultParameters("MessageItem").attributes).toBe("*,previewText,replyTo,cc,bcc");
     });
 
+
+    t.it("getMethod()", t => {
+
+        const
+            proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy"),
+            actions = {
+                create: "POST",
+                read: "GET",
+                update: "PATCH",
+                destroy: "DELETE"
+            },
+            request = new Ext.data.Request;
+
+        Object.entries(actions).forEach(([action, method]) => {
+            let spy = t.spyOn(request, "getAction").and.callFake(() => action);
+            t.expect(proxy.getMethod(request)).toBe(method);
+            spy.remove();
+        });
+
+
+    });
 
 });

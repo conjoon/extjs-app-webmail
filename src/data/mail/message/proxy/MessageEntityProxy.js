@@ -35,15 +35,19 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         // @define
         "l8",
         "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
-        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
+        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
+        "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter"
     ],
 
     mixins: {
         utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     },
 
-
     alias: "proxy.cn_mail-mailmessageentityproxy",
+
+    writer: {
+        type: "cn_mail-mailmessageentitywriter"
+    },
 
     // default reader, gets set by BaseSchema for MessageItem and MessageDraft individually
     reader: {
@@ -59,7 +63,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         "MessageItem",
         "MessageBody"
     ],
-
 
     /**
      * The entity being used with this Proxy. Can be any of MessageItem,
@@ -149,10 +152,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             }
             break;
         case "update":
-            if (target === "MessageBody") {
-                appendUrl = (target === "MessageBody" ? "MessageBody" : "");
-                delete finalParams.target;
-            }
+            delete finalParams.target;
+            appendUrl = me.entityName;
             break; 
         case "read":
             if (["MessageBody", "MessageItem", "MessageDraft"].includes(target)) {
@@ -237,6 +238,26 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         };
 
         return l8.unchain(type, defs, {});
+    },
+
+
+    /**
+     * https://jsonapi.org/faq/ - "Where's PUT?"
+     *
+     * @param {Ext.data.Request} request
+     *
+     * @return {String}
+     */
+    getMethod (request) {
+
+        const actionMethods = {
+            create: "POST",
+            read: "GET",
+            update: "PATCH",
+            destroy: "DELETE"
+        };
+
+        return actionMethods[request.getAction()];
     }
 
 });
