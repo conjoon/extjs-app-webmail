@@ -151,7 +151,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
      * Callback for the "cn_mail-mailmessagegridload"-event of the MailMessageGrid.
      * Will check if any of the items flagged as "recent" that were loaded with the grid's store
      * is already existing in recentMessageItems, and if not, trigger the notification-process for
-     * these items. They will get added to the recentMessagheItemKeys-Set afterwards to prevent
+     * these items. They will get added to the recentMessageItemKeys-Set afterwards to prevent
      * notification-duplicates.
      *
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
