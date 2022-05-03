@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -135,7 +135,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
                                                 (record.get("recent") ? " recent" : "")+"\">" +
                           "<div class=\"subject"+ (!record.get("seen") ? " seen" : "") +
                                                   (record.get("recent") ? " recent" : "")+"\">" +
-                             (record.get("answered") ? "<span class=\"fa fa-mail-reply\"></span>" : "")+
+                             (record.get("answered") ? "<span class=\"fa fa-reply\"></span>" : "")+
                              (record.get("flagged") ? "<span class=\"fa fa-flag\"></span>" : "")+
                              (record.get("draft") ? "<span class=\"draft\">[Draft]</span>" : "") +
 
