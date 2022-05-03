@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -154,7 +154,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
      * following:
      * - if no href attribute is found, the target-attribute will be removed
      * - if the href-attribute is a local anchor, the target-attribute will be
-     * removed to make sure the links is treated as anchor of the owning document
+     * removed to make sure the links is treated as anchor of the owning document.
+     * The browser should then prevent any action triggered by clicking on the url
      * - if the href-attribute's value starts with "mailto:", the value will be
      * prepended with "#cn_mail/message/compose/" to make sure the routing of
      * the mail-module will process the link, and the target of the element will
@@ -173,17 +174,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
             a = elements[i];
             href = a.getAttribute("href");
 
-            if (!href || href.indexOf("#") === 0) {
+            if (!/^(((http|https|ftp):\/\/)|(mailto:))/.test(href)) {
+                a.removeAttribute("href");
                 a.removeAttribute("target");
                 continue;
             }
 
+            // mailto to make emails working with current browser instance and conjoon
             if (href.indexOf("mailto:") === 0) {
-
                 a.setAttribute("href", "#cn_mail/message/compose/" + encodeURIComponent(href));
                 a.setAttribute("target", "_top");
                 continue;
             }
+
 
             a.setAttribute("target", "_blank");
         }
