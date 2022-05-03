@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -91,7 +91,11 @@ StartTest(async t => {
 
                     t.isCalled("getHumanReadableDate", coon.core.util.Date);
                     t.isCalled("getPreviewTextRow", feature);
-                    feature.getAdditionalData(null, null, {get: function () {}}, null);
+                    const addData = feature.getAdditionalData(null, null, {get: function (key) {return true;}}, null);
+
+                    t.expect(addData.rowBody).toContain("draft");
+                    t.expect(addData.rowBody).toContain("fa fa-flag");
+                    t.expect(addData.rowBody).toContain("fa fa-reply");
 
                     feature = grid.view.getFeature("cn_mail-mailMessageFeature-livegrid");
                     t.isInstanceOf(feature, "conjoon.cn_mail.view.mail.message.grid.feature.Livegrid");
