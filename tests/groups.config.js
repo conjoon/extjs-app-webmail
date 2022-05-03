@@ -82,6 +82,7 @@ export default [{
             group: "mail",
 
             items: [
+                "src/data/mail/MailboxSubscriptionMixinTest.js",
                 "src/data/mail/MailboxRunnerTest.js",
                 {
                     group: "account",
