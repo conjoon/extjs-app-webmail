@@ -100,15 +100,18 @@
     }
 
     .badge-unreadcount {
-        border-radius    : 3px;
-        background-color : var(--accent-foreground-color);
-        color            : var(--accent-color);
-        font-size        : 10px;
-        height           : 16px;
-        line-height      : 18px;
-        padding          : 0 4px;
-        position         : absolute;
-        right            : 9px;
+        border-radius: 5px;
+        border: 1px solid var(--accent-light-color);
+        min-width: 20px;
+        text-align: center;
+        background-color: var(--accent-foreground-color);
+        color: var(--accent-color);
+        font-size: 10px;
+        height: 18px;
+        line-height: 16px;
+        padding: 0 3px;
+        position: absolute;
+        right: 9px;
     }
 
     .x-grid-item {
