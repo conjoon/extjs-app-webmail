@@ -213,6 +213,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view.busyMask = null;
         }
 
+        if (view.loadingFailedMask) {
+            view.loadingFailedMask.destroy();
+            view.loadingFailedMask = null;
+        }
+
         if (view.loadingMask) {
             view.loadingMask.destroy();
             view.loadingMask = null;
