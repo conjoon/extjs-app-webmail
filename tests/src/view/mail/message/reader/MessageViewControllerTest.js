@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -66,18 +66,30 @@ StartTest(async t => {
 
         t.it("extjs-app-webmail#88 - sanitizeLinks()", t => {
 
-            let tests = [{
-                has: {id: "cn_" + 1, target: "_blank"},
-                expected: {id: "cn_" + 1, href: null, target: null}
+            let c, tests = [{
+                has: {id: "cn_" + (++c), target: "_blank"},
+                expected: {id: "cn_" + c, href: null, target: null}
             }, {
-                has: {id: "cn_" + 2, href: "#foobar", target: "_top"},
-                expected: {id: "cn_" + 2, href: "#foobar", target: null}
+                has: {id: "cn_" + (++c), href: "#foobar", target: "_top"},
+                expected: {id: "cn_" + c, href: null, target: null}
             }, {
-                has: {id: "cn_" + 3, href: "mailto:foobar@check"},
-                expected: {id: "cn_" + 3, href: "#cn_mail/message/compose/" + encodeURIComponent("mailto:foobar@check"), target: "_top"}
+                has: {id: "cn_" + (++c), href: "/#", target: "_top"},
+                expected: {id: "cn_" + c, href: null, target: null}
             }, {
-                has: {id: "cn_" + 4, href: "safssfafs"},
-                expected: {id: "cn_" + 4, href: "safssfafs", target: "_blank"}
+                has: {id: "cn_" + (++c), href: "mailto:foobar@check"},
+                expected: {id: "cn_" + c, href: "#cn_mail/message/compose/" + encodeURIComponent("mailto:foobar@check"), target: "_top"}
+            }, {
+                has: {id: "cn_" + (++c), href: "url.domain.com"},
+                expected: {id: "cn_" + c, href: null, target: null}
+            }, {
+                has: {id: "cn_" + (++c), href: "https://url.domain.com"},
+                expected: {id: "cn_" + c, href: "https://url.domain.com", target: "_blank"}
+            }, {
+                has: {id: "cn_" + (++c), href: "http://url.domain.com"},
+                expected: {id: "cn_" + c, href: "http://url.domain.com", target: "_blank"}
+            }, {
+                has: {id: "cn_" + (++c), href: "ftp://url.domain.com"},
+                expected: {id: "cn_" + c, href: "ftp://url.domain.com", target: "_blank"}
             }];
 
             let elements = [], test;
