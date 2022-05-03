@@ -24,8 +24,10 @@
  */
 
 /**
- * ControllerPlugin for sending Notification messages/sound to ther desktop
- * of the user when recent messages have been found or loaded from the backend.
+ * ControllerPlugin for sending Notification messages/sound to the desktop
+ * of the user when recent messages have been found or loaded from the backend, if the
+ * mailFolder with the recent messages is in the list of subscriptions maintained
+ * by the #mailboxRunner.
  * The plugin will make sure that the PackageController registers itself to the
  * "conjoon.cn_mail.event.NewMessagesAvailable"-event and the cn_mail-mailmessagegridload
  * of the MessageGrid to react appropriately to these events.
@@ -149,6 +151,8 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
 
     /**
      * Callback for the "cn_mail-mailmessagegridload"-event of the MailMessageGrid.
+     * Will check if the owning mailfolder is maintained in the list of subscriptions
+     * this plugin uses for notifying.
      * Will check if any of the items flagged as "recent" that were loaded with the grid's store
      * is already existing in recentMessageItems, and if not, trigger the notification-process for
      * these items. They will get added to the recentMessageItemKeys-Set afterwards to prevent
@@ -166,10 +170,16 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
             ctrl = me.controller,
             recentMessageItemKeys = conjoon.cn_mail.MailboxService.recentMessageItemKeys,
             inboxViewCtrl = ctrl.getMailInboxView().getController(),
-            mailFolder = inboxViewCtrl.getSelectedMailFolder(),
-            recentMessages = messageItems.filter(
-                item => item.get("recent") === true && !recentMessageItemKeys.has(item.getCompoundKey().toString())
-            );
+            mailFolder = inboxViewCtrl.getSelectedMailFolder();
+
+
+        if (!me.folderHasMailboxRunnerSubscription(mailFolder)) {
+            return null;
+        }
+
+        const recentMessages = messageItems.filter(
+            item => item.get("recent") === true && !recentMessageItemKeys.has(item.getCompoundKey().toString())
+        );
 
         if (!recentMessages.length) {
             return null;
@@ -188,6 +198,23 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
         return true;
     },
 
+
+    /**
+     * Returns true is the specified folder is in the list of subscriptions for the #mailboxRunner.
+     *
+     * @param {conjoon.cn_mail.model.mail.folder.MailFolder} mailFolder
+     *
+     * @return {boolean}
+     */
+    folderHasMailboxRunnerSubscription (mailFolder) {
+        "use strict";
+
+        const
+            me = this,
+            subscription = me.mailboxRunner.getSubscription(mailFolder.getCompoundKey().getMailAccountId());
+
+        return subscription ? subscription.folder === mailFolder : false;
+    },
 
     /**
      * Updates the current active MessageItemGrid - if any - with the messageItems,

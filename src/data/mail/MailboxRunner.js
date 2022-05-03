@@ -46,6 +46,10 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         "conjoon.cn_mail.data.mail.service.MailboxService"
     ],
 
+    mixins: [
+        "conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"
+    ],
+
     /**
      * The intrerval in ms, in which a runner should be called
      * @var {Number} interval
@@ -393,77 +397,6 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         }
 
         me.createSubscription(records[0].parentNode);
-    },
-
-
-    /**
-     * @private
-     */
-    initSubscriptions () {
-        "use strict";
-        const me = this;
-
-        if (!me.subscriptions) {
-            me.subscriptions = {};
-        }
-    },
-
-
-    /**
-     * @param {String|Ext.data.TreeModel} mailAccount
-     *
-     * @private
-     */
-    getSubscription (mailAccount) {
-        "use strict";
-        const me = this;
-
-        me.initSubscriptions();
-
-        const id = me.getSubscriptionId(mailAccount);
-
-        return me.subscriptions[id];
-    },
-
-
-    /**
-     * @param {String|Ext.data.TreeModel}
-     * @param {Object}
-     *
-     * @private
-     */
-    addSubscription (mailAccount, subscription) {
-        "use strict";
-        const me = this;
-
-        me.initSubscriptions();
-
-        const id = me.getSubscriptionId(mailAccount);
-
-        me.subscriptions[id] = subscription;
-
-        return subscription;
-    },
-
-
-    /**
-     *
-     * @param {String|Ext.data.TreeModel}
-     *
-     * @private
-     */
-    getSubscriptionId (mailAccount) {
-        "use strict";
-
-        if (l8.isObject(mailAccount) && l8.isFunction(mailAccount.get)) {
-            return mailAccount.get("id");
-        }
-
-        if (!l8.isString(mailAccount)) {
-            throw new Error("Unexpected type for \"mailAccount\" submitted");
-        }
-
-        return mailAccount;
     },
 
 

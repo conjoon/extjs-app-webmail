@@ -348,6 +348,29 @@ StartTest(t => {
     });
 
 
+    t.it("folderHasMailboxRunnerSubscription()", t => {
+
+        const
+            compoundKey = {getMailAccountId: function () {}},
+            mailFolder = {getCompoundKey: () => compoundKey},
+            mailboxRunner = {getSubscription: function () {}},
+            compoundKeySpy = t.spyOn(compoundKey, "getMailAccountId").and.callFake(() => "ID");
+
+        let mailboxRunnerSpy;
+
+        plugin.mailboxRunner = mailboxRunner;
+
+        mailboxRunnerSpy = t.spyOn(mailboxRunner, "getSubscription").and.callFake(() => ({folder: mailFolder}));
+        t.expect(plugin.folderHasMailboxRunnerSubscription(mailFolder)).toBe(true);
+        t.expect(mailboxRunnerSpy.calls.mostRecent().args[0]).toBe("ID");
+
+        mailboxRunnerSpy = t.spyOn(mailboxRunner, "getSubscription").and.callFake(() => null);
+        t.expect(plugin.folderHasMailboxRunnerSubscription(mailFolder)).toBe(false);
+
+        [mailboxRunnerSpy, compoundKeySpy].map(spy => spy.remove());
+    });
+
+
     t.it("onMessageGridLoad()", t => {
 
         const
@@ -374,8 +397,16 @@ StartTest(t => {
 
                 }
             },
-            messageItems = [record];
+            messageItems = [record],
+            mailboxRunner = {getSubscription: function () {}};
 
+        let subscriptionSpy = t.spyOn(plugin, "folderHasMailboxRunnerSubscription").and.callFake(() => false);
+
+        plugin.mailboxRunner = mailboxRunner;
+        t.expect(plugin.onMessageGridLoad(store, messageItems)).toBe(null);
+        t.expect(subscriptionSpy.calls.mostRecent().args[0]).toBe(mailFolder);
+
+        subscriptionSpy = t.spyOn(plugin, "folderHasMailboxRunnerSubscription").and.callFake(() => true);
         conjoon.cn_mail.MailboxService.recentMessageItemKeys.add(record.getCompoundKey().toString());
         t.expect(plugin.onMessageGridLoad(store, messageItems)).toBe(null);
 
@@ -390,7 +421,7 @@ StartTest(t => {
         );
         t.expect(playSpy.calls.count()).toBe(1);
 
-        [textSpy, playSpy, notificationSpy, mailFolderSpy].map(spy => spy.remove());
+        [textSpy, playSpy, notificationSpy, mailFolderSpy, subscriptionSpy].map(spy => spy.remove());
     });
 
 
