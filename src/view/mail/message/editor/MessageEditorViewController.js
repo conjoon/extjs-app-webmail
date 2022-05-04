@@ -400,8 +400,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     /**
      * Callback for this view's beforesave event.
      * If the viewModel's isSubjectRequired is set to true and the subject is
-     * empty, the saveing process will be cancelled and the user is prompted
-     * for a subject. If it's still empty, isSubjectRequired will be set to false
+     * empty, the process will be cancelled and the user is prompted
+     * for a subject. If it's still empty, "isSubjectRequired" will be set to false
      * and the process will be triggered again. The controller will not ask for a
      * subject then.
      *
@@ -449,10 +449,37 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             return false;
         }
 
+        me.commitBodyAndAttachments();
+
+        vm.set("isSaving", true);
+
+        /**
+         * @i18n
+         */
+        view.setBusy({msg: "Saving Mail", msgAction: "Stand by..."});
+    },
+
+
+    /**
+     * Helper function to make sure associations are not considered in an operation
+     * if the associations are marked dirty, but the dirty-flag is only set because a
+     * foreign key had changed.
+     * In this case, the update can be committed locally.
+     *
+     * @private
+     */
+    commitBodyAndAttachments () {
+        "use strict";
+
+        const
+            me = this,
+            vm = me.getViewModel();
+
+        let attachments, body, attachment, keys;
+
         // silently commits attachments where the messageItemId foreign key was
         // changed previously
-        let attachments = vm.get("messageDraft.attachments").getRange(),
-            attachment, keys;
+        attachments = vm.get("messageDraft.attachments").getRange();
 
         for (let a = attachments.length - 1; a >= 0; a--) {
             attachment = attachments[a];
@@ -464,13 +491,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
         }
 
-
-        vm.set("isSaving", true);
-
-        /**
-         * @i18n
-         */
-        view.setBusy({msg: "Saving Mail", msgAction: "Stand by..."});
+        // ... do the same with the messageBody
+        body = vm.get("messageDraft.messageBody");
+        keys = body.modified ? Object.keys(body.modified) : null;
+        if (body.crudState === "U" && keys && keys.length === 1 && keys[0] === "messageBodyId") {
+            // commit silently
+            body.commit(true);
+        }
     },
 
 
