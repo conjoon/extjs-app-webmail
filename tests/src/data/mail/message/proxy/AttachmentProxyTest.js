@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -190,7 +190,7 @@ StartTest(t => {
 
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams()).toEqual({foo: "bar", type: "draft"});
+        t.expect(request.getParams()).toEqual({foo: "bar"});
 
         let exc;
         proxy.entityName = "ItemAttachment";
@@ -237,7 +237,7 @@ StartTest(t => {
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams().type).toBe("draft");
+        t.expect(request.getParams()).toBeUndefined();
 
         let exc;
         proxy.entityName = "ItemAttachment";
@@ -284,7 +284,7 @@ StartTest(t => {
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams().type).toBe("draft");
+        t.expect(request.getParams()).toBeUndefined();
 
         let exc;
         proxy.entityName = "ItemAttachment";
@@ -345,7 +345,7 @@ StartTest(t => {
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams().type).toBe("draft");
+        t.expect(request.getParams().type).toBeUndefined();
         keysUndefined();
 
         proxy.entityName = "ItemAttachment";
@@ -391,7 +391,7 @@ StartTest(t => {
         t.expect(request.getUrl()).not.toBe(targetUrl);
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
-        t.expect(request.getParams()).toEqual({snafu: "YO!",type: "draft", filter: "[{\"property\":\"foo\",\"value\":\"bar\"}]"});
+        t.expect(request.getParams()).toEqual({snafu: "YO!", filter: "[{\"property\":\"foo\",\"value\":\"bar\"}]"});
 
     });
 
