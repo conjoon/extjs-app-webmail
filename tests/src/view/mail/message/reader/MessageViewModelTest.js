@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -65,6 +65,7 @@ StartTest(async t => {
                     "conjoon.cn_mail.model.mail.message.MessageItem",
                     item
                 );
+                messageItem.commit(true);
 
                 return messageItem;
             },
