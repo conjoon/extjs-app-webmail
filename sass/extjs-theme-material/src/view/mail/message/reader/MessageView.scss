@@ -54,10 +54,30 @@
 
         .sender-img {
 
-            margin-left : 10px;
+            margin: 0px;
+            left: 4px;
+            top: 8px;
+            height: 66px;
+            width: 66px;
+
+            overflow: hidden;
+
+            img {
+                position: absolute;
+                left: 0px;
+                border-radius: 36px;
+                top: 0px;
+                height: 66px;
+            }
 
             &.fas::before {
-                font-size : 68px;
+                font-size: 74px;
+                padding-top: 0px;
+                position: absolute;
+                height: 66px;
+                width: 66px;
+                border-radius: 40px;
+                overflow: hidden;
             }
         }
 
