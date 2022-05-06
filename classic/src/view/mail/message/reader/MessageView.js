@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -142,7 +142,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
             hidden: "{!messageItem}"
         },
         items: [{
-            xtype: "box",
+            xtype: "image",
+            autoEl: "div",
+            bind: {
+                src: "{getSenderImage}"
+            },
             cls: "sender-img fas fa-user",
             margin: "8 8 0 8"
         }, {

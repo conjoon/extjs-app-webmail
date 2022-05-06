@@ -30,9 +30,15 @@ StartTest(async t => {
     const helper = l8.liquify(TestHelper.get(t, window));
     await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
         
-        t.requireOk("coon.core.util.Date", () => {
+        t.requireOk("coon.core.util.Date", "coon.core.ServiceProvider", () => {
 
-          
+            const userImageService = Ext.create("coon.core.service.UserImageService");
+            userImageService.getImageSrc = id => id;
+            coon.core.ServiceProvider.register(
+                "coon.core.service.UserImageService",
+                userImageService
+            );
+
             if (!Ext.manifest) {
                 Ext.manifest = {};
             }
@@ -148,6 +154,9 @@ StartTest(async t => {
                 t.expect(view.closable).toBe(true);
 
                 t.expect(view.down("cn_mail-mailmessagereaderattachmentlist") instanceof conjoon.cn_mail.view.mail.message.reader.AttachmentList).toBe(true);
+
+                const image = view.down("image[cls=sender-img fas fa-user]");
+                t.expect(image.config.bind).toEqual({src: "{getSenderImage}"});
 
                 t.expect(
                     view.getViewModel() instanceof conjoon.cn_mail.view.mail.message.reader.MessageViewModel
