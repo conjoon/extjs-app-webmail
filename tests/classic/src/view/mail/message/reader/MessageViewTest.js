@@ -850,9 +850,7 @@ StartTest(async t => {
 
 
                 const
-                    segmentedbutton = view.down("segmentedbutton"),
-                    plainbtn = view.down("#btn-showplain"),
-                    htmlbtn = view.down("#btn-showhtml"),
+                    button = view.down("button[reference=htmlplainButton]"),
                     messageItem = createMessageItem(true);
 
                 view.setMessageItem(messageItem);
@@ -861,9 +859,8 @@ StartTest(async t => {
 
                     t.expect(vm.get("messageBody.textHtml")).toBeTruthy();
                     t.expect(vm.get("messageBody.textPlain")).toBeTruthy();
-                    t.expect(segmentedbutton.isVisible()).toBe(true);
-                    t.expect(plainbtn.pressed).toBe(false);
-                    t.expect(htmlbtn.pressed).toBe(true);
+                    t.expect(button.isVisible()).toBe(true);
+                    t.expect(button.pressed).toBe(true);
                     t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(vm.get("messageBody.textHtml"));
 
                     // switch to plain by setting values / mimmicking loading
@@ -872,10 +869,9 @@ StartTest(async t => {
                     vm.set("messageBody.textPlain", plain);
                     vm.set("messageBody.textHtml", null);
                     vm.notify();
-                    t.expect(plainbtn.pressed).toBe(true);
-                    t.expect(htmlbtn.pressed).toBe(false);
-                    t.expect(segmentedbutton.isVisible()).toBe(true);
-                    t.expect(segmentedbutton.isDisabled()).toBe(true);
+                    t.expect(button.pressed).toBe(false);
+                    t.expect(button.isVisible()).toBe(true);
+                    t.expect(button.isDisabled()).toBe(true);
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
@@ -884,15 +880,15 @@ StartTest(async t => {
                         vm.set("messageBody.textHtml", html);
                         vm.notify();
 
-                        t.expect(segmentedbutton.isVisible()).toBe(true);
-                        t.expect(htmlbtn.pressed).toBe(true);
-                        t.expect(segmentedbutton.isDisabled()).toBe(false);
+                        t.expect(button.isVisible()).toBe(true);
+                        t.expect(button.pressed).toBe(true);
+                        t.expect(button.isDisabled()).toBe(false);
                         // switch by button click
-                        t.click(plainbtn, function () {
+                        t.click(button, function () {
                             vm.notify();
                             t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
 
-                            t.click(htmlbtn, function () {
+                            t.click(button, function () {
                                 vm.notify();
                                 t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(html);
                             });
