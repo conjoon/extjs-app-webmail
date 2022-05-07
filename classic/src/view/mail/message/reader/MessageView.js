@@ -174,37 +174,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
                     ]
 
                 }, {
-                    xtype: "segmentedbutton",
-                    hidden: true,
-                    disabled: true,
+                    xtype: "button",
+                    scale: "small",
+                    reference: "htmlplainButton",
+                    enableToggle: true,
                     bind: {
+                        pressed: "{!!messageBody.textHtml}",
+                        iconCls: "{htmlplainButton.pressed ? \"fas fa-code\" : \"fas fa-align-left\"}",
                         disabled: "{!messageBody.textHtml || !messageBody.textPlain}",
                         visible: "{messageBody.textHtml || messageBody.textPlain}"
                     },
-                    items: [{
-                        xtype: "button",
-                        scale: "small",
-                        iconCls: "fas fa-code",
-                        itemId: "btn-showhtml",
-                        reference: "htmlplainButton",
-                        bind: {
-                            pressed: "{!!messageBody.textHtml}"
-                        },
-                        tooltip: {
-                            text: "Show text/html"
-                        }
-                    }, {
-                        xtype: "button",
-                        scale: "small",
-                        itemId: "btn-showplain",
-                        iconCls: "fas fa-align-left",
-                        bind: {
-                            pressed: "{!messageBody.textHtml}"
-                        },
-                        tooltip: {
-                            text: "Show text/plain"
-                        }
-                    }]
+                    tooltip: {
+                        text: "Show text/html"
+                    }
                 }, {
                     xtype: "button",
                     scale: "small",
