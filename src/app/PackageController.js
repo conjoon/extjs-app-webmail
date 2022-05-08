@@ -996,6 +996,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         var me  = this,
             app = me.getApplication();
 
+        let title = app.getPackageConfig(me, "title");
+        title && Ext.fireEvent("conjoon.application.TitleAvailable", me, title);
+
         /**
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
          */
