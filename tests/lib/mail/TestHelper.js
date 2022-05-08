@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -170,6 +170,37 @@ export default class TestHelper {
                 "coon.core.ConfigManager", function ()  {
                     me.prepare();
                     resolve("-> temp");
+                });
+        });
+
+        return this;
+    }
+
+
+    /**
+     * Creates stubs for services.
+     *
+     * @param {String] className The name of the service that should be considered
+     * for stubbing
+     */
+    async mockUpServices (className) {
+
+        const t = this.siestaTest;
+
+        await new Promise(function (resolve, reject) {
+
+            t.requireOk(
+                className,
+                "coon.core.ServiceProvider",
+                function ()  {
+                    coon.core.ServiceProvider.get = function (key) {
+                        return key === "coon.core.service.UserImageService" ? {
+
+                            getImageSrc: () => {}
+
+                        } : undefined;
+                    };
+                    resolve("-> services");
                 });
         });
 
