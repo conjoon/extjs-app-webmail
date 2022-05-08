@@ -33,8 +33,8 @@ export default [{
                 name: "conjoon/php-ms-imapuser#40",
                 url: "src/_issues_/feat/php-ms-imapuser%2340.js"
             }, {
-                name: "conjoon/extjs-app-webmail#194",
-                url: "src/_issues_/refactor/extjs-app-webmail%23194.js"
+                name: "conjoon/conjoon#7",
+                url: "src/_issues_/feat/conjoon%237.js"
             }]
         }, {
             group: "refactor",

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -995,6 +995,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     getMainPackageView: function () {
         var me  = this,
             app = me.getApplication();
+
+        let title = app.getPackageConfig(me, "title");
+        title && Ext.fireEvent("conjoon.application.TitleAvailable", me, title);
 
         /**
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}
