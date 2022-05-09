@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2020-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2020-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -65,7 +65,7 @@ StartTest(async t => {
                     });
 
                 let messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-                    mailAccountId: 1, mailFolderId: 1, id: 1
+                    mailAccountId: 1, mailFolderId: 3, id: 2
                 });
                 messageDraft.dirty = messageDraft.phantom = false;
 
@@ -80,7 +80,7 @@ StartTest(async t => {
                 t.expect(
                     controller.getSendMessageDraftRequestConfig(messageDraft, ".//cn_mail///")
                 ).toEqual({
-                    url: "./cn_mail/1/1/1",
+                    url: "./cn_mail/MailAccounts/1/MailFolders/3/MessageItems/2",
                     method: "POST"
                 });
 

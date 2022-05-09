@@ -112,8 +112,7 @@ export default class TestHelper {
                 "conjoon.dev.cn_mailsim.data.AttachmentSim",
                 "conjoon.dev.cn_mailsim.data.MailAccountSim",
                 "conjoon.dev.cn_mailsim.data.MailFolderSim",
-                "conjoon.dev.cn_mailsim.data.MessageItemSim",
-                "conjoon.dev.cn_mailsim.data.SendMessageSim", () => {
+                "conjoon.dev.cn_mailsim.data.MessageItemSim", () => {
 
                     conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 100;
 
@@ -125,9 +124,7 @@ export default class TestHelper {
                         "conjoon.dev.cn_mailsim.data.MailFolderSim": Object.assign(
                             config.mailFolder, {url: "cn_mail/MailAccounts/(.+)/MailFolders(/.*)?"}),
                         "conjoon.dev.cn_mailsim.data.MailAccountSim": Object.assign(
-                            config.mailAccount, {url: "cn_mail/MailAccounts(/d+)?"}),
-                        "conjoon.dev.cn_mailsim.data.SendMessageSim": Object.assign(
-                            config.sendMessage, {url: "cn_mail/SendMessage(/d+)?"})
+                            config.mailAccount, {url: "cn_mail/MailAccounts(/d+)?"})
                     }).forEach(([cls, config]) => {
 
                         Ext.ux.ajax.SimManager.register(
