@@ -80,8 +80,8 @@ StartTest(async t => {
                 t.expect(
                     controller.getSendMessageDraftRequestConfig(messageDraft, ".//cn_mail///")
                 ).toEqual({
-                    url: "./cn_mail/SendMessage",
-                    params: messageDraft.getCompoundKey().toObject()
+                    url: "./cn_mail/1/1/1",
+                    method: "POST"
                 });
 
                 let tmp = Ext.Ajax.request;

@@ -601,9 +601,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 throw("\"baseAddress\" must be a string");
             }
 
+            let url = [
+                baseAddress,
+                "MailAccounts",
+                encodeURIComponent(messageDraft.getCompoundKey().getMailAccountId()),
+                "MailFolders",
+                encodeURIComponent(messageDraft.getCompoundKey().getMailFolderId()),
+                "MessageItems",
+                encodeURIComponent(messageDraft.getCompoundKey().getId())
+            ].join("/");
+
             return {
-                url: l8.unify(baseAddress + "/SendMessage", "/", "://"),
-                params: messageDraft.getCompoundKey().toObject()
+                url: l8.unify(url, "/", "://"),
+                method: "POST"
             };
 
         },
