@@ -89,7 +89,7 @@
         "standard-version": "^9.3.1"
     },
     "description": "JavaScript email client for conjoon, powered by Sencha Ext JS and coon.js",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "main": "index.js",
     "directories": {
         "test": "tests"
