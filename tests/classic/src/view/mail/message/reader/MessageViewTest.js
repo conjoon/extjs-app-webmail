@@ -30,11 +30,11 @@ StartTest(async t => {
     const helper = l8.liquify(TestHelper.get(t, window));
     await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
         
-        t.requireOk("coon.core.util.Date", "coon.core.ServiceProvider", () => {
+        t.requireOk("coon.core.util.Date", "coon.core.ServiceLocator", () => {
 
             const userImageService = Ext.create("coon.core.service.UserImageService");
             userImageService.getImageSrc = id => id;
-            coon.core.ServiceProvider.register(
+            coon.core.ServiceLocator.register(
                 "coon.core.service.UserImageService",
                 userImageService
             );

@@ -45,7 +45,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
         "conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater",
         "conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy",
         "coon.core.util.Date",
-        "coon.core.ServiceProvider"
+        "coon.core.ServiceLocator"
     ],
 
     alias: "viewmodel.cn_mail-mailmessagereadermessageviewmodel",
@@ -83,7 +83,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
     emptySubjectText: "(No subject)",
 
     /**
-     * UserImageService as registered with the ServiceProvider
+     * UserImageService as registered with the ServiceLocator
      * @type {coon.core.service.UserImageService} userImageService
      */
 
@@ -91,7 +91,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
 
         const me = this;
 
-        me.userImageService = coon.core.ServiceProvider.get("coon.core.service.UserImageService");
+        me.userImageService = coon.core.ServiceLocator.resolve("coon.core.service.UserImageService");
 
         me.callParent(arguments);
     },

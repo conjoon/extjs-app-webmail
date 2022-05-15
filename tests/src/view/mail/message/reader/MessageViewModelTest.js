@@ -30,11 +30,11 @@ StartTest(async t => {
     const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.setupSimlets().mockUpMailTemplates().andRun(t => {
 
-        t.requireOk("coon.core.ServiceProvider", () => {
+        t.requireOk("coon.core.ServiceLocator", () => {
 
             const userImageService = Ext.create("coon.core.service.UserImageService");
             userImageService.getImageSrc = id => id;
-            coon.core.ServiceProvider.register(
+            coon.core.ServiceLocator.register(
                 "coon.core.service.UserImageService",
                 userImageService
             );
@@ -105,7 +105,7 @@ StartTest(async t => {
 
                 t.it("1. Should create the ViewModel", t => {
 
-                    let providerSpy = t.spyOn(coon.core.ServiceProvider, "get").and.callThrough();
+                    let providerSpy = t.spyOn(coon.core.ServiceLocator, "resolve").and.callThrough();
 
                     viewModel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageViewModel");
                     t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);

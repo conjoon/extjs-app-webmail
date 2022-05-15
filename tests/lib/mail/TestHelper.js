@@ -91,14 +91,12 @@ export default class TestHelper {
             t = me.siestaTest;
 
         let config = await l8.load(
-            "../../../../../node_modules/@conjoon/extjs-dev-webmailsim/package.json"
+            "../../../../../node_modules/@conjoon/extjs-dev-webmailsim/resources/extjs-dev-webmailsim.conf.json"
         );
 
-        if (config) {
-            config = JSON.parse(config)?.sencha["coon-js"]?.package.config;
-        }
+        config = JSON.parse(config);
 
-        if (!config) {
+        if (!l8.isObject(config)) {
             throw("no config found for setting up simlets");
         }
 
@@ -188,9 +186,9 @@ export default class TestHelper {
 
             t.requireOk(
                 className,
-                "coon.core.ServiceProvider",
+                "coon.core.ServiceLocator",
                 function ()  {
-                    coon.core.ServiceProvider.get = function (key) {
+                    coon.core.ServiceLocator.resolve = function (key) {
                         return key === "coon.core.service.UserImageService" ? {
 
                             getImageSrc: () => {}
