@@ -62,9 +62,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.Livegrid", {
         }
 
         return coon.core.data.pageMap.PageMapUtil.getRecordBy(
-            function (rec) {
-                return rec.getCompoundKey().equalTo(compoundKey) === true;
-            }, me.pageMapFeeder
+            (rec) => !rec.hasKeysModified() && rec.getCompoundKey().equalTo(compoundKey) === true,
+            me.pageMapFeeder
         );
     }
 

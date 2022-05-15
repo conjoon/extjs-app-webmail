@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
 
         const discardView = t => {
 
@@ -143,6 +143,10 @@ StartTest(async t => {
             });
         });
 
+        t.afterEach(() => {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
+        });
 
         t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 

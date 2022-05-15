@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,6 +35,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     extend: "Ext.grid.Panel",
 
     requires: [
+        // @see conjoon/extjs-app-webmail#178
+        "Ext.grid.column.Date",
         "coon.comp.grid.feature.RowBodySwitch",
         "conjoon.cn_mail.view.mail.message.grid.feature.Livegrid",
         "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
@@ -44,6 +46,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     ],
 
     alias: "widget.cn_mail-mailmessagegrid",
+
+    /**
+     * Gets fired with initComponent to signal that the component is about to get initialized.
+     * @event cn_init
+     * @param {conjoon.cn_mail.view.mail.message.MessageGrid} this
+     */
 
     /**
      * Gets fired when the conjoon.cn_mail.store.mail.message.MessageItemStore
@@ -99,9 +107,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         ftype: "cn_mail-mailmessagegridfeature-livegrid",
         id: "cn_mail-mailMessageFeature-livegrid"
     }, {
-        ftype: "cn_webmailplug-previewtextlazyload",
-        id: "cn_webmailplug-previewtextlazyload"
-    }, {
         ftype: "cn_comp-gridfeature-rowbodyswitch",
         variableRowHeight: false,
         enableCls: "previewEnabled",
@@ -126,9 +131,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
 
             return {
                 rowBody:
-                          "<div class=\"head" + (!record.get("seen") ? " unread" : "")+"\">" +
-                          "<div class=\"subject"+ (!record.get("seen") ? " unread" : "")+"\">" +
-                             (record.get("answered") ? "<span class=\"fa fa-mail-reply\"></span>" : "")+
+                          "<div class=\"head" + (!record.get("seen") ? " unread" : "") +
+                                                (record.get("recent") ? " recent" : "")+"\">" +
+                          "<div class=\"subject"+ (!record.get("seen") ? " seen" : "") +
+                                                  (record.get("recent") ? " recent" : "")+"\">" +
+                             (record.get("answered") ? "<span class=\"fa fa-reply\"></span>" : "")+
                              (record.get("flagged") ? "<span class=\"fa fa-flag\"></span>" : "")+
                              (record.get("draft") ? "<span class=\"draft\">[Draft]</span>" : "") +
 
@@ -175,9 +182,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     viewConfig: {
         markDirty: false,
         getRowClass: function (record, rowIndex, rowParams, store){
-            let cls = record.get("seen")
-                ? ""
-                : "boldFont";
+            let cls = record.get("recent") ? "recent" : "";
+            cls  += record.get("seen") ? "" : " boldFont";
 
             if (record.get("cn_deleted")) {
                 cls += " cn-deleted";
@@ -285,6 +291,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     initComponent: function () {
 
         const me = this;
+
+        me.fireEvent("cn_init", me);
 
         // apply Renderer to draftDisplayAddress columns
         for (let i = 0, len = me.columns.length; i < len; i++) {

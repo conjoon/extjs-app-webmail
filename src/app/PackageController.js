@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,6 +45,10 @@
  *
  *      });
  *
+ * Additionally, this app controller will create and register a singleton instance of
+ *  {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} to make sure MailAccount-information
+ *  can be accessed given one uniquely identifyable data source.
+ *
  */
 Ext.define("conjoon.cn_mail.app.PackageController", {
 
@@ -58,8 +62,10 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.view.mail.message.reader.MessageView",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
-        "conjoon.cn_mail.data.mail.BaseSchema"
+        "conjoon.cn_mail.data.mail.BaseSchema",
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
+
 
     routes: {
 
@@ -219,9 +225,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         ref: "toggleGridListButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavToggleList"
     }, {
-        ref: "toggleMailFolderButton",
-        selector: "cn_navport-tbar > #cn_mail-nodeNavToggleFolder"
-    }, {
         ref: "switchReadingPaneButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
     }, {
@@ -264,7 +267,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         const
             me = this,
-            baseAddress = app.getPackageConfig(me, "service.rest-imap.base");
+            baseAddress = app.getPackageConfig(me, "service.rest-api-email.base");
 
         if (!l8.isString(baseAddress)) {
             throw("no configured \"base\"-address found in the Package Configuration for \"conjoon.cn_mail.data.mail.BaseSchema\"");
@@ -272,6 +275,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         Ext.data.schema.Schema.get("cn_mail-mailbaseschema").setUrlPrefix(l8.unify(baseAddress, "/", "://"));
     },
+
 
     /**
      * Callback for the MailDesktopView's tabchange event. Makes sure the
@@ -447,15 +451,13 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         const me      = this,
             ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
-        let treeDisabled    = false,
-            paneDisabled    = false,
+        let paneDisabled    = false,
             toggleDisabled  = false,
             sel             = me.getMailFolderTree().getSelection(),
             type            = sel.length && sel[0].get("folderType"),
             accountSelected = type === ACCOUNT;
 
         if (sel.length === 0 || accountSelected) {
-            treeDisabled   = !accountSelected;
             paneDisabled   = true;
             toggleDisabled = true;
 
@@ -473,8 +475,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         me.getToggleGridListButton().setDisabled(toggleDisabled);
         me.getSwitchReadingPaneButton().setDisabled(paneDisabled);
-        me.getToggleMailFolderButton().setDisabled(treeDisabled);
-
     },
 
 
@@ -489,7 +489,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         me.getToggleGridListButton().setDisabled(true);
         me.getSwitchReadingPaneButton().setDisabled(true);
-        me.getToggleMailFolderButton().setDisabled(true);
     },
 
 
@@ -621,7 +620,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         me.getSwitchReadingPaneButton().setDisabled(accountSelected);
         me.getToggleGridListButton().setDisabled(accountSelected);
-        me.getToggleMailFolderButton().setDisabled(records.length === 0);
 
         if (accountSelected) {
             me.disableEmailActionButtons(true);
@@ -759,7 +757,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param {Ext.Button} btn
      */
     onMessageComposeButtonClick: function (btn) {
-        this.showMailEditor(Ext.id().split("-").pop(), "compose");
+        this.showMailEditor(Date.now(), "compose");
     },
 
 
@@ -900,6 +898,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @inheritdoc
      */
     postLaunchHook: function () {
+
+        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+
         return {
             navigation: [{
                 text: "Email",
@@ -909,10 +910,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                 nodeNav: [{
                     xtype: "button",
                     iconCls: "fas fa-plus",
-                    tooltip: {
-                        title: "Create new message",
-                        text: "Opens the editor for writing a new message."
-                    },
                     itemId: "cn_mail-nodeNavCreateMessage"
                 }, {
                     xtype: "tbseparator"
@@ -920,47 +917,27 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                     xtype: "button",
                     iconCls: "fas fa-reply",
                     disabled: true,
-                    itemId: "cn_mail-nodeNavReplyTo",
-                    tooltip: {
-                        title: "Reply to message",
-                        text: "Opens the editor for replying to the sender of the selected message."
-                    }
+                    itemId: "cn_mail-nodeNavReplyTo"
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-reply-all",
                     itemId: "cn_mail-nodeNavReplyAll",
-                    disabled: true,
-                    tooltip: {
-                        title: "Reply all to message",
-                        text: "Opens the editor for replying to all recipients/senders of the selected message."
-                    }
+                    disabled: true
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-share",
                     itemId: "cn_mail-nodeNavForward",
-                    disabled: true,
-                    tooltip: {
-                        title: "Forward message",
-                        text: "Opens the editor for forwarding the selected message."
-                    }
+                    disabled: true
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-edit",
                     itemId: "cn_mail-nodeNavEditMessage",
-                    disabled: true,
-                    tooltip: {
-                        title: "Edit message draft",
-                        text: "Opens the editor for editing the selected message draft."
-                    }
+                    disabled: true
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-trash",
                     itemId: "cn_mail-nodeNavDeleteMessage",
-                    disabled: true,
-                    tooltip: {
-                        title: "Delete message",
-                        text: "Moves this message to the Trash Bin or removes it completely out of it."
-                    }
+                    disabled: true
                 }, {
                     xtype: "tbseparator"
                 }, {
@@ -970,31 +947,19 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                     cls: "toggleFolderViewBtn",
                     itemId: "cn_mail-nodeNavToggleFolder",
                     enableToggle: true,
-                    pressed: true,
-                    tooltip: {
-                        title: "Hide/ show Mail Folder",
-                        text: "Hides or shows the Mail Folder tree."
-                    }
+                    pressed: true
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-list",
                     disabled: true,
                     cls: "toggleGridViewBtn",
                     itemId: "cn_mail-nodeNavToggleList",
-                    enableToggle: true,
-                    tooltip: {
-                        title: "Switch message list view",
-                        text: "Switches between the message grid's preview- and detail-view."
-                    }
+                    enableToggle: true
                 }, {
                     xtype: "button",
                     disabled: true,
                     iconCls: "fas fa-columns",
                     itemId: "cn_mail-nodeNavReadingPane",
-                    tooltip: {
-                        title: "Change reading pane position",
-                        text: "Switch the position of the reading pane or hide it."
-                    },
                     menu: [{
                         iconCls: "fas fa-toggle-right",
                         text: "Right",
@@ -1030,6 +995,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     getMainPackageView: function () {
         var me  = this,
             app = me.getApplication();
+
+        let title = app.getPackageConfig(me, "title");
+        title && Ext.fireEvent("conjoon.application.TitleAvailable", me, title);
 
         /**
          * @type {conjoon.cn_mail.view.mail.MailDesktopView}

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         "coon.core.ConfigManager",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
-        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
+        "conjoon.cn_mail.data.mail.service.MailboxService"
     ],
 
     alias: "controller.cn_mail-mailmessageeditorviewcontroller",
@@ -60,7 +61,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             click: "onSaveButtonClick"
         },
         "cn_mail-mailmessageeditor": {
-            beforedestroy: "onMailMessageEditorBeforeDestroy",
+            "beforedestroy": "onMailMessageEditorBeforeDestroy",
             "cn_mail-mailmessagesaveoperationcomplete": "onMailMessageSaveOperationComplete",
             "cn_mail-mailmessagesaveoperationexception": "onMailMessageSaveOperationException",
             "cn_mail-mailmessagesavecomplete": "onMailMessageSaveComplete",
@@ -89,6 +90,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     mailboxService: null,
 
     /**
+     * Internal ms value for deferring call to close() after message was sent
+     * @type {Number}
+     * @private
+     */
+    closeAfterMs: 1000,
+
+    /**
      * Makes sure
      * conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener#installDragDropListeners
      * is called as soon as the controller's
@@ -105,7 +113,23 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             view: view
         });
 
-        view.on("afterrender", me.onMessageEditorAfterrender, me ,{single: true});
+        view.on({
+            "afterrender": {
+                fn: me.onMessageEditorAfterrender,
+                scope: me,
+                single: true
+            },
+            /**
+             * moved from control-config here since event and listener must be maiontained on
+             * the view for later detaching if mail was sent, instead of maintaed by eventbus
+             * of controller
+             * @see conjoon/php-ms-imapuser#206
+             */
+            "beforeclose": {
+                fn: me.onMailEditorBeforeClose,
+                scope: me
+            }
+        });
 
         me.ddListener.init();
     },
@@ -139,6 +163,35 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
     /**
+     * Callback for the "beforeclose"-event of the MessageEditor.
+     * Routes to the cn_href of the editor and calls {conjoon.cn_mail.view.mail.message.editor.MessageEditor#showConfirmCloseDialog}
+     * afterwards, only if the MessageDraft of the ViewModel is found to be dirty.
+     *
+     * @return {Boolean=false} returns false to prevent closing the dialog
+     *
+     * @see {conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel#isDraftDirty}
+     */
+    onMailEditorBeforeClose () {
+
+        const
+            me = this,
+            vm = me.getViewModel(),
+            editor = me.getView();
+
+        if (!editor.getMessageDraft() ||
+            !vm.isDraftDirty()
+        ) {
+            return true;
+        }
+
+        me.redirectTo(editor.cn_href);
+        editor.showConfirmCloseDialog();
+
+        return false;
+    },
+
+
+    /**
      * Callback for the MailMessageEditor's destroy event. Clears the defer timers.
      *
      */
@@ -158,6 +211,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         if (view.busyMask) {
             view.busyMask.destroy();
             view.busyMask = null;
+        }
+
+        if (view.loadingFailedMask) {
+            view.loadingFailedMask.destroy();
+            view.loadingFailedMask = null;
         }
 
         if (view.loadingMask) {
@@ -283,7 +341,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
                 if (buttonId !== "yesButton" ||
                     view.fireEvent("cn_mail-mailmessagebeforesave", view, messageDraft, isSending, isCreated, true) === false) {
-                    // mailmessagessagebforesave listener called which sets the
+
+                    if (buttonId !== "yesButton") {
+                        // reset attachment store if the operation should not be retried.
+                        // This means that even in the case of a failed message(body) operation,
+                        // the attachment list's store gets reset to its last known state
+                        view.getViewModel().get("messageDraft.attachments").rejectChanges();
+                    }
+
+                    // mailmessagessagebeforesave listener called which sets the
                     // busy state again - cancel it here.
                     // a better way would we to have a "start" event in the
                     // Ext.data.Batch class which gets fired upon start/retry.
@@ -334,8 +400,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     /**
      * Callback for this view's beforesave event.
      * If the viewModel's isSubjectRequired is set to true and the subject is
-     * empty, the saveing process will be cancelled and the user is prompted
-     * for a subject. If it's still empty, isSubjectRequired will be set to false
+     * empty, the process will be cancelled and the user is prompted
+     * for a subject. If it's still empty, "isSubjectRequired" will be set to false
      * and the process will be triggered again. The controller will not ask for a
      * subject then.
      *
@@ -383,10 +449,37 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             return false;
         }
 
+        me.commitBodyAndAttachments();
+
+        vm.set("isSaving", true);
+
+        /**
+         * @i18n
+         */
+        view.setBusy({msg: "Saving Mail", msgAction: "Stand by..."});
+    },
+
+
+    /**
+     * Helper function to make sure associations are not considered in an operation
+     * if the associations are marked dirty, but the dirty-flag is only set because a
+     * foreign key had changed.
+     * In this case, the update can be committed locally.
+     *
+     * @private
+     */
+    commitBodyAndAttachments () {
+        "use strict";
+
+        const
+            me = this,
+            vm = me.getViewModel();
+
+        let attachments, body, attachment, keys;
+
         // silently commits attachments where the messageItemId foreign key was
         // changed previously
-        let attachments = vm.get("messageDraft.attachments").getRange(),
-            attachment, keys;
+        attachments = vm.get("messageDraft.attachments").getRange();
 
         for (let a = attachments.length - 1; a >= 0; a--) {
             attachment = attachments[a];
@@ -398,13 +491,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
         }
 
-
-        vm.set("isSaving", true);
-
-        /**
-         * @i18n
-         */
-        view.setBusy({msg: "Saving Mail", msgAction: "Stand by..."});
+        // ... do the same with the messageBody
+        body = vm.get("messageDraft.messageBody");
+        keys = body.modified ? Object.keys(body.modified) : null;
+        if (body.crudState === "U" && keys && keys.length === 1 && keys[0] === "messageBodyId") {
+            // commit silently
+            body.commit(true);
+        }
     },
 
 
@@ -445,16 +538,25 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
      */
-    onMailMessageSendComplete: function (editor, messagDraft) {
-        var me   = this,
+    onMailMessageSendComplete (editor, messageDraft) {
+        const
+            me   = this,
             view = me.getView();
 
         /**
          * @i18n
          */
         view.setBusy({msgAction: "Message sent successfully.", progress: 1});
-        me.deferTimers["sendcomplete"] = Ext.Function.defer(
-            view.close, 1000, view);
+
+        /**
+         * @see conjoon/extjs-app-webmail#206
+         */
+        view.un("beforeclose", me.onMailEditorBeforeClose, me);
+        me.deferTimers.sendcomplete = Ext.Function.defer(
+            view.close,
+            me.closeAfterMs,
+            view
+        );
     },
 
     /**
@@ -499,9 +601,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 throw("\"baseAddress\" must be a string");
             }
 
+            let url = [
+                baseAddress,
+                "MailAccounts",
+                encodeURIComponent(messageDraft.getCompoundKey().getMailAccountId()),
+                "MailFolders",
+                encodeURIComponent(messageDraft.getCompoundKey().getMailFolderId()),
+                "MessageItems",
+                encodeURIComponent(messageDraft.getCompoundKey().getId())
+            ].join("/");
+
             return {
-                url: l8.unify(baseAddress + "/SendMessage", "/", "://"),
-                params: messageDraft.getCompoundKey().toObject()
+                url: l8.unify(url, "/", "://"),
+                method: "POST"
             };
 
         },
@@ -540,7 +652,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             }
 
-            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-imap.base");
+            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-api-email.base");
 
             Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft, baseAddress)).then(
                 function (response, opts) {
@@ -592,6 +704,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 exception: {
                     fn: function (batch, operation) {
+                        //  view.down("cn_mail-mailmessageeditorattachmentlist").getStore().rejectChanges();
                         view.fireEvent("cn_mail-mailmessagesaveoperationexception",
                             view, messageDraft, operation, isSend === true, isCreated === true, batch);
                     },
@@ -599,6 +712,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 },
                 complete: {
                     fn: function (batch, operation) {
+
                         messageDraft.set("savedAt", new Date());
                         view.fireEvent(
                             "cn_mail-mailmessagesavecomplete",
@@ -607,6 +721,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                             isSend === true,
                             isCreated === true
                         );
+
                     },
                     scope: view,
                     single: true
@@ -676,15 +791,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         getMailboxService: function () {
 
-            const me = this,
-                vm = me.getView().getViewModel();
+            const me = this;
 
             if (!me.mailboxService) {
-                me.mailboxService = Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
-                    mailFolderHelper: Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                        store: vm.get("cn_mail_mailfoldertreestore")
-                    })
-                });
+                me.mailboxService = conjoon.cn_mail.MailboxService.getInstance();
             }
 
             return me.mailboxService;

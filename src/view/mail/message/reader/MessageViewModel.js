@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,11 +38,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
     extend: "Ext.app.ViewModel",
 
     requires: [
+        // @define l8
+        "l8",
         "conjoon.cn_mail.model.mail.message.ItemAttachment",
         "conjoon.cn_mail.model.mail.message.MessageDraft",
         "conjoon.cn_mail.data.mail.message.reader.MessageItemUpdater",
         "conjoon.cn_mail.text.mail.message.reader.PlainReadableStrategy",
-        "coon.core.util.Date"
+        "coon.core.util.Date",
+        "coon.core.ServiceLocator"
     ],
 
     alias: "viewmodel.cn_mail-mailmessagereadermessageviewmodel",
@@ -78,6 +81,20 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
      * @private
      */
     emptySubjectText: "(No subject)",
+
+    /**
+     * UserImageService as registered with the ServiceLocator
+     * @type {coon.core.service.UserImageService} userImageService
+     */
+
+    constructor () {
+
+        const me = this;
+
+        me.userImageService = coon.core.ServiceLocator.resolve("coon.core.service.UserImageService");
+
+        me.callParent(arguments);
+    },
 
     data: {
 
@@ -148,6 +165,16 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
 
         },
 
+
+        getSenderImage: {
+            bind: {
+                address: "{messageItem.from.address}"
+            },
+
+            get (data) {
+                return this.userImageService.getImageSrc(data.address);
+            }
+        },
 
         /**
          * This formula computes the subject to display and returns #emptySubjectText
@@ -577,6 +604,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
             // everything okay, mark item as read and set messageBody
             delete  me.abortedRequestMap[record.getId()];
             me.set("messageBody", record);
+
+            item.set("recent", false);
 
             if (item.get("seen") !== true) {
                 item.set("seen", true);

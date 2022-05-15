@@ -43,6 +43,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
         "conjoon.cn_mail.model.mail.message.MessageDraft"
     ],
 
+
     control: {
         "cn_mail-mailmessagereadermessageview": {
             "cn_mail-mailmessageitemread": "onMessageItemRead"
@@ -81,6 +82,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
      * @private
      */
     mailFolderTree: null,
+
 
     /**
      * Delegates to the mailmessagegrid's #updateRowFlyMenu method.
@@ -124,6 +126,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
         switch (action) {
         case "markunread":
             record.set("seen", !record.get("seen"));
+            record.set("recent", false);
             record.save({
                 callback: me.onMessageItemRead,
                 scope: me
@@ -131,6 +134,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
             break;
         case "flag":
             record.set("flagged", !record.get("flagged"));
+            record.set("recent", false);
             record.save();
             break;
         case "delete":
@@ -276,11 +280,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
         const me = this;
 
         if (!me.mailboxService) {
-            me.mailboxService = Ext.create("conjoon.cn_mail.data.mail.service.MailboxService", {
-                mailFolderHelper: Ext.create("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
-                    store: me.getMailFolderTree().getStore()
-                })
-            });
+            me.mailboxService = conjoon.cn_mail.MailboxService.getInstance();
         }
 
         return me.mailboxService;

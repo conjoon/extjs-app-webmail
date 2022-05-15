@@ -26,7 +26,7 @@
 /**
  * Base model for extjs-app-webmail representing an attachment associated with a
  * MessageDraft.
- * this model uses a proxy of the type {@link conjoon.cn_mail.data.mail.proxy.AttachmentUploadProxy}
+ * this model uses a proxy of the type {@link conjoon.cn_mail.data.mail.proxy.AttachmentProxy}
  * to make sure that attachments can be uploaded to the server when saving.
  * See {@link conjoon.cn_mail.view.mail.message.AttachmentList} for
  * an implementation.

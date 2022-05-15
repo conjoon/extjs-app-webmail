@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -142,7 +142,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
             hidden: "{!messageItem}"
         },
         items: [{
-            xtype: "box",
+            xtype: "image",
+            autoEl: "div",
+            bind: {
+                src: "{getSenderImage}"
+            },
             cls: "sender-img fas fa-user",
             margin: "8 8 0 8"
         }, {
@@ -170,37 +174,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
                     ]
 
                 }, {
-                    xtype: "segmentedbutton",
-                    hidden: true,
-                    disabled: true,
+                    xtype: "button",
+                    scale: "small",
+                    reference: "htmlplainButton",
+                    enableToggle: true,
                     bind: {
+                        pressed: "{!!messageBody.textHtml}",
+                        iconCls: "{htmlplainButton.pressed ? \"fas fa-code\" : \"fas fa-align-left\"}",
                         disabled: "{!messageBody.textHtml || !messageBody.textPlain}",
                         visible: "{messageBody.textHtml || messageBody.textPlain}"
                     },
-                    items: [{
-                        xtype: "button",
-                        scale: "small",
-                        iconCls: "fas fa-code",
-                        itemId: "btn-showhtml",
-                        reference: "htmlplainButton",
-                        bind: {
-                            pressed: "{!!messageBody.textHtml}"
-                        },
-                        tooltip: {
-                            text: "Show text/html"
-                        }
-                    }, {
-                        xtype: "button",
-                        scale: "small",
-                        itemId: "btn-showplain",
-                        iconCls: "fas fa-align-left",
-                        bind: {
-                            pressed: "{!messageBody.textHtml}"
-                        },
-                        tooltip: {
-                            text: "Show text/plain"
-                        }
-                    }]
+                    tooltip: {
+                        text: "Show text/html"
+                    }
                 }, {
                     xtype: "button",
                     scale: "small",

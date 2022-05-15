@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -100,6 +100,7 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
          */
         name: "seen",
         type: "bool",
+        critical: true,
         defaultValue: true
     }, {
         /**
@@ -107,6 +108,7 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
          */
         name: "flagged",
         type: "bool",
+        critical: true,
         defaultValue: false
     }, {
         /**
@@ -121,7 +123,8 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
          */
         name: "recent",
         type: "bool",
-        defaultValue: false
+        defaultValue: false,
+        persist: false
     }, {
         // only required by drafts for now
         // persist=false since value is set by BE

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -91,14 +91,12 @@ export default class TestHelper {
             t = me.siestaTest;
 
         let config = await l8.load(
-            "../../../../../node_modules/@conjoon/extjs-dev-webmailsim/package.json"
+            "../../../../../node_modules/@conjoon/extjs-dev-webmailsim/resources/extjs-dev-webmailsim.conf.json"
         );
 
-        if (config) {
-            config = JSON.parse(config)?.sencha["coon-js"]?.package.config;
-        }
+        config = JSON.parse(config);
 
-        if (!config) {
+        if (!l8.isObject(config)) {
             throw("no config found for setting up simlets");
         }
 
@@ -112,8 +110,7 @@ export default class TestHelper {
                 "conjoon.dev.cn_mailsim.data.AttachmentSim",
                 "conjoon.dev.cn_mailsim.data.MailAccountSim",
                 "conjoon.dev.cn_mailsim.data.MailFolderSim",
-                "conjoon.dev.cn_mailsim.data.MessageItemSim",
-                "conjoon.dev.cn_mailsim.data.SendMessageSim", () => {
+                "conjoon.dev.cn_mailsim.data.MessageItemSim", () => {
 
                     conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 100;
 
@@ -125,9 +122,7 @@ export default class TestHelper {
                         "conjoon.dev.cn_mailsim.data.MailFolderSim": Object.assign(
                             config.mailFolder, {url: "cn_mail/MailAccounts/(.+)/MailFolders(/.*)?"}),
                         "conjoon.dev.cn_mailsim.data.MailAccountSim": Object.assign(
-                            config.mailAccount, {url: "cn_mail/MailAccounts(/d+)?"}),
-                        "conjoon.dev.cn_mailsim.data.SendMessageSim": Object.assign(
-                            config.sendMessage, {url: "cn_mail/SendMessage(/d+)?"})
+                            config.mailAccount, {url: "cn_mail/MailAccounts(/d+)?"})
                     }).forEach(([cls, config]) => {
 
                         Ext.ux.ajax.SimManager.register(
@@ -178,6 +173,37 @@ export default class TestHelper {
 
 
     /**
+     * Creates stubs for services.
+     *
+     * @param {String] className The name of the service that should be considered
+     * for stubbing
+     */
+    async mockUpServices (className) {
+
+        const t = this.siestaTest;
+
+        await new Promise(function (resolve, reject) {
+
+            t.requireOk(
+                className,
+                "coon.core.ServiceLocator",
+                function ()  {
+                    coon.core.ServiceLocator.resolve = function (key) {
+                        return key === "coon.core.service.UserImageService" ? {
+
+                            getImageSrc: () => {}
+
+                        } : undefined;
+                    };
+                    resolve("-> services");
+                });
+        });
+
+        return this;
+    }
+
+
+    /**
      * Send out the spies!
      */
     prepare () {
@@ -197,7 +223,7 @@ export default class TestHelper {
 
                 let val;
 
-                if (config === "service.rest-imap.base") {
+                if (config === "service.rest-api-email.base") {
                     val = "./cn_mail";
                 } else if (config.indexOf("editor") !== -1) {
                     val = "../resources/resources/templates/html/editor.html.tpl";

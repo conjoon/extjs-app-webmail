@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -100,6 +100,25 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
     },
 
     formulas: {
+
+        /**
+         * Returns an informational line regarding last saved date of the message,
+         * if "date" of the maintained messageDraft is valid, otherwise a default
+         * message.
+         */
+        lastSavedMessage: {
+            bind: {
+                date: "{messageDraft.savedAt}"
+            },
+            get (data) {
+                /**
+                 * @i18n
+                 */
+                return data.date ?
+                    `Last saved at ${Ext.Date.format(data.date, "d.m.Y H:i:s")}` :
+                    "Opened for editing";
+            }
+        },
 
         /**
          * Returns true if the MessageDraft is still marked as phantom and the
@@ -492,10 +511,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
          * @throws if messageDraftConfig is not of type
          * conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig
          */
-        createDraftFromData: function (messageDraftConfig) {
+        createDraftFromData (messageDraftConfig) {
+            "use strict";
 
-            var me = this,
-                messageBody,
+            const me = this;
+
+            let messageBody,
                 attachments,
                 data;
 
@@ -521,7 +542,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                 create: data
             });
 
-            me.getSession().setMessageDraft(me.get("messageDraft"));
+            const session = me.getSession();
+            session.setMessageDraft(me.get("messageDraft"));
 
             /**
              * @bug
@@ -534,7 +556,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
             // in the constructor's config-argument
             me.set(
                 "messageDraft.messageBody",
-                me.getSession().createRecord("MessageBody", messageBody || {})
+                session.createRecord("MessageBody", messageBody || {})
             );
 
             me.get("messageDraft").attachments().add(
@@ -655,6 +677,42 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
 
             this.set("messageDraft." + type, addresses);
             return addresses;
+        },
+
+
+        /**
+         * Returns true if the MessageDraft is dirty, i.e. has pending changes in either the MessageBody,
+         * the attachment-store or the draft itself.
+         * This is required since the initial setup of composed messages will already mark the session as dirty
+         * which does not reflect the desired behavior, which is a clean unedited draft that gets marked dirty when the
+         * first data input is recognized.
+         *
+         * @returns {boolean}
+         */
+        isDraftDirty () {
+            const
+                me = this,
+                draft = me.get("messageDraft"),
+                attachments = draft.attachments(),
+                /**
+                 * we assume the following keys have been changed during saving the (associated) model(s)
+                 * and will ignore them in this case.
+                 * @type {string[]}
+                 */
+                ignore = ["id", "localId", "mailAccountId", "mailFolderId", "messageBodyId", "messageDraftId"];
+
+            const messageBodyModified = Object.entries(draft.getMessageBody().modified || {})
+                .map(entry => entry[0])
+                .filter(key => {
+                    return !ignore.includes(key);
+                });
+
+            return !!draft.modified ||
+                !!messageBodyModified.length ||
+                !!attachments.getRemovedRecords().length ||
+                // modified checks only "valid()" records
+                !!attachments.getRange().filter(item => item.dirty === true).length ||
+                !!attachments.getRange().filter(item => item.phantom === true).length;
         }
     }
 

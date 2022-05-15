@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,9 +30,15 @@ StartTest(async t => {
     const helper = l8.liquify(TestHelper.get(t, window));
     await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
         
-        t.requireOk("coon.core.util.Date", () => {
+        t.requireOk("coon.core.util.Date", "coon.core.ServiceLocator", () => {
 
-          
+            const userImageService = Ext.create("coon.core.service.UserImageService");
+            userImageService.getImageSrc = id => id;
+            coon.core.ServiceLocator.register(
+                "coon.core.service.UserImageService",
+                userImageService
+            );
+
             if (!Ext.manifest) {
                 Ext.manifest = {};
             }
@@ -79,7 +85,7 @@ StartTest(async t => {
                     }
 
                     var messageItem = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", conf);
-
+                    messageItem.commit(true);
                     return messageItem;
                 },
                 checkHtmlForValidData = function (t, view) {
@@ -148,6 +154,9 @@ StartTest(async t => {
                 t.expect(view.closable).toBe(true);
 
                 t.expect(view.down("cn_mail-mailmessagereaderattachmentlist") instanceof conjoon.cn_mail.view.mail.message.reader.AttachmentList).toBe(true);
+
+                const image = view.down("image[cls=sender-img fas fa-user]");
+                t.expect(image.config.bind).toEqual({src: "{getSenderImage}"});
 
                 t.expect(
                     view.getViewModel() instanceof conjoon.cn_mail.view.mail.message.reader.MessageViewModel
@@ -841,9 +850,7 @@ StartTest(async t => {
 
 
                 const
-                    segmentedbutton = view.down("segmentedbutton"),
-                    plainbtn = view.down("#btn-showplain"),
-                    htmlbtn = view.down("#btn-showhtml"),
+                    button = view.down("button[reference=htmlplainButton]"),
                     messageItem = createMessageItem(true);
 
                 view.setMessageItem(messageItem);
@@ -852,9 +859,8 @@ StartTest(async t => {
 
                     t.expect(vm.get("messageBody.textHtml")).toBeTruthy();
                     t.expect(vm.get("messageBody.textPlain")).toBeTruthy();
-                    t.expect(segmentedbutton.isVisible()).toBe(true);
-                    t.expect(plainbtn.pressed).toBe(false);
-                    t.expect(htmlbtn.pressed).toBe(true);
+                    t.expect(button.isVisible()).toBe(true);
+                    t.expect(button.pressed).toBe(true);
                     t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(vm.get("messageBody.textHtml"));
 
                     // switch to plain by setting values / mimmicking loading
@@ -863,10 +869,9 @@ StartTest(async t => {
                     vm.set("messageBody.textPlain", plain);
                     vm.set("messageBody.textHtml", null);
                     vm.notify();
-                    t.expect(plainbtn.pressed).toBe(true);
-                    t.expect(htmlbtn.pressed).toBe(false);
-                    t.expect(segmentedbutton.isVisible()).toBe(true);
-                    t.expect(segmentedbutton.isDisabled()).toBe(true);
+                    t.expect(button.pressed).toBe(false);
+                    t.expect(button.isVisible()).toBe(true);
+                    t.expect(button.isDisabled()).toBe(true);
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
@@ -875,15 +880,15 @@ StartTest(async t => {
                         vm.set("messageBody.textHtml", html);
                         vm.notify();
 
-                        t.expect(segmentedbutton.isVisible()).toBe(true);
-                        t.expect(htmlbtn.pressed).toBe(true);
-                        t.expect(segmentedbutton.isDisabled()).toBe(false);
+                        t.expect(button.isVisible()).toBe(true);
+                        t.expect(button.pressed).toBe(true);
+                        t.expect(button.isDisabled()).toBe(false);
                         // switch by button click
-                        t.click(plainbtn, function () {
+                        t.click(button, function () {
                             vm.notify();
                             t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(plain);
 
-                            t.click(htmlbtn, function () {
+                            t.click(button, function () {
                                 vm.notify();
                                 t.expect(view.down("cn_mail-mailmessagereadermessageviewiframe").getSrcDoc()).toContain(html);
                             });

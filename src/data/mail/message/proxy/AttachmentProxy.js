@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,6 +33,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
 
     requires: [
         "conjoon.cn_mail.data.mail.message.reader.MessageItemChildJsonReader",
+        "conjoon.cn_mail.data.mail.message.writer.AttachmentWriter",
         "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     ],
 
@@ -41,6 +42,11 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
     },
 
     alias: "proxy.cn_mail-mailmessageattachmentproxy",
+
+    writer: {
+        type: "cn_mail-mailmessageattachmentwriter"
+    },
+
 
     reader: {
         type: "cn_mail-mailmessageitemchildjsonreader"
@@ -137,12 +143,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
             "MailFolders/" + encodeURIComponent(source.mailFolderId) + "/" +
             "MessageItems/" + encodeURIComponent(source.parentMessageItemId) + "/" +
             "Attachments";
-
-        if (me.entityName === "DraftAttachment") {
-            request.setParams(Ext.apply(request.getParams() || {}, {
-                type: "draft"
-            }));
-        }
 
         if (action !== "create") {
             if (Object.prototype.hasOwnProperty.call(source,"id")) {

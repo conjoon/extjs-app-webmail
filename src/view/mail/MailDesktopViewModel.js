@@ -26,11 +26,10 @@
 /**
  * The default viewModel for {@link conjoon.cn_mail.view.mail.inbox.InboxView}.
  * This default implementation is configured to be used with {@link conjoon.cn_mail.view.mail.inbox.InboxView},
- * which binds the stores "cn_mail_mailfolderstore" and
+ * which binds the stores "cn_mail_mailfoldertreestore" and
  * "cn_mail_mailmessageitemstore" to its MailFolderTree and MessageGrid.
  * Additionally, the filter of the "cn_mail_mailmessageitemstore" is bound to the
  * id of the selection in the MailFolderTree.
- *
  */
 Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewModel", {
 
@@ -45,10 +44,27 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewModel", {
     stores: {
         "cn_mail_mailfoldertreestore": {
             type: "cn_mail-mailfoldertreestore",
-            autoLoad: true,
-            listeners: {
-                load: "onMailFolderTreeStoreLoad"
+            autoLoad: true
+        }
+    },
+
+
+    privates: {
+        /**
+         * Overridden to make sure we can configure the store with a singleton instance.
+         *
+         * @param storeCfg
+         * @returns {*}
+         */
+        applyStores (storeCfg) {
+
+            if (storeCfg.cn_mail_mailfoldertreestore) {
+                const doLoad = !!storeCfg.cn_mail_mailfoldertreestore;
+                storeCfg.cn_mail_mailfoldertreestore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+                doLoad && storeCfg.cn_mail_mailfoldertreestore.load();
             }
+
+            return this.callParent([storeCfg]);
         }
     }
 

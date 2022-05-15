@@ -542,34 +542,55 @@ Ext.define("conjoon.cn_mail.model.mail.CompoundKeyedModelDecorator", {
                  * Returns the compound key representing this model.
                  * The compound key is always the data found in the compound key fields
                  * before the record was committed, e.g if the fields where modified,
-                 * their original value, not their modified vaues will be used until the next
+                 * their original value, not their modified values will be used.
+                 * The method will call checkForeignKeysModified to check whether
+                 * the modified-fields currently has one or more fields from the compound key marked
+                 * as modified. If that is the case, the compound key is not returned to prevent data
+                 * inconsistency, and an exception is thrown. Interested APIs must check beforehand whether
+                 * they operate with records which have modified compound key fields.
                  *
                  * @return conjoon.cn_mail.data.mail.message.AbstractCompoundKey
                  */
-                getCompoundKey: function () {
+                getCompoundKey () {
+                    "use strict";
+
                     const me = this,
                         representingCompoundKeyClass = me.getRepresentingCompoundKeyClass();
 
-                    me.checkForeignKeysModified();
+                    me.hasKeysModified(true);
 
                     return representingCompoundKeyClass.fromRecord(me);
                 },
 
                 /**
-                 * @private
+                 * Checks if the record has currently any compound key-fields modified.
+                 *
+                 * @param {Boolean=false} throws true to throw an exception for modified fields,
+                 * otherwise the method will return true or false depending on the state of the modified
+                 * fields
+                 *
+                 * @return {Boolean} true if there are modified fields which have not been committed
+                 * yet, otherwise false (only if parameter "throws" is set to false)
+                 *
+                 * @throws {Error} if throws=true, an exception is thrown for detected modified fields,
+                 * otherwise true is returned
                  */
-                checkForeignKeysModified: function () {
+                hasKeysModified: function (throws = false) {
                     const me = this,
                         modified = me.modified;
 
                     if (!modified) {
-                        return;
+                        return false;
                     }
                     for (let i = 0, len = me.foreignKeyFields.length; i < len ; i++) {
                         if (Object.prototype.hasOwnProperty.call(modified, me.foreignKeyFields[i]) && modified[me.foreignKeyFields[i]] !== undefined) {
-                            Ext.raise("Field was modified, can not use current information.");
+                            if (throws === true) {
+                                Ext.raise("Field was modified, can not use current information.");
+                            }
+                            return true;
                         }
                     }
+                    return false;
                 },
 
 

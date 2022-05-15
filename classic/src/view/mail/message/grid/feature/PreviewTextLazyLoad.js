@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -103,7 +103,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         // set store's extraParams to all attributes excluding previewText (see conjoon/rest-api-email)
         grid.on(
             "cn_mail-mailmessagegridbeforeload",
-            store => store.getProxy().extraParams.attributes = "*,previewText",
+            store => {
+                store.getProxy().extraParams.attributes = "*,previewText";
+
+                /**
+                 * @see conjoon/extjs-app-webmail#216
+                 */
+                store.on("filterchange", me.onStoreFilterChange, me);
+            },
             null,
             {single: true}
         );
@@ -241,8 +248,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         Object.keys(urlGroups).forEach(mailAccountId => {
             Object.keys(urlGroups[mailAccountId]).forEach(mailFolderId => {
                 requestTemplate.setParams({
-                    mailAccountId,
-                    mailFolderId
+                    mailAccountId: mailAccountId,
+                    mailFolderId: mailFolderId
                 });
                 url = proxy.assembleUrl(requestTemplate);
 
@@ -287,7 +294,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
                     pageMap
                 );
 
-                if (rec.get("previewText") === undefined) {
+                if (rec && rec.get("previewText") === undefined) {
                     let ck = rec.getCompoundKey().toArray();
                     if (!groups[ck[0]]) {
                         groups[ck[0]] = {};
@@ -381,8 +388,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         const
             me = this,
+            CompoundKey = conjoon.cn_mail.data.mail.message.CompoundKey,
             url = response.request.url,
-            loadedIds = response.request.params.ids.split(","),
+            // filter[0] represents the id-IN filter
+            loadedIds = JSON.parse(response.request.params.filter)[0].value,
             livegrid = me.grid.view.getFeature("cn_mail-mailMessageFeature-livegrid");
 
         me.pendingLazies[url] = l8.extract(me.pendingLazies[url].concat(loadedIds));
@@ -390,13 +399,35 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         let data = JSON.parse(response.responseText);
 
         data.data.forEach(item => {
-            let rec = livegrid.getRecordByCompoundKey(conjoon.cn_mail.data.mail.message.CompoundKey.createFor(
-                item.mailAccountId, item.mailFolderId, item.id
-            ));
 
-            rec.set("previewText", item.previewText ? item.previewText : "");
-            rec.commit();
+            setTimeout(() => {
+                let rec = livegrid.getRecordByCompoundKey(CompoundKey.createFor(
+                    item.mailAccountId, item.mailFolderId, item.id
+                ));
+
+                if (rec) {
+                    rec.set("previewText", item.previewText ? item.previewText : "");
+                }
+            }, 1);
+
         });
+    },
+
+
+    /**
+     * When the store's filter changes, it's an indicator that the resource location is
+     * about to change. In this case, pendingLazies get invalidated since the store completely
+     * refills with new data. The pendingLazies need a refresh then.
+     *
+     * @param {Ext.data.Store} store
+     * @param  {Array} filter
+     */
+    onStoreFilterChange (store, filter) {
+        "use strict";
+
+        const me = this;
+
+        me.pendingLazies = {};
     },
 
 
@@ -418,23 +449,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         Ext.Ajax.request({
             method: "get",
-            url,
+            url: url,
             headers: proxy.headers,
             params: {
                 attributes: "previewText",
-                options: JSON.stringify({
-                    previewText: {
-                        plain: {
-                            precedence: true,
-                            length: 200
-                        },
-                        html: {
-                            length: 200
-                        }
-                    }
-                }),
-                target: "MessageItem",
-                ids: idsToLoad.join(",")
+                options: proxy.getDefaultParameters("ListMessageItem.options"),
+                filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
             }
         }).then(me.processLoadedPreviewText.bind(me));
     }

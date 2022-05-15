@@ -85,12 +85,46 @@
  */
 Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
+    alternateClassName: ["conjoon.cn_mail.MailboxService"],
 
     requires: [
         "conjoon.cn_mail.model.mail.message.AbstractMessageItem",
-        "conjoon.cn_mail.data.mail.service.mailbox.Operation"
+        "conjoon.cn_mail.data.mail.service.mailbox.Operation",
+        "conjoon.cn_mail.data.mail.service.MailFolderHelper"
     ],
 
+
+    statics: {
+
+        /**
+         * A static set to keep track of all recent message item keys that have been processed
+         * during the current session of the webmail client.
+         * Recent messages are messages that were either flagged as "RECENT" by the server or by the client.
+         *
+         * @type {Set} recentMessageItems
+         */
+        recentMessageItemKeys: new Set(),
+
+
+        /**
+         * Returns a singleton instance for this helper.
+         *
+         * @returns {conjoon.cn_mail.data.mail.service.MailFolderHelper}
+         */
+        getInstance () {
+
+            let inst = this.__inst;
+            if (!inst) {
+                inst = Ext.create(this, {
+                    mailFolderHelper: conjoon.cn_mail.MailFolderHelper.getInstance()
+                });
+                this.__inst = inst;
+            }
+
+            return inst;
+        }
+
+    },
 
     /**
      * @cfg {conjoon.cn_mail.data.mail.service.MailFolderHelper} mailFolderHelper
@@ -468,7 +502,8 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      */
     moveCallback: function (op) {
 
-        const me               = this,
+        const
+            me               = this,
             request          = op.getRequest(),
             sourceFolderId   = request.sourceFolderId,
             targetFolderId   = request.targetFolderId,
@@ -476,17 +511,23 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
             mailAccountId    = record.get("mailAccountId"),
             mailFolderHelper = me.getMailFolderHelper();
 
+        if (op.getResult().success !== true) {
+            return false;
+        }
+
         // just like MessageItemUpdater#updateItemWithDraft, we're setting the
         // messageBodyId here
         // @see conjoon/extjs-app-webmail#116
         record.set("messageBodyId", record.getId());
 
-        if (op.getResult().success !== true) {
-            return false;
+        // we are not interested in tracking the changes made to the mailFolderId
+        // of the MessageBody, so silently commit this here
+        if (record.entityName === "MessageDraft") {
+            record.getMessageBody().commit(true);
         }
 
         if (record.get("seen")) {
-            return;
+            return true;
         }
 
         let sourceFolder = mailFolderHelper.getMailFolder(mailAccountId, sourceFolderId),
@@ -537,7 +578,6 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
         if (mailFolder) {
             mailFolder.set("unreadCount", Math.max(0, mailFolder.get("unreadCount") - 1), {dirty: false});
         }
-
 
         return true;
     }

@@ -109,6 +109,26 @@ StartTest(t => {
     });
 
 
+    t.it("toString() / decode", t => {
+
+        const
+            key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID}),
+            encodedKey = encodeURIComponent(btoa(JSON.stringify({
+                mailAccountId: MAILACCOUNTID,
+                mailFolderId: MAILFOLDERID,
+                id: ID
+            })));
+
+        t.expect(key.toString()).toBe(encodedKey);
+
+        t.expect(conjoon.cn_mail.data.mail.message.CompoundKey.decode(encodedKey)).toEqual({
+            mailAccountId: MAILACCOUNTID,
+            mailFolderId: MAILFOLDERID,
+            id: ID
+        });
+    });
+
+
     t.it("toArray()", t => {
 
         let key = create({mailAccountId: MAILACCOUNTID, mailFolderId: MAILFOLDERID, id: ID});

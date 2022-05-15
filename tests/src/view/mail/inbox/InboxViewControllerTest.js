@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
 
 
         var panel;
@@ -36,15 +36,15 @@ StartTest(async t => {
         const
             createPanelWithViewModel = function () {
 
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+
                 return Ext.create("conjoon.cn_mail.view.mail.inbox.InboxView", {
 
                     viewModel: {
                         type: "cn_mail-mailinboxviewmodel",
                         stores: {
-                            "cn_mail_mailfoldertreestore": {
-                                type: "cn_mail-mailfoldertreestore",
-                                autoLoad: true
-                            }
+                            "cn_mail_mailfoldertreestore":
+                                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
                         }
                     },
 
@@ -125,6 +125,8 @@ StartTest(async t => {
             };
 
         t.afterEach(function () {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
             if (panel) {
                 panel.destroy();
             }
@@ -270,7 +272,8 @@ StartTest(async t => {
                         mailFolderId: "INBOX",
                         mailAccountId: "dev_sys_conjoon_org",
                         seen: true,
-                        flagged: false
+                        flagged: false,
+                        recent: true
                     }),
                     CALLED = 0;
 
@@ -279,13 +282,19 @@ StartTest(async t => {
                 };
 
                 t.expect(rec.get("seen")).toBe(true);
+                t.expect(rec.get("recent")).toBe(true);
                 t.expect(rec.get("flagged")).toBe(false);
                 t.expect(CALLED).toBe(0);
 
                 viewController.onRowFlyMenuItemClick(null, null, "flag", rec);
                 t.expect(rec.get("flagged")).toBe(true);
+                t.expect(rec.get("recent")).toBe(false);
+
+                rec.set("recent", true);
 
                 viewController.onRowFlyMenuItemClick(null, null, "markunread", rec);
+
+                t.expect(rec.get("recent")).toBe(false);
 
                 t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(rec.get("seen")).toBe(false);
@@ -914,16 +923,11 @@ StartTest(async t => {
 
                 panel = createPanelWithViewModel();
 
-                const viewController = panel.getController();
+                const
+                    viewController = panel.getController(),
+                    moveMessageSpy = t.spyOn(viewController.getMailboxService(), "moveMessage").and.callFake(() => {});
 
                 t.waitForMs(t.parent.TIMEOUT, () => {
-
-                    let oldM = conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage,
-                        CALLED = 0;
-
-                    conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = function () {
-                        CALLED++;
-                    };
 
                     let md = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                         mailAccountId: "foo",
@@ -934,9 +938,9 @@ StartTest(async t => {
                     md.setMessageBody(Ext.create("conjoon.cn_mail.model.mail.message.MessageBody"));
 
                     viewController.updateViewForSentDraft(md);
-                    t.expect(CALLED).toBe(1);
+                    t.expect(moveMessageSpy.calls.count()).toBe(1);
 
-                    conjoon.cn_mail.data.mail.service.MailboxService.prototype.moveMessage = oldM;
+                    moveMessageSpy.remove();
                 });
             });
 

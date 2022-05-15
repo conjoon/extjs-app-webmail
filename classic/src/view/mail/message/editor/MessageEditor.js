@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -282,13 +282,29 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
                 }
             },
             displayTpl: "<tpl for=\".\">{name}</tpl>"
-        }, "->", {
+        }, "->",
+        {
+            xtype: "button",
+            iconCls: "fa fa-envelope",
+            cls: "seenButton",
+            enableToggle: true,
+            bind: {
+                pressed: "{messageDraft.seen}"
+            }
+        }, {
+            xtype: "button",
+            iconCls: "fa fa-flag",
+            cls: "flagButton",
+            enableToggle: true,
+            bind: {
+                pressed: "{messageDraft.flagged}"
+            }
+        }, {
             width: 213,
             xtype: "displayfield",
             cls: "lastSavedDateField",
             bind: {
-                hidden: "{!messageDraft.savedAt}",
-                value: "Last saved at {messageDraft.savedAt:date(\"d.m.Y H:i:s\")}"
+                value: "{lastSavedMessage}"
             }
         }, {
             scale: "small",
@@ -639,6 +655,56 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
 
 
     /**
+     * Shows a notice that the Editor is about to be closed without saving.
+     * Lets the user cancel the close-process.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     */
+    showConfirmCloseDialog () {
+        "use strict";
+
+        const me = this;
+
+        /**
+         * @i18n
+         */
+        let myMask, iconCls;
+
+        // notify any pending states here to flush so we can change the
+        // view's state and be sure not to interfere with any vm setting
+        me.getViewModel().notify();
+
+        iconCls = me.getIconCls();
+
+        myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Close without saving",
+            message: "Do you want to close the editor without saving your changes?",
+            target: me,
+            buttons: coon.comp.component.MessageMask.YESNO,
+            icon: coon.comp.component.MessageMask.QUESTION,
+            callback: function (btnAction) {
+                const me = this;
+                if (btnAction === "noButton") {
+                    me.setClosable(true);
+                    me.setIconCls(iconCls);
+                    return;
+                }
+                me.suspendEvent("beforeclose");
+                me.close();
+                me.resumeEvent("beforeclose");
+
+            },
+            scope: me
+        });
+
+        me.setIconCls("fa fa-question-circle");
+        me.setClosable(false);
+
+        myMask.show();
+    },
+
+
+    /**
      * Shows a notice that the MessageDraft being edited misses a subject field.
      * The ui shows a textfield and a ok and cancel button using a
      * coon.comp.component.MessageMask. Clicking ok will add the specified
@@ -759,9 +825,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
         me.loadingMask = Ext.create("Ext.LoadMask", {
             target: me,
             bind: {
-                hidden: isComposed
-                    ? "{isAccountAndFolderSet}"
-                    : "{!isMessageBodyLoading}"
+                hidden: isComposed ?
+                    "{isAccountAndFolderSet}" :
+                    "{!isMessageBodyLoading}"
             },
             listeners: {
                 hide: function (mask) {
@@ -830,6 +896,5 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
 
         me.mixins.loadingFailedDialog.showLoadingFailedDialog.call(me);
     }
-
 
 });

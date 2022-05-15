@@ -30,18 +30,43 @@
  */
 Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
+    alternateClassName: ["conjoon.cn_mail.MailFolderHelper"],
 
     requires: [
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
 
+    config: {
+        /**
+         * @cfg {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+         * @private
+         */
+        store: null
+    },
 
-    /**
-     * @cfg {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
-     * @private
-     */
-    store: null,
+
+    statics: {
+
+        /**
+         * Returns a singleton instance for this helper.
+         *
+         * @returns {conjoon.cn_mail.data.mail.service.MailFolderHelper}
+         */
+        getInstance () {
+
+            let inst = this.__inst;
+            if (!inst) {
+                inst = Ext.create(this, {
+                    store: conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+                });
+                this.__inst = inst;
+            }
+
+            return inst;
+        }
+
+    },
 
     /**
      * Constructor
@@ -56,14 +81,27 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
 
         const me = this;
 
-        if (!cfg.store || !(cfg.store instanceof conjoon.cn_mail.store.mail.folder.MailFolderTreeStore)) {
+        me.initConfig(cfg);
+    },
+
+
+    /**
+     * Applies the store to "this" class-config.
+     *
+     * @param store
+     *
+     * @returns {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}
+     */
+    applyStore (store) {
+
+        if (!store || !(store instanceof conjoon.cn_mail.store.mail.folder.MailFolderTreeStore)) {
             Ext.raise({
                 msg: "'store' must be an instance of conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
-                store: cfg.store
+                store: store
             });
         }
 
-        me.initConfig(cfg);
+        return store;
     },
 
 
@@ -118,21 +156,6 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailFolderHelper", {
         }
 
         return node.get("id");
-    },
-
-
-    /**
-     * Returns the store used by this helper.
-     *
-     * @return {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}
-     *
-     * @private
-     */
-    getStore: function () {
-
-        const me = this;
-
-        return me.store;
     },
 
 

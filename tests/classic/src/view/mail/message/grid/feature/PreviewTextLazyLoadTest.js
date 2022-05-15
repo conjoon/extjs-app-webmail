@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -182,9 +182,17 @@ StartTest(t => {
                 t.expect(onSpy.calls.mostRecent().args[3]).toEqual({single: true});
                 let extraParamCall = onSpy.calls.mostRecent().args[1],
                     proxyMock = {extraParams: {}},
-                    storeMock = {getProxy: () => proxyMock};
+                    storeMock = {getProxy: () => proxyMock, on () {}},
+                    filterChangeListenerSpy = t.spyOn(storeMock, "on").and.callThrough();
                 extraParamCall(storeMock);
                 t.expect(proxyMock.extraParams.attributes).toBe("*,previewText");
+
+                /**
+                 * @see conjoon/extjs-app-webmail#216
+                 */
+                t.expect(filterChangeListenerSpy.calls.mostRecent().args[0]).toBe("filterchange");
+                t.expect(filterChangeListenerSpy.calls.mostRecent().args[1]).toBe(feature.onStoreFilterChange);
+                t.expect(filterChangeListenerSpy.calls.mostRecent().args[2]).toBe(feature);
 
                 // scrolable on scroll, load for store, prefetch for store observers
                 t.expect(monSpy.calls.count()).toBe(3);
@@ -199,7 +207,7 @@ StartTest(t => {
                     t.expect(call.args[4]).toEqual({buffer: 500});
                 });
 
-                [getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
+                [filterChangeListenerSpy, getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
 
                 t.expect(feature.installed).toBe(true);
             });
@@ -362,19 +370,30 @@ StartTest(t => {
 
                 let indexCount = 0;
 
+                let noRecord = true;
+
                 const
                     feature = createFeature(),
                     browse = [[3, 4, 21], [4, 0, 21]],
-                    getRecordAtSpy = t.spyOn(coon.core.data.pageMap.PageMapUtil, "getRecordAt").and.callFake(() => ({
-                        get: () => indexCount++ % 2 === 0 ? undefined : "foo",
-                        getCompoundKey: () => ({toArray: () => ["account", "folder", indexCount]})
-                    })),
+                    getRecordAtSpy = t.spyOn(coon.core.data.pageMap.PageMapUtil, "getRecordAt").and.callFake(() => {
+                        if (noRecord) {
+                            return;
+                        }
+                        return {
+                            get: () => indexCount++ % 2 === 0 ? undefined : "foo",
+                            getCompoundKey: () => ({toArray: () => ["account", "folder", indexCount]})
+                        };
+                    }),
                     createSpy = t.spyOn(coon.core.data.pageMap.RecordPosition, "create").and.callFake(() => ({}));
 
+                noRecord = true;
+                feature.getUrlGroups(browse, {});
+
+                noRecord = false;
                 const groups = feature.getUrlGroups(browse, {});
 
-                t.expect(getRecordAtSpy.calls.count()).toBe(40);
-                t.expect(createSpy.calls.count()).toBe(40);
+                t.expect(getRecordAtSpy.calls.count()).toBe(80);
+                t.expect(createSpy.calls.count()).toBe(80);
 
                 t.expect(groups.account.folder.length).toBe(20);
 
@@ -405,10 +424,12 @@ StartTest(t => {
 
 
             t.it("processLoadedPreviewText()", t => {
+
                 const
                     feature = createFeature(),
                     livegridMock = {getRecordByCompoundKey: function () {}},
-                    grid = getGrid();
+                    grid = getGrid(),
+                    timeoutSpy = t.spyOn(window, "setTimeout").and.callFake((fn, timeout) => fn());
 
                 grid.view.getFeature = () => livegridMock;
 
@@ -423,8 +444,7 @@ StartTest(t => {
                 let mockRec = {
                     sets: [],
                     commits: 0,
-                    set: function (field, value) {this.sets.push([field, value]);},
-                    commit: function () {this.commits++;}
+                    set: function (field, value) {this.sets.push([field, value]);}
                 };
                 let getRecordByCompoundKeySpy = t.spyOn(livegridMock, "getRecordByCompoundKey").and.callFake(() => mockRec);
 
@@ -435,20 +455,23 @@ StartTest(t => {
                     request: {
                         url: "foo",
                         params: {
-                            ids: "1,2,3,4"
+                            filter: JSON.stringify([{property: "id", operator: "in", value: ["1", "2", "3", "4"]}])
                         }
                     }
                 });
+
+                t.expect(timeoutSpy.calls.count()).toBe(2);
+                t.expect(l8.isFunction(timeoutSpy.calls.all()[0].args[0])).toBe(true);
+                t.expect(timeoutSpy.calls.all()[0].args[1]).toBe(1);
 
                 t.expect(compoundKeySpy.calls.count()).toBe(2);
                 t.expect(getRecordByCompoundKeySpy.calls.count()).toBe(2);
 
                 t.expect(mockRec.sets).toEqual([["previewText", 1], ["previewText", 2]]);
-                t.expect(mockRec.commits).toBe(2);
 
                 t.expect(feature.pendingLazies["foo"]).toEqual(["100", "1", "3"]);
 
-                [getRecordByCompoundKeySpy, compoundKeySpy].map(spy => spy.remove());
+                [getRecordByCompoundKeySpy, compoundKeySpy, timeoutSpy].map(spy => spy.remove());
             });
 
 
@@ -456,7 +479,10 @@ StartTest(t => {
 
                 const
                     feature = createFeature(),
-                    proxyMock = {headers: "bar"},
+                    proxyMock = {
+                        headers: "bar",
+                        getDefaultParameters: (key) => ( key === "ListMessageItem.options" ? {"foo": "bar"} : {})
+                    },
                     storeMock = {getProxy: () => proxyMock},
                     grid = getGrid();
 
@@ -479,24 +505,25 @@ StartTest(t => {
                     headers: proxyMock.headers,
                     params: {
                         attributes: "previewText",
-                        options: JSON.stringify({
-                            previewText: {
-                                plain: {
-                                    precedence: true,
-                                    length: 200
-                                },
-                                html: {
-                                    length: 200
-                                }
-                            }
-                        }),
-                        target: "MessageItem",
-                        ids: [1,2].join(",")
+                        options: {"foo": "bar"},
+                        filter: JSON.stringify([{property: "id", operator: "in", value: [1, 2]}])
                     }
                 });
 
                 [requestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
+            });
 
+
+            t.it("fix: feature PreviewTextLazyLoad must empty pendingLazies if store gets reloaded for folder (conjoon/extjs-app-webmail#216)", t => {
+
+                const
+                    feature = createFeature();
+
+                feature.pendingLazies = null;
+
+                feature.onStoreFilterChange();
+
+                t.expect(feature.pendingLazies).toEqual({});
 
             });
 
