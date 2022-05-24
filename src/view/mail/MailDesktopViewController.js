@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -441,7 +441,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      */
     processMailFolderSelectionForRouting: function (mailAccountId, mailFolderId, shouldSelectMailFolder = false) {
 
-        const me        = this,
+        const me      = this,
             view      = me.getView(),
             inboxView = view.down("cn_mail-mailinboxview"),
             tree      = inboxView.down("cn_mail-mailfoldertree");
@@ -456,7 +456,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         } else if (shouldSelectMailFolder === true && mailFolderId === null) {
             rec = accountNode;
         } else {
-            rec = accountNode.findChild("id", mailFolderId, true);
+            rec = accountNode.findChild("id", mailFolderId.replace("%2F", "/"), true);
 
             if (!rec) {
                 return false;
@@ -677,15 +677,15 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      */
     onMailMessageGridDoubleClick: function (grid, record) {
 
-        var me = this;
+        const
+            me = this,
+            MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
+        let url = [
+            "cn_mail/message/read",
+            MessageEntityCompoundKey.fromRecord(record).toArray().map(cmp => cmp.replace("/", "%2F")).join("/")
+        ].join("/");
 
-        me.redirectTo(
-            ["cn_mail/message/read",
-                conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
-                    .fromRecord(record).toArray().join("/")
-            ].join("/")
-
-        );
+        me.redirectTo(url);
     },
 
     /**
@@ -785,7 +785,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
         let isInstance = me.checkArgumentsForEditorOrView(id, type);
 
-        id = isInstance ? id.toArray().join("/") : id;
+        id = isInstance ? id.toArray().map(cmp => cmp.replace("/", "%2F")).join("/") : id;
 
         switch (type) {
         case "read":
@@ -1090,7 +1090,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
         const me  = this,
             ck  = me.getCompoundKeyFromInboxMessageView(),
-            uri = ["cn_mail/message/" + type, ck.toArray().join("/")].join("/");
+            uri = ["cn_mail/message/" + type, ck.toArray().map(cmp => cmp.replace("/", "%2F")).join("/")].join("/");
 
         me.redirectTo(uri);
 

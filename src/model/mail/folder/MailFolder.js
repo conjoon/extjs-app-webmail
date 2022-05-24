@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -115,7 +115,7 @@ Ext.define("conjoon.cn_mail.model.mail.folder.MailFolder", {
         return prefix +
                me.get("mailAccountId") +
                "/" +
-               me.get("id");
+               me.get("id").replace("/", "%2F");
     }
 
 });
