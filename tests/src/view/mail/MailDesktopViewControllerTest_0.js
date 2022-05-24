@@ -493,18 +493,18 @@ StartTest(async t => {
                         "conjoon.cn_mail.view.mail.MailDesktopViewController"
                     ), exc, tests;
 
-                let key = MessageEntityCompoundKey.createFor(1, 2, 3);
+                let key = MessageEntityCompoundKey.createFor("1", "2", "3");
 
                 tests = [{
-                    args: [8797],
+                    args: ["8797"],
                     expected: "Exception",
                     contains: "valid value"
                 }, {
-                    args: [8797, "edit"],
+                    args: ["8797", "edit"],
                     expected: "Exception",
                     contains: "expects an instance"
                 }, {
-                    args: [8797, "compose"],
+                    args: ["8797", "compose"],
                     expected: "cn_mail/message/compose/8797"
                 }, {
                     args: [key, "edit"],
