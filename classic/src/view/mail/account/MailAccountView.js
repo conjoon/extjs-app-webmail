@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -259,13 +259,25 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                         value: "{mailAccount.outbox_port}"
                     }
                 }]}, {
-                xtype: "checkbox",
+                xtype: "combobox",
                 labelWidth: 160,
-                inputValue: true,
-                fieldLabel: "Use SSL",
-                name: "outbox_ssl",
+                fieldLabel: "Secure",
+                cls: "outbox_secure",
+                name: "outbox_secure",
+                displayField: "value",
+                editable: false,
+                valueField: "id",
+                store: {
+                    data: [{
+                        id: "ssl",
+                        value: "SSL"
+                    }, {
+                        id: "tls",
+                        value: "TLS"
+                    }]
+                },
                 bind: {
-                    value: "{mailAccount.outbox_ssl}"
+                    value: "{mailAccount.outbox_secure}"
                 }
             }, {
                 xtype: "container",

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,7 +48,7 @@ StartTest(async t => {
                     outbox_type: "outbox_type",
                     outbox_address: "outbox_address",
                     outbox_port: "outbox_port",
-                    outbox_ssl: true,
+                    outbox_secure: "ssl",
                     outbox_user: "outbox_user",
                     outbox_password: "outbox_password"
                 });
@@ -320,7 +320,7 @@ StartTest(async t => {
                 "outbox_type",
                 "outbox_address",
                 "outbox_port",
-                "outbox_ssl",
+                "outbox_secure",
                 "outbox_user",
                 "outbox_password"];
 
