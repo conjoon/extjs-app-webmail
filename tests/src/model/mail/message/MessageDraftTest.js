@@ -150,9 +150,9 @@ StartTest(async t => {
                     );
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
-                        t.expect(rec.get("to")).toContain(
-                            { name: "Firstname Lastnameto", address: "nameto@domain.tld"}
-                        );
+                        t.expect(rec.get("to").length).toBeTruthy();
+                        t.expect(rec.get("to")[0].name).toBeDefined();
+                        t.expect(rec.get("to")[0].address).toBeDefined();
                     });
 
                 });

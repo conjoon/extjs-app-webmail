@@ -476,7 +476,7 @@ StartTest(async t => {
 
                     store.filter([
                         {property: "mailAccountId", value: "dev_sys_conjoon_org"},
-                        {property: "mailFolderId", value: "INBOX"}
+                        {property: "mailFolderId", value: "INBOX.Drafts"}
                     ]);
 
                     t.waitForMs(t.parent.TIMEOUT, function () {
@@ -500,6 +500,7 @@ StartTest(async t => {
                         messageItem.commit();
 
                         subjectCont = Ext.dom.Query.select("div[class*=subject]", grid.el.dom)[index];
+
                         t.expect(subjectCont.firstChild.tagName.toLowerCase()).toBe("span");
                         t.expect(subjectCont.firstChild.className.toLowerCase()).toBe("draft");
 

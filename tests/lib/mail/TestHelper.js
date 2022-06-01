@@ -104,6 +104,7 @@ export default class TestHelper {
         Ext.ux.ajax.SimManager.defaultSimlet = null;
         Ext.ux.ajax.SimManager.init({delay: 1});
         await new Promise((resolve, reject) => {
+
             t.requireOk(
                 "Ext.ux.ajax.SimManager",
                 "conjoon.dev.cn_mailsim.data.table.MessageTable",
@@ -113,6 +114,15 @@ export default class TestHelper {
                 "conjoon.dev.cn_mailsim.data.MessageItemSim", () => {
 
                     conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 100;
+
+                    t.beforeEach(t => {
+                        t.ENVIRONMENT_SPY = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake((resource) => resource);
+                    });
+
+                    t.afterEach(t => {
+                        t.ENVIRONMENT_SPY.remove();
+                    });
+
 
                     Object.entries({
                         "conjoon.dev.cn_mailsim.data.AttachmentSim": Object.assign(

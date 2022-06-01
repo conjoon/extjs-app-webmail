@@ -980,7 +980,7 @@ StartTest(async t => {
                     // select folder
                     t.waitForMs(t.parent.TIMEOUT, () => {
 
-                        selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 0, "INBOX"));
+                        selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t));
 
                         // select draft
                         t.waitForMs(t.parent.TIMEOUT, () => {
@@ -1019,11 +1019,12 @@ StartTest(async t => {
                                     t.expect(gridRec.get("subject")).toBe("foo");
 
                                     // select other folder
-                                    selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts"));
+                                    selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 0, "INBOX", t));
                                     t.waitForMs(t.parent.TIMEOUT, () => {
 
                                         // back to previous folder
-                                        selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 0, "INBOX"));
+                                        selectMailFolder(panel, getChildAt(panel, "dev_sys_conjoon_org", 3, "INBOX.Drafts", t));
+
 
                                         t.waitForMs(t.parent.TIMEOUT, () => {
 
