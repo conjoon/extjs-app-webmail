@@ -2,13 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [0.2.1](https://github.com/conjoon/extjs-app-webmail/compare/v0.2.0...v0.2.1) (2022-06-01)
-
-
-### Bug Fixes
-
-* slash "/" not encoded when part of mailFolderId ([49fd1fd](https://github.com/conjoon/extjs-app-webmail/commit/49fd1fdd5557f05105963f6524ed91dfdf206bbd)), closes [conjoon/extjs-app-webmail#242](https://github.com/conjoon/extjs-app-webmail/issues/242)
-
 ## [0.2.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.1.1...v0.2.0) (2022-05-15)
 
 
