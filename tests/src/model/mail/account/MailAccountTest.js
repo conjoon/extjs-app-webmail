@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -90,5 +90,15 @@ StartTest(t => {
         t.isInstanceOf(model.getField("replyTo"), "coon.core.data.field.EmailAddress");
     });
 
+
+    t.it("test mappings php-lib-conjoon#8", t => {
+
+        model.fields.forEach(field => {
+            if (field.getName() !== "id" && Object.prototype.hasOwnProperty.call(field, "definedBy")) {
+                t.expect(field.getMapping()).toBe(`attributes.${field.getName()}`);
+            }
+        });
+
+    });
 
 });

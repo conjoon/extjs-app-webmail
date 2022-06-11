@@ -93,7 +93,12 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
     }, {
         name: "outbox_secure",
         type: "string"
-    }],
+    }].map(field => {
+        if (!["id", "type"].includes(field.name)) {
+            field.mapping = `attributes.${field.name}`;
+        }
+        return field;
+    }),
 
     /**
      * Overriden to make sure we can specify class statics for values of
