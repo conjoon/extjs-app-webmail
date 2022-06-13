@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,8 +47,15 @@ StartTest(t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
         t.expect(model.getIdProperty()).toBe("localId");
-        t.expect(model.getField("unreadCount").getPersist()).toBe(false);
+        t.expect(model.getField("unreadMessages").getPersist()).toBe(false);
+        t.expect(model.getField("totalMessages").getPersist()).toBe(false);
+        t.expect(model.getField("data").getPersist()).toBe(false);
         t.expect(model.getField("mailAccountId").critical).toBe(true);
+        t.expect(model.getField("mailAccountId").getMapping()).toBe("relationships.MailAccounts.data.id");
+
+        ["name", "totalMessages", "data", "unreadMessages", "folderType"].forEach(
+            fieldName => t.expect(model.getField(fieldName).getMapping()).toBe(`attributes.${fieldName}`)
+        );
     });
 
     t.it("Test Entity Name", t => {

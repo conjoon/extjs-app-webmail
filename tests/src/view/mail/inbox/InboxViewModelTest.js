@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -125,15 +125,15 @@ StartTest(async t => {
                     var store = viewModel.getStore("cn_mail_mailfoldertreestore"),
                         rec = store.getRoot().findChild("id", "dev_sys_conjoon_org").findChild("id", "INBOX");
 
-                    t.expect(rec.get("unreadCount")).toBe(3787);
+                    t.expect(rec.get("unreadMessages")).toBe(3787);
 
                     viewModel.updateUnreadMessageCount("dev_sys_conjoon_org", "INBOX", -10);
 
-                    t.expect(rec.get("unreadCount")).toBe(3777);
+                    t.expect(rec.get("unreadMessages")).toBe(3777);
 
                     viewModel.updateUnreadMessageCount("dev_sys_conjoon_org", "INBOX", 12);
 
-                    t.expect(rec.get("unreadCount")).toBe(3789);
+                    t.expect(rec.get("unreadMessages")).toBe(3789);
 
                 });
 

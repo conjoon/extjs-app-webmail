@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,6 +34,8 @@ Ext.define("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader", {
     extend: "Ext.data.reader.Json",
 
     requires: [
+        // @define l8
+        "l8",
         "conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
@@ -78,35 +80,28 @@ Ext.define("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader", {
 
         const me      = this,
             ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT,
-            tp      = me.getTypeProperty();
+            tp      = me.getTypeProperty(),
+            source = l8.unchain("data", data);
 
-        if (Ext.isObject(data)) {
+        if (l8.isArray(source)) {
+            let records = data.data, i, len = records.length, rec;
 
-            if (Ext.isArray(data.data)) {
+            for (i = 0; i < len; i++) {
+                rec = records[i];
 
-                let records = data.data, i, len = records.length, rec;
-
-                for (i = 0; i < len; i++) {
-                    rec = records[i];
-
-                    rec.folderType = ACCOUNT;
-                    rec[tp]  = me.mailAccountModelClass;
-                }
-
-                return data;
-
-            } else if (Ext.isObject(data.data)) {
-                // POST / PUT
-                let d = data.data;
-
-                d.folderType     = ACCOUNT;
-                d[me.getTypeProperty()] = me.mailAccountModelClass;
-
-                return data;
+                l8.chain("attributes.folderType", rec, ACCOUNT);
+                rec[tp]  = me.mailAccountModelClass;
             }
+            return data;
         }
 
-        if (Ext.isObject(data) && data.success === false) {
+        if (l8.isObject(source)) {
+            // POST / PUT
+            let d = data.data;
+
+            l8.chain("attributes.folderType", d, ACCOUNT);
+            d[me.getTypeProperty()] = me.mailAccountModelClass;
+
             return data;
         }
 
@@ -155,9 +150,10 @@ Ext.define("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader", {
 
             let t = [].concat(data.data);
 
-            if (t[0] && Object.prototype.hasOwnProperty.call(t[0],"mailAccountId")) {
+            if (l8.unchain("relationships.MailAccounts.data.type", t[0]) === "MailAccount") {
                 return true;
             }
+
 
         }
 

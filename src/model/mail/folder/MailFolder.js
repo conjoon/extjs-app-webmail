@@ -28,7 +28,8 @@
  * The following fields are available:
  *
  * - text (the display text of the folder)
- * - unreadCount (the number of unread messages in this folder, if any)
+ * - unreadMessages (the number of unread messages in this folder, if any)
+ * - totalMessages (the number of total messages in this folder, if any)
  * - type (the type of the folder, any of INBOX, JUNK, TRASH, SENT, DRAFT, FOLDER)
  * - id (the id of the folder)
  */
@@ -48,14 +49,32 @@ Ext.define("conjoon.cn_mail.model.mail.folder.MailFolder", {
         type: "string",
         validators: [{
             type: "presence"
-        }]
+        }],
+        mapping: "attributes.name"
     }, {
-        name: "unreadCount",
+        name: "unreadMessages",
         type: "int",
-        persist: false
+        persist: false,
+        mapping: "attributes.unreadMessages"
+    }, {
+        name: "totalMessages",
+        type: "int",
+        persist: false,
+        mapping: "attributes.totalMessages"
     }, {
         name: "folderType",
-        type: "string"
+        type: "string",
+        mapping: "attributes.folderType"
+    }, {
+        name: "data",
+        type: "auto",
+        mapping: "attributes.data",
+        persist: false
+    }, {
+        name: "mailAccountId",
+        type: "cn_core-datafieldcompoundkey",
+        mapping: "relationships.MailAccounts.data.id",
+        persist: false
     }],
 
 
@@ -97,6 +116,7 @@ Ext.define("conjoon.cn_mail.model.mail.folder.MailFolder", {
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.DRAFT
             ]
         }]);
+
     },
 
 

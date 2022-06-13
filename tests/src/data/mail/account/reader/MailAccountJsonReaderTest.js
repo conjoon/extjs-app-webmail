@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,28 +48,30 @@ StartTest(t => {
     t.it("applyCompoundKey - exception", t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
-            exc, data;
+            data;
 
-        try{reader.applyModelTypes(data);} catch(e) {exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("malformed");
-        exc = undefined;
+        try {
+            reader.applyModelTypes(data);
+            t.fail("Exception was never thrown");
+        } catch(e) {
+            t.expect(e.msg.toLowerCase()).toContain("malformed");
+        }
 
         data = {};
-        try{reader.applyModelTypes(data);} catch(e) {exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("malformed");
-        exc = undefined;
+        try {
+            reader.applyModelTypes(data);
+            t.fail("Exception was never thrown");
+        } catch(e) {
+            t.expect(e.msg.toLowerCase()).toContain("malformed");
+        }
 
         data = {data: ""};
-        try{reader.applyModelTypes(data);} catch(e) {exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("malformed");
-        exc = undefined;
-
+        try {
+            reader.applyModelTypes(data);
+            t.fail("Exception was never thrown");
+        } catch(e) {
+            t.expect(e.msg.toLowerCase()).toContain("malformed");
+        }
     });
 
 
@@ -83,7 +85,9 @@ StartTest(t => {
             }, result = {
                 data: [{
                     modelType: "conjoon.cn_mail.model.mail.account.MailAccount",
-                    folderType: conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
+                    attributes: {
+                        folderType: conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
+                    }
                 }]
             };
 
@@ -104,9 +108,15 @@ StartTest(t => {
 
     t.it("applyCompoundKey() - success false", t => {
 
-        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
-            ret = reader.applyModelTypes({success: false});
-        t.expect(ret).toEqual({success: false});
+        let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader");
+
+        try {
+            reader.applyModelTypes({success: false});
+            t.fail("Exception was never thrown");
+        } catch(e) {
+            t.expect(e.msg.toLowerCase()).toContain("malformed");
+        }
+
     });
 
 
@@ -115,16 +125,24 @@ StartTest(t => {
         let reader = Ext.create("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"),
             data = {
                 data: [{
-                    mailAccountId: "foo",
-                    id: "bar"
+                    id: "bar",
+                    relationships: {
+                        MailAccounts: {
+                            data: {id: "foo", type: "MailAccount"}
+                        }
+                    }
                 }]
             },
             result = {
                 data: [{
                     modelType: "conjoon.cn_mail.model.mail.folder.MailFolder",
-                    mailAccountId: "foo",
                     id: "bar",
-                    localId: "foo-bar"
+                    localId: "foo-bar",
+                    relationships: {
+                        MailAccounts: {
+                            data: {id: "foo", type: "MailAccount"}
+                        }
+                    }
                 }]
             };
 

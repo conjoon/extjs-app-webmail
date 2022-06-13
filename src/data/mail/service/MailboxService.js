@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -221,7 +221,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * Deletes the specified MessageItem from it's parent folder.
      * Deleting is asynchron. Once finished, the "result" of teh returned operation
      * will be set.
-     * The unreadCount of the belonging source and target mailFolder will also
+     * The unreadMessages of the belonging source and target mailFolder will also
      * be updated.
      *
      * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem
@@ -267,7 +267,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
      * will be set.
      * If the MessageItem has the same mailFolderId as specified, a NOOP operation
      * will be returned.
-     * The unreadCount of the belonging source and target mailFolder will also
+     * The unreadMessages of the belonging source and target mailFolder will also
      * be updated.
      *
      * @param {conjoon.cn_mail.model.mail.message.AbstractMessageItem} messageItem
@@ -535,12 +535,12 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // most likely not loaded yet if null
         if (sourceFolder) {
-            sourceFolder.set("unreadCount", Math.max(0, sourceFolder.get("unreadCount") - 1), {dirty: false});
+            sourceFolder.set("unreadMessages", Math.max(0, sourceFolder.get("unreadMessages") - 1), {dirty: false});
         }
 
         // most likely not loaded yet if null
         if (targetFolder) {
-            targetFolder.set("unreadCount", targetFolder.get("unreadCount") + 1, {dirty: false});
+            targetFolder.set("unreadMessages", targetFolder.get("unreadMessages") + 1, {dirty: false});
         }
 
 
@@ -576,7 +576,7 @@ Ext.define("conjoon.cn_mail.data.mail.service.MailboxService", {
 
         // most likely not loaded if not available
         if (mailFolder) {
-            mailFolder.set("unreadCount", Math.max(0, mailFolder.get("unreadCount") - 1), {dirty: false});
+            mailFolder.set("unreadMessages", Math.max(0, mailFolder.get("unreadMessages") - 1), {dirty: false});
         }
 
         return true;

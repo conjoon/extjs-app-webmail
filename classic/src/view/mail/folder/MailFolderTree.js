@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -99,10 +99,10 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTree", {
         dataIndex: "name",
         flex: 1,
         renderer: function (value, metaData, record) {
-            var unreadCount = record.get("unreadCount");
+            var unreadMessages = record.get("unreadMessages");
 
-            if (unreadCount > 0) {
-                return value  + "<span class=\"badge-unreadcount\">" + unreadCount + "</span>";
+            if (unreadMessages > 0) {
+                return value  + "<span class=\"badge-unreadcount\">" + unreadMessages + "</span>";
             }
             return value;
 
