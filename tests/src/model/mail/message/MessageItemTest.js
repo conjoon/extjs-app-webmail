@@ -74,8 +74,13 @@ StartTest(t => {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create instance", t => {
+    t.it("test class", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
+
+        ["hasAttachments", "to", "previewText", "size"].forEach(field => {
+            t.expect(model.getField(field).getMapping()).toBe(`attributes.${field}`);
+        });
+
     });
 
     t.it("Test for proper proxy and urls", t => {
@@ -124,6 +129,7 @@ StartTest(t => {
         m.set("foo", "bar");
         op = m.save();
         t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a3/MailFolders/b3/MessageItems?");
+        t.expect(op.getRequest().getUrl()).not.toContain("include");
 
     });
 
