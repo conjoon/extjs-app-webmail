@@ -212,10 +212,12 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         const defs = {
             MessageItem: {
-                attributes: "*,previewText,replyTo,cc,bcc"
+                include: "MailFolder",
+                "fields[MailFolder]": "unreadMessages,totalMessages",
+                "fields[MessageItem]": "*,previewText,replyTo,cc,bcc"
             },
             MessageDraft: {
-                attributes: "*,previewText,hasAttachments,size"
+                "fields[MessageItem]": "*,previewText,hasAttachments,size"
             },
             ListMessageItem: {
                 options: JSON.stringify({
