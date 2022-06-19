@@ -51,14 +51,17 @@ Ext.define("conjoon.cn_mail.model.mail.message.AbstractMessageItem", {
 
     fields: [{
         name: "subject",
-        type: "string"
+        type: "string",
+        mapping: "attributes.subject"
     }, {
         name: "date",
         type: "date",
-        dateReadFormat: "Y-m-d H:i:s O"
+        dateReadFormat: "Y-m-d H:i:s O",
+        mapping: "attributes.date"
     }, {
         name: "from",
-        type: "cn_core-datafieldemailaddress"
+        type: "cn_core-datafieldemailaddress",
+        mapping: "attributes.from"
     }, {
         persist: false,
         name: "messageBodyId",
@@ -70,21 +73,26 @@ Ext.define("conjoon.cn_mail.model.mail.message.AbstractMessageItem", {
         validators: "presence"
     }, {
         name: "seen",
-        type: "bool"
+        type: "bool",
+        mapping: "attributes.seen"
     }, {
         name: "answered",
         type: "bool",
-        persist: false
+        persist: false,
+        mapping: "attributes.answered"
     }, {
         name: "flagged",
-        type: "bool"
+        type: "bool",
+        mapping: "attributes.flagged"
     }, {
         name: "draft",
-        type: "bool"
+        type: "bool",
+        mapping: "attributes.draft"
     }, {
         name: "recent",
         type: "bool",
-        persist: false
+        persist: false,
+        mapping: "attributes.recent"
     }],
 
 
