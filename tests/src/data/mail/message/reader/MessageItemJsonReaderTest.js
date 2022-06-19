@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,6 +36,10 @@ StartTest(t => {
 
         t.expect(reader.alias).toContain("reader.cn_mail-mailmessageitemjsonreader");
 
+        t.expect(reader.getRootProperty()).toBe("data");
+        t.expect(reader.getTotalProperty()).toBe("included[0].attributes.totalMessages");
+
+
     });
 
 
@@ -46,12 +50,24 @@ StartTest(t => {
         let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader"),
             ret,
             keys = function (){return {
-                mailAccountId: "a",
-                mailFolderId: "b",
                 id: "c"
             };},
             data = function () {
-                return {data: [keys()]};
+                return {
+                    included: [{
+                        type: "MailFolder",
+                        id: "b",
+                        relationships: {
+                            MailAccount: {
+                                data: {
+                                    id: "a",
+                                    type: "MailAccount"
+                                }
+                            }
+                        }
+                    }],
+                    data: [keys()]
+                };
             },
             result = function (){
                 return {
@@ -59,7 +75,9 @@ StartTest(t => {
                         mailAccountId: "a",
                         mailFolderId: "b",
                         id: "c",
-                        messageBodyId: MessageEntityCompoundKey.createFor(keys().mailAccountId, keys().mailFolderId, keys().id).toLocalId()
+                        messageBodyId: MessageEntityCompoundKey.createFor(
+                            "a", "b", "c"
+                        ).toLocalId()
                     }]
                 };
             }, pResult, pData;
@@ -75,7 +93,7 @@ StartTest(t => {
 
         // Object
         pData = data();
-        pData = {data: pData.data[0]};
+        pData = {included: pData.included, data: pData.data[0]};
         ret = reader.applyCompoundKey(pData, "read");
         pResult = {data: result().data[0]};
         t.expect(ret.data.messageBodyId).not.toBeUndefined();
@@ -94,14 +112,6 @@ StartTest(t => {
 
         }
 
-    });
-
-
-    t.it("applyCompoundKey() - success false", t => {
-
-        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader"),
-            ret = reader.applyCompoundKey({success: false}, "read");
-        t.expect(ret).toEqual({success: false});
     });
 
 

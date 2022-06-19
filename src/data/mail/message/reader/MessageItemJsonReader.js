@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,17 +39,23 @@ Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader", {
 
     foreignKeyProp: "messageBodyId",
 
+    rootProperty: "data",
+
+    totalProperty: "included[0].attributes.totalMessages",
+
     /**
      * @inheritdoc
      */
     applyCompoundKey: function (data, action) {
 
-        const me = this,
+        const
+            me = this,
             MessageEntityCompoundKey  = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
         data = me.callParent(arguments);
 
         if (Ext.isObject(data)) {
+
             if (Ext.isArray(data.data)) {
 
                 let records = data.data,
@@ -81,9 +87,9 @@ Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageItemJsonReader", {
 
         // allow for processing records first,
         // then make sure we return the data object if everything else failed
-        if (Ext.isObject(data) && data.success === false) {
-            return data;
-        }
+        // we most likely wont end up here since a malformed data might have already thrown
+        // an exception when trying to parse the relationships
+        return data;
     }
 
 
