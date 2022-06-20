@@ -73,7 +73,7 @@ Ext.define("conjoon.cn_mail.model.mail.folder.MailFolder", {
     }, {
         name: "mailAccountId",
         type: "cn_core-datafieldcompoundkey",
-        mapping: "relationships.MailAccounts.data.id",
+        mapping: "relationships.MailAccount.data.id",
         persist: false
     }],
 
