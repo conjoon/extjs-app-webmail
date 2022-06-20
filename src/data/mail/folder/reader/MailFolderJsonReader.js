@@ -109,7 +109,7 @@ Ext.define("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
         for (let i = 0, len = records.length; i < len; i++) {
 
             rec = records[i];
-            mailAccountId = l8.unchain("relationships.MailAccounts.data.id", rec);
+            mailAccountId = l8.unchain("relationships.MailAccount.data.id", rec);
 
             if (!rec || !mailAccountId || !rec.id) {
                 Ext.raise({

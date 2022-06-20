@@ -150,7 +150,7 @@ Ext.define("conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader", {
 
             let t = [].concat(data.data);
 
-            if (l8.unchain("relationships.MailAccounts.data.type", t[0]) === "MailAccount") {
+            if (l8.unchain("relationships.MailAccount.data.type", t[0]) === "MailAccount") {
                 return true;
             }
 

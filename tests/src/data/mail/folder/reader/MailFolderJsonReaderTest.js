@@ -69,14 +69,14 @@ StartTest(t => {
                 data: [{
                     id: "bar",
                     relationships: {
-                        MailAccounts: {
+                        MailAccount: {
                             data: {type: "MailAccount", id: "foo"}
                         }
                     }
                 }, {
                     id: "bar2",
                     relationships: {
-                        MailAccounts: {
+                        MailAccount: {
                             data: {type: "MailAccount", id: "foo2"}
                         }
                     }
@@ -87,7 +87,7 @@ StartTest(t => {
                     localId: "foo-bar",
                     id: "bar",
                     relationships: {
-                        MailAccounts: {
+                        MailAccount: {
                             data: {type: "MailAccount", id: "foo"}
                         }
                     }
@@ -96,7 +96,7 @@ StartTest(t => {
                     localId: "foo2-bar2",
                     id: "bar2",
                     relationships: {
-                        MailAccounts: {
+                        MailAccount: {
                             data: {type: "MailAccount", id: "foo2"}
                         }
                     }
