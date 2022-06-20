@@ -55,8 +55,16 @@ StartTest(async t => {
                     delay: 1
                 });
 
-                t.it("Should create instance", t => {
+                t.it("test class", t => {
                     t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
+
+                    [
+                        "seen", "answered", "flagged", "draft", "recent", "replyTo", "to", "cc", "bcc", "messageId",
+                        "references", "inReplyTo", "xCnDraftInfo", "savedAt"
+                    ].forEach(fieldName => {
+                        t.expect(model.getField(fieldName).getMapping()).toBe(`attributes.${fieldName}`);
+                    });
+
                 });
 
                 t.it("Test for proper proxy", t => {

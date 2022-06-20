@@ -65,35 +65,40 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
 
     fields: [{
         name: "replyTo",
-        type: "cn_core-datafieldemailaddress"
+        type: "cn_core-datafieldemailaddress",
+        mapping: "attributes.replyTo"
     }, {
         name: "to",
         type: "cn_core-datafieldemailaddresscollection",
         validators: [{
             type: "cn_core-datavalidatoremailaddresscollection",
             allowEmpty: true
-        }]
+        }],
+        mapping: "attributes.to"
     }, {
         name: "cc",
         type: "cn_core-datafieldemailaddresscollection",
         validators: [{
             type: "cn_core-datavalidatoremailaddresscollection",
             allowEmpty: true
-        }]
+        }],
+        mapping: "attributes.cc"
     }, {
         name: "bcc",
         type: "cn_core-datafieldemailaddresscollection",
         validators: [{
             type: "cn_core-datavalidatoremailaddresscollection",
             allowEmpty: true
-        }]
+        }],
+        mapping: "attributes.bcc"
     }, {
         /**
          * This is by default always true for MessageDrafts
          */
         name: "draft",
         type: "bool",
-        defaultValue: true
+        defaultValue: true,
+        mapping: "attributes.draft"
     }, {
         /**
          * This is by default always true for MessageDrafts
@@ -101,7 +106,8 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
         name: "seen",
         type: "bool",
         critical: true,
-        defaultValue: true
+        defaultValue: true,
+        mapping: "attributes.seen"
     }, {
         /**
          * This is by default always false for MessageDrafts
@@ -109,14 +115,16 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
         name: "flagged",
         type: "bool",
         critical: true,
-        defaultValue: false
+        defaultValue: false,
+        mapping: "attributes.flagged"
     }, {
         /**
          * This is by default always false for MessageDrafts
          */
         name: "answered",
         type: "bool",
-        defaultValue: false
+        defaultValue: false,
+        mapping: "attributes.answered"
     }, {
         /**
          * This is by default always false for MessageDrafts
@@ -124,33 +132,39 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageDraft", {
         name: "recent",
         type: "bool",
         defaultValue: false,
-        persist: false
+        persist: false,
+        mapping: "attributes.recent"
     }, {
         // only required by drafts for now
         // persist=false since value is set by BE
         // and not changed across FE
         name: "messageId",
         type: "string",
-        persist: false
+        persist: false,
+        mapping: "attributes.messageId"
     }, {
         // only required by drafts for now
         name: "references",
         type: "string",
-        defaultValue: null
+        defaultValue: null,
+        mapping: "attributes.references"
     }, {
         // only required by drafts for now
         name: "inReplyTo",
         type: "string",
-        defaultValue: null
+        defaultValue: null,
+        mapping: "attributes.inReplyTo"
     }, {
         // only required by drafts for now x-cn-draft-info
         name: "xCnDraftInfo",
         type: "string",
-        defaultValue: null
+        defaultValue: null,
+        mapping: "attributes.xCnDraftInfo"
     }, {
         name: "savedAt",
         type: "date",
-        persist: false
+        persist: false,
+        mapping: "attributes.savedAt"
     }],
 
 
