@@ -451,11 +451,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             method: "get",
             url: url,
             headers: proxy.headers,
-            params: {
-                attributes: "previewText",
-                options: proxy.getDefaultParameters("ListMessageItem.options"),
-                filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
-            }
+            params: Object.assign({},
+                proxy.getDefaultParameters("MessageItem"),
+                {
+                    options: proxy.getDefaultParameters("ListMessageItem.options"),
+                    filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}]),
+                    "fields[MessageItem]": "previewText"
+                }
+            )
         }).then(me.processLoadedPreviewText.bind(me));
     }
 

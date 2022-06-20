@@ -481,7 +481,16 @@ StartTest(t => {
                     feature = createFeature(),
                     proxyMock = {
                         headers: "bar",
-                        getDefaultParameters: (key) => ( key === "ListMessageItem.options" ? {"foo": "bar"} : {})
+                        getDefaultParameters: (key) => {
+                            switch (key) {
+                            case "ListMessageItem.options":
+                                return {"foo": "bar"};
+                            case "MessageItem":
+                                return {"test": "mock"};
+                            default:
+                                return {0: 1};
+                            }
+                        }
                     },
                     storeMock = {getProxy: () => proxyMock},
                     grid = getGrid();
@@ -504,7 +513,8 @@ StartTest(t => {
                     url: "foo",
                     headers: proxyMock.headers,
                     params: {
-                        attributes: "previewText",
+                        "test": "mock",
+                        "fields[MessageItem]": "previewText",
                         options: {"foo": "bar"},
                         filter: JSON.stringify([{property: "id", operator: "in", value: [1, 2]}])
                     }
