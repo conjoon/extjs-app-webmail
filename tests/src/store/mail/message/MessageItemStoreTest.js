@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +30,16 @@ StartTest(async t => {
     const helper = l8.liquify(TestHelper.get(t, window));
     await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
 
+        const MailFolderTable = conjoon.dev.cn_mailsim.data.table.MailFolderTable,
+
+            /**
+         * Adjust the page size to the total count of store data to prevent prefetching with the buffered store
+         * @param store
+         */
+            adjustPageSize = (store) => {
+                store.setPageSize(MailFolderTable.get("dev_sys_conjoon_org", "INBOX").attributes.totalMessages);
+            };
+
 
         t.it("Should properly create the store and check for default config", t => {
 
@@ -57,6 +67,7 @@ StartTest(async t => {
             t.expect(store.getSorters().getAt(0).getProperty()).toBe("date");
             t.expect(store.getSorters().getAt(0).getDirection()).toBe("DESC");
 
+            adjustPageSize(store);
 
             // data range
             store.load({
@@ -112,6 +123,8 @@ StartTest(async t => {
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+
+            adjustPageSize(store);
 
             store.load({
                 params: {
