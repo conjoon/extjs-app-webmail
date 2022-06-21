@@ -122,8 +122,12 @@ StartTest(async t => {
                         t.expect(messageDraft.get("subject")).toContain(draft.get("subject"));
 
                         if (editMode !== conjoon.cn_mail.data.mail.message.EditingModes.FORWARD) {
-                            t.expect(messageDraft.get("to")[0].name).toBe(draft.get("from").name);
-                            t.expect(messageDraft.get("to")[0].address).toBe(draft.get("from").address);
+                            let fromKey = "replyTo";
+                            if (!draft.get("replyTo")) {
+                                fromKey = "from";
+                            }
+                            t.expect(messageDraft.get("to")[0].name).toBe(draft.get(fromKey).name);
+                            t.expect(messageDraft.get("to")[0].address).toBe(draft.get(fromKey).address);
                         }
                         t.expect(messageBody.get("textHtml")).toContain(body.get("textHtml"));
 
