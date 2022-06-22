@@ -55,7 +55,10 @@ StartTest(t => {
                     url: "cn_comp/fixtures/Livegrid",
                     reader: {
                         type: "json",
-                        rootProperty: "data"
+                        rootProperty: "data",
+                        extractRelationships: function () {
+
+                        }
                     }
                 }
             });
@@ -180,12 +183,21 @@ StartTest(t => {
                 t.expect(onSpy.calls.mostRecent().args[0]).toBe("cn_mail-mailmessagegridbeforeload");
                 t.expect(onSpy.calls.mostRecent().args[2]).toBe(null);
                 t.expect(onSpy.calls.mostRecent().args[3]).toEqual({single: true});
-                let extraParamCall = onSpy.calls.mostRecent().args[1],
-                    proxyMock = {extraParams: {}},
+                let fakeDefaultParameters = {id: "identify"},
+                    extraParamCall = onSpy.calls.mostRecent().args[1],
+                    proxyMock = {
+                        extraParams: {},
+                        getDefaultParameters: function () {}
+                    },
+                    defParamSpy = t.spyOn(proxyMock, "getDefaultParameters").and.callFake(() => fakeDefaultParameters),
                     storeMock = {getProxy: () => proxyMock, on () {}},
                     filterChangeListenerSpy = t.spyOn(storeMock, "on").and.callThrough();
                 extraParamCall(storeMock);
-                t.expect(proxyMock.extraParams.attributes).toBe("*,previewText");
+                t.expect(defParamSpy.calls.mostRecent().args[0]).toBe("MessageItem");
+                t.expect(proxyMock.extraParams).toEqual(Object.assign(fakeDefaultParameters, {
+                    "fields[MessageItem]": "*,previewText"
+                }));
+
 
                 /**
                  * @see conjoon/extjs-app-webmail#216
@@ -207,7 +219,7 @@ StartTest(t => {
                     t.expect(call.args[4]).toEqual({buffer: 500});
                 });
 
-                [filterChangeListenerSpy, getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
+                [defParamSpy, filterChangeListenerSpy, getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
 
                 t.expect(feature.installed).toBe(true);
             });
@@ -429,7 +441,11 @@ StartTest(t => {
                     feature = createFeature(),
                     livegridMock = {getRecordByCompoundKey: function () {}},
                     grid = getGrid(),
-                    timeoutSpy = t.spyOn(window, "setTimeout").and.callFake((fn, timeout) => fn());
+                    timeoutSpy = t.spyOn(window, "setTimeout").and.callFake((fn, timeout) => fn()),
+                    readerSpy = t.spyOn(grid.getStore().getProxy().getReader(), "extractRelationships").and.callFake(() => ({
+                        mailAccountId: "mailAccountId",
+                        mailFolderId: "mailFolderId"
+                    }));
 
                 grid.view.getFeature = () => livegridMock;
 
@@ -450,7 +466,7 @@ StartTest(t => {
 
                 feature.processLoadedPreviewText({
                     responseText: JSON.stringify({
-                        data: [{previewText: 1}, {previewText: 2}]
+                        data: [{attributes: {previewText: 1}}, {attributes: {previewText: 2}}]
                     }),
                     request: {
                         url: "foo",
@@ -465,13 +481,17 @@ StartTest(t => {
                 t.expect(timeoutSpy.calls.all()[0].args[1]).toBe(1);
 
                 t.expect(compoundKeySpy.calls.count()).toBe(2);
+                t.expect(compoundKeySpy.calls.mostRecent().args.slice(0,2)).toEqual([
+                    "mailAccountId", "mailFolderId"
+                ]);
+
                 t.expect(getRecordByCompoundKeySpy.calls.count()).toBe(2);
 
                 t.expect(mockRec.sets).toEqual([["previewText", 1], ["previewText", 2]]);
 
                 t.expect(feature.pendingLazies["foo"]).toEqual(["100", "1", "3"]);
 
-                [getRecordByCompoundKeySpy, compoundKeySpy, timeoutSpy].map(spy => spy.remove());
+                [readerSpy, getRecordByCompoundKeySpy, compoundKeySpy, timeoutSpy].map(spy => spy.remove());
             });
 
 
