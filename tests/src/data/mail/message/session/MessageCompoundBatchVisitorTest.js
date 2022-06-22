@@ -236,6 +236,11 @@ StartTest(async t => {
 
                 t.it("Should properly test behavior", t => {
 
+                    /**
+                     * @note the behavior changed with conjoon/php-lib-conjoon#8.
+                     * The first entity sent to the backend is always a MessageDraft, followed by
+                     * the MessageBody and the attachments.
+                     */
                     let session = setupSession();
 
                     let batch = session.getSaveBatch();
@@ -271,9 +276,9 @@ StartTest(async t => {
                         }
 
                         //  t.expect(operations[1].id).not.toBe(oldId);
-                        t.expect(operations[1]).not.toBe(oldOp);
-                        t.expect(operations[1].getAction()).toBe("update");
-                        t.expect(operations[1].getParams().origin).toBe("create");
+                        t.expect(operations[1]).toBe(oldOp);
+                        t.expect(operations[1].getAction()).toBe("create");
+                        t.expect(operations[1].getParams()).toBeUndefined();
                         t.expect(operations[1].getRecords()[0]).toBe(oldRecord[0]);
                         CMP_REC = operations[1].getRecords()[0];
                     });
