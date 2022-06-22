@@ -229,11 +229,11 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
         Ext.Ajax.request({
             method: "get",
-            // required by the custom Reader used by teh messageEntityProxy
+            // required by the custom Reader used by the MessageEntityProxy
             action: "read",
             url: url,
             headers: proxy.headers,
-            params: Object.assign(parameters, {
+            params: Object.assign(parameters, proxy.getDefaultParameters("MessageItem"), {
                 filter: JSON.stringify(latestFilter)
             })
         }).then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));

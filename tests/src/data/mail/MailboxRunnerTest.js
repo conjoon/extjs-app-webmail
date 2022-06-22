@@ -311,6 +311,7 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
+                proxy = conjoon.cn_mail.model.mail.message.MessageItem.getProxy(),
                 requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("response")),
                 responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {});
 
@@ -328,8 +329,10 @@ StartTest(async t => {
 
             await mailboxRunner.visitSubscription(FOLDER);
 
-            const options = conjoon.cn_mail.model.mail.message.MessageItem.getProxy()
-                .getDefaultParameters("ListMessageItem");
+            const options = Object.assign(
+                proxy.getDefaultParameters("ListMessageItem"),
+                proxy.getDefaultParameters("MessageItem")
+            );
 
             let params = Object.assign(options, {
                 filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]"
