@@ -93,7 +93,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
      */
     getBatch: function (sort) {
 
-        const me = this,
+        const
+            me = this,
             batch = me.callParent(arguments);
 
         // just in case...
@@ -107,6 +108,30 @@ Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
             md.storePreBatchCompoundKey();
 
         }, me);
+
+
+        if (sort !== false) {
+
+            batch.getOperations().sort((op_l, op_r) => {
+
+                const order = [
+                    "MessageDraft",
+                    "MessageBody"
+                ];
+
+                let lft = order.indexOf(op_l.getRecords()[0].entityName),
+                    rght = order.indexOf(op_r.getRecords()[0].entityName);
+
+                if (lft !== -1 && rght !== -1) {
+                    return lft - rght;
+                } else if (lft === -1) {
+                    return 1;
+                } else if (rght === -1) {
+                    return -1;
+                }
+
+            });
+        }
 
         return batch;
     },
