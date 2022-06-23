@@ -34,7 +34,7 @@ StartTest(t => {
         let writer = create();
 
         t.isInstanceOf(writer, "Ext.data.writer.Json");
-        
+
         t.expect(writer.alias).toContain("writer.cn_mail-mailmessageentitywriter");
     });
 
@@ -59,39 +59,70 @@ StartTest(t => {
             resultJson = {
                 data: {
                     type: "entityName",
-                    mailAccountId: "dev",
-                    mailFolderId: "INBOX.Drafts",
                     id: "123",
                     attributes: {
                         subject: "Hello World",
                         date: "123445565"
+                    },
+                    relationships: {
+                        MailFolder: {
+                            data: {type: "MailFolder", id: "INBOX.Drafts"}
+                        }
                     }
+                },
+                meta: {
+                    included: [{
+                        type: "MailFolder",
+                        id: "INBOX.Drafts",
+                        relationships: {
+                            MailAccount: {
+                                data: {
+                                    type: "MailAccount", id: "dev"
+                                }
+                            }
+                        }
+                    }]
                 }
             },
-            getProxySpy = t.spyOn(request, "getProxy").and.callFake(() => proxy);
+            getProxySpy = t.spyOn(request, "getProxy").and.callFake(() => proxy),
+            map = (en) => {
+                let m = {
+                    "MessageBodyDraft": "MessageBody",
+                    "MessageDraft": "MessageItem"
+                };
 
-        request.setJsonData(defaultData);
+                return m[en] ? m[en] : en;
+            };
 
-        request = writer.writeRecords(request, {});
+        ["entityName", "MessageBodyDraft", "MessageDraft"].forEach(en => {
 
-        t.expect(request.getJsonData()).toEqual(resultJson);
+            proxy.entityName = en;
+            resultJson.data.type = map(en);
+
+            request.setJsonData(defaultData);
+            request = writer.writeRecords(request, {});
+            t.expect(request.getJsonData()).toEqual(resultJson);
+        });
 
         request.setParams({
             action: "move"
         });
         request.setJsonData(defaultData);
 
-        resultJson.data.attributes.mailFolderId = resultJson.data.mailFolderId;
+
         // this is the value from the "modified"-object, which will be re-written
         // into the data.mailFolderId. It denotes the source folder. The actual value will
         // be written into the attributes-bag - see above!
-        resultJson.data.mailFolderId = "sourceMailFolder";
+        resultJson.data.relationships.MailFolder.data.id = "sourceMailFolder";
+        resultJson.meta.included[0].id = "sourceMailFolder";
 
         t.spyOn(request, "getOperation").and.callFake(() => ({
-            getRecords: () => [{modified: {mailFolderId: resultJson.data.mailFolderId}}]
+            getRecords: () => [{modified: {mailFolderId: "sourceMailFolder"}}]
         }));
         request = writer.writeRecords(request, {});
+
         t.expect(request.getJsonData()).toEqual(resultJson);
+
         t.expect(request.getParams().action).toBeUndefined();
 
         getProxySpy.remove();
