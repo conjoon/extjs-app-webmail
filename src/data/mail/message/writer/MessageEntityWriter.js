@@ -107,12 +107,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
             })
         );
 
-        // we will update the relationship if the mailFolderId was identified as modified
-        // we are optimistically assuming that the target folder belongs to the existing
-        // mail account. Everything else is up to the server...
-        let mailFolderId = jsonData.mailFolderId;
+
         if (request.getParams() && request.getParams().action === "move") {
-            mailFolderId = request.getOperation().getRecords()[0].modified.mailFolderId;
             delete request.getParams().action;
         }
 
@@ -120,7 +116,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
             MailFolder: {
                 data: {
                     type: "MailFolder",
-                    id: mailFolderId
+                    id: jsonData.mailFolderId
                 }
             }
         };
@@ -128,7 +124,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
         root.meta = {
             included: [{
                 type: "MailFolder",
-                id: mailFolderId,
+                id: jsonData.mailFolderId,
                 relationships: {
                     MailAccount: {
                         data: {
