@@ -213,7 +213,7 @@ StartTest(t => {
                 {},
                 proxy.getDefaultParameters("MessageItem"),
                 proxy.getDefaultParameters("MessageDraft"),
-                {"field[MailFolder]": ""}
+                {"fields[MailFolder]": ""}
             ),
             request = Ext.create("Ext.data.Request", {
                 action: "create",
