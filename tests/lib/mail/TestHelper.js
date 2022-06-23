@@ -241,9 +241,9 @@ export default class TestHelper {
                     val = "../resources/resources/templates/html/reader.html.tpl";
                 }
 
-                /* eslint-disable-next-line no-console */
+                /* ____eslint-disable-next-line no-console
                 console.info(`Querying coon.core.ConfigManager[spy] for ${config}, returning ${val}`);
-
+                */
                 return val;
             });
 

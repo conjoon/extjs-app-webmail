@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -487,7 +487,7 @@ StartTest(async t => {
                         view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
 
                         t.isCalledNTimes("onMailMessageBeforeSave",            controller, 1);
-                        t.isCalledNTimes("onMailMessageSaveOperationComplete", controller, 1);
+                        t.isCalledNTimes("onMailMessageSaveOperationComplete", controller, 0);
                         t.isCalledNTimes("onMailMessageSaveComplete",          controller, 0);
                         t.isCalledNTimes("onMailMessageSaveOperationException", controller, 1);
 
