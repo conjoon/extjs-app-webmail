@@ -144,8 +144,15 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         switch (action) {
         case "destroy":
-        case "create":
             delete finalParams.target;
+            break;
+        case "create":
+            finalParams = Object.assign(
+                {},
+                me.getDefaultParameters("MessageItem"),
+                me.getDefaultParameters("MessageDraft"),
+                {"field[MailFolder]": ""}
+            );
             break;
         case "update":
             delete finalParams.target;
