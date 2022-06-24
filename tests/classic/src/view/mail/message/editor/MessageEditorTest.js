@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -586,13 +586,13 @@ StartTest(async t => {
 
                 view.getViewModel().notify();
 
+                const toFocusSpy = t.spyOn(view.down("#toField"), "focus").and.callThrough();
+
                 var iconCls = view.getIconCls();
 
                 t.expect(view.getClosable()).toBe(true);
 
                 t.click(view.down("#subjectField"), () => {
-
-                    t.expect(view.down("#subjectField").hasFocus).toBe(true);
 
                     view.showAddressMissingNotice();
 
@@ -613,8 +613,9 @@ StartTest(async t => {
                         t.expect(view.getIconCls()).toBe(iconCls);
                         t.expect(view.getClosable()).toBe(true);
 
-                        t.expect(view.down("#toField").hasFocus).toBe(true);
-                        view.hide();// destroying the view trigegrs error with Siesta 5.3.1,
+                        t.expect(toFocusSpy.calls.all().length).toBe(1);
+                        toFocusSpy.remove();
+                        view.hide();// destroying the view triggrs error with Siesta 5.3.1,
                         // wrong implementation of overrides for parentNode.removeChild
                         // and synthetic mouse events?
                     });
