@@ -90,11 +90,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
                 })
             );
 
-        root.data = Object.fromEntries(
-            Object.entries(jsonData).filter(entry => {
-                return ["id"].includes(entry[0]);
-            })
-        );
+        root.data = {id: jsonData.id};
 
 
         // we will update the relationship if the mailFolderId was identified as modified.
