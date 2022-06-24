@@ -38,6 +38,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
      * and values to write in the property "data.attributes".
      * Additionally, the request proxy's entityName will be made available in the property
      * "data.type"
+     * If the relationship to the owning MailFolder changes, the updated relationship must
+     * be made available with the "relationships" property.
      *
      * @example
      *      {
@@ -64,20 +66,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
      *                     }
      *                  }
      *             }
-     *         },
-     *         meta: {
-     *              included: [{
-     *                 type: "MailFolder",
-     *                 id: "INBOX.Drafts",
-     *                 relationships: {
-     *                     MailAccount: {
-     *                         data: {
-     *                             type: "MailAccount", id: "dev"
-     *                         }
-     *                     }
-     *                 }
-     *             }]
-     *        }
+     *         }
      *     }
      *
      * @param {Ext.data.Request} request
@@ -108,32 +97,30 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
         );
 
 
+        // we will update the relationship if the mailFolderId was identified as modified.
+        // (we are optimistically assuming that the target folder belongs to the existing
+        // mail account. Everything else is up to the server...)
+        if (request.getOperation()) {
+            const
+                recs = request.getOperation().getRecords(),
+                modified = recs.length && recs[0].modified,
+                modFolderId = modified && modified.mailFolderId;
+            if (modFolderId !== undefined && modFolderId !== jsonData.mailFolderId) {
+                root.data.relationships = {
+                    MailFolder: {
+                        data: {
+                            type: "MailFolder",
+                            id: jsonData.mailFolderId
+                        }
+                    }
+                };
+            }
+        }
+
         if (request.getParams() && request.getParams().action === "move") {
             delete request.getParams().action;
         }
 
-        root.data.relationships = {
-            MailFolder: {
-                data: {
-                    type: "MailFolder",
-                    id: jsonData.mailFolderId
-                }
-            }
-        };
-
-        root.meta = {
-            included: [{
-                type: "MailFolder",
-                id: jsonData.mailFolderId,
-                relationships: {
-                    MailAccount: {
-                        data: {
-                            type: "MailAccount", id: jsonData.mailAccountId
-                        }
-                    }
-                }
-            }]
-        };
 
         const
             en = request.getProxy().entityName,
