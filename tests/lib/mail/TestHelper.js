@@ -116,6 +116,7 @@ export default class TestHelper {
                     conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 100;
 
                     t.beforeEach(t => {
+                        conjoon.dev.cn_mailsim.data.table.MessageTable.resetAll();
                         t.ENVIRONMENT_SPY = t.spyOn(coon.core.Environment, "getPathForResource").and.callFake((resource) => resource);
                     });
 
