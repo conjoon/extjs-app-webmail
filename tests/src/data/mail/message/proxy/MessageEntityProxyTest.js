@@ -589,7 +589,53 @@ StartTest(t => {
             t.expect(proxy.getMethod(request)).toBe(method);
             spy.remove();
         });
+    });
 
+
+    t.it("getSendMessageDraftRequestConfig()", t => {
+
+        const
+            proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy"),
+            messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                mailAccountId: "dev account",
+                mailFolderId: "INBOX.Last Week",
+                id: 123
+            }),
+            base = messageDraft.schema.getUrlPrefix();
+
+        t.expect(() => {
+            proxy.getSendMessageDraftRequestConfig(messageDraft);
+        }).toThrow();
+
+        messageDraft.commit();
+
+        const schemaSpy = t.spyOn(messageDraft.schema, "getUrlPrefix").and.callFake(() => {});
+
+        t.expect(() => {
+            proxy.getSendMessageDraftRequestConfig(messageDraft);
+        }).toThrow();
+
+        schemaSpy.remove();
+
+        const expected = {
+                url: [
+                    base,
+                    "MailAccounts",
+                    "dev%20account",
+                    "MailFolders",
+                    "INBOX.Last%20Week",
+                    "MessageItems",
+                    "123",
+                    "send"
+                ].join("/"),
+                method: "POST",
+                params: proxy.getDefaultParameters("MessageDraft")
+            },
+            result = proxy.getSendMessageDraftRequestConfig(messageDraft);
+
+        t.expect(Object.keys(result)).toEqual(Object.keys(expected));
+
+        Object.keys(result).forEach(key => t.expect(result[key]).toBe(result[key]));
 
     });
 
