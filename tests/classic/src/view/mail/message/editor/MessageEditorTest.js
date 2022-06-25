@@ -73,7 +73,7 @@ StartTest(async t => {
                     t.expect(view.down("#ccField").isHidden()).toBe(expect);
                     t.expect(view.down("#bccField").isHidden()).toBe(expect);
                 },
-                createMessageItem = function (index, mailFolderId) {
+                createMessageItem = function (index, mailFolderId, withAttachments) {
 
                     index = index === undefined ? 1 : index;
 
@@ -85,7 +85,12 @@ StartTest(async t => {
                         for (; i <= upper; i++) {
                             mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
                             if (mi.mailFolderId === mailFolderId) {
-                                break;
+                                if (withAttachments === true && mi.hasAttachments) {
+                                    break;
+                                } else {
+                                    break;
+                                }
+
                             }
                         }
 
@@ -866,7 +871,7 @@ StartTest(async t => {
 
             t.it("extjs-app-webmail#65", t => {
 
-                let item  = createMessageItem(1, "INBOX.Drafts"),
+                let item  = createMessageItem(1, "INBOX.Drafts", true),
                     editor;
 
 
@@ -896,7 +901,7 @@ StartTest(async t => {
 
             t.it("extjs-app-webmail#67", t => {
 
-                let item  = createMessageItem(1, "INBOX.Drafts"),
+                let item  = createMessageItem(1, "INBOX.Drafts", true),
                     editor;
 
 
