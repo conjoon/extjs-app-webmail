@@ -104,4 +104,24 @@ StartTest(t => {
 
     });
 
+
+    t.it("JSON:API compliant sorting and pagination parameters",  t => {
+
+        const proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
+
+        t.expect(proxy.getPageParam()).toBe("");
+        t.expect(proxy.getStartParam()).toBe("page[start]");
+        t.expect(proxy.getLimitParam()).toBe("page[limit]");
+
+
+        const sorters = [Ext.create("Ext.util.Sorter", {
+            property: "date",
+            direction: "DESC"
+        }), Ext.create("Ext.util.Sorter",{
+            property: "subject",
+            direction: "ASC"
+        })];
+
+        t.expect(proxy.encodeSorters(sorters)).toBe("-date,subject");
+    });
 });
