@@ -335,7 +335,16 @@ StartTest(async t => {
             );
 
             let params = Object.assign(options, {
-                filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]"
+                filter: JSON.stringify({
+                    "OR": [
+                        {">=": {
+                            "id": 3
+                        }},
+                        {"=": {
+                            "recent": true
+                        }}
+                    ]
+                })
             });
             t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
                 method: "get",
@@ -353,7 +362,11 @@ StartTest(async t => {
             mailboxRunner.visitSubscription(FOLDER);
 
             params = Object.assign(options, {
-                filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"}]"
+                filter: JSON.stringify({
+                    "=": {
+                        "recent": true
+                    }
+                })
             });
 
             t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
