@@ -113,7 +113,6 @@ StartTest(t => {
         t.expect(proxy.getStartParam()).toBe("page[start]");
         t.expect(proxy.getLimitParam()).toBe("page[limit]");
 
-
         const sorters = [Ext.create("Ext.util.Sorter", {
             property: "date",
             direction: "DESC"
@@ -122,6 +121,80 @@ StartTest(t => {
             direction: "ASC"
         })];
 
-        t.expect(proxy.encodeSorters(sorters)).toBe("-date,subject");
+        const encoderSpy = t.spyOn(coon.core.data.jsonApi.SorterEncoder.prototype, "encode").and.callThrough();
+
+        t.expect(proxy.encodeSorters(sorters)).toBe(
+            encoderSpy.calls.mostRecent().returnValue
+        );
+
+        t.expect(encoderSpy.calls.mostRecent().args[0]).toBe(sorters);
+
+        encoderSpy.remove();
     });
+
+
+    t.it("@conjoon/rest-api-description - rest-api-email compliant filter query params",  t => {
+
+        const encoder = Ext.create("conjoon.cn_mail.data.jsonApi.PnFilterEncoder");
+        const filterCollection = Ext.create("Ext.util.FilterCollection");
+
+        filterCollection.add(Ext.create("Ext.util.Filter", {
+            property: "date",
+            operator: ">=",
+            value: 1000
+        }));
+
+        filterCollection.add(Ext.create("Ext.util.Filter",{
+            property: "subject",
+            operator: "IN",
+            value: ["Hello World", "Hallo Welt"]
+        }));
+
+        // missing operator defaults to "="
+        filterCollection.add(Ext.create("Ext.util.Filter",{
+            property: "size",
+            value: 250
+        }));
+
+        const serializeSpy = t.spyOn(conjoon.cn_mail.data.jsonApi.PnFilterEncoder.prototype, "serialize").and.callThrough();
+
+
+        t.expect(encoder.encode(filterCollection)).toBe(
+            JSON.stringify({
+                "AND": [{
+                    ">=": {date: 1000}
+                }, {
+                    "IN": {subject: ["Hello World", "Hallo Welt"]}
+                }, {
+                    "=": {size: 250}
+                }]
+            })
+        );
+
+        t.expect(serializeSpy.calls.count()).toBe(filterCollection.length);
+
+        const testWithProxy = function (proxy) {
+            let encoderSpy = t.spyOn(conjoon.cn_mail.data.jsonApi.PnFilterEncoder.prototype, "encode").and.callThrough();
+
+            // pass array instead of Ext.util.FilterCollection
+            let collection = filterCollection.items;
+
+            t.expect(proxy.encodeFilters(collection)).toBe(
+                encoderSpy.calls.mostRecent().returnValue
+            );
+
+            t.isInstanceOf(proxy.filterEncoder, "conjoon.cn_mail.data.jsonApi.PnFilterEncoder");
+
+            t.expect(encoderSpy.calls.mostRecent().args[0]).toBe(collection);
+
+            serializeSpy.remove();
+            encoderSpy.remove();
+        };
+
+        [
+            Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy"),
+            Ext.create("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy")
+        ].map(proxy => testWithProxy(proxy));
+    });
+
 });

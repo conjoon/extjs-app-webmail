@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,13 +30,20 @@ StartTest(t => {
 
         let mixin = Ext.create("conjoon.cn_mail.data.mail.message.proxy.UtilityMixin");
 
-        let params = {snafu: "a",filter: "[{\"property\":\"mailAccountId\",\"value\":1},{\"property\":\"foo\",\"value\":\"bar\"}]"};
-
+        let params = {snafu: "a",filter: JSON.stringify({
+            "AND": [{
+                "=": {"mailAccountId": 1}
+            }, {
+                "=": {"foo": "bar"}
+            }]
+        })};
         mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
 
-        t.expect(params).toEqual({snafu: "a",mailAccountId: 1,filter: "[{\"property\":\"foo\",\"value\":\"bar\"}]"});
+        t.expect(params).toEqual({snafu: "a", mailAccountId: 1, filter: JSON.stringify({"=": {"foo": "bar"}})});
 
-        params = {filter: "[{\"property\":\"mailAccountId\",\"value\":1}]"};
+        params = {filter: JSON.stringify({
+            "=": {"mailAccountId": 1}
+        })};
 
         mixin.purgeFilter(params, ["mailAccountId", "mailFolderId", "parentMessageItemId"]);
 
