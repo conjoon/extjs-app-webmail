@@ -417,21 +417,18 @@ StartTest(t => {
 
 
             t.it("assembleUrls()", t => {
+
+                const
+                    proxy = conjoon.cn_mail.model.mail.message.MessageBody.getProxy(),
+                    assembleUrlSpy = t.spyOn(proxy, "assembleUrl").and.callFake(() => "dev/inbox");
+
                 const
                     feature = createFeature(),
-                    grid = getGrid(),
-                    mockStore = {
-                        getProxy: () => ({
-                            assembleUrl: (request) => `${request.getParams().mailAccountId}/${request.getParams().mailFolderId}`
-                        })
-                    };
-
-                grid.getStore = () => mockStore;
-                feature.grid = grid;
-
-                const res = feature.assembleUrls({dev: {inbox: [1, 2, 3]}});
+                    res = feature.assembleUrls({dev: {inbox: [1, 2, 3]}});
 
                 t.expect(res["dev/inbox"]).toEqual([1, 2, 3]);
+
+                [assembleUrlSpy].map(spy => spy.remove());
             });
 
 
@@ -466,7 +463,7 @@ StartTest(t => {
 
                 feature.processLoadedPreviewText({
                     responseText: JSON.stringify({
-                        data: [{attributes: {previewText: 1}}, {attributes: {previewText: 2}}]
+                        data: [{attributes: {textHtml: 1}}, {attributes: {textPlain: 2}}]
                     }),
                     request: {
                         url: "foo",
@@ -512,12 +509,10 @@ StartTest(t => {
                             }
                         }
                     },
-                    storeMock = {getProxy: () => proxyMock},
-                    grid = getGrid();
+                    getProxySpy = t.spyOn(
+                        conjoon.cn_mail.model.mail.message.MessageBody, "getProxy"
+                    ).and.callFake(() => proxyMock);
 
-                grid.getStore = () => storeMock;
-
-                feature.grid = grid;
 
                 let processLoadedPreviewTextSpy = t.spyOn(feature, "processLoadedPreviewText").and.callFake(() => {}),
                     requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("foobar"));
@@ -533,14 +528,16 @@ StartTest(t => {
                     url: "foo",
                     headers: proxyMock.headers,
                     params: {
-                        "test": "mock",
-                        "fields[MessageItem]": "previewText",
-                        options: {"foo": "bar"},
+                        "include": "MailFolder",
+                        "fields[MailFolder]": "",
+                        "fields[MessageBody]": "textHtml,textPlain",
+                        "options[textHtml][length]": 200,
+                        "options[textPlain][length]": 200,
                         filter: JSON.stringify({"in": {"id": [1, 2]}})
                     }
                 });
 
-                [requestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
+                [getProxySpy, requestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
             });
 
 

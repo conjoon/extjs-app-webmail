@@ -105,6 +105,11 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
      * Assembles the url in preparation for #buildUrl.
      * Provides convenient access for external APIs to query resource-locations
      * based on passed arguments
+     * Possible url returned are in the form of
+     *   - MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageItems/{messageItemId}
+     *   - MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageItems/{messageItemId}/MessageBody
+     *   - MailAccounts/{mailAccountId}/MailFolders/{mailFolderId}/MessageBodies
+     *
      *
      * @param {Ext.data.Request} request
      *
@@ -134,7 +139,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         let url = me.getUrl(request),
             action = request.getAction(),
             rec = request.getRecords() ? request.getRecords()[0] : null,
-            source;
+            source, hasId = false;
 
         if (!url.match(me.slashRe)) {
             url += "/";
@@ -162,14 +167,20 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             });
         }
 
-        url += "MailAccounts/" + encodeURIComponent(source.mailAccountId) + "/" +
-            "MailFolders/" + encodeURIComponent(source.mailFolderId) + "/" +
-            "MessageItems";
-
+        if (Object.prototype.hasOwnProperty.call(source, "id")) {
+            hasId = true;
+        }
         // switch target parameter to MessageBodyDraft if applicable
         let target = me.entityName,
             appendUrl = "",
             finalParams = {target: target};
+
+        url += "MailAccounts/" + encodeURIComponent(source.mailAccountId) + "/" +
+            "MailFolders/" + encodeURIComponent(source.mailFolderId) + "/" +
+            ({   "MessageItem": "MessageItems",
+                "MessageBody": hasId ? "MessageItems" : "MessageBodies",
+                "MessageDraft": "MessageItems"
+            }[target]);
 
         switch (action) {
         case "destroy":
@@ -189,7 +200,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             break; 
         case "read":
             if (["MessageBody", "MessageItem", "MessageDraft"].includes(target)) {
-                appendUrl = (target === "MessageBody" ? "MessageBody" : "");
+                appendUrl = (hasId && target === "MessageBody" ? "MessageBody" : "");
                 finalParams = Object.assign({}, me.getDefaultParameters(target));
             } 
             break;
@@ -202,10 +213,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         request.setParams(Ext.apply(request.getParams() || {}, finalParams));
 
-        if (action !== "create") {
-            if (Object.prototype.hasOwnProperty.call(source, "id")) {
-                url += "/" + source.id + (appendUrl ? "/" + appendUrl : "");
-            }
+        if (action !== "create" && hasId) {
+            url += "/" + source.id + (appendUrl ? "/" + appendUrl : "");
         }
 
         if (params) {
@@ -256,20 +265,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
                 "include": "MailFolder",
                 "fields[MailFolder]": "",
                 "fields[MessageItem]": "*,previewText,hasAttachments,size"
-            },
-            ListMessageItem: {
-                options: JSON.stringify({
-                    previewText: {
-                        plain: {
-                            precedence: true,
-                            length: 200
-                        },
-                        html: {
-                            length: 200
-                        }
-                    }
-                }),
-                limit: -1
             }
         };
 
