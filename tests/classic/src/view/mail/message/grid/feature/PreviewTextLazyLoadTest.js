@@ -183,20 +183,10 @@ StartTest(t => {
                 t.expect(onSpy.calls.mostRecent().args[0]).toBe("cn_mail-mailmessagegridbeforeload");
                 t.expect(onSpy.calls.mostRecent().args[2]).toBe(null);
                 t.expect(onSpy.calls.mostRecent().args[3]).toEqual({single: true});
-                let fakeDefaultParameters = {id: "identify"},
-                    extraParamCall = onSpy.calls.mostRecent().args[1],
-                    proxyMock = {
-                        extraParams: {},
-                        getDefaultParameters: function () {}
-                    },
-                    defParamSpy = t.spyOn(proxyMock, "getDefaultParameters").and.callFake(() => fakeDefaultParameters),
-                    storeMock = {getProxy: () => proxyMock, on () {}},
+                let onCall = onSpy.calls.mostRecent().args[1],
+                    storeMock = { on () {}},
                     filterChangeListenerSpy = t.spyOn(storeMock, "on").and.callThrough();
-                extraParamCall(storeMock);
-                t.expect(defParamSpy.calls.mostRecent().args[0]).toBe("MessageItem");
-                t.expect(proxyMock.extraParams).toEqual(Object.assign(fakeDefaultParameters, {
-                    "fields[MessageItem]": "*,previewText"
-                }));
+                onCall(storeMock);
 
 
                 /**
@@ -219,7 +209,7 @@ StartTest(t => {
                     t.expect(call.args[4]).toEqual({buffer: 500});
                 });
 
-                [defParamSpy, filterChangeListenerSpy, getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
+                [filterChangeListenerSpy, getFeatureSpy, scrollableSpy, onSpy, monSpy].map(spy => spy.remove());
 
                 t.expect(feature.installed).toBe(true);
             });
