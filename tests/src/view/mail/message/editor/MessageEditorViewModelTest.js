@@ -331,6 +331,11 @@ StartTest(async t => {
 
                                 let index = 1;
 
+                                let processMbLoadSpy = t.spyOn(
+                                    conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype,
+                                    "processMessageBodyLoad"
+                                ).and.callThrough();
+
                                 let tmp = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView;
                                 conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = function (){return{fireEvent: Ext.emptyFn};};
 
@@ -348,8 +353,41 @@ StartTest(async t => {
 
                                     conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
 
+                                    t.expect(processMbLoadSpy.calls.count()).toBe(1);
+
+                                    [processMbLoadSpy].map(spy => spy.remove());
+                                });
+                            });
+
+
+                            t.it("processMessageBodyLoad() delegates to processMessageDraftLoadFailure()", t => {
+
+                                let index = 1;
+                                let prot = conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype;
+
+                                let processMessageDraftLoadFailure = t.spyOn(
+                                        prot, "processMessageDraftLoadFailure"
+                                    ).and.callFake(() => {}),
+                                    loadMessageBodySpy = t.spyOn(
+                                        conjoon.cn_mail.model.mail.message.MessageDraft.prototype, "loadMessageBody"
+                                    ).and.callFake((options) => {
+                                        options.failure.call(options.scope);
+                                    }),
+                                    getViewSpy = t.spyOn(
+                                        prot, "getView"
+                                    ).and.callFake(() => ({fireEvent: Ext.emptyFn}));
+
+                                viewModel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
+                                    session: createSession(),
+                                    messageDraft: createKeyForExistingMessage(index)
                                 });
 
+                                t.waitForMs(t.parent.TIMEOUT, () => {
+
+                                    t.expect(processMessageDraftLoadFailure.calls.count()).toBe(1);
+
+                                    [loadMessageBodySpy, processMessageDraftLoadFailure, getViewSpy].map(spy => spy.remove());
+                                });
                             });
 
 
