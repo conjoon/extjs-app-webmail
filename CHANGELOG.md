@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/conjoon/extjs-app-webmail/compare/v0.3.0...v0.3.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* plugin fails if application is not used in a secure context (https) ([07f38d0](https://github.com/conjoon/extjs-app-webmail/commit/07f38d0656e68528f33fa876e3d4c8fbc1149157))
+
 ## [0.3.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.2.1...v0.3.0) (2022-11-14)
 
 
