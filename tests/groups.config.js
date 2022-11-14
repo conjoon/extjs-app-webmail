@@ -78,7 +78,8 @@ export default [{
             {
                 group: "plugin",
                 items: [
-                    "src/app/plugin/NewMessagesNotificationPluginTest.js"
+                    "src/app/plugin/NewMessagesNotificationPluginTest.js",
+                    "src/app/plugin/MailtoProtocolHandlerPluginTest.js"
                 ]
             }
         ]
