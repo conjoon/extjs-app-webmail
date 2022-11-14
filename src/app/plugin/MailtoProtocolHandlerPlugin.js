@@ -37,13 +37,14 @@ Ext.define("conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin", {
     run (controller) {
         "use strict";
 
-        const origin = window.location.origin;
-
-        navigator.registerProtocolHandler(
-            "mailto",
-            origin + "/#cn_mail/message/compose/%s",
-            "mailto handler"
-        );
+        if (navigator.registerProtocolHandler) {
+            const origin = window.location.origin;
+            navigator.registerProtocolHandler(
+                "mailto",
+                origin + "/#cn_mail/message/compose/%s",
+                "mailto handler"
+            );
+        }
 
         return true;
     }

@@ -65,6 +65,10 @@ StartTest(t => {
 
         let registerProtocolHandler = function (){};
 
+        navigator.registerProtocolHandler = undefined;
+
+        t.expect(plugin.run(ctrl)).toBe(true);
+
         navigator.registerProtocolHandler = registerProtocolHandler;
 
         let registerSpy = t.spyOn(navigator, "registerProtocolHandler").and.callFake(() => {});
