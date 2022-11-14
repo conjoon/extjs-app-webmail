@@ -36,7 +36,7 @@ Ext.define("conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin", {
      */
     run (controller) {
         "use strict";
-        
+
         if (navigator.registerProtocolHandler) {
             const origin = window.location.origin;
             navigator.registerProtocolHandler(
