@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.2.1...v0.3.0) (2022-11-14)
+
+
+### Features
+
+* add protocol handler for mailto ([801da10](https://github.com/conjoon/extjs-app-webmail/commit/801da1098e65813b51260252a43101ff16533e4b)), closes [conjoon/extjs-app-webmail#250](https://github.com/conjoon/extjs-app-webmail/issues/250)
+
 ### [0.2.1](https://github.com/conjoon/extjs-app-webmail/compare/v0.2.0...v0.2.1) (2022-06-01)
 
 
