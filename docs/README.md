@@ -47,6 +47,9 @@ and appearance of the email client:
     ],
     "controller": [
       {
+        "xclass": "conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin"
+      },
+      {
         "xclass": "conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin",
         "args": [
           {
