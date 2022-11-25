@@ -480,7 +480,6 @@ StartTest(t => {
                 const
                     feature = createFeature(),
                     proxyMock = {
-                        headers: "bar",
                         getDefaultParameters: (key) => ( key === "ListMessageItem.options" ? {"foo": "bar"} : {})
                     },
                     storeMock = {getProxy: () => proxyMock},
@@ -490,8 +489,18 @@ StartTest(t => {
 
                 feature.grid = grid;
 
+                const requestCfg = feature.getDefaultRequestCfg(
+                    {url: "foo",  idsToLoad: [1,2], options: {"foo": "bar"}}
+                );
+
+                const requestWithHeader = Object.assign({headers: "headers"}, requestCfg);
+
                 let processLoadedPreviewTextSpy = t.spyOn(feature, "processLoadedPreviewText").and.callFake(() => {}),
-                    requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("foobar"));
+                    requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("foobar")),
+                    requestCfgSpy = t.spyOn(feature, "getDefaultRequestCfg").and.callFake(() => requestCfg),
+                    buildRequestSpy = t.spyOn(feature, "buildRequest").and.callFake(
+                        () => requestWithHeader
+                    );
 
                 await feature.sendRequest([1,2], "foo");
 
@@ -499,18 +508,14 @@ StartTest(t => {
                 t.expect(processLoadedPreviewTextSpy.calls.all()[0].args[0]).toBe("foobar");
                 t.expect(requestSpy.calls.count()).toBe(1);
                 let request = requestSpy.calls.all()[0];
-                t.expect(request.args[0]).toEqual({
-                    method: "get",
-                    url: "foo",
-                    headers: proxyMock.headers,
-                    params: {
-                        attributes: "previewText",
-                        options: {"foo": "bar"},
-                        filter: JSON.stringify([{property: "id", operator: "in", value: [1, 2]}])
-                    }
-                });
 
-                [requestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
+                // in
+                t.expect(buildRequestSpy.calls.mostRecent().args[0]).toEqual(requestCfg);
+
+                // out
+                t.expect(request.args[0]).toEqual(requestWithHeader);
+
+                [requestSpy, requestCfgSpy, buildRequestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
             });
 
 

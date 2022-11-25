@@ -64,6 +64,14 @@ StartTest(async t => {
                     "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                     });
 
+                const expectedRequestCfg = {
+                        url: "./cn_mail/MailAccounts/1/MailFolders/3/MessageItems/2",
+                        method: "POST"
+                    },
+                    buildRequestSpy = t.spyOn(controller, "buildRequest").and.callFake(
+                        cfg => Object.assign({headers: "injected"}, expectedRequestCfg)
+                    );
+
                 let messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                     mailAccountId: 1, mailFolderId: 3, id: 2
                 });
@@ -77,12 +85,13 @@ StartTest(async t => {
                 }
                 t.expect(exc).toContain("baseAddress");
 
+
                 t.expect(
                     controller.getSendMessageDraftRequestConfig(messageDraft, ".//cn_mail///")
-                ).toEqual({
-                    url: "./cn_mail/MailAccounts/1/MailFolders/3/MessageItems/2",
-                    method: "POST"
-                });
+                ).toEqual(buildRequestSpy.calls.mostRecent().returnValue);
+
+                t.expect(buildRequestSpy.calls.mostRecent().args[0]).toEqual(expectedRequestCfg);
+
 
                 let tmp = Ext.Ajax.request;
 

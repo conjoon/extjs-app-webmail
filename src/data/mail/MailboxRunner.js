@@ -225,19 +225,45 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             }
         }));
 
-        const parameters = proxy.getDefaultParameters("ListMessageItem");
+        const
+            parameters = proxy.getDefaultParameters("ListMessageItem"),
+            defaultCfg = me.getDefaultRequestCfg({
+                url, parameters, latestFilter
+            }),
+            requestCfg = me.buildRequest(defaultCfg);
 
-        Ext.Ajax.request({
+        Ext.Ajax.request(requestCfg)
+            .then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
+
+    },
+
+
+    /**
+     * @private
+     */
+    getDefaultRequestCfg ({url, parameters, latestFilter}) {
+        return {
             method: "get",
-            // required by the custom Reader used by teh messageEntityProxy
+            // required by the custom Reader used by the messageEntityProxy
             action: "read",
             url: url,
-            headers: proxy.headers,
             params: Object.assign(parameters, {
                 filter: JSON.stringify(latestFilter)
             })
-        }).then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
+        };
+    },
 
+
+    /**
+     * Allows to hook into the process of assembling the request  and returns the configuration
+     * to use with the request.
+     *
+     * @param {Object} cfg
+     *
+     * @returns {Object}
+     */
+    buildRequest (cfg) {
+        return  cfg;
     },
 
 

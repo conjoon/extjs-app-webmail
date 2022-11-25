@@ -447,16 +447,44 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             store = grid.getStore(),
             proxy = store.getProxy();
 
-        Ext.Ajax.request({
+        Ext.Ajax.request(me.buildRequest(
+
+            me.getDefaultRequestCfg({
+                url,
+                idsToLoad,
+                options: proxy.getDefaultParameters("ListMessageItem.options")
+            })
+
+
+        )).then(me.processLoadedPreviewText.bind(me));
+    },
+
+    /**
+     * @private
+     */
+    getDefaultRequestCfg ({url, idsToLoad, options}) {
+        return {
             method: "get",
             url: url,
-            headers: proxy.headers,
             params: {
                 attributes: "previewText",
-                options: proxy.getDefaultParameters("ListMessageItem.options"),
+                options: options,
                 filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
             }
-        }).then(me.processLoadedPreviewText.bind(me));
+        };
+    },
+
+
+    /**
+     * Allows to hook into the process of assembling the request  and returns the configuration
+     * to use with the request.
+     *
+     * @param {Object} cfg
+     *
+     * @returns {Object}
+     */
+    buildRequest (cfg) {
+        return  cfg;
     }
 
 });

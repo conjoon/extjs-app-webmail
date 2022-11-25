@@ -597,6 +597,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         getSendMessageDraftRequestConfig: function (messageDraft, baseAddress) {
 
+            const me = this;
+
             if (!l8.isString(baseAddress)) {
                 throw("\"baseAddress\" must be a string");
             }
@@ -611,11 +613,24 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 encodeURIComponent(messageDraft.getCompoundKey().getId())
             ].join("/");
 
-            return {
+            return me.buildRequest({
                 url: l8.unify(url, "/", "://"),
                 method: "POST"
-            };
+            });
 
+        },
+
+
+        /**
+         * Allows to hook into the process of assembling the request  and returns the configuration
+         * to use with the request.
+         *
+         * @param {Object} cfg
+         *
+         * @returns {Object}
+         */
+        buildRequest (cfg) {
+            return  cfg;
         },
 
 

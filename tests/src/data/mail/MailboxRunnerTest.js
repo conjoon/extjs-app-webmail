@@ -49,6 +49,7 @@ StartTest(async t => {
                 mailboxRunner = null;
             }
             MailFolderTreeStore().getInstance().getRoot().removeAll();
+            Ext.StoreManager.unregister(MailFolderTreeStore().getInstance());
         });
 
 
@@ -311,7 +312,11 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
+                injectedCfg = {headers: "headers"},
                 requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("response")),
+                buildRequestSpy = t.spyOn(mailboxRunner, "buildRequest").and.callFake(
+                    cfg => Object.assign(injectedCfg, cfg)
+                ),
                 responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {});
 
             const FOLDER = {
@@ -325,7 +330,6 @@ StartTest(async t => {
                 }
             };
 
-
             await mailboxRunner.visitSubscription(FOLDER);
 
             const options = conjoon.cn_mail.model.mail.message.MessageItem.getProxy()
@@ -334,13 +338,14 @@ StartTest(async t => {
             let params = Object.assign(options, {
                 filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]"
             });
-            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
+
+
+            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(Object.assign(injectedCfg, {
                 method: "get",
                 action: "read",
                 url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
-                headers: undefined,
                 params
-            });
+            }));
 
             t.expect(responseSpy.calls.count()).toBe(1);
             t.expect(responseSpy.calls.mostRecent().args[0]).toBe(FOLDER);
@@ -353,16 +358,14 @@ StartTest(async t => {
                 filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"}]"
             });
 
-            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
+            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(Object.assign(injectedCfg, {
                 method: "get",
                 action: "read",
                 url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
-                headers: undefined,
                 params
-            });
+            }));
 
-            requestSpy.remove();
-            responseSpy.remove();
+            [requestSpy, responseSpy, buildRequestSpy].map(spy => spy.remove());
 
         });
 
