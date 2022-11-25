@@ -74,7 +74,7 @@
         "@coon-js/extjs-comp-navport": "^0.2.4",
         "@coon-js/extjs-lib-comp": "^0.2.8",
         "@coon-js/extjs-lib-core": "^0.8.3",
-        "@l8js/l8": "^0.7.2"
+        "@l8js/l8": "^0.7.4"
     },
     "devDependencies": {
         "@commitlint/cli": "^13.2.0",
