@@ -23,45 +23,36 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- *
- */
-Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
+StartTest(t => {
 
-    extend: "Ext.data.proxy.Rest",
 
-    requires: [
-        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
-    ],
+    t.it("Should successfully create and test instance", t => {
 
-    mixins: {
-        utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
-    },
+        const proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy");
+        t.isInstanceOf(proxy, "Ext.data.proxy.Rest");
 
-    /**
-     * The entity being used with this Proxy.
-     * @cfg {string}
-     */
-    entityName: null,
+        t.expect(proxy.getAppendId()).toBe(false);
+    });
 
-    appendId: false,
+    t.it("sendRequest()", t => {
 
-    /**
-     * @type {coon.core.data.request.Configurator} requestConfigurator
-     * @private
-     */
+        const
+            requestConfigurator = Ext.create("coon.core.data.request.Configurator"),
+            proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy", {
+                requestConfigurator
+            }),
+            fakeRequest = {},
+            parentSpy = t.spyOn(proxy, "callParent").and.callFake(() => {}),
+            cfgSpy = t.spyOn(requestConfigurator, "configure").and.callThrough();
 
-    /**
-     * @param request
-     * @returns {*}
-     */
-    sendRequest (request) {
+        proxy.sendRequest(fakeRequest);
 
-        const me = this;
+        t.expect(cfgSpy.calls.mostRecent().args[0]).toBe(fakeRequest);
+        t.expect(parentSpy.calls.mostRecent().args[0][0]).toBe(cfgSpy.calls.mostRecent().returnValue);
 
-        request = me.requestConfigurator.configure(request);
+        [cfgSpy, parentSpy].map(spy => spy.remove());
 
-        return me.callParent([request]);
-    }
+    });
+
 
 });
