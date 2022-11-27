@@ -59,6 +59,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
      * @private
      */
 
+    /**
+     * @type {coon.core.data.request.Configurator} requestConfigurator
+     * @private
+     */
+
 
     /**
      * Inits this plugin.
@@ -447,7 +452,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             store = grid.getStore(),
             proxy = store.getProxy();
 
-        Ext.Ajax.request(me.buildRequest(
+        Ext.Ajax.request(me.requestConfigurator.configure(
 
             me.getDefaultRequestCfg({
                 url,
@@ -458,6 +463,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         )).then(me.processLoadedPreviewText.bind(me));
     },
+
 
     /**
      * @private
@@ -472,19 +478,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
                 filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
             }
         };
-    },
-
-
-    /**
-     * Allows to hook into the process of assembling the request  and returns the configuration
-     * to use with the request.
-     *
-     * @param {Object} cfg
-     *
-     * @returns {Object}
-     */
-    buildRequest (cfg) {
-        return  cfg;
     }
 
 });

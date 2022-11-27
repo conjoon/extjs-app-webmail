@@ -43,8 +43,16 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
         "conjoon.cn_mail.model.mail.message.MessageItem",
-        "conjoon.cn_mail.data.mail.service.MailboxService"
+        "conjoon.cn_mail.data.mail.service.MailboxService",
+        "coon.core.data.request.Configurator"
     ],
+
+    di: {
+        require: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
+
 
     mixins: [
         "conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"
@@ -72,11 +80,15 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * @var {conjoon.cn_mail.data.mail.service.MailFolderHelper} mailFolderHelper
      */
 
+    /**
+     * @var {coon.core.data.request.Configurator} requestConfigurator
+     */
 
     /**
      * Constructor.
      *
-     * @param {Object} mailFolderTreeStore
+     * @param {Object} cfg
+     * @param {coon.core.data.request.Configurator} cfg.requestConfigurator} cfg
      *
      * @see init
      */
@@ -89,7 +101,6 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             mailFolderTreeStore = cfg.mailFolderTreeStore;
 
         delete cfg.mailFolderTreeStore;
-
         Object.assign(me, cfg);
 
         if (mailFolderTreeStore) {
@@ -226,11 +237,13 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         }));
 
         const
-            parameters = proxy.getDefaultParameters("ListMessageItem"),
+            parameters = Object.assign(proxy.getDefaultParameters("ListMessageItem"), {
+                filter: JSON.stringify(latestFilter)
+            }),
             defaultCfg = me.getDefaultRequestCfg({
                 url, parameters, latestFilter
             }),
-            requestCfg = me.buildRequest(defaultCfg);
+            requestCfg = me.requestConfigurator.configure(defaultCfg);
 
         Ext.Ajax.request(requestCfg)
             .then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
@@ -241,29 +254,14 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
     /**
      * @private
      */
-    getDefaultRequestCfg ({url, parameters, latestFilter}) {
+    getDefaultRequestCfg ({url, parameters}) {
         return {
             method: "get",
             // required by the custom Reader used by the messageEntityProxy
             action: "read",
             url: url,
-            params: Object.assign(parameters, {
-                filter: JSON.stringify(latestFilter)
-            })
+            params: parameters
         };
-    },
-
-
-    /**
-     * Allows to hook into the process of assembling the request  and returns the configuration
-     * to use with the request.
-     *
-     * @param {Object} cfg
-     *
-     * @returns {Object}
-     */
-    buildRequest (cfg) {
-        return  cfg;
     },
 
 

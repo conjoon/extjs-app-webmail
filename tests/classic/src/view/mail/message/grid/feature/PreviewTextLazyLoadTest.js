@@ -87,7 +87,9 @@ StartTest(t => {
             });
         };
 
-    const createFeature = () => Ext.create("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad");
+    const createFeature = () => Ext.create("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad", {
+        requestConfigurator: Ext.create("coon.core.data.request.Configurator")
+    });
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
@@ -475,6 +477,26 @@ StartTest(t => {
             });
 
 
+            t.it("getDefaultRequestCfg()", t => {
+
+                const
+                    feature = createFeature(),
+                    idsToLoad = [1, 2, 3,4],
+                    options = {"key": "value"},
+                    url = "https://url";
+
+                t.expect(feature.getDefaultRequestCfg({url, idsToLoad, options})).toEqual({
+                    method: "get",
+                    url,
+                    params: {
+                        attributes: "previewText",
+                        options,
+                        filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
+                    }
+                });
+            });
+
+
             t.it("sendRequest()", async t => {
 
                 const
@@ -493,29 +515,23 @@ StartTest(t => {
                     {url: "foo",  idsToLoad: [1,2], options: {"foo": "bar"}}
                 );
 
-                const requestWithHeader = Object.assign({headers: "headers"}, requestCfg);
-
                 let processLoadedPreviewTextSpy = t.spyOn(feature, "processLoadedPreviewText").and.callFake(() => {}),
                     requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("foobar")),
                     requestCfgSpy = t.spyOn(feature, "getDefaultRequestCfg").and.callFake(() => requestCfg),
-                    buildRequestSpy = t.spyOn(feature, "buildRequest").and.callFake(
-                        () => requestWithHeader
-                    );
+                    configuratorSpy = t.spyOn(feature.requestConfigurator, "configure").and.callThrough();
 
                 await feature.sendRequest([1,2], "foo");
 
                 t.expect(processLoadedPreviewTextSpy.calls.count()).toBe(1);
                 t.expect(processLoadedPreviewTextSpy.calls.all()[0].args[0]).toBe("foobar");
+
+                t.expect(configuratorSpy.calls.mostRecent().args[0]).toEqual(requestCfgSpy.calls.mostRecent().returnValue);
                 t.expect(requestSpy.calls.count()).toBe(1);
-                let request = requestSpy.calls.all()[0];
 
                 // in
-                t.expect(buildRequestSpy.calls.mostRecent().args[0]).toEqual(requestCfg);
+                t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(configuratorSpy.calls.mostRecent().returnValue);
 
-                // out
-                t.expect(request.args[0]).toEqual(requestWithHeader);
-
-                [requestSpy, requestCfgSpy, buildRequestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
+                [requestSpy, requestCfgSpy, configuratorSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
             });
 
 

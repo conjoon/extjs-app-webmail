@@ -36,7 +36,15 @@ StartTest(async t => {
         let mailboxRunner = null;
 
         const
-            createMailboxRunner = () => Ext.create("conjoon.cn_mail.data.mail.MailboxRunner"),
+            createMailboxRunner = cfg => {
+
+                cfg = cfg || {};
+
+                if (!cfg.requestConfigurator) {
+                    cfg.requestConfigurator = Ext.create("coon.core.data.request.Configurator");
+                }
+                return Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", cfg);
+            },
             MailFolderTreeStore = () => conjoon.cn_mail.store.mail.folder.MailFolderTreeStore;
 
         t.beforeEach(() => {
@@ -54,8 +62,7 @@ StartTest(async t => {
 
 
         t.it("constructor() - no arg", t => {
-
-            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner");
+            mailboxRunner = createMailboxRunner();
 
             t.expect(mailboxRunner.mixins["conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"]).toBeDefined();
 
@@ -72,7 +79,7 @@ StartTest(async t => {
         t.it("constructor() - cfg", t => {
 
             let spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
-            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", {
+            mailboxRunner = createMailboxRunner({
                 mailFolderTreeStore: MailFolderTreeStore().getInstance(),
                 interval: 1000
             });
@@ -84,6 +91,7 @@ StartTest(async t => {
 
             spy.remove();
         });
+
 
         t.it("init() - exception", t => {
 
@@ -307,17 +315,30 @@ StartTest(async t => {
         });
 
 
+        t.it("getDefaultRequestCfg()", t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const parameters = {};
+
+            t.expect(mailboxRunner.getDefaultRequestCfg({url: "url", parameters})).toEqual({
+                method: "get",
+                action: "read",
+                url: "url",
+                params: parameters
+            });
+        });
+
+
         t.it("visitSubscription()", async t => {
 
             mailboxRunner = createMailboxRunner();
 
             const
-                injectedCfg = {headers: "headers"},
                 requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("response")),
-                buildRequestSpy = t.spyOn(mailboxRunner, "buildRequest").and.callFake(
-                    cfg => Object.assign(injectedCfg, cfg)
-                ),
-                responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {});
+                configureRequestSpy = t.spyOn(mailboxRunner.requestConfigurator, "configure").and.callThrough(),
+                responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {}),
+                getDefaultRequestSpy = t.spyOn(mailboxRunner, "getDefaultRequestCfg").and.callThrough();
 
             const FOLDER = {
                 props: {
@@ -332,20 +353,26 @@ StartTest(async t => {
 
             await mailboxRunner.visitSubscription(FOLDER);
 
-            const options = conjoon.cn_mail.model.mail.message.MessageItem.getProxy()
-                .getDefaultParameters("ListMessageItem");
+            const MessageItem = conjoon.cn_mail.model.mail.message.MessageItem;
 
-            let params = Object.assign(options, {
-                filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]"
-            });
+            let
+                cfgArgs = getDefaultRequestSpy.calls.mostRecent().args[0],
+                options = MessageItem.getProxy().getDefaultParameters("ListMessageItem"),
+                params = Object.assign(options, {
+                    filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]"
+                });
 
+            t.expect(cfgArgs.url).toBe( "cn_mail/MailAccounts/1/MailFolders/2/MessageItems");
+            t.expect(cfgArgs.parameters).toEqual(params);
 
-            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(Object.assign(injectedCfg, {
-                method: "get",
-                action: "read",
-                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
-                params
-            }));
+            t.expect(configureRequestSpy.calls.mostRecent().args[0]).toEqual(
+                configureRequestSpy.calls.mostRecent(
+                    getDefaultRequestSpy.calls.mostRecent().returnValue
+                ).args[0]
+            );
+
+            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(configureRequestSpy.calls.mostRecent().returnValue);
+
 
             t.expect(responseSpy.calls.count()).toBe(1);
             t.expect(responseSpy.calls.mostRecent().args[0]).toBe(FOLDER);
@@ -358,14 +385,10 @@ StartTest(async t => {
                 filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"}]"
             });
 
-            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(Object.assign(injectedCfg, {
-                method: "get",
-                action: "read",
-                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
-                params
-            }));
+            cfgArgs = getDefaultRequestSpy.calls.mostRecent().args[0];
+            t.expect(cfgArgs.parameters).toEqual(params);
 
-            [requestSpy, responseSpy, buildRequestSpy].map(spy => spy.remove());
+            [requestSpy, responseSpy, configureRequestSpy, getDefaultRequestSpy].map(spy => spy.remove());
 
         });
 
