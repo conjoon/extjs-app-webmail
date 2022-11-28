@@ -31,12 +31,20 @@ Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
     extend: "Ext.data.proxy.Rest",
 
     requires: [
-        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
+        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
+        "coon.core.data.request.Configurator"
     ],
 
     mixins: {
         utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     },
+
+    inheritableStatics: {
+        require: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
+
 
     /**
      * The entity being used with this Proxy.

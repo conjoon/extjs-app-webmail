@@ -39,8 +39,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
-        "conjoon.cn_mail.data.mail.service.MailboxService"
+        "conjoon.cn_mail.data.mail.service.MailboxService",
+        "coon.core.data.request.Configurator"
     ],
+
+    statics: {
+        require: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
 
     alias: "controller.cn_mail-mailmessageeditorviewcontroller",
 
@@ -95,6 +102,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @private
      */
     closeAfterMs: 1000,
+
+    /**
+     * @type {coon.core.data.request.Configurator} requestConfigurator
+     * @private
+     */
+
 
     /**
      * Makes sure
@@ -613,7 +626,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 encodeURIComponent(messageDraft.getCompoundKey().getId())
             ].join("/");
 
-            return me.buildRequest({
+            return me.requestConfigurator.configure({
                 url: l8.unify(url, "/", "://"),
                 method: "POST"
             });

@@ -28,8 +28,8 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
-        
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
+
         t.requireOk("coon.core.util.Date", "coon.core.ServiceLocator", () => {
 
             const userImageService = Ext.create("coon.core.service.UserImageService");

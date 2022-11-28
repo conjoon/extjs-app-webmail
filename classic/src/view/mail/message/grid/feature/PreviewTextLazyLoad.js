@@ -46,8 +46,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         "l8",
         "conjoon.cn_mail.data.mail.message.CompoundKey",
         "coon.core.data.pageMap.PageMapUtil",
-        "coon.core.data.pageMap.RecordPosition"
+        "coon.core.data.pageMap.RecordPosition",
+        "coon.core.data.request.Configurator"
     ],
+
+    statics: {
+        require: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
 
     /**
      * @type {Object} pendingLazies

@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.load(
+    await helper.registerIoC().load(
         "conjoon.cn_mail.data.mail.MailboxRunner",
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ).setupSimlets().mockUpMailTemplates().andRun((t) => {

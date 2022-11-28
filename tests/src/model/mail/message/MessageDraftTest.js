@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
         var model;
 
         t.beforeEach(function () {

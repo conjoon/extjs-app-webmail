@@ -47,12 +47,11 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         "coon.core.data.request.Configurator"
     ],
 
-    di: {
+    statics: {
         require: {
             requestConfigurator: "coon.core.data.request.Configurator"
         }
     },
-
 
     mixins: [
         "conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"
