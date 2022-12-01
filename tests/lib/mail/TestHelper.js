@@ -69,8 +69,8 @@ export default class TestHelper {
 
         await new Promise((resolve, reject) => {
 
-            t.requireOk("coon.core.ioc.Proxy", () => {
-                coon.core.ioc.Proxy.boot();
+            t.requireOk("coon.core.ioc.Container", () => {
+                coon.core.ioc.Container.bind({});
                 resolve(" -> IoC");
             });
 
