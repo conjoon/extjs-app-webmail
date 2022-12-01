@@ -35,7 +35,7 @@ StartTest(t => {
         }]
     });
 
-    var createStore = function (cfg) {
+    const createStore = function (cfg) {
 
             cfg = cfg || {};
 
@@ -47,9 +47,7 @@ StartTest(t => {
                 fields: ["id", "testProp"],
                 pageSize: 100,
                 autoLoad: cfg.autoLoad ? cfg.autoLoad : undefined,
-                sorters: cfg.sorters
-                    ? cfg.sorters
-                    : undefined,
+                sorters: cfg.sorters ? cfg.sorters : undefined,
                 proxy: {
                     type: "rest",
                     url: "cn_comp/fixtures/Livegrid",
@@ -98,16 +96,21 @@ StartTest(t => {
         "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad", () => {
 
             t.it("constructor()", t => {
-                "use strict";
+
 
                 let feature = createFeature();
                 t.isInstanceOf(feature, "Ext.grid.feature.Feature");
                 t.expect(feature.alias).toContain("feature.cn_webmailplug-previewtextlazyload");
+
+                t.expect(conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad.require.requestConfigurator).toBe(
+                    "coon.core.data.request.Configurator"
+                );
+
             });
 
 
             t.it("init()", t => {
-                "use strict";
+
 
                 let
                     feature = createFeature(),
@@ -120,7 +123,7 @@ StartTest(t => {
 
 
             t.it("installListeners() throws", t => {
-                "use strict";
+
 
                 let feature = createFeature();
 
@@ -139,7 +142,7 @@ StartTest(t => {
 
 
             t.it("installListeners()", t => {
-                "use strict";
+
 
                 let feature = createFeature(),
                     grid = getGrid();
@@ -217,7 +220,6 @@ StartTest(t => {
 
             t.it("requestPreviewText()", t => {
 
-                "use strict";
 
                 const
                     feature = createFeature(),
@@ -266,7 +268,7 @@ StartTest(t => {
 
 
             t.it("computeIdsToLoad()", t => {
-                "use strict";
+
 
                 const feature = createFeature();
 
@@ -288,7 +290,7 @@ StartTest(t => {
 
 
             t.it("processRequestedIds() - sendRequest() not called", t => {
-                "use strict";
+
 
                 const
                     feature = createFeature(),
@@ -309,7 +311,7 @@ StartTest(t => {
 
 
             t.it("processRequestedIds() - sendRequest()", t => {
-                "use strict";
+
 
                 const
                     feature = createFeature(),

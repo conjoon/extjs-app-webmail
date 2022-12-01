@@ -31,11 +31,15 @@ StartTest(t => {
         const proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy");
         t.isInstanceOf(proxy, "Ext.data.proxy.Rest");
 
+        t.expect(conjoon.cn_mail.data.mail.BaseProxy.require.requestConfigurator).toBe(
+            "coon.core.data.request.Configurator"
+        );
+
         t.expect(proxy.getAppendId()).toBe(false);
     });
 
-    t.it("sendRequest()", t => {
 
+    t.it("sendRequest()", t => {
         const
             requestConfigurator = Ext.create("coon.core.data.request.Configurator"),
             proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy", {
@@ -51,7 +55,6 @@ StartTest(t => {
         t.expect(parentSpy.calls.mostRecent().args[0][0]).toBe(cfgSpy.calls.mostRecent().returnValue);
 
         [cfgSpy, parentSpy].map(spy => spy.remove());
-
     });
 
 

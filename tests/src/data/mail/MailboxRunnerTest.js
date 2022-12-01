@@ -66,6 +66,10 @@ StartTest(async t => {
 
             t.expect(mailboxRunner.mixins["conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"]).toBeDefined();
 
+            t.expect(conjoon.cn_mail.data.mail.MailboxRunner.require.requestConfigurator).toBe(
+                "coon.core.data.request.Configurator"
+            );
+
             const spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
 
             t.expect(spy.calls.count()).toBe(0);
