@@ -63,8 +63,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
         "conjoon.cn_mail.data.mail.BaseSchema",
-        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
-        "coon.core.ioc.Proxy"
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
 
@@ -902,7 +901,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
 
-        coon.core.ioc.Proxy.boot();
 
         return {
             navigation: [{

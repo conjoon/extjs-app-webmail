@@ -142,18 +142,6 @@ StartTest(async t => {
                     loadSpy.remove();
                 });
 
-                t.it("postLaunchHook should boot ioc.Proxy", t => {
-
-                    const bootSpy = t.spyOn(coon.core.ioc.Proxy, "boot");
-
-                    packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
-                    t.expect(bootSpy.calls.count()).toBe(0);
-                    packageCtrl.postLaunchHook();
-                    t.expect(bootSpy.calls.count()).toBe(1);
-
-                    bootSpy.remove();
-                });
-
 
                 t.it("showMailEditor()", t => {
 
