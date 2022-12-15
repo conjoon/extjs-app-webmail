@@ -31,7 +31,7 @@ StartTest(t => {
         const proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy");
         t.isInstanceOf(proxy, "Ext.data.proxy.Rest");
 
-        t.expect(conjoon.cn_mail.data.mail.BaseProxy.require.requestConfigurator).toBe(
+        t.expect(conjoon.cn_mail.data.mail.BaseProxy.required.requestConfigurator).toBe(
             "coon.core.data.request.Configurator"
         );
 

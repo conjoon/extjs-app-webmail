@@ -102,7 +102,7 @@ StartTest(t => {
                 t.isInstanceOf(feature, "Ext.grid.feature.Feature");
                 t.expect(feature.alias).toContain("feature.cn_webmailplug-previewtextlazyload");
 
-                t.expect(conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad.require.requestConfigurator).toBe(
+                t.expect(conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad.required.requestConfigurator).toBe(
                     "coon.core.data.request.Configurator"
                 );
 

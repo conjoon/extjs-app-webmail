@@ -38,7 +38,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
     ],
 
     statics: {
-        require: {
+        required: {
             requestConfigurator: "coon.core.data.request.Configurator"
         }
     },

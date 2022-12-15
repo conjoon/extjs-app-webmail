@@ -51,7 +51,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
     ],
 
     statics: {
-        require: {
+        required: {
             requestConfigurator: "coon.core.data.request.Configurator"
         }
     },

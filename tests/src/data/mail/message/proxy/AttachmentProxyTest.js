@@ -30,7 +30,7 @@ StartTest(t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy");
 
-        t.expect(conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy.require.requestConfigurator).toBe(
+        t.expect(conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy.required.requestConfigurator).toBe(
             "coon.core.data.request.Configurator"
         );
 

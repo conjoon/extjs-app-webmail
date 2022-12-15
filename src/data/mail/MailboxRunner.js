@@ -48,7 +48,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
     ],
 
     statics: {
-        require: {
+        required: {
             requestConfigurator: "coon.core.data.request.Configurator"
         }
     },

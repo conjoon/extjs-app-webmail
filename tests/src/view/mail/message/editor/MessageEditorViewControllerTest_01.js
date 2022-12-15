@@ -113,7 +113,7 @@ StartTest(async t => {
                     });
 
 
-                t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.require.requestConfigurator).toBe(
+                t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.required.requestConfigurator).toBe(
                     "coon.core.data.request.Configurator"
                 );
 

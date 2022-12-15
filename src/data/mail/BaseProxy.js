@@ -40,7 +40,7 @@ Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
     },
 
     inheritableStatics: {
-        require: {
+        required: {
             requestConfigurator: "coon.core.data.request.Configurator"
         }
     },

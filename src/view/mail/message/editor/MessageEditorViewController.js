@@ -44,7 +44,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     ],
 
     statics: {
-        require: {
+        required: {
             requestConfigurator: "coon.core.data.request.Configurator"
         }
     },
