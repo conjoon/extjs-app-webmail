@@ -70,16 +70,17 @@
         ]
     },
     "dependencies": {
+        "@conjoon/extjs-dev-webmailsim": "^0.1.6",
         "@coon-js/extjs-app-user": "^0.1.7",
         "@coon-js/extjs-comp-navport": "^0.2.4",
-        "@coon-js/extjs-lib-comp": "^0.2.8",
-        "@coon-js/extjs-lib-core": "^0.8.3",
-        "@l8js/l8": "^0.7.2"
+        "@coon-js/extjs-lib-comp": "^0.3.0",
+        "@coon-js/extjs-lib-core": "^1.0.2",
+        "@l8js/l8": "^0.8.0"
     },
     "devDependencies": {
         "@commitlint/cli": "^13.2.0",
         "@commitlint/config-conventional": "^13.2.0",
-        "@conjoon/extjs-dev-webmailsim": "^0.1.4",
+        "@coon-js/delorean": "^0.3.1",
         "@coon-js/extjs-link": "^0.1.10",
         "@coon-js/siesta-lib-helper": "^0.1.16",
         "eslint": "^7.28.0",
@@ -100,9 +101,10 @@
         "postversion": "git push && git push --tags",
         "test": "npx ws --port 8093 --static.index tests.redirect.html --open",
         "release": "standard-version",
-        "release:patch": "standard-version --release-as patch && npm run postversion",
-        "release:minor": "standard-version --release-as minor && npm run postversion",
-        "release:major": "standard-version --release-as major && npm run postversion"
+        "preversion": "npx delorean -r",
+        "release:patch": "npm run preversion && standard-version --release-as patch && npm run postversion",
+        "release:minor": "npm run preversion && standard-version --release-as minor && npm run postversion",
+        "release:major": "npm run preversion && standard-version --release-as major && npm run postversion"
     },
     "repository": {
         "type": "git",

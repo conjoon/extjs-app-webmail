@@ -46,8 +46,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         "l8",
         "conjoon.cn_mail.data.mail.message.CompoundKey",
         "coon.core.data.pageMap.PageMapUtil",
-        "coon.core.data.pageMap.RecordPosition"
+        "coon.core.data.pageMap.RecordPosition",
+        "coon.core.data.request.Configurator"
     ],
+
+    statics: {
+        required: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
 
     /**
      * @type {Object} pendingLazies
@@ -56,6 +63,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
     /**
      * @type {Boolean} installed
+     * @private
+     */
+
+    /**
+     * @type {coon.core.data.request.Configurator} requestConfigurator
      * @private
      */
 
@@ -447,16 +459,32 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             store = grid.getStore(),
             proxy = store.getProxy();
 
-        Ext.Ajax.request({
+        Ext.Ajax.request(me.requestConfigurator.configure(
+
+            me.getDefaultRequestCfg({
+                url,
+                idsToLoad,
+                options: proxy.getDefaultParameters("ListMessageItem.options")
+            })
+
+
+        )).then(me.processLoadedPreviewText.bind(me));
+    },
+
+
+    /**
+     * @private
+     */
+    getDefaultRequestCfg ({url, idsToLoad, options}) {
+        return {
             method: "get",
             url: url,
-            headers: proxy.headers,
             params: {
                 attributes: "previewText",
-                options: proxy.getDefaultParameters("ListMessageItem.options"),
+                options: options,
                 filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
             }
-        }).then(me.processLoadedPreviewText.bind(me));
+        };
     }
 
 });

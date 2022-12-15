@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -107,12 +107,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.HtmlEditor", {
 
         // Destroying the component during initialization cancels initialization.
         if (me.destroying || me.destroyed) {
-            return me.callParent(arguments);
+            return me.superclass.initFrameDoc.apply(me, arguments);
         }
 
         me.editorHtmlTemplateTxt = await me.loadMarkup();
 
-        return me.callParent(arguments);
+        return me.superclass.initFrameDoc.apply(me, arguments);
     },
 
 

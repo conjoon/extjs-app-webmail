@@ -901,6 +901,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
         conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
 
+
         return {
             navigation: [{
                 text: "Email",

@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         var view,
             controller;
@@ -62,7 +62,16 @@ StartTest(async t => {
             t.it("getSendMessageDraftRequestConfig()", t => {
                 controller = Ext.create(
                     "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
+                        requestConfigurator: Ext.create("coon.core.data.request.Configurator")
                     });
+
+                const expectedRequestCfg = {
+                        url: "./cn_mail/MailAccounts/1/MailFolders/3/MessageItems/2",
+                        method: "POST"
+                    },
+                    requestConfiguratorSpy = t.spyOn(controller.requestConfigurator, "configure").and.callFake(
+                        cfg => Object.assign({headers: "injected"}, expectedRequestCfg)
+                    );
 
                 let messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
                     mailAccountId: 1, mailFolderId: 3, id: 2
@@ -77,12 +86,12 @@ StartTest(async t => {
                 }
                 t.expect(exc).toContain("baseAddress");
 
+
                 t.expect(
                     controller.getSendMessageDraftRequestConfig(messageDraft, ".//cn_mail///")
-                ).toEqual({
-                    url: "./cn_mail/MailAccounts/1/MailFolders/3/MessageItems/2",
-                    method: "POST"
-                });
+                ).toEqual(requestConfiguratorSpy.calls.mostRecent().returnValue);
+                t.expect(requestConfiguratorSpy.calls.mostRecent().args[0]).toEqual(expectedRequestCfg);
+
 
                 let tmp = Ext.Ajax.request;
 

@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().load(
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().load(
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.BaseSchema",
         "coon.core.data.Session",

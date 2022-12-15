@@ -35,7 +35,7 @@ StartTest(t => {
         }]
     });
 
-    var createStore = function (cfg) {
+    const createStore = function (cfg) {
 
             cfg = cfg || {};
 
@@ -47,9 +47,7 @@ StartTest(t => {
                 fields: ["id", "testProp"],
                 pageSize: 100,
                 autoLoad: cfg.autoLoad ? cfg.autoLoad : undefined,
-                sorters: cfg.sorters
-                    ? cfg.sorters
-                    : undefined,
+                sorters: cfg.sorters ? cfg.sorters : undefined,
                 proxy: {
                     type: "rest",
                     url: "cn_comp/fixtures/Livegrid",
@@ -87,7 +85,9 @@ StartTest(t => {
             });
         };
 
-    const createFeature = () => Ext.create("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad");
+    const createFeature = () => Ext.create("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad", {
+        requestConfigurator: Ext.create("coon.core.data.request.Configurator")
+    });
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
@@ -96,16 +96,21 @@ StartTest(t => {
         "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad", () => {
 
             t.it("constructor()", t => {
-                "use strict";
+
 
                 let feature = createFeature();
                 t.isInstanceOf(feature, "Ext.grid.feature.Feature");
                 t.expect(feature.alias).toContain("feature.cn_webmailplug-previewtextlazyload");
+
+                t.expect(conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad.required.requestConfigurator).toBe(
+                    "coon.core.data.request.Configurator"
+                );
+
             });
 
 
             t.it("init()", t => {
-                "use strict";
+
 
                 let
                     feature = createFeature(),
@@ -118,7 +123,7 @@ StartTest(t => {
 
 
             t.it("installListeners() throws", t => {
-                "use strict";
+
 
                 let feature = createFeature();
 
@@ -137,7 +142,7 @@ StartTest(t => {
 
 
             t.it("installListeners()", t => {
-                "use strict";
+
 
                 let feature = createFeature(),
                     grid = getGrid();
@@ -215,7 +220,6 @@ StartTest(t => {
 
             t.it("requestPreviewText()", t => {
 
-                "use strict";
 
                 const
                     feature = createFeature(),
@@ -264,7 +268,7 @@ StartTest(t => {
 
 
             t.it("computeIdsToLoad()", t => {
-                "use strict";
+
 
                 const feature = createFeature();
 
@@ -286,7 +290,7 @@ StartTest(t => {
 
 
             t.it("processRequestedIds() - sendRequest() not called", t => {
-                "use strict";
+
 
                 const
                     feature = createFeature(),
@@ -307,7 +311,7 @@ StartTest(t => {
 
 
             t.it("processRequestedIds() - sendRequest()", t => {
-                "use strict";
+
 
                 const
                     feature = createFeature(),
@@ -475,12 +479,31 @@ StartTest(t => {
             });
 
 
+            t.it("getDefaultRequestCfg()", t => {
+
+                const
+                    feature = createFeature(),
+                    idsToLoad = [1, 2, 3,4],
+                    options = {"key": "value"},
+                    url = "https://url";
+
+                t.expect(feature.getDefaultRequestCfg({url, idsToLoad, options})).toEqual({
+                    method: "get",
+                    url,
+                    params: {
+                        attributes: "previewText",
+                        options,
+                        filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
+                    }
+                });
+            });
+
+
             t.it("sendRequest()", async t => {
 
                 const
                     feature = createFeature(),
                     proxyMock = {
-                        headers: "bar",
                         getDefaultParameters: (key) => ( key === "ListMessageItem.options" ? {"foo": "bar"} : {})
                     },
                     storeMock = {getProxy: () => proxyMock},
@@ -490,27 +513,27 @@ StartTest(t => {
 
                 feature.grid = grid;
 
+                const requestCfg = feature.getDefaultRequestCfg(
+                    {url: "foo",  idsToLoad: [1,2], options: {"foo": "bar"}}
+                );
+
                 let processLoadedPreviewTextSpy = t.spyOn(feature, "processLoadedPreviewText").and.callFake(() => {}),
-                    requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("foobar"));
+                    requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("foobar")),
+                    requestCfgSpy = t.spyOn(feature, "getDefaultRequestCfg").and.callFake(() => requestCfg),
+                    configuratorSpy = t.spyOn(feature.requestConfigurator, "configure").and.callThrough();
 
                 await feature.sendRequest([1,2], "foo");
 
                 t.expect(processLoadedPreviewTextSpy.calls.count()).toBe(1);
                 t.expect(processLoadedPreviewTextSpy.calls.all()[0].args[0]).toBe("foobar");
-                t.expect(requestSpy.calls.count()).toBe(1);
-                let request = requestSpy.calls.all()[0];
-                t.expect(request.args[0]).toEqual({
-                    method: "get",
-                    url: "foo",
-                    headers: proxyMock.headers,
-                    params: {
-                        attributes: "previewText",
-                        options: {"foo": "bar"},
-                        filter: JSON.stringify([{property: "id", operator: "in", value: [1, 2]}])
-                    }
-                });
 
-                [requestSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
+                t.expect(configuratorSpy.calls.mostRecent().args[0]).toEqual(requestCfgSpy.calls.mostRecent().returnValue);
+                t.expect(requestSpy.calls.count()).toBe(1);
+
+                // in
+                t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(configuratorSpy.calls.mostRecent().returnValue);
+
+                [requestSpy, requestCfgSpy, configuratorSpy, processLoadedPreviewTextSpy].map(spy => spy.remove());
             });
 
 
