@@ -29,19 +29,15 @@
  */
 Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
-    extend: "Ext.data.proxy.Rest",
+    extend: "conjoon.cn_mail.data.mail.BaseProxy",
 
     requires: [
         // @define
         "l8",
         "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
-        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
         "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter"
     ],
 
-    mixins: {
-        utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
-    },
 
     alias: "proxy.cn_mail-mailmessageentityproxy",
 
@@ -56,20 +52,11 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
     idParam: "localId",
 
-    appendId: false,
-
     validEntityNames: [
         "MessageDraft",
         "MessageItem",
         "MessageBody"
     ],
-
-    /**
-     * The entity being used with this Proxy. Can be any of MessageItem,
-     * MessageDraft or MessageBody.
-     * @cfg {string}
-     */
-    entityName: null,
 
 
     /**
@@ -150,12 +137,12 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         case "update":
             delete finalParams.target;
             appendUrl = me.entityName;
-            break; 
+            break;
         case "read":
             if (["MessageBody", "MessageItem", "MessageDraft"].includes(target)) {
                 appendUrl = (target === "MessageBody" ? "MessageBody" : "");
                 finalParams = Object.assign({}, me.getDefaultParameters(target));
-            } 
+            }
             break;
         }
 
@@ -164,7 +151,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             finalParams.action = "move";
         }
 
-        request.setParams(Ext.apply(request.getParams() || {}, finalParams));
+        request.setParams(Object.assign(request.getParams() || {}, finalParams));
 
         if (action !== "create") {
             if (Object.prototype.hasOwnProperty.call(source, "id")) {

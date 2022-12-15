@@ -47,6 +47,9 @@ and appearance of the email client:
     ],
     "controller": [
       {
+        "xclass": "conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin"
+      },
+      {
         "xclass": "conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin",
         "args": [
           {
@@ -105,6 +108,8 @@ for new messages. Plays notification sounds when new messages have been received
 desktop notifications are shown for new messages, too. The default interval
 for looking up new messages is set to 240000 ms. Additional resources for this plugin can be configured 
 with the [static resources](#staticResources).
+ - `conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin` - a plugin for registering **extjs-app-webmail**
+as a [protocol handler](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/registerProtocolHandler/Web-based_protocol_handlers) for `mailto`-links.
 
 #### Rest API
 - `service` - Endpoint configuration for this package. Used to create required URLs for outgoing

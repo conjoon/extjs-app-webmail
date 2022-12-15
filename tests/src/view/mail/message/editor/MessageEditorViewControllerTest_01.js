@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         var view,
             controller,
@@ -111,6 +111,11 @@ StartTest(async t => {
                 controller = Ext.create(
                     "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                     });
+
+
+                t.expect(conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.required.requestConfigurator).toBe(
+                    "coon.core.data.request.Configurator"
+                );
 
                 t.expect(controller instanceof Ext.app.ViewController).toBe(true);
 

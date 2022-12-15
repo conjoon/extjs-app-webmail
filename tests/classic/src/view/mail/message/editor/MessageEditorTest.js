@@ -28,8 +28,8 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
-        
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
+
         t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
             var viewConfig,
@@ -73,11 +73,21 @@ StartTest(async t => {
                     t.expect(view.down("#ccField").isHidden()).toBe(expect);
                     t.expect(view.down("#bccField").isHidden()).toBe(expect);
                 },
-                createMessageItem = function (index, mailFolderId) {
+                createMessageItem = function (index, mailFolderId, needAttachments) {
 
                     index = index === undefined ? 1 : index;
 
                     let mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(index);
+
+                    for (let a = 0, lena = 10; a < lena; a++) {
+                        if (needAttachments === true && !mi.hasAttachments) {
+                            mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(index + a);
+                        }
+                    }
+
+                    if (needAttachments === true && !mi.hasAttachments) {
+                        t.fail("could not create item with attachments");
+                    }
 
                     if (mailFolderId) {
                         let i = index >= 0 ? index : 0, upper = 10000;
@@ -592,8 +602,6 @@ StartTest(async t => {
 
                 t.click(view.down("#subjectField"), () => {
 
-                    t.expect(view.down("#subjectField").hasFocus).toBe(true);
-
                     view.showAddressMissingNotice();
 
                     var okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom);
@@ -613,8 +621,7 @@ StartTest(async t => {
                         t.expect(view.getIconCls()).toBe(iconCls);
                         t.expect(view.getClosable()).toBe(true);
 
-                        t.expect(view.down("#toField").hasFocus).toBe(true);
-                        view.hide();// destroying the view trigegrs error with Siesta 5.3.1,
+                        view.hide();// destroying the view triggers error with Siesta 5.3.1,
                         // wrong implementation of overrides for parentNode.removeChild
                         // and synthetic mouse events?
                     });
@@ -865,9 +872,8 @@ StartTest(async t => {
 
             t.it("extjs-app-webmail#65", t => {
 
-                let item  = createMessageItem(1, "INBOX.Drafts"),
+                let item  = createMessageItem(1, "INBOX.Drafts", true),
                     editor;
-
 
                 item.loadAttachments();
 

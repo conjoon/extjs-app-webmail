@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().andRun((t) => {
+    await helper.registerIoC().setupSimlets().andRun((t) => {
 
         t.requireOk(
             "conjoon.cn_mail.data.mail.message.EditingModes",

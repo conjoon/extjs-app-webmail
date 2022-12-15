@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,7 +73,7 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         getInstance () {
 
             let treeStore = Ext.StoreManager.get("cn_mail-mailfoldertreestore");
-            if (!treeStore){
+            if (!treeStore) {
                 treeStore = Ext.create("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore");
             }
 
@@ -91,49 +91,32 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
     },
 
 
-    /**
-     * Makes sure the append listener #onRootNodeAppend for the root node gets
-     * installed.
-     *
-     * @see onRootNodeAppend
-     */
     constructor: function () {
 
         const me = this;
 
         me.callParent(arguments);
 
-        let root = me.getRoot();
-
-        root.on("append", me.onRootNodeAppend, me);
+        me.on("load", me.onStoreHasLoadedRootNode, me, {single: true});
     },
 
 
     /**
-     * Callback for the root node's append event. Makes sure the root node is expanded and
-     * furthermore expands the appended MailAccount-nodes to make sure they are loaded
-     * with their MailFolder's.
+     * Callback for the tree's load event, to make sure the child nodes are loaded.
+     * Child Nodes are Mail Accounts that have to load their child folders.
+     * subsequent collapsing/expanding is required in some cases to properly display
+     * node icons.
+     *
+     * @param store
      */
-    onRootNodeAppend: function (rootNode, node) {
-
-        const me   = this,
-            root = me.getRoot(),
-            cb   = function () {
-                node.expand(false, function () {node.collapse();node.expand();});
-            };
-
-        if (rootNode !== root) {
-            return;
-        }
-
-        switch (rootNode.isExpanded()) {
-        case true:
-            rootNode.expand(false, cb);
-            break;
-        default:
-            cb();
-        }
+    onStoreHasLoadedRootNode (store) {
+        store.getRootNode().childNodes.forEach(
+            // close / collapse to make sure icons are rendered
+            (node) => node.expand(false, () => {
+                node.collapse();
+                node.expand();
+            })
+        );
     }
-
 
 });

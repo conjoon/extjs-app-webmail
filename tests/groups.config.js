@@ -181,7 +181,8 @@ export default [{
                     "src/data/mail/service/MailboxServiceTest.js"
                     ]
                 },
-                "src/data/mail/BaseSchemaTest.js"
+                "src/data/mail/BaseSchemaTest.js",
+                "src/data/mail/BaseProxyTest.js"
             ]
         }]
     }, {

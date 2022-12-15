@@ -39,8 +39,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorDragDropListener",
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
-        "conjoon.cn_mail.data.mail.service.MailboxService"
+        "conjoon.cn_mail.data.mail.service.MailboxService",
+        "coon.core.data.request.Configurator"
     ],
+
+    statics: {
+        required: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
 
     alias: "controller.cn_mail-mailmessageeditorviewcontroller",
 
@@ -95,6 +102,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @private
      */
     closeAfterMs: 1000,
+
+    /**
+     * @type {coon.core.data.request.Configurator} requestConfigurator
+     * @private
+     */
+
 
     /**
      * Makes sure
@@ -597,6 +610,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         getSendMessageDraftRequestConfig: function (messageDraft, baseAddress) {
 
+            const me = this;
+
             if (!l8.isString(baseAddress)) {
                 throw("\"baseAddress\" must be a string");
             }
@@ -611,11 +626,24 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 encodeURIComponent(messageDraft.getCompoundKey().getId())
             ].join("/");
 
-            return {
+            return me.requestConfigurator.configure({
                 url: l8.unify(url, "/", "://"),
                 method: "POST"
-            };
+            });
 
+        },
+
+
+        /**
+         * Allows to hook into the process of assembling the request  and returns the configuration
+         * to use with the request.
+         *
+         * @param {Object} cfg
+         *
+         * @returns {Object}
+         */
+        buildRequest (cfg) {
+            return  cfg;
         },
 
 

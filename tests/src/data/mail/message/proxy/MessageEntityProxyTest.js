@@ -30,7 +30,7 @@ StartTest(t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
 
-        t.isInstanceOf(proxy, "Ext.data.proxy.Rest");
+        t.isInstanceOf(proxy, "conjoon.cn_mail.data.mail.BaseProxy");
 
         t.expect(proxy.getIdParam()).toBe("localId");
 
