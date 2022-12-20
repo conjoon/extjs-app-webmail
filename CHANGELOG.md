@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.3.1...v0.4.0) (2022-12-15)
+
+
+### Features
+
+* add requestConfigurator as dependency< to BaseProxy ([6ec5f3b](https://github.com/conjoon/extjs-app-webmail/commit/6ec5f3bb5888a032256eddad6ef719d6997b67fc)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* add requestConfigurator as external dependency ([1ae72cd](https://github.com/conjoon/extjs-app-webmail/commit/1ae72cd5e29607b65a531cf03d4b49dd6990735d)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+
+
+### Bug Fixes
+
+* callParent() in async method throws runtime error after transpiling w/ babel ([a3af1dd](https://github.com/conjoon/extjs-app-webmail/commit/a3af1ddb469719218511055d1265d359c0a89836))
+* **tests:** tests not considering ioc bindings ([0b81c1f](https://github.com/conjoon/extjs-app-webmail/commit/0b81c1f3ec1bc8b55e9e6b3174e0cfb07aca1620)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* **tests:** when testing MessageEditor, tests fail if window has not focus ([9d79063](https://github.com/conjoon/extjs-app-webmail/commit/9d79063586f372c1bcce33c00a258922c7309340))
+* when loading attachments, additional options are not passed to request ([7812ccf](https://github.com/conjoon/extjs-app-webmail/commit/7812ccf0ae4a208011bfab165648ea64e3e575ab))
+
 ### [0.3.1](https://github.com/conjoon/extjs-app-webmail/compare/v0.3.0...v0.3.1) (2022-11-14)
 
 
