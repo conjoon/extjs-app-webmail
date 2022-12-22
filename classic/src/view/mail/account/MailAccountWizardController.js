@@ -120,11 +120,14 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
 
 
     prepareConfig (configs) {
+
         configs = configs.map(config => {
-            config.img = coon.core.Environment.getPathForResource(
-                config.img,
-                "extjs-app-webmail"
-            );
+            if (config.img) {
+                config.img = coon.core.Environment.getPathForResource(
+                    config.img,
+                    "extjs-app-webmail"
+                );
+            }
             return config;
         });
 
