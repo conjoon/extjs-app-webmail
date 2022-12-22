@@ -66,6 +66,25 @@ StartTest(t => {
     });
 
 
+    t.it("buildUrl() - action \"create\"", t => {
+        let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),
+            request = Ext.create("Ext.data.Request", {
+                action: "create",
+                params: {
+                    mailAccountId: "foo"
+                },
+                operation: Ext.create("Ext.data.operation.Create")
+            }),
+            targetUrl = "/MailAccounts";
+
+        t.expect(request.getParams().mailAccountId).not.toBeUndefined();
+        t.expect(request.getUrl()).not.toBe(targetUrl);
+        proxy.buildUrl(request);
+        t.expect(request.getUrl()).toBe(targetUrl);
+        t.expect(request.getParams().mailAccountId).toBeUndefined();
+    });
+
+
     t.it("buildUrl() - params trigger url for MailFolder", t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),

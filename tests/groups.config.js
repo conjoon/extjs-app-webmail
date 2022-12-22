@@ -339,7 +339,7 @@ export default [{
                 group: "account",
                 items: [
                     "classic/src/view/mail/account/MailAccountViewTest.js",
-                    "classic/src/view/mail/folder/MailFolderTreeTest.js"
+                    "classic/src/view/mail/account/MailAccountWizardTest.js"
                 ]
             }, {
                 group: "folder",
