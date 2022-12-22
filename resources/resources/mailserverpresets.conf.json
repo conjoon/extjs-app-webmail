@@ -4,26 +4,38 @@
   "img": "resources/images/mailprovider/aol.svg",
   "config": {
     "inbox_type": "IMAP",
-    "inbox_address": "imap.gmail.com",
+    "inbox_address": "imap.aol.com",
     "inbox_port": 993,
     "inbox_ssl": true,
-    "outbox_address":  "smtp.gmail.com",
+    "outbox_address":  "smtp.aol.com",
     "outbox_port": 465,
     "outbox_secure": "ssl",
-    "root": ["INBOX", "[Gmail]", "[Google Mail]"]
+    "root": []
   }
+}, {
+   "name": "Domain Factory",
+   "config": {
+     "inbox_type": "IMAP",
+     "inbox_address": "sslin.df.eu",
+     "inbox_port": 993,
+     "inbox_ssl": true,
+     "outbox_address":  "smtprelaypool.ispgateway.de",
+     "outbox_port": 465,
+     "outbox_secure": "ssl",
+     "root": ["INBOX"]
+   }
 }, {
   "name": "freenet",
   "img": "resources/images/mailprovider/freenet.svg",
   "config": {
     "inbox_type": "IMAP",
-    "inbox_address": "imap.gmail.com",
+    "inbox_address": "mx.freenet.de",
     "inbox_port": 993,
     "inbox_ssl": true,
-    "outbox_address":  "smtp.gmail.com",
-    "outbox_port": 465,
-    "outbox_secure": "ssl",
-    "root": ["INBOX", "[Gmail]", "[Google Mail]"]
+    "outbox_address":  "mx.freenet.de",
+    "outbox_port": 587,
+    "outbox_secure": "tls",
+    "root": ["INBOX"]
   }
 }, {
   "name": "Google Mail",
@@ -43,26 +55,26 @@
   "img": "resources/images/mailprovider/gmx.svg",
   "config": {
     "inbox_type": "IMAP",
-    "inbox_address": "imap.gmail.com",
+    "inbox_address": "imap.gmx.net",
     "inbox_port": 993,
     "inbox_ssl": true,
-    "outbox_address":  "smtp.gmail.com",
-    "outbox_port": 465,
-    "outbox_secure": "ssl",
-    "root": ["INBOX", "[Gmail]", "[Google Mail]"]
+    "outbox_address":  "mail.gmx.net",
+    "outbox_port": 587,
+    "outbox_secure": "tls",
+    "root": []
   }
 }, {
   "name": "Outlook",
   "img": "resources/images/mailprovider/outlook.svg",
   "config": {
     "inbox_type": "IMAP",
-    "inbox_address": "imap.gmail.com",
+    "inbox_address": "outlook.office365.com",
     "inbox_port": 993,
     "inbox_ssl": true,
-    "outbox_address":  "smtp.gmail.com",
-    "outbox_port": 465,
-    "outbox_secure": "ssl",
-    "root": ["INBOX", "[Gmail]", "[Google Mail]"]
+    "outbox_address":  "smtp-mail.outlook.com",
+    "outbox_port": 587,
+    "outbox_secure": "tls",
+    "root": []
   }
 }, {
     "name": "web.de",
@@ -72,7 +84,7 @@
         "inbox_address": "imap.web.de",
         "inbox_port": 993,
         "inbox_ssl": true,
-        "outbox_address":  "smtp.gmail.com",
+        "outbox_address":  "smtp.web.de",
         "outbox_port": 587,
         "outbox_secure": "tls",
         "root": []
@@ -83,12 +95,12 @@
   "img": "resources/images/mailprovider/yahoomail.svg",
   "config":{
     "inbox_type": "IMAP",
-    "inbox_address": "imap.web.de",
+    "inbox_address": "imap.mail.yahoo.com",
     "inbox_port": 993,
     "inbox_ssl": true,
-    "outbox_address":  "smtp.gmail.com",
+    "outbox_address":  "smtp.mail.yahoo.com",
     "outbox_port": 587,
-    "outbox_secure": "tls",
-    "root": []
+    "outbox_secure": "ssl",
+    "root": ["INBOX"]
   }
 }]
