@@ -92,5 +92,13 @@ StartTest(t => {
         t.isInstanceOf(model.getField("replyTo"), "coon.core.data.field.EmailAddress");
     });
 
+    t.it("createFrom()", t => {
+        const rec  = conjoon.cn_mail.model.mail.account.MailAccount.createFrom({name: "accountName"});
 
+        t.isInstanceOf(rec, "conjoon.cn_mail.model.mail.account.MailAccount");
+
+        t.expect(rec.get("name")).toBe("accountName");
+        t.expect(rec.get("folderType")).toBe(conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT);
+
+    });
 });
