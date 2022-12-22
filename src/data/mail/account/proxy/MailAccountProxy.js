@@ -87,7 +87,7 @@ Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
             url += "/";
         }
 
-        if (action !== "read" && action !== "update") {
+        if (action !== "read" && action !== "update" && action !== "create") {
             Ext.raise("Unexpected error; any action other but \"read\" and \"update\" not supported.");
         }
 
@@ -102,7 +102,7 @@ Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
                     params.mailAccountId +
                     "/MailFolders";
             }
-        } else {
+        } else if (action !== "create") {
             url += "/" + rec.getId();
         }
 

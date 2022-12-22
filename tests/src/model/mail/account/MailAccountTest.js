@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -44,6 +44,8 @@ StartTest(t => {
 
     t.it("Should create instance and check basic configuration", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
+
+        t.expect(model.get("inactive")).toBe(false);
 
         t.expect(model.getIdProperty()).toBe("id");
 
@@ -90,5 +92,13 @@ StartTest(t => {
         t.isInstanceOf(model.getField("replyTo"), "coon.core.data.field.EmailAddress");
     });
 
+    t.it("createFrom()", t => {
+        const rec  = conjoon.cn_mail.model.mail.account.MailAccount.createFrom({name: "accountName"});
 
+        t.isInstanceOf(rec, "conjoon.cn_mail.model.mail.account.MailAccount");
+
+        t.expect(rec.get("name")).toBe("accountName");
+        t.expect(rec.get("folderType")).toBe(conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT);
+
+    });
 });

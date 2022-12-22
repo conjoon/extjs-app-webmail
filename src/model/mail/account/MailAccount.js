@@ -39,6 +39,13 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         "coon.core.data.field.EmailAddress"
     ],
 
+    statics: {
+        createFrom: data => Ext.create(
+            "conjoon.cn_mail.model.mail.account.MailAccount",
+            Object.assign(data || {}, {folderType: conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT})
+        )
+    },
+
 
     fields: [{
         name: "name",
@@ -93,6 +100,10 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
     }, {
         name: "outbox_secure",
         type: "string"
+    }, {
+        name: "inactive",
+        type: "bool",
+        default: false
     }],
 
     /**
