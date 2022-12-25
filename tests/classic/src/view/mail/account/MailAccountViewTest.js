@@ -178,6 +178,10 @@ StartTest(t => {
                     t.expect(data["replyTo"].address).toBe(values[i]);
                     break;
 
+                case "inactive":
+                    t.expect(data["inactive"]).toBe(!values[i]);
+                    break;
+
                 default:
                     t.expect(data[i]).toBe(values[i]);
                     break;

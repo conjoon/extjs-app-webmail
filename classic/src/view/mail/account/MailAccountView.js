@@ -152,6 +152,15 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                 bind: {
                     value: "{processReplyTo}"
                 }
+            }, {
+                xtype: "checkbox",
+                labelWidth: 160,
+                inputValue: true,
+                fieldLabel: "Active",
+                name: "inactive",
+                bind: {
+                    value: "{!mailAccount.inactive}"
+                }
             }]
         }, {
             xtype: "fieldset",
