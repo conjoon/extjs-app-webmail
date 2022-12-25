@@ -105,7 +105,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
                 )
             );
 
-        view.fireEvent("accountavailable", me, accountModel);
+        view.fireEvent("accountavailable", view, accountModel);
     },
 
 
