@@ -221,26 +221,5 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         };
 
         return l8.unchain(type, defs, {});
-    },
-
-
-    /**
-     * https://jsonapi.org/faq/ - "Where's PUT?"
-     *
-     * @param {Ext.data.Request} request
-     *
-     * @return {String}
-     */
-    getMethod (request) {
-
-        const actionMethods = {
-            create: "POST",
-            read: "GET",
-            update: "PATCH",
-            destroy: "DELETE"
-        };
-
-        return actionMethods[request.getAction()];
     }
-
 });

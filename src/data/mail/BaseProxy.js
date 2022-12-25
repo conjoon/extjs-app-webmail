@@ -70,6 +70,27 @@ Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
         request = me.requestConfigurator.configure(request);
 
         return me.callParent([request]);
+    },
+
+
+    /**
+     * https://jsonapi.org/faq/ - "Where's PUT?"
+     *
+     * @param {Ext.data.Request} request
+     *
+     * @return {String}
+     */
+    getMethod (request) {
+
+        const actionMethods = {
+            create: "POST",
+            read: "GET",
+            update: "PATCH",
+            destroy: "DELETE"
+        };
+
+        return actionMethods[request.getAction()];
     }
+
 
 });
