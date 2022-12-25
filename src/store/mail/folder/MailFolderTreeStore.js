@@ -49,6 +49,8 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
     extend: "Ext.data.TreeStore",
 
     requires: [
+        // @define l8
+        "l8",
         "conjoon.cn_mail.model.mail.folder.MailFolder",
         "conjoon.cn_mail.model.mail.account.MailAccount"
     ],
@@ -117,6 +119,36 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
                 node.expand();
             })
         );
+    },
+
+
+    /**
+     * Adds a new MailAccount to this instance. Makes sure the name does not appear twice.
+ *
+     *
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     *
+     * @return conjoon.cn_mail.model.mail.account.MailAccount
+     */
+    addMailAccount (mailAccount) {
+
+        const
+            me = this,
+            root = me.getRoot(),
+            childNodes = root.childNodes;
+
+        let list = [];
+        childNodes.forEach(node => list.push(node.get("name")));
+
+
+        let name = l8.text.nameToOrdinal(mailAccount.get("name"), list);
+
+        mailAccount.set("name", name);
+
+        root.appendChild(mailAccount);
+
+        return mailAccount;
+
     }
 
 });

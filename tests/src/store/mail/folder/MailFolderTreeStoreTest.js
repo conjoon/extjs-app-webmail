@@ -103,6 +103,27 @@ StartTest(async t => {
         });
 
 
+        t.it("addMailAccount()", t => {
+
+            const
+                inst = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
+                accounts = [
+                    conjoon.cn_mail.model.mail.account.MailAccount.createFrom({name: "New Account"}),
+                    conjoon.cn_mail.model.mail.account.MailAccount.createFrom({name: "New Account"})
+                ];
+
+
+            accounts.forEach(acc => t.expect(inst.addMailAccount(acc)).toBe(acc));
+
+            const
+                nodes = inst.getRoot().childNodes,
+                length = nodes.length;
+
+            t.expect(nodes[length - 2].get("name")).toBe("New Account");
+            t.expect(nodes[length - 1].get("name")).toBe("New Account (1)");
+        });
+
+
     });
 
 
