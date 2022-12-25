@@ -67,7 +67,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
 
             get: function (get) {
                 let replyTo = get("mailAccount.replyTo");
-                return replyTo.address;
+                return replyTo?.address ?? "";
             },
 
             set: function (value) {
@@ -116,8 +116,8 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
 
             set: function (value) {
                 const me      = this,
-                    from    = Ext.clone(me.get("mailAccount.from")),
-                    replyTo = Ext.clone(me.get("mailAccount.replyTo")),
+                    from    = Ext.clone(me.get("mailAccount.from")) || {},
+                    replyTo = Ext.clone(me.get("mailAccount.replyTo")) || {},
                     ma      = me.get("mailAccount");
 
                 from.name    = value;

@@ -437,6 +437,21 @@ StartTest(async t => {
         });
 
 
+        t.it("formulas - processReplyTo - replyTo not existing", t => {
+
+            viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
+            decorateViewModel(viewModel);
+
+            let getReplyToSpy = t.spyOn(viewModel, "get").and.callFake(() => {
+                return null;
+            });
+
+            t.expect(viewModel.getFormulas().processReplyTo.get.apply(viewModel, [viewModel.get])).toBe("");
+
+            getReplyToSpy.remove();
+        });
+
+
         t.it("formulas - processUserName", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
@@ -458,6 +473,29 @@ StartTest(async t => {
 
             t.expect(ma.get("replyTo")).not.toBe(oldReplyTo);
             t.expect(ma.get("from")).not.toBe(oldFrom);
+        });
+
+
+        t.it("formulas - processUserName - from and replyTo not existing", t => {
+
+            viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
+            decorateViewModel(viewModel);
+            const ma = viewModel.get("mailAccount");
+
+
+            let mSpy = t.spyOn(viewModel, "get").and.callFake(function (arg) {
+                if (["mailAccount.from", "mailAccount.replyTo"].includes(arg)) {
+                    return null;
+                }
+                return ma;
+            });
+
+            viewModel.getFormulas().processUserName.set.apply(viewModel, ["someValue"]);
+
+            mSpy.remove();
+
+            t.expect(viewModel.get("mailAccount.from")).toEqual({name: "someValue"});
+            t.expect(viewModel.get("mailAccount.replyTo")).toEqual({name: "someValue"});
         });
 
     });});
