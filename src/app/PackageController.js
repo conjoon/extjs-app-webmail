@@ -67,6 +67,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     ],
 
 
+    statics: {
+        required: {
+            mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+        }
+    },
+
     routes: {
 
         // route for generic compser instances
@@ -200,6 +206,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         },
         "cn_navport-tbar > #cn_mail-nodeNavToggleFolder": {
             toggle: "onToggleFolderViewButtonClick"
+        },
+        "cn_navport-tbar > #cn_mail-addMailAccountBtn": {
+            click: "onAddMailAccountBtnClick"
         }
     },
 
@@ -895,6 +904,26 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
 
     /**
+     * Callback for the node navigation's "add mail account"-button.
+     *
+     * @param {Ext.Button} btn
+     *
+     * @return {Boolean}
+     */
+    onAddMailAccountBtnClick (btn) {
+
+        const me = this;
+
+        if (!me.mailAccountHandler.enabled()) {
+            return false;
+        }
+
+        me.mailAccountHandler.invoke(btn);
+        return true;
+    },
+
+
+    /**
      * @inheritdoc
      */
     postLaunchHook: function () {
@@ -902,88 +931,104 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
 
 
-        return {
-            navigation: [{
-                text: "Email",
-                route: "cn_mail/home",
-                view: "conjoon.cn_mail.view.mail.MailDesktopView",
-                iconCls: "fas fa-paper-plane",
-                nodeNav: [{
-                    xtype: "button",
-                    iconCls: "fas fa-plus",
-                    itemId: "cn_mail-nodeNavCreateMessage"
-                }, {
-                    xtype: "tbseparator"
-                }, {
-                    xtype: "button",
-                    iconCls: "fas fa-reply",
-                    disabled: true,
-                    itemId: "cn_mail-nodeNavReplyTo"
-                }, {
-                    xtype: "button",
-                    iconCls: "fas fa-reply-all",
-                    itemId: "cn_mail-nodeNavReplyAll",
-                    disabled: true
-                }, {
-                    xtype: "button",
-                    iconCls: "fas fa-share",
-                    itemId: "cn_mail-nodeNavForward",
-                    disabled: true
-                }, {
-                    xtype: "button",
-                    iconCls: "fas fa-edit",
-                    itemId: "cn_mail-nodeNavEditMessage",
-                    disabled: true
-                }, {
-                    xtype: "button",
-                    iconCls: "fas fa-trash",
-                    itemId: "cn_mail-nodeNavDeleteMessage",
-                    disabled: true
-                }, {
-                    xtype: "tbseparator"
-                }, {
-                    xtype: "button",
-                    iconCls: "far fa-folder",
-                    disabled: false,
-                    cls: "toggleFolderViewBtn",
-                    itemId: "cn_mail-nodeNavToggleFolder",
-                    enableToggle: true,
-                    pressed: true
-                }, {
-                    xtype: "button",
-                    iconCls: "fas fa-list",
-                    disabled: true,
-                    cls: "toggleGridViewBtn",
-                    itemId: "cn_mail-nodeNavToggleList",
-                    enableToggle: true
-                }, {
-                    xtype: "button",
-                    disabled: true,
-                    iconCls: "fas fa-columns",
-                    itemId: "cn_mail-nodeNavReadingPane",
-                    menu: [{
-                        iconCls: "fas fa-toggle-right",
-                        text: "Right",
-                        itemId: "right",
-                        checked: true,
-                        xtype: "menucheckitem",
-                        group: "cn_mail-nodeNavReadingPaneRGroup"
+        const
+            me = this,
+            data = {
+                navigation: [{
+                    text: "Email",
+                    route: "cn_mail/home",
+                    view: "conjoon.cn_mail.view.mail.MailDesktopView",
+                    iconCls: "fas fa-paper-plane",
+                    nodeNav: [{
+                        xtype: "button",
+                        iconCls: "fas fa-plus",
+                        itemId: "cn_mail-nodeNavCreateMessage"
                     }, {
-                        iconCls: "fas fa-toggle-down",
-                        text: "Bottom",
-                        itemId: "bottom",
-                        xtype: "menucheckitem",
-                        group: "cn_mail-nodeNavReadingPaneRGroup"
+                        xtype: "tbseparator"
                     }, {
-                        iconCls: "fas fa-close",
-                        text: "Hidden",
-                        itemId: "hide",
-                        xtype: "menucheckitem",
-                        group: "cn_mail-nodeNavReadingPaneRGroup"
+                        xtype: "button",
+                        iconCls: "fas fa-reply",
+                        disabled: true,
+                        itemId: "cn_mail-nodeNavReplyTo"
+                    }, {
+                        xtype: "button",
+                        iconCls: "fas fa-reply-all",
+                        itemId: "cn_mail-nodeNavReplyAll",
+                        disabled: true
+                    }, {
+                        xtype: "button",
+                        iconCls: "fas fa-share",
+                        itemId: "cn_mail-nodeNavForward",
+                        disabled: true
+                    }, {
+                        xtype: "button",
+                        iconCls: "fas fa-edit",
+                        itemId: "cn_mail-nodeNavEditMessage",
+                        disabled: true
+                    }, {
+                        xtype: "button",
+                        iconCls: "fas fa-trash",
+                        itemId: "cn_mail-nodeNavDeleteMessage",
+                        disabled: true
+                    }, {
+                        xtype: "tbseparator"
+                    }, {
+                        xtype: "button",
+                        iconCls: "far fa-folder",
+                        disabled: false,
+                        cls: "toggleFolderViewBtn",
+                        itemId: "cn_mail-nodeNavToggleFolder",
+                        enableToggle: true,
+                        pressed: true
+                    }, {
+                        xtype: "button",
+                        iconCls: "fas fa-list",
+                        disabled: true,
+                        cls: "toggleGridViewBtn",
+                        itemId: "cn_mail-nodeNavToggleList",
+                        enableToggle: true
+                    }, {
+                        xtype: "button",
+                        disabled: true,
+                        iconCls: "fas fa-columns",
+                        itemId: "cn_mail-nodeNavReadingPane",
+                        menu: [{
+                            iconCls: "fas fa-toggle-right",
+                            text: "Right",
+                            itemId: "right",
+                            checked: true,
+                            xtype: "menucheckitem",
+                            group: "cn_mail-nodeNavReadingPaneRGroup"
+                        }, {
+                            iconCls: "fas fa-toggle-down",
+                            text: "Bottom",
+                            itemId: "bottom",
+                            xtype: "menucheckitem",
+                            group: "cn_mail-nodeNavReadingPaneRGroup"
+                        }, {
+                            iconCls: "fas fa-close",
+                            text: "Hidden",
+                            itemId: "hide",
+                            xtype: "menucheckitem",
+                            group: "cn_mail-nodeNavReadingPaneRGroup"
+                        }]
                     }]
                 }]
-            }]
-        };
+            };
+
+
+        if (me.mailAccountHandler.enabled()) {
+            data.navigation[0].nodeNav.push({
+                xtype: "tbseparator"
+            });
+            data.navigation[0].nodeNav.push({
+                xtype: "button",
+                iconCls: "fas fa-at",
+                itemId: "cn_mail-addMailAccountBtn"
+            });
+        }
+
+        return data;
     },
 
 

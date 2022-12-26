@@ -95,6 +95,10 @@ StartTest(async t => {
                     packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
                     t.expect(packageCtrl instanceof coon.core.app.PackageController).toBe(true);
 
+                    t.expect(conjoon.cn_mail.app.PackageController.required).toEqual({
+                        mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+                    });
+
                     let exc;
                     try {
                         packageCtrl.init({getPackageConfig: (ctrl, path) => {}});
@@ -140,6 +144,37 @@ StartTest(async t => {
                     t.expect(loadSpy.calls.count()).toBe(1);
 
                     loadSpy.remove();
+                });
+
+
+                t.it("postLaunchHook() should include addAccountBtn depending on MailAccountHandler.enabled()", t => {
+
+                    packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+                    let ret = packageCtrl.postLaunchHook();
+
+                    const
+                        length = () => ret.navigation[0].nodeNav.length,
+                        addAccountBtnIndex = () => length() - 1,
+                        expectedSeparator = {
+                            xtype: "tbseparator"
+                        },
+                        expectedButton = {
+                            xtype: "button",
+                            iconCls: "fas fa-at",
+                            itemId: "cn_mail-addMailAccountBtn"
+                        },
+                        nodeNav = (ret) => ret.navigation[0].nodeNav;
+
+                    t.expect(nodeNav(ret)[addAccountBtnIndex() - 1]).not.toEqual(expectedSeparator);
+                    t.expect(nodeNav(ret)[addAccountBtnIndex()]).not.toEqual(expectedButton);
+
+                    packageCtrl.mailAccountHandler = {enabled: () => true};
+                    ret = packageCtrl.postLaunchHook();
+
+                    t.expect(nodeNav(ret)[addAccountBtnIndex() - 1]).toEqual(expectedSeparator);
+                    t.expect(nodeNav(ret)[addAccountBtnIndex()]).toEqual(expectedButton);
+
                 });
 
 
@@ -1665,5 +1700,29 @@ StartTest(async t => {
                     }
 
                 });
+
+
+                t.it("onAddMailAccountBtnClick()", t => {
+
+                    const fakeComp = {};
+
+                    let ENABLED = false;
+
+                    packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+
+                    let invokeSpy = t.spyOn(packageCtrl.mailAccountHandler, "invoke").and.callThrough(),
+                        enabledSpy = t.spyOn(packageCtrl.mailAccountHandler, "enabled").and.callFake(() => ENABLED);
+
+                    t.expect(packageCtrl.onAddMailAccountBtnClick()).toBe(false);
+
+                    ENABLED = true;
+                    t.expect(packageCtrl.onAddMailAccountBtnClick(fakeComp)).toBe(true);
+                    t.expect(invokeSpy.calls.count()).toBe(1);
+                    t.expect(invokeSpy.calls.mostRecent().args[0]).toBe(fakeComp);
+
+                    [invokeSpy, enabledSpy].map(spy => spy.remove());
+                });
+
 
             });});});
