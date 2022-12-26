@@ -188,7 +188,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizard", {
     ],
 
 
-    setBusy (show = true) {
+    setBusy (show = true, msg = "Loading configuration") {
         const me = this;
 
         let mask = me.busyMask;
@@ -205,7 +205,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizard", {
                 /**
                  * @i18n
                  */
-                msg: "Loading configuration",
+                msg,
                 msgAction: "Please wait...",
                 glyphCls: "fa fa-spin fa-gear",
                 target: me
@@ -214,6 +214,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizard", {
         }
 
         mask.show();
+        mask.updateMsg(msg);
         mask.loopProgress();
         return mask;
     }
