@@ -97,7 +97,7 @@ appearance of the email client. The dot-notation for the configuration options i
 - `resources.sounds.notifications.newEmail` - a notification sound to play when new email messages are coming in.
 - `templates.html.editor` - an html-template to use with the message editor.
 - `templates.html.reader` - an html-template to use with the message reader.
-- `mailServerPresets` - a file holding json configuration for mail server presets used with teh **MailAccountWizard**
+- `mailServerPresets` - a file holding json configuration for mail server presets used with the **MailAccountWizard**
 
 
 #### Plugins
