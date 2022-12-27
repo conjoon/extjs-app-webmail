@@ -62,9 +62,13 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizard", {
 
     autoShow: false,
 
+    shadow: false,
+
     resizable: false,
 
     width: 400,
+
+    modal: true,
 
     height: 600,
 

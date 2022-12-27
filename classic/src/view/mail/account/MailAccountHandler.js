@@ -23,25 +23,160 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
 /**
  * Handler representing Strategy for adding MailAccounts.
- */
-Ext.define("conjoon.cn_mail.view.mail.account.MailAccountHandler", {
+ */Ext.define("conjoon.cn_mail.view.mail.account.MailAccountHandler", {
+
+
+    requires: [
+        // @define
+        "l8",
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
+        "conjoon.cn_mail.view.mail.account.MailAccountWizard",
+        "coon.comp.component.MessageMask"
+    ],
+
+    /**
+     * @type {conjoon.cn_mail.app.PackageController} mailPackageController
+     * @private
+     */
+
+    enabled () {
+        return true;
+    },
+
+
+    invoke (btn) {
+        const
+            me = this,
+            mailView = me.getMailMainPackageView();
+
+        const accountWizard = me.createOrReturnAccountWizard();
+        accountWizard.on("close", () => btn.setDisabled(false), me, {single: true});
+
+        mailView.add(accountWizard);
+        btn.setDisabled(true);
+
+        accountWizard.show();
+    },
+
+
+    createOrReturnAccountWizard () {
+        const me = this;
+
+        if (!me.accountWizard || me.accountWizard.destroyed) {
+            me.accountWizard = null;
+            let accountWizard = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountWizard");
+            accountWizard.on("accountavailable", me.onAccountAvailable, me);
+            me.accountWizard = accountWizard;
+        }
+
+        return me.accountWizard;
+    },
+
+
+    onAccountAvailable (wizard, mailAccount) {
+        const
+            me = this,
+            store = me.getMailFolderStore();
+
+        wizard.setBusy(true, "Saving...");
+
+        // add mailAccount first since store might update its name
+        store.addMailAccount(mailAccount);
+
+        // ... then save
+        mailAccount.save({
+            success: me.onMailAccountSaveSuccess,
+            failure: me.onMailAccountSaveFailure,
+            scope: me
+        });
+    },
+
+
+    onMailAccountSaveSuccess (mailAccount) {
+        const me = this;
+
+        me.accountWizard.close();
+        me.getMailFolderTreeSelectionModel().select(mailAccount);
+    },
+
+
+    onMailAccountSaveFailure () {
+
+        const me = this;
+
+        me.accountWizard.setBusy(false);
+        me.accountWizard.hide();
+
+        me.showFailureMask();
+    },
+
+
+    showFailureMask () {
+
+        const me = this;
+
+        let myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Saving failed",
+            message: "Creating the Mail Account failed. Retry?",
+            target: me.getMailMainPackageView(),
+            buttons: coon.comp.component.MessageMask.YESNO,
+            icon: coon.comp.component.MessageMask.FAILURE,
+            callback: function (btnAction) {
+                const me = this;
+                if (btnAction === "noButton") {
+                    me.accountWizard.close();
+                    myMask.close();
+                    return;
+                }
+
+                myMask.close();
+                me.accountWizard.show();
+            },
+            scope: me
+        });
+
+        myMask.show();
+    },
 
 
     /**
-     * Return true to indicate general availability of this handler for the
-     * application.
-     *
-     * @returns {boolean}
+     * @private
      */
-    enabled: () => false,
+    getMailFolderTreeSelectionModel () {
+        return this.getMailPackageController().getMailFolderTree().getSelectionModel();
+    },
 
 
     /**
-     * @param {Ext.Component} The component that might have invoked the handler, e.g. a button click
+     * @private
      */
-    invoke: Ext.emptyFn
+    getMailMainPackageView () {
+        return this.getMailPackageController().getMainPackageView();
+    },
 
+
+    /**
+     * @private
+     */
+    getMailPackageController () {
+        const me = this;
+        if (!me.mailPackageController) {
+            me.mailPackageController = Ext.getApplication().getController("conjoon.cn_mail.app.PackageController");
+        }
+
+        return me.mailPackageController;
+    },
+
+
+    /**
+     * @private
+     * @returns {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}
+     */
+    getMailFolderStore () {
+        return conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+    }
 
 });
