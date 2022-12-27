@@ -166,14 +166,14 @@ StartTest(async t => {
                         },
                         nodeNav = (ret) => ret.navigation[0].nodeNav;
 
-                    t.expect(nodeNav(ret)[addAccountBtnIndex() - 1]).not.toEqual(expectedSeparator);
-                    t.expect(nodeNav(ret)[addAccountBtnIndex()]).not.toEqual(expectedButton);
-
-                    packageCtrl.mailAccountHandler = {enabled: () => true};
-                    ret = packageCtrl.postLaunchHook();
-
                     t.expect(nodeNav(ret)[addAccountBtnIndex() - 1]).toEqual(expectedSeparator);
                     t.expect(nodeNav(ret)[addAccountBtnIndex()]).toEqual(expectedButton);
+
+                    packageCtrl.mailAccountHandler = {enabled: () => false};
+                    ret = packageCtrl.postLaunchHook();
+
+                    t.expect(nodeNav(ret)[addAccountBtnIndex() - 1]).not.toEqual(expectedSeparator);
+                    t.expect(nodeNav(ret)[addAccountBtnIndex()]).not.toEqual(expectedButton);
 
                 });
 
@@ -1710,8 +1710,7 @@ StartTest(async t => {
 
                     packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
-
-                    let invokeSpy = t.spyOn(packageCtrl.mailAccountHandler, "invoke").and.callThrough(),
+                    let invokeSpy = t.spyOn(packageCtrl.mailAccountHandler, "invoke").and.callFake(() => {}),
                         enabledSpy = t.spyOn(packageCtrl.mailAccountHandler, "enabled").and.callFake(() => ENABLED);
 
                     t.expect(packageCtrl.onAddMailAccountBtnClick()).toBe(false);

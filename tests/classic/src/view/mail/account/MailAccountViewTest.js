@@ -220,10 +220,15 @@ StartTest(t => {
             height: 600
         });
 
+        const validateSpy = t.spyOn(view.getController(), "validate").and.callFake(() => true);
+
         t.isCalled("onSaveButtonClick", view.getController());
 
         t.click(view.down("#saveButton"), function () {
 
+            t.expect(validateSpy.calls.count()).toBe(1);
+
+            validateSpy.remove();
         });
 
     });
