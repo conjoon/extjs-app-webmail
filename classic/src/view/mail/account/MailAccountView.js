@@ -34,6 +34,8 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
 
     requires: [
         "Ext.form.FieldSet",
+        "coon.comp.component.MessageMask",
+        "coon.comp.component.LoadMask",
         "conjoon.cn_mail.view.mail.account.MailAccountViewModel",
         "conjoon.cn_mail.view.mail.account.MailAccountViewController"
     ],
@@ -429,6 +431,23 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
         mask.loopProgress();
 
         return mask;
+    },
+
+
+    showMailAccountNotValidMessage () {
+
+        const me = this;
+
+        let myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Invalid configuration",
+            message: "Please make sure that an account name is specified which does not already exist.",
+            target: me,
+            buttons: coon.comp.component.MessageMask.OK,
+            icon: coon.comp.component.MessageMask.ERROR
+        });
+
+        myMask.show();
+
     }
 
 });
