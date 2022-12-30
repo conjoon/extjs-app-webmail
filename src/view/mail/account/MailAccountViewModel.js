@@ -265,6 +265,8 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
                 "inbox_user",
                 "inbox_password",
 
+                "active",
+
                 "outbox_type",
                 "outbox_address",
                 "outbox_port",

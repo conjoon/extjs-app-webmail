@@ -159,9 +159,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                 labelWidth: 160,
                 inputValue: true,
                 fieldLabel: "Active",
-                name: "inactive",
+                name: "active",
                 bind: {
-                    value: "{!mailAccount.inactive}"
+                    value: "{mailAccount.active}"
                 }
             }]
         }, {

@@ -101,9 +101,9 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         name: "outbox_secure",
         type: "string"
     }, {
-        name: "inactive",
+        name: "active",
         type: "bool",
-        default: false
+        defaultValue: true
     }],
 
     /**

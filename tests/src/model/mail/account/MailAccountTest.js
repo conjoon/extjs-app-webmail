@@ -45,7 +45,7 @@ StartTest(t => {
     t.it("Should create instance and check basic configuration", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
-        t.expect(model.get("inactive")).toBe(false);
+        t.expect(model.get("active")).toBe(true);
 
         t.expect(model.getIdProperty()).toBe("id");
 
