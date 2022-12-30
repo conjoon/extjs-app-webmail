@@ -108,7 +108,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
                         name: accountName,
                         from,
                         replyTo: Object.assign({}, from),
-                        inactive: true
+                        active: false
                     }
                 )
             );
