@@ -175,6 +175,30 @@ StartTest(async t => {
         });
 
 
+        t.it("init() - no active nodes", t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const
+                treeStore = MailFolderTreeStore().getInstance(),
+                subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad").and.callFake(() => {});
+
+            treeStore.load();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                treeStore.getRoot().childNodes.forEach(node => node.set("active", false));
+
+                mailboxRunner.init(treeStore);
+
+                t.expect(subSpy.calls.count()).toBe(0);
+                subSpy.remove();
+                loadSpy.remove();
+
+            });
+        });
+
+
         t.it("init() - treeStore about to get loaded", t => {
 
             mailboxRunner = createMailboxRunner();

@@ -137,7 +137,13 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
         if (mailFolderTreeStore.isLoaded()) {
             const accountNodes = mailFolderTreeStore.getRoot().childNodes;
-            accountNodes && accountNodes.forEach(mailAccount => me.createSubscription(mailAccount));
+            if (accountNodes) {
+                accountNodes.forEach(mailAccount => {
+                    if (mailAccount.get("active")) {
+                        me.createSubscription(mailAccount);
+                    }
+                });
+            }
         }
     },
 
