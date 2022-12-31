@@ -99,6 +99,48 @@ StartTest(t => {
 
         t.expect(rec.get("name")).toBe("accountName");
         t.expect(rec.get("folderType")).toBe(conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT);
-
     });
+
+
+    t.it("getInboxAuth()", t => {
+        model.set("inbox_user", "user");
+        model.set("inbox_password", "password");
+
+        t.expect(model.getInboxAuth()).toEqual(["user", "password"]);
+    });
+
+
+    t.it("getOutboxAuth()", t => {
+        model.set("outbox_user", "user");
+        model.set("outbox_password", "password");
+
+        t.expect(model.getOutboxAuth()).toEqual(["user", "password"]);
+    });
+
+
+    t.it("getInboxInfo()", t => {
+        model.set("inbox_address", "address");
+        model.set("inbox_port", "8080");
+        model.set("inbox_ssl", true);
+
+        t.expect(model.getInboxInfo()).toEqual({
+            inbox_address: "address",
+            inbox_port: "8080",
+            inbox_ssl: true
+        });
+    });
+
+
+    t.it("getOutboxInfo()", t => {
+        model.set("outbox_address", "address");
+        model.set("outbox_port", "8080");
+        model.set("outbox_secure", "tls");
+
+        t.expect(model.getOutboxInfo()).toEqual({
+            outbox_address: "address",
+            outbox_port: "8080",
+            outbox_secure: "tls"
+        });
+    });
+
 });

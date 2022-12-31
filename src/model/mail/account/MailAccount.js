@@ -127,6 +127,66 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
 
 
     /**
+     * Returns an array where the 0th index is the inbox-user and the 1st is the
+     * inbox password.
+     *
+     * @returns {Array}
+     */
+    getInboxAuth () {
+        const me = this;
+
+        return [me.get("inbox_user"), me.get("inbox_password")];
+    },
+
+
+    /**
+     * Returns an array where the 0th index is the outbox-user and the 1st is the
+     * outbox password.
+     *
+     * @returns {Array}
+     */
+    getOutboxAuth (mailAccount) {
+        const me = this;
+
+        return [me.get("outbox_user"), me.get("outbox_password")];
+    },
+
+
+    /**
+     * Returns an object containing connection information of the inbox server.
+     *
+     * @returns {Object}
+     */
+    getInboxInfo () {
+        const
+            me = this,
+            fields =  ["inbox_address", "inbox_port", "inbox_ssl"],
+            res = {};
+
+        fields.forEach(field => res[field] = me.get(field));
+
+        return res;
+    },
+
+
+    /**
+     * Returns an object containing connection information of the outbox server.
+     *
+     * @returns {Object}
+     */
+    getOutboxInfo () {
+        const
+            me = this,
+            fields =  ["outbox_address", "outbox_port", "outbox_secure"],
+            res = {};
+
+        fields.forEach(field => res[field] = me.get(field));
+
+        return res;
+    },
+
+
+    /**
      * Returns the url represented by an instance of this MailFolder
      * to be used with redirectTo.
      *
