@@ -136,10 +136,21 @@ StartTest(t => {
         model.set("outbox_port", "8080");
         model.set("outbox_secure", "tls");
 
+        model.set("outbox_user", "user");
+        model.set("outbox_password", "password");
+
         t.expect(model.getOutboxInfo()).toEqual({
             outbox_address: "address",
             outbox_port: "8080",
             outbox_secure: "tls"
+        });
+
+        t.expect(model.getOutboxInfo(true)).toEqual({
+            outbox_address: "address",
+            outbox_port: "8080",
+            outbox_secure: "tls",
+            outbox_user: "user",
+            outbox_password: "password"
         });
     });
 

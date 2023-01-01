@@ -174,11 +174,16 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
      *
      * @returns {Object}
      */
-    getOutboxInfo () {
+    getOutboxInfo (includeCredentials) {
         const
             me = this,
             fields =  ["outbox_address", "outbox_port", "outbox_secure"],
             res = {};
+
+        if (includeCredentials === true) {
+            fields.push("outbox_user");
+            fields.push("outbox_password");
+        }
 
         fields.forEach(field => res[field] = me.get(field));
 
