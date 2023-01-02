@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -125,7 +125,7 @@ StartTest(t => {
 
         t.expect(model.getInboxInfo()).toEqual({
             inbox_address: "address",
-            inbox_port: "8080",
+            inbox_port: 8080,
             inbox_ssl: true
         });
     });
@@ -141,16 +141,34 @@ StartTest(t => {
 
         t.expect(model.getOutboxInfo()).toEqual({
             outbox_address: "address",
-            outbox_port: "8080",
+            outbox_port: 8080,
             outbox_secure: "tls"
         });
 
         t.expect(model.getOutboxInfo(true)).toEqual({
             outbox_address: "address",
-            outbox_port: "8080",
+            outbox_port: 8080,
             outbox_secure: "tls",
             outbox_user: "user",
             outbox_password: "password"
+        });
+    });
+
+
+    t.it("subscription field", t => {
+        t.isInstanceOf(model.getField("subscriptions"), "Ext.data.field.Array");
+    });
+
+
+    t.it("getGeneralInfo()", t => {
+        model.set("from", {address: "mailaddress", name: "sendername"});
+        model.set("replyTo", {address: "replytomailaddress", name: "replytosendername"});
+        model.set("subscriptions", ["INBOX", "[Gmail]"]);
+
+        t.expect(model.getGeneralInfo()).toEqual({
+            from: {address: "mailaddress", name: "sendername"},
+            replyTo: {address: "replytomailaddress", name: "replytosendername"},
+            subscriptions: ["INBOX", "[Gmail]"]
         });
     });
 

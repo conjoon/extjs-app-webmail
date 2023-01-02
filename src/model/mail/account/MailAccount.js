@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,7 +73,7 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         type: "string"
     }, {
         name: "inbox_port",
-        type: "string"
+        type: "int"
     }, {
         name: "inbox_user",
         type: "string"
@@ -90,7 +90,7 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         type: "string"
     }, {
         name: "outbox_port",
-        type: "string"
+        type: "int"
     }, {
         name: "outbox_user",
         type: "string"
@@ -104,6 +104,9 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         name: "active",
         type: "bool",
         defaultValue: true
+    }, {
+        name: "subscriptions",
+        type: "array"
     }],
 
     /**
@@ -184,6 +187,23 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
             fields.push("outbox_user");
             fields.push("outbox_password");
         }
+
+        fields.forEach(field => res[field] = me.get(field));
+
+        return res;
+    },
+
+
+    /**
+     * Returns general info for this mailbox, such as replyTo, from and subscriptions.
+     *
+     * @return {Object}
+     */
+    getGeneralInfo () {
+        const
+            me = this,
+            fields =  ["from", "replyTo", "subscriptions"],
+            res = {};
 
         fields.forEach(field => res[field] = me.get(field));
 
