@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,6 +55,12 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
          * @private
          */
         mailAccount: null
+    },
+
+    stores: {
+        subscriptionStore: {
+            data: []
+        }
     },
 
     formulas: {
@@ -266,6 +272,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
                 "inbox_password",
 
                 "active",
+                "subscriptions",
 
                 "outbox_type",
                 "outbox_address",

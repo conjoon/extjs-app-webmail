@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -321,6 +321,31 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                         value: "{mailAccount.outbox_password}"
                     }
                 }]}]
+        }, {
+            xtype: "fieldset",
+            title: "Subscriptions",
+            listeners: {
+                // fix for tagfield growing horizontally
+                afterrender: cmp => cmp.setWidth(1)
+            },
+            items: [{
+                xtype: "tagfield",
+                flex: 1,
+                labelWidth: 160,
+                fieldLabel: " ",
+                name: "subscriptions",
+                queryMode: "local",
+                forceSelection: false,
+                triggerOnClick: false,
+                createNewOnEnter: true,
+                hideTrigger: true,
+                createNewOnBlur: true,
+                bind: {
+                    value: "{mailAccount.subscriptions}",
+                    store: "{subscriptionStore}"
+                }
+            }]
+
         }]
     }],
 

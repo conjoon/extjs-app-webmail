@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,14 +34,17 @@ StartTest(t => {
 
             inbox_type: "inbox_type",
             inbox_address: "inbox_address",
-            inbox_port: "inbox_port",
+            inbox_port: 8080,
             inbox_ssl: true,
             inbox_user: "inbox_user",
             inbox_password: "inbox_password",
 
+            active: true,
+            subscriptions: ["INBOX"],
+
             outbox_type: "outbox_type",
             outbox_address: "outbox_address",
-            outbox_port: "outbox_port",
+            outbox_port: 8088,
             outbox_secure: "tsl",
             outbox_user: "outbox_user",
             outbox_password: "outbox_password"
@@ -178,9 +181,20 @@ StartTest(t => {
                     t.expect(data["replyTo"].address).toBe(values[i]);
                     break;
 
-                case "inactive":
-                    t.expect(data["inactive"]).toBe(!values[i]);
+                case "active":
+                    t.expect(data["active"]).toBe(values[i]);
                     break;
+
+                case "inbox_port":
+                case "outbox_port":
+                    t.expect(data[i]).toBe(parseInt(values[i]));
+                    break;
+
+
+                case "subscriptions":
+                    t.expect(data["subscriptions"]).toEqual(["INBOX"]);
+                    break;
+
 
                 default:
                     t.expect(data[i]).toBe(values[i]);
