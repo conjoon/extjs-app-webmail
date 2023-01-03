@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,7 +32,8 @@ Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
 
     requires: [
         "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
-        "coon.core.data.request.Configurator"
+        "coon.core.data.request.Configurator",
+        "conjoon.cn_mail.data.jsonApi.PnFilterEncoder"
     ],
 
     mixins: {
@@ -90,6 +91,24 @@ Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
         };
 
         return actionMethods[request.getAction()];
+    },
+
+
+    /**
+     * Overriden to consider filter syntax according to
+     * https://www.conjoon.org/docs/api/rest-api/@conjoon/rest-api-description/rest-api-email
+     *
+     * @return {String}
+     */
+    encodeFilters (filters) {
+
+        const me = this;
+
+        if (!me.filterEncoder) {
+            me.filterEncoder = Ext.create("conjoon.cn_mail.data.jsonApi.PnFilterEncoder");
+        }
+
+        return me.filterEncoder.encode(filters);
     }
 
 
