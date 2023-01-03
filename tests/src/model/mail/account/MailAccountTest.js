@@ -160,16 +160,4 @@ StartTest(t => {
     });
 
 
-    t.it("getGeneralInfo()", t => {
-        model.set("from", {address: "mailaddress", name: "sendername"});
-        model.set("replyTo", {address: "replytomailaddress", name: "replytosendername"});
-        model.set("subscriptions", ["INBOX", "[Gmail]"]);
-
-        t.expect(model.getGeneralInfo()).toEqual({
-            from: {address: "mailaddress", name: "sendername"},
-            replyTo: {address: "replytomailaddress", name: "replytosendername"},
-            subscriptions: ["INBOX", "[Gmail]"]
-        });
-    });
-
 });

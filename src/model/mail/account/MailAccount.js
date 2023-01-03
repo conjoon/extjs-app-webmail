@@ -195,23 +195,6 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
 
 
     /**
-     * Returns general info for this mailbox, such as replyTo, from and subscriptions.
-     *
-     * @return {Object}
-     */
-    getGeneralInfo () {
-        const
-            me = this,
-            fields =  ["from", "replyTo", "subscriptions"],
-            res = {};
-
-        fields.forEach(field => res[field] = me.get(field));
-
-        return res;
-    },
-
-
-    /**
      * Returns the url represented by an instance of this MailFolder
      * to be used with redirectTo.
      *
