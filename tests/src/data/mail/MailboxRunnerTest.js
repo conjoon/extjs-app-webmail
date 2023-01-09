@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -139,7 +139,7 @@ StartTest(async t => {
             const
                 treeStore = MailFolderTreeStore().getInstance(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad").and.callFake(() => {});
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
             mailboxRunner.init(treeStore);
 
@@ -158,7 +158,7 @@ StartTest(async t => {
             const
                 treeStore = MailFolderTreeStore().getInstance(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad").and.callFake(() => {});
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
             treeStore.load();
 
@@ -182,7 +182,8 @@ StartTest(async t => {
             const
                 treeStore = MailFolderTreeStore().getInstance(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad").and.callFake(() => {});
+                pauseSpy = t.spyOn(mailboxRunner, "pause").and.callFake(() => {}),
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
             treeStore.load();
 
@@ -191,7 +192,8 @@ StartTest(async t => {
 
                 mailboxRunner.init(treeStore);
 
-                t.expect(subSpy.calls.count()).toBe(0);
+                t.expect(subSpy.calls.count()).toBe(2);
+                t.expect(pauseSpy.calls.count()).toBe(2);
                 subSpy.remove();
                 loadSpy.remove();
 
@@ -206,17 +208,58 @@ StartTest(async t => {
             const
                 treeStore = MailFolderTreeStore().getInstance(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription"),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad");
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd");
 
             mailboxRunner.init(treeStore);
             treeStore.load();
 
             t.waitForMs(t.parent.TIMEOUT, () => {
-                t.expect(subSpy.calls.count()).toBe(2);
+
+                const ACCOUNTNODES = 2;
+                const CHILDNODES = 2;
+                const NODEHIERARCHYCOUNT = ACCOUNTNODES * CHILDNODES;
+                t.expect(subSpy.calls.count()).toBe(NODEHIERARCHYCOUNT);
+
                 t.expect(loadSpy.calls.count()).toBeGreaterThan(0);
 
                 subSpy.remove();
                 loadSpy.remove();
+            });
+        });
+
+
+        t.it("onMailFolderTreeStoreUpdate()", t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const
+                treeStore = MailFolderTreeStore().getInstance(),
+                pauseSpy = t.spyOn(mailboxRunner, "pause"),
+                resumeSpy = t.spyOn(mailboxRunner, "resume");
+
+            mailboxRunner.init(treeStore);
+            treeStore.load();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+
+                const accountNode = treeStore.getRoot().childNodes[0];
+                const INBOXNODE = treeStore.getRoot().childNodes[0].childNodes[0];
+
+                INBOXNODE.set("name", "foo");
+                t.expect(pauseSpy.calls.count()).toBe(0);
+                t.expect(resumeSpy.calls.count()).toBe(0);
+
+                accountNode.set("active", false);
+                t.expect(pauseSpy.calls.count()).toBe(1);
+                t.expect(resumeSpy.calls.count()).toBe(0);
+                accountNode.commit();
+
+                accountNode.set("active", true);
+                t.expect(pauseSpy.calls.count()).toBe(1);
+                t.expect(resumeSpy.calls.count()).toBe(1);
+
+                pauseSpy.remove();
+                resumeSpy.remove();
             });
         });
 
