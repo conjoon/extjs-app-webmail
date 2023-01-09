@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-app-webmail
- * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,7 +40,6 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
     requires: [
         // @define
         "l8",
-        "coon.user.Manager",
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
         "conjoon.cn_mail.data.mail.MailboxRunner",
         "coon.comp.window.Toast",
@@ -77,10 +76,6 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
      */
     run (controller) {
         "use strict";
-
-        if (!coon.user.Manager.getUser()) {
-            return false;
-        }
 
         if (!(controller instanceof conjoon.cn_mail.app.PackageController)) {
             throw new Error("\"controller\" must be an instance of conjoon.cn_mail.app.PackageController");
@@ -126,7 +121,7 @@ Ext.define("conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin", {
      * @param {conjoon.cn_mail.model.mail.folder.MailFolder} mailFolder
      * @param {Array<conjoon.cn_mail.model.mail.message.MessageItem>} messageItems
      *
-     * @return {null|Boolean=true} true if notification process was initiated, otehrwise null
+     * @return {null|Boolean=true} true if notification process was initiated, otherwise null
      */
     onNewMessagesAvailable (mailFolder, messageItems) {
 

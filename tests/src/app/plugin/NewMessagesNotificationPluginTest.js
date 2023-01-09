@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -461,13 +461,6 @@ StartTest(t => {
             createSpy = t.spyOn(Ext, "create").and.callFake(() => mailboxRunner),
             listenSpy = t.spyOn(ctrl, "listen").and.callFake(() => {}),
             controlSpy = t.spyOn(ctrl, "control").and.callFake(() => {});
-
-        coon.user.Manager.getUser = () => undefined;
-        t.expect(plugin.run(controllerMock)).toBe(false);
-
-        coon.user.Manager.getUser = () => ({});
-        t.expect(() => plugin.run(controllerMock)).toThrow();
-
 
         t.expect(plugin.run(ctrl)).toBe(true);
 
