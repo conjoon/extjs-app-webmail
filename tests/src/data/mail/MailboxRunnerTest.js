@@ -509,10 +509,15 @@ StartTest(async t => {
         t.it("stop()", t => {
             mailboxRunner = createMailboxRunner();
 
+            let STOPSPYCALL = 0;
+
             const stopSpy = t.spyOn(Ext.TaskManager, "stop").and.callFake(
                 (task, remove) => {
                     t.expect(task).toBe(sub.extjsTask);
                     t.expect(remove).toBe(true);
+                    stopSpy.remove();
+                    STOPSPYCALL++;
+                    Ext.TaskManager.stop(task, remove);
                 }
             );
             const FOLDER = {};
@@ -532,8 +537,7 @@ StartTest(async t => {
             t.expect(extjsTask).toBeUndefined();
             t.expect(mailboxRunner.subscriptions["foo"]).toBeUndefined();
 
-            t.expect(stopSpy.calls.count()).toBe(1);
-            stopSpy.remove();
+            t.expect(STOPSPYCALL).toBe(1);
         });
 
 
