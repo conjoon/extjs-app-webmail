@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,6 +43,11 @@
  *             + MailFolder
  *
  * Model types will be set by the readers specified by the proxies et al.
+ *
+ * This store will observe changes made to MAilAccount's and fire the activemailaccountchange-event
+ * based on the availability of active MailAccounts (see conjoon.cn_mail.model.mail.account.MailAccount#active).
+ *
+ *
  */
 Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
@@ -52,7 +57,8 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         // @define l8
         "l8",
         "conjoon.cn_mail.model.mail.folder.MailFolder",
-        "conjoon.cn_mail.model.mail.account.MailAccount"
+        "conjoon.cn_mail.model.mail.account.MailAccount",
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
 
     alias: "store.cn_mail-mailfoldertreestore",
@@ -64,6 +70,17 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
     nodeParam: "mailAccountId",
 
     storeId: "cn_mail-mailfoldertreestore",
+
+    /**
+     * @event activemailaccountavailable
+     * @param this
+     * @param {Boolean} hasActiveMailAccount
+     */
+
+    /**
+     * @type {Boolean} hasActiveMailAccount
+     */
+    hasActiveMailAccount: false,
 
     statics: {
 
@@ -100,6 +117,72 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         me.callParent(arguments);
 
         me.on("load", me.onStoreHasLoadedRootNode, me, {single: true});
+
+        me.on("add", me.onMailFolderTreeStoreAdd, me);
+        me.on("update", me.onMailFolderTreeStoreUpdate, me);
+    },
+
+
+    /**
+     * Callback for the add-event of this store.
+     *
+     * @param {this} store
+     * @param {Array} records
+     *
+     * @see checkAndFireActiveMailAccountChange
+     */
+    onMailFolderTreeStoreAdd (store, records) {
+
+        const me = this;
+        const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+
+        if (records[0].get("folderType") !== TYPES.ACCOUNT &&
+            records[0].parentNode.get("folderType") !== TYPES.ACCOUNT) {
+            return;
+        }
+        me.checkAndFireActiveMailAccountChange();
+    },
+
+
+    /**
+     * Callback for the update-event of this store.
+     *
+     * @param {this} store
+     * @param {Ext.data.Model} record
+     *
+     * @see checkAndFireActiveMailAccountChange
+     */
+    onMailFolderTreeStoreUpdate (store, record) {
+
+        const me = this;
+
+        const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+
+        if (record.modified?.active === undefined || record.get("folderType") !== TYPES.ACCOUNT) {
+            return;
+        }
+        me.checkAndFireActiveMailAccountChange();
+    },
+
+
+    /**
+     * Checks whether this store hase any active MailAccounts available and compare the rersult
+     * with #hasActiveMailAccount. Will trigger the activemailaccountavailable-event
+     * if the state regarding this value has changed.
+     *
+     */
+    checkAndFireActiveMailAccountChange () {
+        const me = this;
+
+        const hasActive = me.getRoot().childNodes.filter(account => account.get("active")).length !== 0;
+
+        if (hasActive === me.hasActiveMailAccount) {
+            return;
+        }
+
+        me.hasActiveMailAccount = hasActive;
+
+        me.fireEvent("activemailaccountavailable", me, me.hasActiveMailAccount);
     },
 
 

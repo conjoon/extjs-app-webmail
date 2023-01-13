@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -121,6 +121,64 @@ StartTest(async t => {
 
             t.expect(nodes[length - 2].get("name")).toBe("New Account");
             t.expect(nodes[length - 1].get("name")).toBe("New Account (1)");
+        });
+
+
+        t.it("checkAndFireActiveMailAccountChange()", t => {
+            const
+                inst = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+            let STATE = false;
+            const observer = function (store, active) {
+
+                STATE = active;
+            };
+
+            inst.on("activemailaccountavailable", observer);
+
+            t.expect(inst.hasActiveMailAccount).toBe(false);
+            t.expect(inst.getRoot().childNodes.length).toBe(0);
+
+            const MailAccount = conjoon.cn_mail.model.mail.account.MailAccount;
+
+            // 0 - ACTIVE
+            inst.getRoot().appendChild(MailAccount.createFrom({active: true}));
+            t.expect(STATE).toBe(true);
+
+            // 1 - ACTIVE
+            inst.getRoot().appendChild(MailAccount.createFrom({active: true}));
+            t.expect(STATE).toBe(true);
+
+            // 2 - INACTIVE (0, 1 ACTIVE)
+            inst.getRoot().appendChild(MailAccount.createFrom({active: false}));
+            t.expect(STATE).toBe(true);
+
+            // 2 - ACTIVE - (0, 1, 2 ACTIVE)
+            inst.getRoot().childNodes[2].set("active", true);
+            inst.getRoot().childNodes[2].commit();
+            t.expect(STATE).toBe(true);
+
+            // 1 - INACTIVE - (0, 2 ACTIVE)
+            inst.getRoot().childNodes[1].set("active", false);
+            inst.getRoot().childNodes[1].commit();
+            t.expect(STATE).toBe(true);
+
+            // 0 - INACTIVE - (2 ACTIVE)
+            inst.getRoot().childNodes[0].set("active", false);
+            inst.getRoot().childNodes[0].commit();
+            t.expect(STATE).toBe(true);
+
+            // 2 - INACTIVE ()
+            inst.getRoot().childNodes[2].set("active", false);
+            inst.getRoot().childNodes[2].commit();
+            t.expect(STATE).toBe(false);
+
+            // Set one node active again
+            inst.getRoot().childNodes[1].set("active", true);
+            inst.getRoot().childNodes[1].commit();
+            t.expect(STATE).toBe(true);
+
+
         });
 
 
