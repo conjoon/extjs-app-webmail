@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -146,6 +146,50 @@ StartTest(async t => {
                     loadSpy.remove();
                 });
 
+
+                t.it("postLaunchHook should render createMessageButton initially disabled", t => {
+
+                    packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+                    const ret = packageCtrl.postLaunchHook();
+                    const btnId = "cn_mail-nodeNavCreateMessage";
+
+                    let btn = ret.navigation[0].nodeNav.filter(item => item.itemId === btnId && item.disabled === true);
+
+                    t.expect(btn.length).toBe(1);
+                });
+
+
+                t.it("postLaunchHook registers activemailaccountavailable-event", t => {
+
+                    packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+                    const spy = t.spyOn(packageCtrl, "onActiveMailAccountAvailable").and.callFake(() => {});
+                    packageCtrl.postLaunchHook();
+                    conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().fireEvent("activemailaccountavailable");
+                    t.expect(spy.calls.count()).toBe(1);
+                    spy.remove();
+                });
+
+
+                t.it("onActiveMailAccountAvailable()", t => {
+
+                    const FAKE_STORE = {};
+                    const FAKE_BUTTON = {
+                        setDisabled () {}
+                    };
+                    packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+                    const btnSpy = t.spyOn(packageCtrl, "getCreateMessageButton").and.callFake(() => FAKE_BUTTON);
+                    const enableSpy = t.spyOn(FAKE_BUTTON, "setDisabled").and.callFake(() => {});
+
+                    [true, false].map(disabled => {
+                        packageCtrl.onActiveMailAccountAvailable(FAKE_STORE, disabled);
+                        t.expect(enableSpy.calls.mostRecent().args[0]).toBe(!disabled);
+
+                    });
+
+                    [btnSpy, enableSpy].map(spy => spy.remove());
+                });
 
                 t.it("postLaunchHook() should include addAccountBtn depending on MailAccountHandler.enabled()", t => {
 

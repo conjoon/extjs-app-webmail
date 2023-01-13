@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -236,6 +236,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     }, {
         ref: "switchReadingPaneButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
+    }, {
+        ref: "createMessageButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavCreateMessage"
     }, {
         ref: "replyToButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReplyTo"
@@ -924,97 +927,114 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
 
     /**
+     * Callback for the MailAccount-Store's activemailaccountavailable event.
+     * Will enable/disable the "createMessageButton" based on available.
+     *
+     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {Boolean} available
+     */
+    onActiveMailAccountAvailable (store, available) {
+        const me = this;
+
+        me.getCreateMessageButton().setDisabled(!available);
+    },
+
+    /**
      * @inheritdoc
      */
-    postLaunchHook: function () {
-
-        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
-
+    postLaunchHook () {
 
         const
             me = this,
-            data = {
-                navigation: [{
-                    text: "Email",
-                    route: "cn_mail/home",
-                    view: "conjoon.cn_mail.view.mail.MailDesktopView",
-                    iconCls: "fas fa-paper-plane",
-                    nodeNav: [{
-                        xtype: "button",
-                        iconCls: "fas fa-plus",
-                        itemId: "cn_mail-nodeNavCreateMessage"
+            mailAccountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+        mailAccountStore.on("activemailaccountavailable", me.onActiveMailAccountAvailable, me);
+        mailAccountStore.load();
+
+
+        const data = {
+            navigation: [{
+                text: "Email",
+                route: "cn_mail/home",
+                view: "conjoon.cn_mail.view.mail.MailDesktopView",
+                iconCls: "fas fa-paper-plane",
+                nodeNav: [{
+                    xtype: "button",
+                    iconCls: "fas fa-plus",
+                    itemId: "cn_mail-nodeNavCreateMessage",
+                    disabled: true
+                }, {
+                    xtype: "tbseparator"
+                }, {
+                    xtype: "button",
+                    iconCls: "fas fa-reply",
+                    disabled: true,
+                    itemId: "cn_mail-nodeNavReplyTo"
+                }, {
+                    xtype: "button",
+                    iconCls: "fas fa-reply-all",
+                    itemId: "cn_mail-nodeNavReplyAll",
+                    disabled: true
+                }, {
+                    xtype: "button",
+                    iconCls: "fas fa-share",
+                    itemId: "cn_mail-nodeNavForward",
+                    disabled: true
+                }, {
+                    xtype: "button",
+                    iconCls: "fas fa-edit",
+                    itemId: "cn_mail-nodeNavEditMessage",
+                    disabled: true
+                }, {
+                    xtype: "button",
+                    iconCls: "fas fa-trash",
+                    itemId: "cn_mail-nodeNavDeleteMessage",
+                    disabled: true
+                }, {
+                    xtype: "tbseparator"
+                }, {
+                    xtype: "button",
+                    iconCls: "far fa-folder",
+                    disabled: false,
+                    cls: "toggleFolderViewBtn",
+                    itemId: "cn_mail-nodeNavToggleFolder",
+                    enableToggle: true,
+                    pressed: true
+                }, {
+                    xtype: "button",
+                    iconCls: "fas fa-list",
+                    disabled: true,
+                    cls: "toggleGridViewBtn",
+                    itemId: "cn_mail-nodeNavToggleList",
+                    enableToggle: true
+                }, {
+                    xtype: "button",
+                    disabled: true,
+                    iconCls: "fas fa-columns",
+                    itemId: "cn_mail-nodeNavReadingPane",
+                    menu: [{
+                        iconCls: "fas fa-toggle-right",
+                        text: "Right",
+                        itemId: "right",
+                        checked: true,
+                        xtype: "menucheckitem",
+                        group: "cn_mail-nodeNavReadingPaneRGroup"
                     }, {
-                        xtype: "tbseparator"
+                        iconCls: "fas fa-toggle-down",
+                        text: "Bottom",
+                        itemId: "bottom",
+                        xtype: "menucheckitem",
+                        group: "cn_mail-nodeNavReadingPaneRGroup"
                     }, {
-                        xtype: "button",
-                        iconCls: "fas fa-reply",
-                        disabled: true,
-                        itemId: "cn_mail-nodeNavReplyTo"
-                    }, {
-                        xtype: "button",
-                        iconCls: "fas fa-reply-all",
-                        itemId: "cn_mail-nodeNavReplyAll",
-                        disabled: true
-                    }, {
-                        xtype: "button",
-                        iconCls: "fas fa-share",
-                        itemId: "cn_mail-nodeNavForward",
-                        disabled: true
-                    }, {
-                        xtype: "button",
-                        iconCls: "fas fa-edit",
-                        itemId: "cn_mail-nodeNavEditMessage",
-                        disabled: true
-                    }, {
-                        xtype: "button",
-                        iconCls: "fas fa-trash",
-                        itemId: "cn_mail-nodeNavDeleteMessage",
-                        disabled: true
-                    }, {
-                        xtype: "tbseparator"
-                    }, {
-                        xtype: "button",
-                        iconCls: "far fa-folder",
-                        disabled: false,
-                        cls: "toggleFolderViewBtn",
-                        itemId: "cn_mail-nodeNavToggleFolder",
-                        enableToggle: true,
-                        pressed: true
-                    }, {
-                        xtype: "button",
-                        iconCls: "fas fa-list",
-                        disabled: true,
-                        cls: "toggleGridViewBtn",
-                        itemId: "cn_mail-nodeNavToggleList",
-                        enableToggle: true
-                    }, {
-                        xtype: "button",
-                        disabled: true,
-                        iconCls: "fas fa-columns",
-                        itemId: "cn_mail-nodeNavReadingPane",
-                        menu: [{
-                            iconCls: "fas fa-toggle-right",
-                            text: "Right",
-                            itemId: "right",
-                            checked: true,
-                            xtype: "menucheckitem",
-                            group: "cn_mail-nodeNavReadingPaneRGroup"
-                        }, {
-                            iconCls: "fas fa-toggle-down",
-                            text: "Bottom",
-                            itemId: "bottom",
-                            xtype: "menucheckitem",
-                            group: "cn_mail-nodeNavReadingPaneRGroup"
-                        }, {
-                            iconCls: "fas fa-close",
-                            text: "Hidden",
-                            itemId: "hide",
-                            xtype: "menucheckitem",
-                            group: "cn_mail-nodeNavReadingPaneRGroup"
-                        }]
+                        iconCls: "fas fa-close",
+                        text: "Hidden",
+                        itemId: "hide",
+                        xtype: "menucheckitem",
+                        group: "cn_mail-nodeNavReadingPaneRGroup"
                     }]
                 }]
-            };
+            }]
+        };
 
 
         if (me.mailAccountHandler.enabled()) {
