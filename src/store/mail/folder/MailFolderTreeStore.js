@@ -78,6 +78,14 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
      */
 
     /**
+     * Fired when the "active" value of an account managed by this store has changed.
+     * @event mailaccountactivechange
+     * @param this
+     * @param {Boolean} hasActiveMailAccount
+     */
+
+
+    /**
      * @type {Boolean} hasActiveMailAccount
      */
     hasActiveMailAccount: false,
@@ -124,6 +132,30 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
 
     /**
+     * Finds the first active mail account managed by this store.
+     * Returns undefined if no active account was found
+     *
+     * @return {conjoon.cn_mail.model.mail.account.MailAccount|undefined}
+     */
+    findFirstActiveMailAccount () {
+
+        const
+            me = this,
+            childNodes = me.getRoot().childNodes;
+
+        let mailAccount;
+        childNodes.some(node => {
+            if (node.get("active")) {
+                mailAccount = node;
+                return true;
+            }
+        });
+
+        return mailAccount;
+    },
+
+
+    /**
      * Callback for the add-event of this store.
      *
      * @param {this} store
@@ -158,10 +190,10 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
         const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (record.modified?.active === undefined || record.get("folderType") !== TYPES.ACCOUNT) {
-            return;
+        if (record.modified?.active !== undefined && record.get("folderType") === TYPES.ACCOUNT) {
+            me.fireEvent("mailaccountactivechange", me, record);
+            me.checkAndFireActiveMailAccountChange();
         }
-        me.checkAndFireActiveMailAccountChange();
     },
 
 
