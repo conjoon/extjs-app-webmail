@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,6 +29,7 @@ StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
     await helper.registerIoC().setupSimlets().mockUpMailTemplates().load(
+        "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.BaseSchema",
         "coon.core.data.Session",
@@ -937,6 +938,51 @@ StartTest(async t => {
 
                                 t.waitForMs(t.parent.TIMEOUT, () => {
                                     conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel.prototype.getView = tmp;
+                                });
+
+                            });
+
+
+                            t.it("includeInactiveMailAccounts()", t => {
+
+                                let session = createSession();
+
+                                viewModel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
+                                    session: session,
+                                    messageDraft: Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig")
+                                });
+
+                                try {
+                                    viewModel.includeInactiveMailAccounts();
+                                    t.fail();
+                                } catch (e) {
+                                    t.expect(e.message).toContain("no MailAccount-store available");
+                                }
+
+                                viewModel.set(
+                                    "cn_mail_mailfoldertreestore",
+                                    conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance());
+
+                                let EDIT_MODE = "CREATE";
+
+                                const FAKE_VIEW = {editMode: EDIT_MODE};
+
+                                viewModel.getView = () => FAKE_VIEW;
+                                viewModel.notify();
+
+                                t.waitForMs(t.parent.TIMEOUT, () => {
+
+                                    t.expect(viewModel.includeInactiveMailAccounts(false)).toBe(true);
+
+                                    const filters = viewModel.get("mailAccountStore").getFilters();
+                                    t.expect(filters.getAt(1).getId()).toBe("inact");
+
+                                    FAKE_VIEW.editMode = "NOT_CREATE";
+                                    t.expect(viewModel.includeInactiveMailAccounts(false)).toBe(false);
+
+                                    viewModel.includeInactiveMailAccounts();
+                                    t.expect(filters.getAt(1)).toBeUndefined();
+
                                 });
 
                             });

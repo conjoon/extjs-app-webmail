@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,6 +37,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
     extend: "Ext.app.ViewModel",
 
     requires: [
+        "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.model.mail.message.MessageDraft",
         "conjoon.cn_mail.model.mail.message.MessageBody",
         "conjoon.cn_mail.model.mail.message.EmailAddress",
@@ -360,6 +361,44 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                            "MessageDraftConfig, of MessageDraftCopyRequest or of " +
                            "MessageEntityCompoundKey."
         });
+    },
+
+
+    /**
+     * Includes or excludes inactive mail accounts in the MailAccount-store.
+     * Only excludes inactive MailAccounts if the message managed by this
+     * ViewModel was opened in CREATE-edit mode.
+     *
+     *  @param {Boolean=true} include true to include inactive MailAccounts,
+     *  otherwise false to exclude them.
+     *
+     * @returns {boolean}
+     */
+    includeInactiveMailAccounts (include = true) {
+
+        const
+            me = this,
+            maStore = me.get("mailAccountStore");
+
+        if (!maStore) {
+            throw new Error("no MailAccount-store available.");
+        }
+
+
+        if (include !== false) {
+            maStore.removeFilter("inact");
+        } else {
+            if (me.getView().editMode !== conjoon.cn_mail.data.mail.message.EditingModes.CREATE) {
+                return false;
+            }
+            maStore.addFilter({
+                id: "inact",
+                property: "active",
+                value: true
+            });
+        }
+
+        return true;
     },
 
 
