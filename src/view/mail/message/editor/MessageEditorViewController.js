@@ -119,8 +119,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
         const
             me   = this,
-            view = me.getView(),
-            vm = me.getViewModel();
+            view = me.getView();
 
         me.deferTimers = {};
 
@@ -146,12 +145,22 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
         });
 
-        me.getMailAccountStore().on("mailaccountactivechange", me.onMailAccountActiveChange, me);
-        vm.includeInactiveMailAccounts(false);
-
+        me.registerMailAccountRelatedFunctionality();
 
         me.ddListener.init();
     },
+
+
+    /**
+     * @private
+     */
+    registerMailAccountRelatedFunctionality () {
+        const me = this;
+
+        me.getMailAccountStore().on("mailaccountactivechange", me.onMailAccountActiveChange, me);
+        me.getViewModel().includeInactiveMailAccounts(false);
+    },
+
 
     /**
      * Will probe the next available active MailAccount and set the MailAccount for this

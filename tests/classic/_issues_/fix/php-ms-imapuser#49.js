@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,131 +28,142 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets().mockUpMailTemplates()
+        .load("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController")
+        .andRun((t) => {
 
-        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
+            t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
-            let view,
-                createWithViewConfig = function (config) {
-                    return Ext.create(
-                        "conjoon.cn_mail.view.mail.message.editor.MessageEditor", config);
-                };
+                let view,
+                    createWithViewConfig = function (config) {
+                        return Ext.create(
+                            "conjoon.cn_mail.view.mail.message.editor.MessageEditor", config);
+                    };
 
-            t.afterEach(function () {
-                if (view) {
-                    view.destroy();
-                    view = null;
-                }
-            });
-
-            t.beforeEach(function () {
-                Ext.ux.ajax.SimManager.init({
-                    delay: 1
-                });
-            });
-
-
-            t.it("seen/flag buttons", t => {
-
-                const mdConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig");
-
-                view = createWithViewConfig({
-                    renderTo: document.body,
-                    width: 400,
-                    height: 400,
-                    messageDraft: mdConfig
+                t.afterEach(function () {
+                    registerMailAccountRelatedFunctionalitySpy.remove();
+                    registerMailAccountRelatedFunctionalitySpy = null;
+                    if (view) {
+                        view.destroy();
+                        view = null;
+                    }
                 });
 
-                t.waitForMs(t.parent.TIMEOUT, () => {
+                let registerMailAccountRelatedFunctionalitySpy;
 
-                    const
-                        md = view.getViewModel().get("messageDraft"),
-                        flagButton = view.down("button[cls=flagButton]"),
-                        seenButton = view.down("button[cls=seenButton]");
+                t.beforeEach(t => {
+                    registerMailAccountRelatedFunctionalitySpy = t.spyOn(
+                        conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.prototype,
+                        "registerMailAccountRelatedFunctionality"
+                    ).and.callFake(() => {});
+
+                    Ext.ux.ajax.SimManager.init({
+                        delay: 1
+                    });
+                });
 
 
-                    t.expect(seenButton.pressed).toBe(true);
-                    t.expect(flagButton.pressed).toBe(false);
+                t.it("seen/flag buttons", t => {
 
-                    md.set("seen", false);
+                    const mdConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig");
+
+                    view = createWithViewConfig({
+                        renderTo: document.body,
+                        width: 400,
+                        height: 400,
+                        messageDraft: mdConfig
+                    });
+
                     t.waitForMs(t.parent.TIMEOUT, () => {
-                        t.expect(seenButton.pressed).toBe(false);
 
-                        md.set("flagged", true);
+                        const
+                            md = view.getViewModel().get("messageDraft"),
+                            flagButton = view.down("button[cls=flagButton]"),
+                            seenButton = view.down("button[cls=seenButton]");
+
+
+                        t.expect(seenButton.pressed).toBe(true);
+                        t.expect(flagButton.pressed).toBe(false);
+
+                        md.set("seen", false);
                         t.waitForMs(t.parent.TIMEOUT, () => {
-                            t.expect(flagButton.pressed).toBe(true);
+                            t.expect(seenButton.pressed).toBe(false);
 
-                            // is: false
-                            seenButton.toggle();
-                            // is: true
-                            flagButton.toggle();
-
+                            md.set("flagged", true);
                             t.waitForMs(t.parent.TIMEOUT, () => {
-                                t.expect(md.get("seen")).toBe(true);
-                                t.expect(md.get("flagged")).toBe(false);
-                            });
+                                t.expect(flagButton.pressed).toBe(true);
 
+                                // is: false
+                                seenButton.toggle();
+                                // is: true
+                                flagButton.toggle();
+
+                                t.waitForMs(t.parent.TIMEOUT, () => {
+                                    t.expect(md.get("seen")).toBe(true);
+                                    t.expect(md.get("flagged")).toBe(false);
+                                });
+
+                            });
                         });
                     });
                 });
-            });
 
 
-            t.it("MessageDraft critical fields seen/flagged", t => {
-                const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
+                t.it("MessageDraft critical fields seen/flagged", t => {
+                    const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft");
 
-                t.expect(draft.getField("seen").critical).toBe(true);
-                t.expect(draft.getField("flagged").critical).toBe(true);
+                    t.expect(draft.getField("seen").critical).toBe(true);
+                    t.expect(draft.getField("flagged").critical).toBe(true);
 
-            });
-
-
-            t.it("lastSavedMessage", t => {
-
-                const mdConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig");
-
-                view = createWithViewConfig({
-                    renderTo: document.body,
-                    width: 400,
-                    height: 400,
-                    messageDraft: mdConfig
                 });
 
-                t.expect(view.down("displayfield[cls=lastSavedDateField]").bind.value.stub.name).toBe("lastSavedMessage");
 
-                let viewModel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
-                    messageDraft: Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"),
-                    session: Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession")
-                });
+                t.it("lastSavedMessage", t => {
 
-                var formulas = viewModel.getFormulas();
+                    const mdConfig = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig");
 
-                viewModel.get("messageDraft").pantom = true;
-                viewModel.set("messageDraft.savedAt", "");
+                    view = createWithViewConfig({
+                        renderTo: document.body,
+                        width: 400,
+                        height: 400,
+                        messageDraft: mdConfig
+                    });
 
-                t.expect(formulas.lastSavedMessage).toBeDefined();
-                t.expect(formulas.lastSavedMessage.bind.date).toBe("{messageDraft.savedAt}");
+                    t.expect(view.down("displayfield[cls=lastSavedDateField]").bind.value.stub.name).toBe("lastSavedMessage");
 
-                t.expect(
-                    formulas.lastSavedMessage.get({
-                        date: viewModel.get("messageDraft.savedAt")
-                    })
+                    let viewModel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
+                        messageDraft: Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"),
+                        session: Ext.create("conjoon.cn_mail.data.mail.message.session.MessageDraftSession")
+                    });
+
+                    var formulas = viewModel.getFormulas();
+
+                    viewModel.get("messageDraft").pantom = true;
+                    viewModel.set("messageDraft.savedAt", "");
+
+                    t.expect(formulas.lastSavedMessage).toBeDefined();
+                    t.expect(formulas.lastSavedMessage.bind.date).toBe("{messageDraft.savedAt}");
+
+                    t.expect(
+                        formulas.lastSavedMessage.get({
+                            date: viewModel.get("messageDraft.savedAt")
+                        })
                     /**
                      * @i18n
                      */
-                ).toBe("Opened for editing");
+                    ).toBe("Opened for editing");
 
-                viewModel.set("messageDraft.savedAt", new Date());
+                    viewModel.set("messageDraft.savedAt", new Date());
 
-                t.expect(
-                    formulas.lastSavedMessage.get({
-                        date: viewModel.get("messageDraft.savedAt")
-                    })
+                    t.expect(
+                        formulas.lastSavedMessage.get({
+                            date: viewModel.get("messageDraft.savedAt")
+                        })
                     /**
                      * @i18n
                      */
-                ).toContain("Last saved at");
+                    ).toContain("Last saved at");
 
-            });
+                });
 
-        });});});
+            });});});

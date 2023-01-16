@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,85 +29,103 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.setupSimlets()
+        .load("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController")
+        .mockUpMailTemplates().andRun((t) => {
+
+            let registerMailAccountRelatedFunctionalitySpy;
+
+            t.beforeEach(function () {
+                registerMailAccountRelatedFunctionalitySpy = t.spyOn(
+                    conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.prototype,
+                    "registerMailAccountRelatedFunctionality"
+                ).and.callFake(() => {});
+            });
+
+            t.afterEach(function () {
+                if (registerMailAccountRelatedFunctionalitySpy) {
+                    registerMailAccountRelatedFunctionalitySpy.remove();
+                    registerMailAccountRelatedFunctionalitySpy = null;
+                }
+            });
 
 
-        const createVisitor = (cfg) => {
+            const createVisitor = (cfg) => {
 
-            const visitor = Ext.create(
-                "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
-            );
+                const visitor = Ext.create(
+                    "conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisitor"
+                );
 
-            visitor.setMessageDraft(cfg.messageDraft);
-            return visitor;
-        };
-
-
-        // +-----------------------------------------
-        // | Tests
-        // +-----------------------------------------
-        t.diag("fix: attachments must re-appear in the list if DELETING fails (conjoon/extjs-app-webmail#196)");
-
-        t.it("MessageCompoundBatchVisitor.refreshKeyForDestroy()", t => {
-
-            const
-                id = "123",
-                store = Ext.create("Ext.data.Store"),
-                messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
-                    mailAccountId: "dev",
-                    mailFolderId: "inbox",
-                    id
-                }),
-                draftAttachment = Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
-                    mailAccountId: "dev",
-                    mailFolderId: "inbox",
-                    id: "1"
-                }),
-                records = [draftAttachment],
-                operation = {getAction: () => "destroy", getRecords: () => records},
-                visitor = createVisitor({messageDraft});
-
-            draftAttachment.commit();
-            store.add(draftAttachment);
-            draftAttachment.drop();
-
-            t.expect(draftAttachment.dropped).toBe(true);
-            t.expect(visitor.refreshKeyForDestroy(operation)).toBe(true);
-            t.expect(draftAttachment.get("parentMessageItemId")).toBe(id);
-            t.expect(draftAttachment.dropped).toBe(true);
-
-            t.expect(store.getRemovedRecords()[0]).toBe(draftAttachment);
-        });
+                visitor.setMessageDraft(cfg.messageDraft);
+                return visitor;
+            };
 
 
-        t.it("MessageEditorViewController.onMailMessageSaveOperationException()", t => {
+            // +-----------------------------------------
+            // | Tests
+            // +-----------------------------------------
+            t.diag("fix: attachments must re-appear in the list if DELETING fails (conjoon/extjs-app-webmail#196)");
 
-            const
-                messageDraft = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
-                    Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                        localId: ["1-2-4"].join("-"),
-                        id: "4",
-                        mailAccountId: "1",
-                        mailFolderId: "2"
-                    }).data
-                ),
-                editor = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
-                    renderTo: document.body,
-                    messageDraft
-                }),
-                store = editor.getViewModel().get("messageDraft.attachments"),
-                storeSpy = t.spyOn(store, "rejectChanges");
+            t.it("MessageCompoundBatchVisitor.refreshKeyForDestroy()", t => {
 
-            editor.getController().onMailMessageSaveOperationException(editor);
+                const
+                    id = "123",
+                    store = Ext.create("Ext.data.Store"),
+                    messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                        mailAccountId: "dev",
+                        mailFolderId: "inbox",
+                        id
+                    }),
+                    draftAttachment = Ext.create("conjoon.cn_mail.model.mail.message.DraftAttachment", {
+                        mailAccountId: "dev",
+                        mailFolderId: "inbox",
+                        id: "1"
+                    }),
+                    records = [draftAttachment],
+                    operation = {getAction: () => "destroy", getRecords: () => records},
+                    visitor = createVisitor({messageDraft});
 
-            const noButton = Ext.dom.Query.select("span[data-ref=noButton]", editor.el.dom)[0];
+                draftAttachment.commit();
+                store.add(draftAttachment);
+                draftAttachment.drop();
 
-            t.click(noButton, () => {
-                t.expect(storeSpy.calls.count()).toBe(1);
-                editor.close();
-                editor.destroy();
-                [storeSpy].map(spy => spy.remove());
+                t.expect(draftAttachment.dropped).toBe(true);
+                t.expect(visitor.refreshKeyForDestroy(operation)).toBe(true);
+                t.expect(draftAttachment.get("parentMessageItemId")).toBe(id);
+                t.expect(draftAttachment.dropped).toBe(true);
+
+                t.expect(store.getRemovedRecords()[0]).toBe(draftAttachment);
+            });
+
+
+            t.it("MessageEditorViewController.onMailMessageSaveOperationException()", t => {
+
+                const
+                    messageDraft = Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
+                        Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                            localId: ["1-2-4"].join("-"),
+                            id: "4",
+                            mailAccountId: "1",
+                            mailFolderId: "2"
+                        }).data
+                    ),
+                    editor = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
+                        renderTo: document.body,
+                        messageDraft
+                    }),
+                    store = editor.getViewModel().get("messageDraft.attachments"),
+                    storeSpy = t.spyOn(store, "rejectChanges");
+
+                editor.getController().onMailMessageSaveOperationException(editor);
+
+                const noButton = Ext.dom.Query.select("span[data-ref=noButton]", editor.el.dom)[0];
+
+                t.click(noButton, () => {
+                    t.expect(storeSpy.calls.count()).toBe(1);
+                    editor.close();
+                    editor.destroy();
+                    [storeSpy].map(spy => spy.remove());
+                });
             });
         });
-    });
 });
