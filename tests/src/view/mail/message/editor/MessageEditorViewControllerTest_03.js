@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2020-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2020-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -51,6 +51,112 @@ StartTest(async t => {
 
             Ext.ux.ajax.SimManager.init({
                 delay: 1
+            });
+
+
+            t.it("init registers MailAccount active-related functionality", t => {
+
+                const FAKE_VIEWMODEL = {
+                    includeInactiveMailAccounts () {}
+                };
+                const FAKE_VIEW = {
+                    on () {}                        
+                };
+
+                const FAKE_STORE = Ext.create("Ext.data.Store");
+
+                controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
+
+                controller.getView = () => FAKE_VIEW;
+                controller.getViewModel = () => FAKE_VIEWMODEL;
+
+                const onMailAccountActiveChangeSpy = t.spyOn(
+                    controller,
+                    "onMailAccountActiveChange"
+                ).and.callFake(() => {});
+
+                const includeInactiveMailAccountsSpy = t.spyOn(
+                    controller.getViewModel(),
+                    "includeInactiveMailAccounts"
+                ).and.callThrough();
+
+                const getMailAccountStoreSpy = t.spyOn(
+                    controller,
+                    "getMailAccountStore"
+                ).and.callFake(() => FAKE_STORE);
+
+                controller.init();
+
+                t.expect(includeInactiveMailAccountsSpy.calls.mostRecent().args[0]).toBe(false);
+
+                FAKE_STORE.fireEvent("mailaccountactivechange");
+
+                t.expect(onMailAccountActiveChangeSpy.calls.count()).toBe(1);
+
+
+                [
+                    onMailAccountActiveChangeSpy,
+                    includeInactiveMailAccountsSpy,
+                    getMailAccountStoreSpy
+                ].map(spy => spy.remove());  
+            });
+
+
+            t.it("onMailMessageSaveOperationComplete() considers inactiveMailAccounts", t => {
+
+                const FAKE_OPERATION = {};
+
+                const FAKE_VIEWMODEL = {
+                    includeInactiveMailAccounts () {}
+                };
+                const FAKE_VIEW = {
+
+                };
+
+                controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
+                const setViewBusySpy = t.spyOn(controller, "setViewBusy").and.callFake(() => {});
+
+                controller.getView = () => FAKE_VIEW;
+                controller.getViewModel = () => FAKE_VIEWMODEL;
+
+                const includeInactiveMailAccountsSpy = t.spyOn(
+                    controller.getViewModel(),
+                    "includeInactiveMailAccounts"
+                ).and.callThrough();
+
+                controller.onMailMessageSaveOperationComplete(FAKE_OPERATION);
+
+                t.expect(includeInactiveMailAccountsSpy.calls.mostRecent().args[0]).toBe(true);
+
+                [
+                    includeInactiveMailAccountsSpy,
+                    setViewBusySpy
+                ].map(spy => spy.remove());
+            });
+
+
+            t.it("getMailAccountStore()", t => {
+
+                let NOTIFIED = false;
+
+                const FAKE_STORE = {};
+
+                const FAKE_VIEWMODEL = {
+                    get () {return NOTIFIED ? FAKE_STORE : undefined;},
+                    notify () {NOTIFIED = true;}
+                };
+
+                const notifySpy = t.spyOn(FAKE_VIEWMODEL, "notify");
+                const getSpy = t.spyOn(FAKE_VIEWMODEL, "get");
+
+                controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
+                controller.getViewModel = () => FAKE_VIEWMODEL;
+
+                t.expect(controller.getMailAccountStore()).toBe(FAKE_STORE);
+                t.expect(notifySpy.calls.count()).toBe(1);
+                t.expect(getSpy.calls.count()).toBe(2);
+
+                [getSpy, notifySpy].map(spy => spy.remove());
             });
 
 

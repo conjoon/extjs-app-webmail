@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -115,10 +115,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * is called as soon as the controller's
      * editor was rendered.
      */
-    init: function () {
+    init () {
 
-        var me   = this,
-            view = me.getView();
+        const
+            me   = this,
+            view = me.getView(),
+            vm = me.getViewModel();
 
         me.deferTimers = {};
 
@@ -144,7 +146,37 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
         });
 
+        me.getMailAccountStore().on("mailaccountactivechange", me.onMailAccountActiveChange, me);
+        vm.includeInactiveMailAccounts(false);
+
+
         me.ddListener.init();
+    },
+
+    /**
+     * Will probe the next available active MailAccount and set the MailAccount for this
+     *  message if it has not been saved yet.
+     *
+     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     */
+    onMailAccountActiveChange (store, mailAccount) {
+
+        const
+            me = this,
+            vm = me.getViewModel(),
+            messageDraft = vm.get("messageDraft"),
+            currentMailAccountId = messageDraft.get("mailAccountId");
+
+        if (!vm.get("isPhantom") || currentMailAccountId !== mailAccount.get("id")) {
+            return;
+        }
+
+        if (!mailAccount.get("active")) {
+            messageDraft.set("mailAccountId", me.getMailAccountStore().findFirstActiveMailAccount()?.get("id"));
+            vm.notify();
+        }
+
     },
 
 
@@ -316,6 +348,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
     /**
      * Callback for a single operation's complete event.
+     * Will make sure that the ViewModel considers inactive MailAccounts again so that
+     * a previously "active=true" MailAccount now set to "active=false" does leave
+     * the Account information empty.
      *
      * @param {conjoon.cn_mail.view.mail.message.editor.MessageEditor} editor
      * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
@@ -326,6 +361,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         var me = this;
 
         me.setViewBusy(operation);
+        me.getViewModel().includeInactiveMailAccounts(true);
     },
 
 
@@ -770,9 +806,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          */
         applyAccountInformation: function (messageDraft) {
 
-            const me             = this,
-                view           = me.getView(),
-                vm             = view.getViewModel(),
+            const
+                me          = this,
                 mailboxService = me.getMailboxService(),
                 mailAccountId  = messageDraft.get("mailAccountId");
 
@@ -792,7 +827,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
 
 
-            let accRecord = vm.get("cn_mail_mailfoldertreestore").findRecord(
+            let accRecord = me.getMailAccountStore().findRecord(
                 "id", mailAccountId
             );
 
@@ -890,7 +925,22 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 progress: progress
             });
         }
+    },
 
 
+    /**
+     * @private
+     */
+    getMailAccountStore () {
+        const
+            me = this,
+            vm = me.getViewModel();
+
+        if (!vm.get("mailAccountStore")) {
+            vm.notify();
+        }
+        return vm.get("mailAccountStore");
     }
+
+
 });
