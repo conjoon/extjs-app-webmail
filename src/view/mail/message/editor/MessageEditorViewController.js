@@ -157,7 +157,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
     registerMailAccountRelatedFunctionality () {
         const me = this;
 
-        me.getMailAccountStore().on("mailaccountactivechange", me.onMailAccountActiveChange, me);
+        me.getChainedMailAccountStore().getSource().on(
+            "mailaccountactivechange", me.onMailAccountActiveChange, me
+        );
         me.getViewModel().includeInactiveMailAccounts(false);
     },
 
@@ -182,7 +184,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         }
 
         if (!mailAccount.get("active")) {
-            messageDraft.set("mailAccountId", me.getMailAccountStore().findFirstActiveMailAccount()?.get("id"));
+            messageDraft.set("mailAccountId", me.getChainedMailAccountStore().getSource().findFirstActiveMailAccount()?.get("id"));
             vm.notify();
         }
 
@@ -314,7 +316,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @see conjoon.cn_mail.view.mail.message.editor.AttachmentList#addAttachment
      */
     onFormFileButtonChange: function (fileButton, evt, value, fileList) {
-        var me = this;
+        const me = this;
         me.addAttachmentsFromFileList(fileList);
     },
 
@@ -338,7 +340,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      */
     onSendButtonClick: function (btn) {
 
-        var me = this;
+        const me = this;
 
         me.configureAndStartSaveBatch(true);
     },
@@ -350,7 +352,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      * @param {Ext.Button} btn
      */
     onSaveButtonClick: function (btn) {
-        var me = this;
+        const me = this;
         me.configureAndStartSaveBatch();
     },
 
@@ -367,7 +369,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      */
     onMailMessageSaveOperationComplete: function (editor, messageDraft, operation) {
 
-        var me = this;
+        const me = this;
 
         me.setViewBusy(operation);
         me.getViewModel().includeInactiveMailAccounts(true);
@@ -437,7 +439,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
      */
     onMailMessageSaveComplete: function (editor, messageDraft, operation, isSending, isCreated) {
 
-        var me = this;
+        const me = this;
 
         me.setViewBusy(operation, 1);
 
@@ -446,7 +448,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 me.endBusyState, 750, me, ["saving"]);
         } else {
             me.deferTimers["savecompletesend"] = Ext.Function.defer(function () {
-                var me = this;
+                const me = this;
                 me.endBusyState("saving");
                 me.sendMessage();
             }, 750, me);
@@ -489,7 +491,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             vm.get("isSubjectRequired") === true) {
             view.showSubjectMissingNotice(messageDraft, Ext.Function.bindCallback(
                 function (isSending, isCreated, viewModel, buttonId, value) {
-                    var me = this;
+                    const me = this;
 
                     if (buttonId !== "okButton") {
                         return;
@@ -746,19 +748,29 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          * is a "send" operation of the MessageDraft. This will additionally trigger
          * the send-process once the draft was successfully saved.
          *
+         * @return {Boolean} false if the save-batch was not started, otherwise true
+         *
          * @private
          */
         configureAndStartSaveBatch: function (isSend) {
 
-            var me           = this,
+            const
+                me           = this,
                 view         = me.getView(),
                 vm           = view.getViewModel(),
                 session      = view.getSession(),
                 messageDraft = vm.get("messageDraft"),
-                isCreated    = messageDraft.phantom === true,
-                saveBatch;
+                isCreated    = messageDraft.phantom === true;
 
-            me.applyAccountInformation(messageDraft);
+            let saveBatch, accountValid;
+
+            accountValid = me.applyAccountInformation(messageDraft);
+
+            if (accountValid === false) {
+                view.showAccountInvalidNotice();
+                return false;
+            }
+
 
             if (view.fireEvent("cn_mail-mailmessagebeforesave", view, messageDraft, isSend === true, isCreated === true) === false) {
                 return false;
@@ -802,6 +814,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             });
 
             saveBatch.start();
+            return true;
         },
 
 
@@ -811,6 +824,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          *
          * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
          *
+         * @return {Boolean} returns true, if the account was considered to
+         * be in a valid state, otehrwise false
+         *
          * @private
          */
         applyAccountInformation: function (messageDraft) {
@@ -819,6 +835,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 me          = this,
                 mailboxService = me.getMailboxService(),
                 mailAccountId  = messageDraft.get("mailAccountId");
+
+            if (!mailAccountId ||
+                !mailboxService.getMailFolderHelper().getAccountNode(mailAccountId)?.get("active")) {
+                return false;
+            }
 
             if (!messageDraft.get("mailFolderId")) {
                 let mailFolderId = mailboxService.getMailFolderHelper().getMailFolderIdForType(
@@ -836,7 +857,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             }
 
 
-            let accRecord = me.getMailAccountStore().findRecord(
+            let accRecord = me.getChainedMailAccountStore().findRecord(
                 "id", mailAccountId
             );
 
@@ -852,6 +873,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
             // will trigger a save in the case the date value changes.
             messageDraft.set("date", new Date());
+
+            return true;
         },
 
 
@@ -938,9 +961,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
     /**
+     * Returns the chained store based on the MailFolderTreeStore.
+     * For node operations, make sure to query getSource() called with
+     * the return value of this method.
+     *
+     * @return {Ext.data.ChainedStore}
+     *
      * @private
      */
-    getMailAccountStore () {
+    getChainedMailAccountStore () {
         const
             me = this,
             vm = me.getViewModel();

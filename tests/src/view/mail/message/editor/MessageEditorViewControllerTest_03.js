@@ -63,7 +63,8 @@ StartTest(async t => {
                     on () {}                        
                 };
 
-                const FAKE_STORE = Ext.create("Ext.data.Store");
+                const SOURCE_STORE = Ext.create("Ext.data.Store");
+                const FAKE_STORE = {getSource: () => SOURCE_STORE};
 
                 controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
 
@@ -80,16 +81,16 @@ StartTest(async t => {
                     "includeInactiveMailAccounts"
                 ).and.callThrough();
 
-                const getMailAccountStoreSpy = t.spyOn(
+                const getChainedMailAccountStoreSpy = t.spyOn(
                     controller,
-                    "getMailAccountStore"
+                    "getChainedMailAccountStore"
                 ).and.callFake(() => FAKE_STORE);
 
                 controller.init();
 
                 t.expect(includeInactiveMailAccountsSpy.calls.mostRecent().args[0]).toBe(false);
 
-                FAKE_STORE.fireEvent("mailaccountactivechange");
+                FAKE_STORE.getSource().fireEvent("mailaccountactivechange");
 
                 t.expect(onMailAccountActiveChangeSpy.calls.count()).toBe(1);
 
@@ -97,7 +98,7 @@ StartTest(async t => {
                 [
                     onMailAccountActiveChangeSpy,
                     includeInactiveMailAccountsSpy,
-                    getMailAccountStoreSpy
+                    getChainedMailAccountStoreSpy
                 ].map(spy => spy.remove());  
             });
 
@@ -135,11 +136,12 @@ StartTest(async t => {
             });
 
 
-            t.it("getMailAccountStore()", t => {
+            t.it("getChainedMailAccountStore()", t => {
 
                 let NOTIFIED = false;
 
-                const FAKE_STORE = {};
+                const SOURCE_STORE = Ext.create("Ext.data.Store");
+                const FAKE_STORE = {getSource: () => SOURCE_STORE};
 
                 const FAKE_VIEWMODEL = {
                     get () {return NOTIFIED ? FAKE_STORE : undefined;},
@@ -152,13 +154,50 @@ StartTest(async t => {
                 controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
                 controller.getViewModel = () => FAKE_VIEWMODEL;
 
-                t.expect(controller.getMailAccountStore()).toBe(FAKE_STORE);
+                t.expect(controller.getChainedMailAccountStore()).toBe(FAKE_STORE);
                 t.expect(notifySpy.calls.count()).toBe(1);
                 t.expect(getSpy.calls.count()).toBe(2);
 
                 [getSpy, notifySpy].map(spy => spy.remove());
             });
 
+
+            t.it("configureAndStartSaveBatch() - exits if applyAccountInformation() is false", t => {
+
+                controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
+
+                const FAKE_VIEW = {
+                    showAccountInvalidNotice () {
+
+                    },
+                    fireEvent: () => true,
+                    getSession: () => ({
+                        getSaveBatch: () => ({
+                            setPauseOnException: ()  => {},
+                            on: () => {},
+                            start: ()  => {}
+                        })}),
+                    getViewModel: () => ({
+                        get: () => ({})
+                    })
+                };
+
+                controller.getView = () => FAKE_VIEW;
+
+                let VALID = false;
+
+                const showSpy = t.spyOn(FAKE_VIEW, "showAccountInvalidNotice").and.callFake(() => {});
+                const applySpy = t.spyOn(controller, "applyAccountInformation").and.callFake(() => VALID);
+
+                t.expect(controller.configureAndStartSaveBatch()).toBe(false);
+
+                t.expect(showSpy.calls.count()).toBe(1);
+
+                VALID = true;
+                t.expect(controller.configureAndStartSaveBatch()).toBe(true);
+
+                [showSpy, applySpy].map(spy => spy.remove());
+            });
 
             // +----------------------------------------------------------------------------
             // | SENDING

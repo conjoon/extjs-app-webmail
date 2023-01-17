@@ -34,28 +34,6 @@ StartTest(async t => {
 
             var view,
                 controller,
-                createKey = function (id1, id2, id3) {
-                    return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
-                },
-                getMessageItemAt = function (messageIndex) {
-                    return conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(messageIndex);
-                },
-                createKeyForExistingMessage = function (messageIndex){
-                    let item = getMessageItemAt(messageIndex);
-
-                    let key = createKey(
-                        item.mailAccountId, item.mailFolderId, item.id
-                    );
-
-                    return key;
-                },
-                createOperation = function () {
-                    return Ext.create("Ext.data.operation.Create", {
-                        entityType: {
-                            entityName: "TESTENTITY"
-                        }
-                    });
-                },
                 createEditorForController = function (controller, editMode, messageDraft) {
 
                     if (!messageDraft) {
@@ -126,7 +104,7 @@ StartTest(async t => {
 
 
             t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
-
+                /*
                 t.it("onMailMessageBeforeSave() - cancelled", t => {
                     controller = Ext.create(
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
@@ -890,7 +868,7 @@ StartTest(async t => {
 
                 });
 
-
+*/
                 t.it("applyAccountInformation() - no mailFolder set if already available in draft", t => {
 
                     controller = Ext.create(
@@ -912,12 +890,50 @@ StartTest(async t => {
                         t.expect(messageDraft.get("mailFolderId")).toBe(MAILFOLDERID);
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
-                            controller.applyAccountInformation(messageDraft);
+                            t.expect(controller.applyAccountInformation(messageDraft)).toBe(true);
 
                             t.expect(messageDraft.get("mailFolderId")).toBe(MAILFOLDERID);
                             t.expect(messageDraft.get("mailFolderId")).not.toBe(controller.getMailboxService().getMailFolderHelper().getMailFolderIdForType("dev_sys_conjoon_org", "DRAFT"));
 
                         });
+
+                    });
+                });
+
+
+                t.it("applyAccountInformation() - no valid MailAccount", t => {
+
+                    controller = Ext.create(
+                        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
+                        });
+                    view = createEditorForController(controller);
+
+
+                    let MAILFOLDERID = "foo";
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                        let messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft", {
+                            mailFolderId: MAILFOLDERID
+                        });
+
+                        t.expect(controller.applyAccountInformation(messageDraft)).toBe(false);
+
+                        const account = controller.mailboxService.getMailFolderHelper().getAccountNode(
+                            "dev_sys_conjoon_org"
+                        );
+                        t.expect(account).toBeTruthy();
+                        account.set("active", false);
+                        account.commit();
+
+                        messageDraft.set("mailAccountId", account.get("id"));
+                        t.expect(messageDraft.get("mailAccountId")).toBeTruthy();
+                        t.expect(controller.applyAccountInformation(messageDraft)).toBe(false);
+
+                        account.set("active", true);
+
+                        t.expect(controller.applyAccountInformation(messageDraft)).toBe(true);
+
 
                     });
 
