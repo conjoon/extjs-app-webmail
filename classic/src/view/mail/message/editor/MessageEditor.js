@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -755,6 +755,31 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
         me.setClosable(false);
 
         myMask.show();
+    },
+
+
+    /**
+     * Shows a notice that the either an account is missing for the message being edited,
+     * or this account's state is invalid.
+     *
+     */
+    showAccountInvalidNotice () {
+
+        const me = this;
+
+        let mask = Ext.create("coon.comp.component.MessageMask", {
+            /**
+             * @i18n
+             */
+            title: "Mail Account Information invalid",
+            message: "Please make sure an active Mail Account is used for this message.",
+            buttons: coon.comp.component.MessageMask.OK,
+            target: me,
+            icon: coon.comp.component.MessageMask.ERROR,
+            dialogStyle: false
+        });
+
+        mask.show();
     },
 
 
