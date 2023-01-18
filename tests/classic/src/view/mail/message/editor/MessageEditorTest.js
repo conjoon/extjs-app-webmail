@@ -1041,4 +1041,16 @@ StartTest(async t => {
                 });
 
 
+                t.it("combobox with NULL as default value", t => {
+                    let messageDraftConfig = Ext.create(
+                        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {mailAccountId: undefined}
+                    );
+
+                    view = createWithMessageConfig(messageDraftConfig, "CREATE");
+
+                    let combo = view.down("#accountCombo");
+                    t.expect(combo.initialConfig.bind.value).toBe("{messageDraft.mailAccountId || null}");
+                });
+
+
             });});});
