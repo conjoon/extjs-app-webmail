@@ -53,7 +53,6 @@ StartTest(async t => {
                 delay: 1
             });
 
-
             t.it("init registers MailAccount active-related functionality", t => {
 
                 const FAKE_VIEWMODEL = {
@@ -100,6 +99,100 @@ StartTest(async t => {
                     includeInactiveMailAccountsSpy,
                     getChainedMailAccountStoreSpy
                 ].map(spy => spy.remove());  
+            });
+
+
+            t.it("onMailAccountActiveChange()", t => {
+
+                controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController");
+
+                let store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+                let IS_PHANTOM = false;
+
+                let MAIL_ACCOUNT_ID = "id";
+
+                let ACCOUNT_ACTIVE = false;
+
+                const getAccountNodeSpy = t.spyOn(controller, "getAccountNode").and.callFake(id => {
+                    if (id === "dev_sys_conjoon_org") {
+                        return {
+                            get: key => key === "active" ? ACCOUNT_ACTIVE : undefined
+                        };
+                    }
+                });
+
+                const FAKE_MESSAGEDRAFT = {
+
+                    get (key) {
+                        switch (key) {
+                        case "mailAccountId":
+                            return MAIL_ACCOUNT_ID;
+                        }
+                    },
+                    set (key, value) {
+                        this[key] = value;
+                    }
+                };
+
+                const FAKE_VIEWMODEL = {
+                    get: (key) => {
+                        switch (key) {
+                        case "messageDraft":
+                            return FAKE_MESSAGEDRAFT;
+                        case "isPhantom":
+                            return IS_PHANTOM;
+                        }
+                    }
+                };
+
+                let NODE_TPL = {
+                    get: () => "newactiveid"
+                };
+                let FAKE_NODE = undefined;
+                const findSpy = t.spyOn(store, "findFirstActiveMailAccount").and.callFake(() => FAKE_NODE);
+
+                // case vm isPhantom == false
+
+                controller.getViewModel = () => FAKE_VIEWMODEL;
+
+                t.waitForMs(t.parent.TIMEOUT, () => {
+                    // case vm isPhantom == false
+                    IS_PHANTOM = false;
+                    let activeId = controller.onMailAccountActiveChange(store, {});
+                    t.expect(activeId).toBe(MAIL_ACCOUNT_ID);
+
+                    // isPhantom = true, no current node (account removed, message was loaded before)
+                    IS_PHANTOM = true;
+                    activeId = controller.onMailAccountActiveChange(store, {});
+                    t.expect(activeId).toBe(MAIL_ACCOUNT_ID);
+
+                    // isPhantom = true, current node active (account removed, message was loaded before)
+                    IS_PHANTOM = true;
+                    ACCOUNT_ACTIVE = true;
+                    MAIL_ACCOUNT_ID = "dev_sys_conjoon_org";
+                    activeId = controller.onMailAccountActiveChange(store, {});
+                    t.expect(activeId).toBe(MAIL_ACCOUNT_ID);
+
+                    // isPhantom = true, currentNode is not active, no active account found
+                    IS_PHANTOM = true;
+                    ACCOUNT_ACTIVE = false;
+                    MAIL_ACCOUNT_ID = "dev_sys_conjoon_org";
+                    activeId = controller.onMailAccountActiveChange(store, {});
+                    t.expect(activeId).toBeUndefined();
+                    t.expect(FAKE_MESSAGEDRAFT.mailAccountId).toBe(null);
+
+                    // isPhantom = true, currentNode is not active, active account found
+                    IS_PHANTOM = true;
+                    ACCOUNT_ACTIVE = false;
+                    MAIL_ACCOUNT_ID = "dev_sys_conjoon_org";
+                    FAKE_NODE = NODE_TPL;
+                    activeId = controller.onMailAccountActiveChange(store, {});
+                    t.expect(activeId).toBe(NODE_TPL.get());
+                    t.expect(FAKE_MESSAGEDRAFT.mailAccountId).toBe(activeId);
+
+                    [getAccountNodeSpy, findSpy].map(spy => spy.remove());
+                });
             });
 
 

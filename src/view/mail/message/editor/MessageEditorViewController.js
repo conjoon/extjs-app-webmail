@@ -165,11 +165,18 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
     /**
+     * Callback for the mailaccountactivechange event.
+     * Will do nothing if the message's MailAccount is active.
      * Will probe the next available active MailAccount and set the MailAccount for this
-     *  message if it has not been saved yet.
+     * message if it has not been saved yet.
+     * Returns the id of the mailAccount of the MessageDraft, which can
+     * differ from the original mailAccountId. Returns undefined if no active account
+     * was determined.
      *
      * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
      * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     *
+     * @return {Number|undefined}
      */
     onMailAccountActiveChange (store, mailAccount) {
 
@@ -177,17 +184,17 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             me = this,
             vm = me.getViewModel(),
             messageDraft = vm.get("messageDraft"),
-            currentMailAccountId = messageDraft.get("mailAccountId");
+            currentMailAccountId = messageDraft.get("mailAccountId"),
+            currentNode = me.getAccountNode(currentMailAccountId);
 
-        if (!vm.get("isPhantom") || currentMailAccountId !== mailAccount.get("id")) {
-            return;
+        if (!vm.get("isPhantom") || (!currentNode || currentNode.get("active"))) {
+            return currentMailAccountId;
         }
 
-        if (!mailAccount.get("active")) {
-            messageDraft.set("mailAccountId", me.getChainedMailAccountStore().getSource().findFirstActiveMailAccount()?.get("id"));
-            vm.notify();
-        }
+        const activeId = store.findFirstActiveMailAccount()?.get("id");
+        messageDraft.set("mailAccountId", activeId || null);
 
+        return activeId;
     },
 
 
@@ -819,6 +826,23 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
 
         /**
+         * @param mailAccountId
+         * @returns {*|conjoon.cn_mail.model.mail.folder.MailFolder|undefined}
+         * @private
+         */
+        getAccountNode (mailAccountId) {
+
+            const
+                me          = this,
+                mailboxService = me.getMailboxService(),
+                accountNode    = mailAccountId &&
+                                    mailboxService.getMailFolderHelper()
+                                        .getAccountNode(mailAccountId);
+
+            return accountNode || undefined;
+        },
+
+        /**
          * Helper method to apply additional information to the MessageDraft
          * right before saving.
          *
@@ -836,8 +860,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 mailboxService = me.getMailboxService(),
                 mailAccountId  = messageDraft.get("mailAccountId");
 
-            if (!mailAccountId ||
-                !mailboxService.getMailFolderHelper().getAccountNode(mailAccountId)?.get("active")) {
+            if (!me.getAccountNode(mailAccountId)?.get("active")) {
                 return false;
             }
 
