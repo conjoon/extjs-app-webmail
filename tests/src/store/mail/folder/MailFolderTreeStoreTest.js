@@ -225,6 +225,21 @@ StartTest(async t => {
             account2.set("active", false);
             t.expect(inst.findFirstActiveMailAccount()).toBe(undefined);
 
+            account1.set("active", true);
+            account2.set("active", true);
+
+            t.expect(inst.findFirstActiveMailAccount({
+                property: "id",
+                operator: "NOT_IN",
+                value: [account1.get("id"), account2.get("id")]
+            })).toBe(undefined);
+
+            t.expect(inst.findFirstActiveMailAccount({
+                property: "id",
+                operator: "NOT_IN",
+                value: [account1.get("id")]
+            })).toBe(account2);
+
         });
 
 

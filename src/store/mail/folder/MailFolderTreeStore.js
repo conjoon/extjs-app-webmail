@@ -135,9 +135,13 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
      * Finds the first active mail account managed by this store.
      * Returns undefined if no active account was found
      *
+     * @param {Object} filter allows for specifying a filter object that
+     * can be used for filtering active mail accounts based on additional
+     * conditions
+     *
      * @return {conjoon.cn_mail.model.mail.account.MailAccount|undefined}
      */
-    findFirstActiveMailAccount () {
+    findFirstActiveMailAccount (filter = {}) {
 
         const
             me = this,
@@ -146,6 +150,15 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         let mailAccount;
         childNodes.some(node => {
             if (node.get("active")) {
+
+                if (filter) {
+                    if (filter.operator === "NOT_IN") {
+                        if (filter.value.includes(node.get(filter.property))) {
+                            return;
+                        }
+                    }
+                }
+
                 mailAccount = node;
                 return true;
             }
