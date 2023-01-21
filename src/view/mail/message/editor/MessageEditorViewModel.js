@@ -326,7 +326,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                     failure: me.processMessageDraftLoadFailure,
                     scope: me
                 };
-                me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
+                // configured the VM with loadingDraft information.
+                // interested clients should call the associated view's loadDraft
+                // once the environment can be used for loading the draft.
+                me.loadingDraft = {messageDraft, options};
             } else {
                 me.getSession().setMessageDraft(sessDraft);
                 me.set("messageDraft", sessDraft);

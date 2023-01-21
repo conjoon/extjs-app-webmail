@@ -153,6 +153,14 @@ StartTest(async t => {
                 });
             };
 
+        const loadDraft = function (viewModel) {
+            t.expect(Object.keys(viewModel.loadingDraft)).toEqual(["messageDraft", "options"]);
+            conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+                viewModel.loadingDraft.messageDraft,
+                viewModel.loadingDraft.options
+            );
+        };
+
         t.afterEach(function () {
             if (viewModel) {
                 viewModel.destroy();
@@ -338,6 +346,8 @@ StartTest(async t => {
 
                                 let messageItem = getMessageItemAt(index);
 
+                                loadDraft(viewModel);
+
                                 t.waitForMs(t.parent.TIMEOUT, () => {
                                     t.expect(viewModel.get("messageDraft").get("id")).toBe(messageItem.id);
                                     t.expect(viewModel.get("messageDraft").get("mailAccountId")).toBe(messageItem.mailAccountId);
@@ -445,6 +455,8 @@ StartTest(async t => {
                                 });
 
                                 let item = getMessageItemAt(1);
+
+                                loadDraft(viewModel);
 
                                 t.waitForMs(t.parent.TIMEOUT, () => {
                                     t.expect(viewModel.get("messageDraft")).toBeDefined();
@@ -686,6 +698,7 @@ StartTest(async t => {
                                     messageDraft: CK
                                 });
 
+                                loadDraft(viewModel);
 
                                 t.waitForMs(t.parent.TIMEOUT, () => {
                                     t.expect(viewModel.get("messageDraft")).toBeFalsy();
@@ -696,6 +709,8 @@ StartTest(async t => {
                                         session: session,
                                         messageDraft: existing
                                     });
+
+                                    loadDraft(newVm);
 
                                     t.waitForMs(t.parent.TIMEOUT, () => {
 
@@ -743,7 +758,6 @@ StartTest(async t => {
                                     delay: Math.max(1, t.parent.TIMEOUT - 1000)
                                 });
 
-
                                 viewModel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                                     session: session,
                                     messageDraft: CK
@@ -764,6 +778,7 @@ StartTest(async t => {
 
                                 viewModel.getView = function (){return VIEWMOCK;};
 
+                                loadDraft(viewModel);
 
                                 t.waitForMs(t.parent.TIMEOUT, () => {
                                     t.expect(viewModel.loadingDraft).toBeFalsy();
@@ -798,6 +813,7 @@ StartTest(async t => {
 
                                 t.expect(CALLED).toBe(0);
 
+                                loadDraft(viewModel);
 
                                 t.waitForMs(t.parent.TIMEOUT, () => {
                                     t.expect(CALLED).toBe(1);
