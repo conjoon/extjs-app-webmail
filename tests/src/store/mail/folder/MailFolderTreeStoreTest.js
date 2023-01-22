@@ -242,8 +242,44 @@ StartTest(async t => {
 
         });
 
+        t.it("loadMailAccounts()", async t => {
+
+            const
+                inst = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+            t.expect(inst.getRoot().childNodes.length).toBe(0);
+
+            const observer = {
+                onMailAccountsLoaded () {
+
+                }
+            };
+
+            const fireSpy = t.spyOn(observer, "onMailAccountsLoaded").and.callThrough();
+            const loadSpy = t.spyOn(inst, "load").and.callThrough();
+
+            inst.on("mailaccountsloaded", observer.onMailAccountsLoaded);
+
+            let res = await inst.loadMailAccounts();
+            let res2 = await inst.loadMailAccounts();
+
+            const accounts = inst.getRoot().childNodes;
+
+            t.expect(res).toBe(accounts);
+            t.expect(res).toBe(res2);
+
+            t.expect(loadSpy.calls.count()).toBe(1 + accounts.length);
+
+            t.expect(fireSpy.calls.count()).toBe(1);
+            t.expect(fireSpy.calls.mostRecent().args).toEqual([
+                inst,
+                accounts
+            ]);
+
+            [fireSpy, loadSpy].map(spy => spy.remove());
+
+        });
 
     });
-
 
 });

@@ -84,11 +84,26 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
      * @param {Boolean} hasActiveMailAccount
      */
 
+    /**
+     * Fired when the MailAccounts and their child nodes where loaded.
+     * @event mailaccountsloaded
+     * @param this
+     * @param {Array} mailAccounts
+     */
+
+    /**
+     * @type {Boolean} accountsLoaded
+     */
 
     /**
      * @type {Boolean} hasActiveMailAccount
      */
     hasActiveMailAccount: false,
+
+    /**
+     * @type {Boolean} acccountsAreBeingLoaded
+     * @private
+     */
 
     statics: {
 
@@ -275,6 +290,68 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         root.appendChild(mailAccount);
 
         return mailAccount;
+    },
+
+
+    /**
+     * Makes an attempt to load the MailAccounts with their child nodes.
+     * Fires the "mailaccountsloaded"-once load-operations have
+     * finished.
+     *
+     * @return {Array} the nodes loaded.
+     */
+    async loadMailAccounts () {
+
+        const me = this;
+
+        if (me.accountsLoaded) {
+            return me.getRoot().childNodes;
+        }
+
+        if (me.acccountsAreBeingLoaded) {
+            return await new Promise(function (resolve, reject) {
+                me.on("mailaccountsloaded", function (store, nodes) {
+                    return resolve(nodes);
+                }, {single: true});
+            });
+        }
+
+        me.acccountsAreBeingLoaded = true;
+
+        const accounts = await new Promise(function (resolve, reject) {
+            const childs = me.getRoot().childNodes;
+
+            if (childs.length) {
+                return resolve(childs);
+            }
+
+            me.load();
+            me.on("load", function (store, nodes) {
+                return resolve(nodes);
+            }, {single: true});
+        });
+
+        let accountCount = accounts.length;
+
+        if (me.isLoading()) {
+            await new Promise (function (resolve, reject) {
+                const cb = function () {
+                    accountCount--;
+                    if (accountCount === 0) {
+                        me.accountsLoaded = true;
+                        resolve();
+                    } else {
+                        me.on("load", cb, me, {single: true});
+                    }
+                };
+                me.on("load", cb, me, {single: true});
+            });
+        }
+
+        const childNodes = me.getRoot().childNodes;
+        me.fireEvent("mailaccountsloaded", me, childNodes);
+
+        return childNodes;
     }
 
 });
