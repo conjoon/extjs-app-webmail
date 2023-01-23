@@ -949,7 +949,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             mailAccountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
         mailAccountStore.on("activemailaccountavailable", me.onActiveMailAccountAvailable, me);
-        mailAccountStore.load();
+        mailAccountStore.loadMailAccounts();
 
 
         const data = {
@@ -1163,9 +1163,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          * Opens the MaiLEditor for the specified id and the specified action (
          * one of edit, compose, replyTo, replyAll, forward).
          *
-         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
-         *
-         * @param {String type
+         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} key
+         * @param {String} type
          *
          * @private
          *

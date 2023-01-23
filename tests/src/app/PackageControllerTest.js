@@ -151,7 +151,10 @@ StartTest(async t => {
 
                     t.it("postLaunchHook should load MailFolderTreeStore", t => {
 
-                        const loadSpy = t.spyOn(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(), "load");
+                        const loadSpy = t.spyOn(
+                            conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
+                            "loadMailAccounts"
+                        );
 
                         packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
                         t.expect(loadSpy.calls.count()).toBe(0);

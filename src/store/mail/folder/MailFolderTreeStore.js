@@ -331,6 +331,10 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
             }, {single: true});
         });
 
+        if (!accounts) {
+            return [];
+        }
+
         let accountCount = accounts.length;
 
         if (me.isLoading()) {
