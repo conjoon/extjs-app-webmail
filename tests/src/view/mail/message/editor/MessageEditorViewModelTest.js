@@ -979,7 +979,7 @@ StartTest(async t => {
                                     "cn_mail_mailfoldertreestore",
                                     conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance());
 
-                                let EDIT_MODE = "CREATE";
+                                let EDIT_MODE = "NOT_EDIT";
 
                                 const FAKE_VIEW = {editMode: EDIT_MODE};
 
@@ -988,19 +988,58 @@ StartTest(async t => {
 
                                 t.waitForMs(t.parent.TIMEOUT, () => {
 
-                                    t.expect(viewModel.includeInactiveMailAccounts(false)).toBe(true);
-
-                                    const filters = viewModel.get("mailAccountStore").getFilters();
-                                    t.expect(filters.getAt(1).getId()).toBe("inact");
-
-                                    FAKE_VIEW.editMode = "NOT_CREATE";
                                     t.expect(viewModel.includeInactiveMailAccounts(false)).toBe(false);
 
-                                    viewModel.includeInactiveMailAccounts();
+                                    const filters = viewModel.get("mailAccountStore").getFilters();
+                                    t.expect(filters.getAt(1).getId()).toBe("onlyActiveAccounts");
+
+                                    FAKE_VIEW.editMode = "EDIT";
+                                    t.expect(viewModel.includeInactiveMailAccounts(false)).toBe(true);
+
+                                    t.expect(viewModel.includeInactiveMailAccounts()).toBe(true);
                                     t.expect(filters.getAt(1)).toBeUndefined();
 
                                 });
 
+                            });
+
+
+                            t.it("loadDraft()", t => {
+                                let session = createSession();
+                                viewModel = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
+                                    session: session,
+                                    messageDraft: Ext.create("conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig")
+                                });
+
+                                try {
+                                    viewModel.loadDraft();
+                                    t.fail();
+                                } catch (e) {
+                                    t.expect(e.message).toContain("no loadingDraft configured");
+                                }
+
+                                const
+                                    RET_VALUE = {},
+                                    LOADING_DRAFT = {messageDraft: "messageDraft", options: "options"};
+
+                                viewModel.loadingDraft = LOADING_DRAFT;
+
+                                const loadSpy = t.spyOn(
+                                    conjoon.cn_mail.model.mail.message.MessageDraft,
+                                    "loadEntity"
+                                ).and.callFake(() => RET_VALUE);
+
+                                // RET_VALUE <- returnValue <- loadingDraft <- result
+                                t.expect(viewModel.loadDraft()).toBe(viewModel.loadingDraft);
+                                t.expect(viewModel.loadingDraft).toBe(loadSpy.calls.mostRecent().returnValue);
+                                t.expect(loadSpy.calls.mostRecent().returnValue).toBe(RET_VALUE);
+
+                                t.expect(
+                                    loadSpy.calls.mostRecent().args).toEqual(
+                                    Object.values(LOADING_DRAFT)
+                                );
+
+                                loadSpy.remove();
                             });
 
 

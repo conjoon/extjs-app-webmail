@@ -370,14 +370,16 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
     /**
      * Includes or excludes inactive mail accounts in the MailAccount-store.
      * Only excludes inactive MailAccounts if the message managed by this
-     * ViewModel was opened in CREATE-edit mode.
+     * ViewModel was opened in EDIT mode.
      *
-     *  @param {Boolean=true} include true to include inactive MailAccounts,
-     *  otherwise false to exclude them.
+     *  @param {Boolean=true} includeInactiveAccounts true to include inactive
+     *  MailAccounts, otherwise false to exclude them.
      *
-     * @returns {boolean}
+     * @returns {boolean} returns true if inactiveMailAccounts are included,
+     * otherwise false
      */
-    includeInactiveMailAccounts (include = true) {
+    includeInactiveMailAccounts (includeInactiveAccounts = true) {
+        includeInactiveAccounts = !!includeInactiveAccounts;
 
         const
             me = this,
@@ -387,21 +389,24 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
             throw new Error("no MailAccount-store available.");
         }
 
+        const
+            editMode = me.getView().editMode,
+            EDIT = conjoon.cn_mail.data.mail.message.EditingModes.EDIT;
 
-        if (include !== false) {
-            maStore.removeFilter("inact");
-        } else {
-            if (me.getView().editMode !== conjoon.cn_mail.data.mail.message.EditingModes.CREATE) {
-                return false;
-            }
-            maStore.addFilter({
-                id: "inact",
-                property: "active",
-                value: true
-            });
+        // if edit mode is EDIT, we need to show the account that was used with
+        // the original draft, if possible. Show all accounts then!
+        if ([EDIT].includes(editMode) || includeInactiveAccounts === true) {
+            maStore.removeFilter("onlyActiveAccounts");
+            return true;
         }
 
-        return true;
+        maStore.addFilter({
+            id: "onlyActiveAccounts",
+            property: "active",
+            value: true
+        });
+
+        return false;
     },
 
 
@@ -756,6 +761,30 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                 !!attachments.getRange().filter(item => item.dirty === true).length ||
                 !!attachments.getRange().filter(item => item.phantom === true).length;
         }
+    },
+
+
+    /**
+     * Triggers the loading of a draft if loadingDraft is configured.
+     *
+     * @return {conjoon.cn_mail.model.mail.message.MessageDraft}
+     *
+     * @throws if no loadingDraft is available with the ViewModel.
+     */
+    loadDraft () {
+
+        const me = this;
+
+        if (!me.loadingDraft) {
+            throw new Error("Cannot load draft, ViewModel has no loadingDraft configured");
+        }
+
+        me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+            me.loadingDraft.messageDraft,
+            me.loadingDraft.options
+        );
+
+        return me.loadingDraft;
     }
 
 });
