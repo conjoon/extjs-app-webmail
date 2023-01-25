@@ -762,24 +762,35 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
      * Shows a notice that the either an account is missing for the message being edited,
      * or this account's state is invalid.
      *
+     * @return {coon.comp.component.MessageMask}
      */
-    showAccountInvalidNotice () {
+    showAccountInvalidNotice (closeEditor = false) {
 
-        const me = this;
+        closeEditor = !!closeEditor;
 
-        let mask = Ext.create("coon.comp.component.MessageMask", {
-            /**
-             * @i18n
-             */
-            title: "Mail Account Information invalid",
-            message: "Please make sure an active Mail Account is used for this message.",
-            buttons: coon.comp.component.MessageMask.OK,
-            target: me,
-            icon: coon.comp.component.MessageMask.ERROR,
-            dialogStyle: false
-        });
+        const
+            me = this,
+            mask = Ext.create("coon.comp.component.MessageMask", {
+                /**
+                 * @i18n
+                 */
+                title: `Valid Mail Account missing ${closeEditor ? " - Cannot open Message" : ""}`,
+                message: "Please make sure an active Mail Account is used for this message.",
+                buttons: coon.comp.component.MessageMask.OK,
+                target: me,
+                callback: function (btnAction, value) {
+                    mask.close();
+                    if (closeEditor === true) {
+                        me.close();
+                    }
+                },
+                icon: coon.comp.component.MessageMask.ERROR,
+                dialogStyle: true
+            });
 
         mask.show();
+
+        return mask;
     },
 
 

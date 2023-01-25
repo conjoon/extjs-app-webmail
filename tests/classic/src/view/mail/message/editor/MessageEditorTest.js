@@ -410,7 +410,7 @@ StartTest(async t => {
                 t.it("Should load message from backend", t => {
                 // anything but 1 returns cc/bcc which is needed for this test
                     view = createWithMessageConfig(createKeyForExistingMessage(2));
-
+                    view.getViewModel().loadDraft();
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.editMode).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorattachmentlist").getEditMode()).toBe("EDIT");
@@ -427,7 +427,7 @@ StartTest(async t => {
 
                 t.it("Should load message from backend and not hide cc/bcc if fields are cleared", t => {
                     view = createWithMessageConfig(createKeyForExistingMessage(2));
-
+                    view.getViewModel().loadDraft();
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.editMode).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorhtmleditor").getValue()).toBeTruthy();
@@ -452,7 +452,7 @@ StartTest(async t => {
 
                 t.it("Should load message from backend and showHide ccbcc button depending on the values of the cc bcc fields", t => {
                     view = createWithMessageConfig(createKeyForExistingMessage(2));
-
+                    view.getViewModel().loadDraft();
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(view.editMode).toBe("EDIT");
                         t.expect(view.down("cn_mail-mailmessageeditorhtmleditor").getValue()).toBeTruthy();
@@ -475,6 +475,8 @@ StartTest(async t => {
                 t.it("Should load message from backend, cc and bcc field hidden", t => {
 
                     view = createWithMessageConfig(createKeyForExistingMessage(1));
+
+                    view.getViewModel().loadDraft();
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         expectCcsHidden(true, t, view);
@@ -891,7 +893,7 @@ StartTest(async t => {
 
 
                         editor = createWithMessageConfig(item.getCompoundKey());
-
+                        editor.getViewModel().loadDraft();
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
 
@@ -911,8 +913,7 @@ StartTest(async t => {
 
                     let item  = createMessageItem(1, "INBOX.Drafts"),
                         editor;
-
-
+                    
                     item.loadAttachments();
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
@@ -921,7 +922,7 @@ StartTest(async t => {
 
 
                         editor = createWithMessageConfig(item.getCompoundKey());
-
+                        editor.getViewModel().loadDraft();
                         let store = Ext.create(
                             "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
                         );
@@ -1050,6 +1051,45 @@ StartTest(async t => {
 
                     let combo = view.down("#accountCombo");
                     t.expect(combo.initialConfig.bind.value).toBe("{messageDraft.mailAccountId || null}");
+                });
+
+
+                t.it("showAccountInvalidNotice()", t => {
+                    view = createWithViewConfig(viewConfig);
+
+                    const closeSpy = t.spyOn(view, "close").and.callThrough();
+
+                    view.getViewModel().notify();
+
+                    let mask = view.showAccountInvalidNotice();
+
+                    t.isInstanceOf(mask, "coon.comp.component.MessageMask");
+                    t.expect(mask.msg).not.toContain("Cannot open Message");
+
+                    let okButton = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom),
+                        maskEl   = Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom);
+
+                    t.expect(maskEl.length).toBe(1);
+                    t.expect(okButton.length).toBe(1);
+
+                    // OKBUTTON
+                    t.click(okButton[0], function () {
+                        t.expect(Ext.dom.Query.select("div[class*=cn_comp-messagemask]", view.el.dom).length).toBe(0);
+
+                        mask = view.showAccountInvalidNotice(true);
+                        t.expect(mask.msg).toContain("Cannot open Message");
+                        okButton  = Ext.dom.Query.select("span[data-ref=okButton]", view.el.dom);
+
+                        t.expect(closeSpy.calls.count()).toBe(0);
+
+                        t.click(okButton[0], function () {
+                            t.expect(closeSpy.calls.count()).toBe(1);
+                            closeSpy.remove();
+                        });
+
+                    });
+
+
                 });
 
 
