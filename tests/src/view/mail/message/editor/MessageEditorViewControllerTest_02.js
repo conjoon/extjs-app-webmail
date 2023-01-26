@@ -607,6 +607,8 @@ StartTest(async t => {
 
                     view = createEditorForController(controller, null, createKeyForExistingMessage(1));
 
+                    view.getViewModel().loadDraft();
+
                     t.waitForMs(t.parent.TIMEOUT, () => {
 
                         view.render(document.body);
@@ -648,6 +650,7 @@ StartTest(async t => {
                         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
                         });
                     view = createEditorForController(controller, null, createKeyForExistingMessage(1));
+                    view.getViewModel().loadDraft();
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
 

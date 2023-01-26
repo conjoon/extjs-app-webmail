@@ -229,17 +229,13 @@ StartTest(async t => {
 
                 const
                     ctrl = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewController"),
-                    folders = [
-                        Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder")
-                    ],
+                    folder = Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder"),
                     messageDraft = Ext.create("conjoon.cn_mail.model.mail.message.MessageDraft"),
-                    messageDraftSpy = t.spyOn(messageDraft, "set");
+                    messageDraftSpy = t.spyOn(messageDraft, "set"),
+                    defaultDraftSpy = t.spyOn(ctrl, "getDefaultDraftFolderForComposing").and.callFake(() => folder);
+
 
                 Object.assign(ctrl, {
-                    defaultAccountInformations: {
-                        mailAccountId: "dev",
-                        mailFolderId: "INBOX"
-                    },
                     starvingEditors: ["itemid"],
                     view: {
                         down: () => ({
@@ -253,10 +249,12 @@ StartTest(async t => {
                 });
 
 
-                ctrl.seedFolders(folders);
+                ctrl.seedFolders();
                 t.expect(messageDraftSpy.calls.count()).toBe(1);
                 t.expect(Object.keys(messageDraftSpy.calls.all()[0].args[0])).toEqual(["mailAccountId", "mailFolderId"]);
                 t.expect(messageDraft.dirty).toBe(false);
+
+                [messageDraftSpy, defaultDraftSpy].map(spy => spy.remove());
             });
 
 
