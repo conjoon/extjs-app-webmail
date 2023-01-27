@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,6 +34,8 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
 
     requires: [
         "Ext.form.FieldSet",
+        "coon.comp.component.MessageMask",
+        "coon.comp.component.LoadMask",
         "conjoon.cn_mail.view.mail.account.MailAccountViewModel",
         "conjoon.cn_mail.view.mail.account.MailAccountViewController"
     ],
@@ -151,6 +153,15 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                 fieldLabel: "Reply-To",
                 bind: {
                     value: "{processReplyTo}"
+                }
+            }, {
+                xtype: "checkbox",
+                labelWidth: 160,
+                inputValue: true,
+                fieldLabel: "Active",
+                name: "active",
+                bind: {
+                    value: "{mailAccount.active}"
                 }
             }]
         }, {
@@ -310,6 +321,31 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
                         value: "{mailAccount.outbox_password}"
                     }
                 }]}]
+        }, {
+            xtype: "fieldset",
+            title: "Subscriptions",
+            listeners: {
+                // fix for tagfield growing horizontally
+                afterrender: cmp => cmp.setWidth(1)
+            },
+            items: [{
+                xtype: "tagfield",
+                flex: 1,
+                labelWidth: 160,
+                fieldLabel: " ",
+                name: "subscriptions",
+                queryMode: "local",
+                forceSelection: false,
+                triggerOnClick: false,
+                createNewOnEnter: true,
+                hideTrigger: true,
+                createNewOnBlur: true,
+                bind: {
+                    value: "{mailAccount.subscriptions}",
+                    store: "{subscriptionStore}"
+                }
+            }]
+
         }]
     }],
 
@@ -420,6 +456,23 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountView", {
         mask.loopProgress();
 
         return mask;
+    },
+
+
+    showMailAccountNotValidMessage () {
+
+        const me = this;
+
+        let myMask = Ext.create("coon.comp.component.MessageMask", {
+            title: "Invalid configuration",
+            message: "Please make sure that an account name is specified which does not already exist.",
+            target: me,
+            buttons: coon.comp.component.MessageMask.OK,
+            icon: coon.comp.component.MessageMask.ERROR
+        });
+
+        myMask.show();
+
     }
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -57,6 +57,12 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
         mailAccount: null
     },
 
+    stores: {
+        subscriptionStore: {
+            data: []
+        }
+    },
+
     formulas: {
 
         /**
@@ -67,7 +73,7 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
 
             get: function (get) {
                 let replyTo = get("mailAccount.replyTo");
-                return replyTo.address;
+                return replyTo?.address ?? "";
             },
 
             set: function (value) {
@@ -116,8 +122,8 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
 
             set: function (value) {
                 const me      = this,
-                    from    = Ext.clone(me.get("mailAccount.from")),
-                    replyTo = Ext.clone(me.get("mailAccount.replyTo")),
+                    from    = Ext.clone(me.get("mailAccount.from")) || {},
+                    replyTo = Ext.clone(me.get("mailAccount.replyTo")) || {},
                     ma      = me.get("mailAccount");
 
                 from.name    = value;
@@ -264,6 +270,9 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewModel", {
                 "inbox_ssl",
                 "inbox_user",
                 "inbox_password",
+
+                "active",
+                "subscriptions",
 
                 "outbox_type",
                 "outbox_address",

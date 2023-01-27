@@ -36,6 +36,12 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
         "conjoon.cn_mail.model.mail.account.MailAccount"
     ],
 
+    /**
+     * @type {Boolean} configsLoaded
+     * @private
+     */
+
+
     control: {
 
         "#backBtn": {
@@ -94,18 +100,20 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
             accountName = view.down("#accountNameField").getValue(),
             name = view.down("#nameField").getValue(),
             address = view.down("#emailField").getValue(),
+            from = name ? {name, address} : {address},
             accountModel = conjoon.cn_mail.model.mail.account.MailAccount.createFrom(
                 Object.assign(
                     config,
                     {
                         name: accountName,
-                        from: name ? {name, address} : {address},
-                        inactive: true
+                        from,
+                        replyTo: Object.assign({}, from),
+                        active: false
                     }
                 )
             );
 
-        view.fireEvent("accountavailable", me, accountModel);
+        view.fireEvent("accountavailable", view, accountModel);
     },
 
 
@@ -114,8 +122,14 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
             me = this,
             view = me.getView();
 
+        if (me.configsLoaded === true) {
+            return;
+        }
         view.setBusy(true);
-        me.loadConfig().then(configs => {me.onConfigsLoad(configs);});
+        me.loadConfig().then(configs => {
+            me.configsLoaded = true;
+            me.onConfigsLoad(configs);
+        });
     },
 
 

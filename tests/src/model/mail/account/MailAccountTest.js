@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,7 +45,7 @@ StartTest(t => {
     t.it("Should create instance and check basic configuration", t => {
         t.expect(model instanceof conjoon.cn_mail.model.mail.BaseTreeModel).toBe(true);
 
-        t.expect(model.get("inactive")).toBe(false);
+        t.expect(model.get("active")).toBe(true);
 
         t.expect(model.getIdProperty()).toBe("id");
 
@@ -99,6 +99,65 @@ StartTest(t => {
 
         t.expect(rec.get("name")).toBe("accountName");
         t.expect(rec.get("folderType")).toBe(conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT);
-
     });
+
+
+    t.it("getInboxAuth()", t => {
+        model.set("inbox_user", "user");
+        model.set("inbox_password", "password");
+
+        t.expect(model.getInboxAuth()).toEqual(["user", "password"]);
+    });
+
+
+    t.it("getOutboxAuth()", t => {
+        model.set("outbox_user", "user");
+        model.set("outbox_password", "password");
+
+        t.expect(model.getOutboxAuth()).toEqual(["user", "password"]);
+    });
+
+
+    t.it("getInboxInfo()", t => {
+        model.set("inbox_address", "address");
+        model.set("inbox_port", "8080");
+        model.set("inbox_ssl", true);
+
+        t.expect(model.getInboxInfo()).toEqual({
+            inbox_address: "address",
+            inbox_port: 8080,
+            inbox_ssl: true
+        });
+    });
+
+
+    t.it("getOutboxInfo()", t => {
+        model.set("outbox_address", "address");
+        model.set("outbox_port", "8080");
+        model.set("outbox_secure", "tls");
+
+        model.set("outbox_user", "user");
+        model.set("outbox_password", "password");
+
+        t.expect(model.getOutboxInfo()).toEqual({
+            outbox_address: "address",
+            outbox_port: 8080,
+            outbox_secure: "tls"
+        });
+
+        t.expect(model.getOutboxInfo(true)).toEqual({
+            outbox_address: "address",
+            outbox_port: 8080,
+            outbox_secure: "tls",
+            outbox_user: "user",
+            outbox_password: "password"
+        });
+    });
+
+
+    t.it("subscription field", t => {
+        t.isInstanceOf(model.getField("subscriptions"), "Ext.data.field.Array");
+    });
+
+
 });
