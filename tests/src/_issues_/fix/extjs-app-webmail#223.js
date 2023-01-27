@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,44 +25,64 @@
 
 StartTest(t => {
 
-    t.diag("fix: updating only a message triggers request for saving the MessageBody conjoon/extjs-app-webmail#223");
+    t.requireOk(
+        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", () => {
 
 
-    t.it("onMailMessageBeforeSave()", t => {
+            let registerMailAccountRelatedFunctionalitySpy;
 
-        const
-            controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController"),
-            messageDraft = Ext.create(
-                "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
-                    subject: "Test Email",
-                    mailAccountId: "dev_sys_conjoon_org",
-                    mailFolderId: "INBOX"
-                }),
-            editor = Ext.create(
-                "conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
-                    renderTo: document.body,
-                    controller,
-                    messageDraft
-                });
+            t.beforeEach(function () {
+                registerMailAccountRelatedFunctionalitySpy = t.spyOn(
+                    conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.prototype,
+                    "registerMailAccountRelatedFunctionality"
+                ).and.callFake(() => {});
+            });
 
-        let messageBody = editor.getViewModel().get("messageDraft.messageBody"),
-            commitSpy = t.spyOn(messageBody, "commit").and.callThrough();
+            t.afterEach(function () {
+                if (registerMailAccountRelatedFunctionalitySpy) {
+                    registerMailAccountRelatedFunctionalitySpy.remove();
+                    registerMailAccountRelatedFunctionalitySpy = null;
+                }
+            });
 
-        messageBody.modified = {"messageBodyId": true};
-        messageBody.crudState = "U";
+            t.diag("fix: updating only a message triggers request for saving the MessageBody conjoon/extjs-app-webmail#223");
 
-        controller.onMailMessageBeforeSave(
-            editor, editor.getViewModel().get("messageDraft"), false, false
-        );
+            t.it("onMailMessageBeforeSave()", t => {
 
-        t.expect(commitSpy.calls.count()).toBe(1);
+                const
+                    controller = Ext.create("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController"),
+                    messageDraft = Ext.create(
+                        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {
+                            subject: "Test Email",
+                            mailAccountId: "dev_sys_conjoon_org",
+                            mailFolderId: "INBOX"
+                        }),
+                    editor = Ext.create(
+                        "conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
+                            renderTo: document.body,
+                            controller,
+                            messageDraft
+                        });
 
-        t.expect(messageBody.modified).toBeFalsy();
+                let messageBody = editor.getViewModel().get("messageDraft.messageBody"),
+                    commitSpy = t.spyOn(messageBody, "commit").and.callThrough();
 
-        commitSpy.remove();
+                messageBody.modified = {"messageBodyId": true};
+                messageBody.crudState = "U";
 
-        editor.destroy();
-    });
+                controller.onMailMessageBeforeSave(
+                    editor, editor.getViewModel().get("messageDraft"), false, false
+                );
+
+                t.expect(commitSpy.calls.count()).toBe(1);
+
+                t.expect(messageBody.modified).toBeFalsy();
+
+                commitSpy.remove();
+
+                editor.destroy();
+            });
 
 
+        });
 });

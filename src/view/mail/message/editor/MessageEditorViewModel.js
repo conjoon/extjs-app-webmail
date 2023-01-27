@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,6 +37,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
     extend: "Ext.app.ViewModel",
 
     requires: [
+        "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.model.mail.message.MessageDraft",
         "conjoon.cn_mail.model.mail.message.MessageBody",
         "conjoon.cn_mail.model.mail.message.EmailAddress",
@@ -325,7 +326,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                     failure: me.processMessageDraftLoadFailure,
                     scope: me
                 };
-                me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(messageDraft, options);
+                // configured the VM with loadingDraft information.
+                // interested clients should call the associated view's loadDraft
+                // once the environment can be used for loading the draft.
+                me.loadingDraft = {messageDraft, options};
             } else {
                 me.getSession().setMessageDraft(sessDraft);
                 me.set("messageDraft", sessDraft);
@@ -360,6 +364,49 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                            "MessageDraftConfig, of MessageDraftCopyRequest or of " +
                            "MessageEntityCompoundKey."
         });
+    },
+
+
+    /**
+     * Includes or excludes inactive mail accounts in the MailAccount-store.
+     * Only excludes inactive MailAccounts if the message managed by this
+     * ViewModel was opened in EDIT mode.
+     *
+     *  @param {Boolean=true} includeInactiveAccounts true to include inactive
+     *  MailAccounts, otherwise false to exclude them.
+     *
+     * @returns {boolean} returns true if inactiveMailAccounts are included,
+     * otherwise false
+     */
+    includeInactiveMailAccounts (includeInactiveAccounts = true) {
+        includeInactiveAccounts = !!includeInactiveAccounts;
+
+        const
+            me = this,
+            maStore = me.get("mailAccountStore");
+
+        if (!maStore) {
+            throw new Error("no MailAccount-store available.");
+        }
+
+        const
+            editMode = me.getView().editMode,
+            EDIT = conjoon.cn_mail.data.mail.message.EditingModes.EDIT;
+
+        // if edit mode is EDIT, we need to show the account that was used with
+        // the original draft, if possible. Show all accounts then!
+        if ([EDIT].includes(editMode) || includeInactiveAccounts === true) {
+            maStore.removeFilter("onlyActiveAccounts");
+            return true;
+        }
+
+        maStore.addFilter({
+            id: "onlyActiveAccounts",
+            property: "active",
+            value: true
+        });
+
+        return false;
     },
 
 
@@ -714,6 +761,30 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                 !!attachments.getRange().filter(item => item.dirty === true).length ||
                 !!attachments.getRange().filter(item => item.phantom === true).length;
         }
+    },
+
+
+    /**
+     * Triggers the loading of a draft if loadingDraft is configured.
+     *
+     * @return {conjoon.cn_mail.model.mail.message.MessageDraft}
+     *
+     * @throws if no loadingDraft is available with the ViewModel.
+     */
+    loadDraft () {
+
+        const me = this;
+
+        if (!me.loadingDraft) {
+            throw new Error("Cannot load draft, ViewModel has no loadingDraft configured");
+        }
+
+        me.loadingDraft = conjoon.cn_mail.model.mail.message.MessageDraft.loadEntity(
+            me.loadingDraft.messageDraft,
+            me.loadingDraft.options
+        );
+
+        return me.loadingDraft;
     }
 
 });

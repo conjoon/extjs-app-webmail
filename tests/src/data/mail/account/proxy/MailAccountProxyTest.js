@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,13 +48,20 @@ StartTest(t => {
 
     t.it("buildUrl() - action \"read\"", t => {
 
+        const node = Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
+            subscriptions: ["INBOX", "[Gmail]"]
+        });
+
+        const op = Ext.create("Ext.data.operation.Read");
+        op.node = node;
+
         let proxy = Ext.create("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy"),
             request = Ext.create("Ext.data.Request", {
                 action: "read",
                 params: {
                     mailAccountId: "root"
                 },
-                operation: Ext.create("Ext.data.operation.Read")
+                operation: op
             }),
             targetUrl = "/MailAccounts";
 
@@ -63,6 +70,10 @@ StartTest(t => {
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().mailAccountId).toBeUndefined();
+        t.expect(request.getParams().filter).toBe(
+            JSON.stringify({"AND": [{"IN": {"id": node.get("subscriptions")}}]})
+        );
+
     });
 
 

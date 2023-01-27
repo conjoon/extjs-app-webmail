@@ -24,73 +24,56 @@
  */
 
 /**
- *
+ * Provides serializer and encoder for filters according to
+ * https://www.conjoon.org/docs/api/rest-api/@conjoon/rest-api-description/rest-api-email
  */
-Ext.define("conjoon.cn_mail.data.mail.BaseProxy", {
-
-    extend: "Ext.data.proxy.Rest",
+Ext.define("conjoon.cn_mail.data.jsonApi.PnFilterEncoder", {
 
     requires: [
-        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
-        "coon.core.data.request.Configurator",
-        "conjoon.cn_mail.data.jsonApi.PnFilterEncoder"
+        "Ext.util.FilterCollection"
     ],
 
-    mixins: {
-        utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
-    },
-
-    inheritableStatics: {
-        required: {
-            requestConfigurator: "coon.core.data.request.Configurator"
-        }
-    },
-
 
     /**
-     * The entity being used with this Proxy.
-     * @cfg {string}
-     */
-    entityName: null,
-
-    appendId: false,
-
-    /**
-     * @type {coon.core.data.request.Configurator} requestConfigurator
-     * @private
-     */
-
-    /**
-     * @param request
-     * @returns {*}
-     */
-    sendRequest (request) {
-
-        const me = this;
-
-        request = me.requestConfigurator.configure(request);
-
-        return me.callParent([request]);
-    },
-
-
-    /**
-     * https://jsonapi.org/faq/ - "Where's PUT?"
+     * Serializes the specified Ext.util.Filter.
      *
-     * @param {Ext.data.Request} request
-     *
-     * @return {String}
+     * @param {Ext.util.Filter} filter
+     * @returns {Object}
      */
-    getMethod (request) {
+    serialize (filter) {
 
-        const actionMethods = {
-            create: "POST",
-            read: "GET",
-            update: "PATCH",
-            destroy: "DELETE"
-        };
+        const
+            transformed = Object.create(null),
+            operator = filter.getOperator() || "=";
 
-        return actionMethods[request.getAction()];
+        transformed[operator] = {};
+        transformed[operator][filter.getProperty()] = filter.getValue();
+
+        return transformed;
+
+    },
+
+
+    /**
+     * Returns the transformed filters to be used with the filter query
+     * parameter.
+     * Logical operators supported are only "AND", since Ext JS filters use this
+     * by default.
+     *
+     * @param {Ext.util.FilterCollection} filters
+     *
+     * @returns {string}
+     */
+    encode (filters) {
+        const
+            me = this,
+            serialized = [],
+            items = (filters instanceof Ext.util.FilterCollection) ? filters.items : filters;
+
+        items.map(filter => serialized.push(me.serialize(filter)));
+
+        return JSON.stringify({"AND": serialized});
     }
+
 
 });

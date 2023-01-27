@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,14 +43,22 @@
  *             + MailFolder
  *
  * Model types will be set by the readers specified by the proxies et al.
+ *
+ * This store will observe changes made to MAilAccount's and fire the activemailaccountchange-event
+ * based on the availability of active MailAccounts (see conjoon.cn_mail.model.mail.account.MailAccount#active).
+ *
+ *
  */
 Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
     extend: "Ext.data.TreeStore",
 
     requires: [
+        // @define l8
+        "l8",
         "conjoon.cn_mail.model.mail.folder.MailFolder",
-        "conjoon.cn_mail.model.mail.account.MailAccount"
+        "conjoon.cn_mail.model.mail.account.MailAccount",
+        "conjoon.cn_mail.data.mail.folder.MailFolderTypes"
     ],
 
     alias: "store.cn_mail-mailfoldertreestore",
@@ -62,6 +70,40 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
     nodeParam: "mailAccountId",
 
     storeId: "cn_mail-mailfoldertreestore",
+
+    /**
+     * @event activemailaccountavailable
+     * @param this
+     * @param {Boolean} hasActiveMailAccount
+     */
+
+    /**
+     * Fired when the "active" value of an account managed by this store has changed.
+     * @event mailaccountactivechange
+     * @param this
+     * @param {Boolean} hasActiveMailAccount
+     */
+
+    /**
+     * Fired when the MailAccounts and their child nodes where loaded.
+     * @event mailaccountsloaded
+     * @param this
+     * @param {Array} mailAccounts
+     */
+
+    /**
+     * @type {Boolean} accountsLoaded
+     */
+
+    /**
+     * @type {Boolean} hasActiveMailAccount
+     */
+    hasActiveMailAccount: false,
+
+    /**
+     * @type {Boolean} acccountsAreBeingLoaded
+     * @private
+     */
 
     statics: {
 
@@ -98,6 +140,109 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         me.callParent(arguments);
 
         me.on("load", me.onStoreHasLoadedRootNode, me, {single: true});
+
+        me.on("add", me.onMailFolderTreeStoreAdd, me);
+        me.on("update", me.onMailFolderTreeStoreUpdate, me);
+    },
+
+
+    /**
+     * Finds the first active mail account managed by this store.
+     * Returns undefined if no active account was found
+     *
+     * @param {Object} filter allows for specifying a filter object that
+     * can be used for filtering active mail accounts based on additional
+     * conditions
+     *
+     * @return {conjoon.cn_mail.model.mail.account.MailAccount|undefined}
+     */
+    findFirstActiveMailAccount (filter = {}) {
+
+        const
+            me = this,
+            childNodes = me.getRoot().childNodes;
+
+        let mailAccount;
+        childNodes.some(node => {
+            if (node.get("active")) {
+
+                if (filter) {
+                    if (filter.operator === "NOT_IN") {
+                        if (filter.value.includes(node.get(filter.property))) {
+                            return;
+                        }
+                    }
+                }
+
+                mailAccount = node;
+                return true;
+            }
+        });
+
+        return mailAccount;
+    },
+
+
+    /**
+     * Callback for the add-event of this store.
+     *
+     * @param {this} store
+     * @param {Array} records
+     *
+     * @see checkAndFireActiveMailAccountChange
+     */
+    onMailFolderTreeStoreAdd (store, records) {
+
+        const me = this;
+        const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+
+        if (records[0].get("folderType") !== TYPES.ACCOUNT &&
+            records[0].parentNode.get("folderType") !== TYPES.ACCOUNT) {
+            return;
+        }
+        me.checkAndFireActiveMailAccountChange();
+    },
+
+
+    /**
+     * Callback for the update-event of this store.
+     *
+     * @param {this} store
+     * @param {Ext.data.Model} record
+     *
+     * @see checkAndFireActiveMailAccountChange
+     */
+    onMailFolderTreeStoreUpdate (store, record) {
+
+        const me = this;
+
+        const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+
+        if (record.modified?.active !== undefined && record.get("folderType") === TYPES.ACCOUNT) {
+            me.fireEvent("mailaccountactivechange", me, record);
+            me.checkAndFireActiveMailAccountChange();
+        }
+    },
+
+
+    /**
+     * Checks whether this store hase any active MailAccounts available and compare the rersult
+     * with #hasActiveMailAccount. Will trigger the activemailaccountavailable-event
+     * if the state regarding this value has changed.
+     *
+     */
+    checkAndFireActiveMailAccountChange () {
+        const me = this;
+
+        const hasActive = me.getRoot().childNodes.filter(account => account.get("active")).length !== 0;
+
+        if (hasActive === me.hasActiveMailAccount) {
+            return;
+        }
+
+        me.hasActiveMailAccount = hasActive;
+
+        me.fireEvent("activemailaccountavailable", me, me.hasActiveMailAccount);
     },
 
 
@@ -117,6 +262,100 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
                 node.expand();
             })
         );
+    },
+
+
+    /**
+     * Adds a new MailAccount to this instance. Makes sure the name does not appear twice.
+     *
+     *
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount} mailAccount
+     *
+     * @return conjoon.cn_mail.model.mail.account.MailAccount
+     */
+    addMailAccount (mailAccount) {
+
+        const
+            me = this,
+            root = me.getRoot(),
+            childNodes = root.childNodes;
+
+        let list = [];
+        childNodes.forEach(node => list.push(node.get("name")));
+
+        let name = l8.text.nameToOrdinal(mailAccount.get("name"), list);
+
+        mailAccount.set("name", name);
+
+        root.appendChild(mailAccount);
+
+        return mailAccount;
+    },
+
+
+    /**
+     * Makes an attempt to load the MailAccounts with their child nodes.
+     * Fires the "mailaccountsloaded"-once load-operations have
+     * finished.
+     *
+     * @return {Array} the nodes loaded.
+     */
+    async loadMailAccounts () {
+
+        const me = this;
+
+        if (me.accountsLoaded) {
+            return me.getRoot().childNodes;
+        }
+
+        if (me.acccountsAreBeingLoaded) {
+            return await new Promise(function (resolve, reject) {
+                me.on("mailaccountsloaded", function (store, nodes) {
+                    return resolve(nodes);
+                }, {single: true});
+            });
+        }
+
+        me.acccountsAreBeingLoaded = true;
+
+        const accounts = await new Promise(function (resolve, reject) {
+            const childs = me.getRoot().childNodes;
+
+            if (childs.length) {
+                return resolve(childs);
+            }
+
+            me.load();
+            me.on("load", function (store, nodes) {
+                return resolve(nodes);
+            }, {single: true});
+        });
+
+        if (!accounts) {
+            return [];
+        }
+
+        let accountCount = accounts.length;
+
+        if (me.isLoading()) {
+            await new Promise (function (resolve, reject) {
+                const cb = function () {
+                    accountCount--;
+                    if (accountCount === 0) {
+                        me.accountsLoaded = true;
+                        resolve();
+                    } else {
+                        me.on("load", cb, me, {single: true});
+                    }
+                };
+                me.on("load", cb, me, {single: true});
+            });
+        }
+
+        const childNodes = me.getRoot().childNodes;
+        me.fireEvent("mailaccountsloaded", me, childNodes);
+
+        return childNodes;
     }
 
 });

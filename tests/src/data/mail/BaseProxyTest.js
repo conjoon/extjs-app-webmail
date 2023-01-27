@@ -58,4 +58,25 @@ StartTest(t => {
     });
 
 
+    t.it("getMethod()", t => {
+
+        const
+            proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy"),
+            actions = {
+                create: "POST",
+                read: "GET",
+                update: "PATCH",
+                destroy: "DELETE"
+            },
+            request = Ext.create("Ext.data.Request");
+
+        Object.entries(actions).forEach(([action, method]) => {
+            let spy = t.spyOn(request, "getAction").and.callFake(() => action);
+            t.expect(proxy.getMethod(request)).toBe(method);
+            spy.remove();
+        });
+
+
+    });
+
 });

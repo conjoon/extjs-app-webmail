@@ -75,7 +75,8 @@ and appearance of the email client:
         "editor": "resources/templates/html/editor.html.tpl",
         "reader": "resources/templates/html/reader.html.tpl"
       }
-    }
+    },
+    "mailServerPresets": "resources/mailserverpresets.conf.json"
   },
   "service": {
     "rest-api-email": {
@@ -96,6 +97,8 @@ appearance of the email client. The dot-notation for the configuration options i
 - `resources.sounds.notifications.newEmail` - a notification sound to play when new email messages are coming in.
 - `templates.html.editor` - an html-template to use with the message editor.
 - `templates.html.reader` - an html-template to use with the message reader.
+- `mailServerPresets` - a file containing json configuration for mail server presets used with the **MailAccountWizard**
+
 
 #### Plugins
 There are several plugins preconfigured for **extjs-app-webmail**. Please consult the documentation

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -58,13 +58,42 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountViewController", {
      * Callback for the saveButton's "click" event.
      *
      * @param {Ext.Button} btn
+     *
+     * @see validate()
      */
     onSaveButtonClick: function (btn) {
 
         const me = this,
             view = me.getView();
 
+        if (me.validate() !== true) {
+            me.getView().showMailAccountNotValidMessage();
+            return;
+        }
+
         return view.getViewModel().savePendingChanges();
+    },
+
+
+    /**
+     * Validates the
+     */
+    validate () {
+
+        const
+            me = this,
+            mailAccount = me.getViewModel().get("mailAccount"),
+            name = (mailAccount.get("name") || "").toLowerCase().trim();
+
+        let accounts = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().getRoot().childNodes;
+
+        accounts = accounts || [];
+
+        let found = accounts.some(
+            node => node.getId() !== mailAccount.getId() && node.get("name").toLowerCase().trim() === name
+        );
+
+        return !found;
     },
 
 
