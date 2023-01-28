@@ -70,17 +70,17 @@
         ]
     },
     "dependencies": {
-        "@conjoon/extjs-dev-webmailsim": "^0.1.6",
+        "@conjoon/extjs-dev-webmailsim": "^1.0.1",
         "@coon-js/extjs-app-user": "^0.1.7",
         "@coon-js/extjs-comp-navport": "^0.2.4",
         "@coon-js/extjs-lib-comp": "^0.3.0",
-        "@coon-js/extjs-lib-core": "^1.0.2",
-        "@l8js/l8": "^0.8.0"
+        "@coon-js/extjs-lib-core": "^1.0.5",
+        "@l8js/l8": "^0.10.1"
     },
     "devDependencies": {
         "@commitlint/cli": "^13.2.0",
         "@commitlint/config-conventional": "^13.2.0",
-        "@coon-js/delorean": "^0.3.1",
+        "@coon-js/delorean": "^0.3.3",
         "@coon-js/extjs-link": "^0.1.10",
         "@coon-js/siesta-lib-helper": "^0.1.16",
         "eslint": "^7.28.0",
