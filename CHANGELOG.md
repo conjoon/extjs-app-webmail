@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.4.0...v1.0.0) (2023-01-28)
+
+
+### Features
+
+* add "activemailaccountavailable"-event ([f62bd8a](https://github.com/conjoon/extjs-app-webmail/commit/f62bd8a4954ef1c499b4d8731618b4c819fb9e52)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* add loadMailAccounts() for loading accounts nodes including mailboxes ([4c32d1c](https://github.com/conjoon/extjs-app-webmail/commit/4c32d1c93423d15c3a50913e929bebe08182cba4)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* add MailAccountWizard for registering new Mail Accounts ([4652db9](https://github.com/conjoon/extjs-app-webmail/commit/4652db99eec56cfe3599e5e2c49150f9872e4e4c)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* MailDesktopViewController considers multiple available MailAccounts ([636ebd7](https://github.com/conjoon/extjs-app-webmail/commit/636ebd7b3a492df101bb0f1f4c491ed06a009403)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* only active MailAccounts considered w/ new messages ([01c9263](https://github.com/conjoon/extjs-app-webmail/commit/01c9263a25560ec79a4957026b212aaf4e993ea3)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* package considers MailAccountHandler as injectable dependency ([579e3ad](https://github.com/conjoon/extjs-app-webmail/commit/579e3adc4b2fd6349765bcd5dc9a6baaa8859e44)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* subscriptions specified with MailAccounts sent with URL ([99cd371](https://github.com/conjoon/extjs-app-webmail/commit/99cd3713b90f355f509e992d2c77dc896c2172c0)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+
+
+### Bug Fixes
+
+* accountCombo requires default value to be NULL if mailAccountId is undefined ([7906a16](https://github.com/conjoon/extjs-app-webmail/commit/7906a167798a71058b685c3022dcabd8afd098af)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* active state of MailAccount not properly reflected on MessageEditor ([668ca35](https://github.com/conjoon/extjs-app-webmail/commit/668ca35828498013a3fe1d15dae18911a1e10f40)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* creating new message possible even if no active MailAccount exists ([612e084](https://github.com/conjoon/extjs-app-webmail/commit/612e0844bffa0e8f6d9de6dc3dc750d1eb7fce4f))
+* error thrown when view has MailAccount w/o address objects ([a485dff](https://github.com/conjoon/extjs-app-webmail/commit/a485dffd8445a68d8ceb8c7e0639e1227fe63fe4)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* filter for MessageEntityProxy cannot be purged ([c3f37bf](https://github.com/conjoon/extjs-app-webmail/commit/c3f37bfef0f50f4d96b4c997a2c8a1d1e9a975fc)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* first arg of accountavailable event is not the Wizard ([0dd74b1](https://github.com/conjoon/extjs-app-webmail/commit/0dd74b13383078d7814ecd463b72dcd1bba632f8)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* missing img in preset-config triggers error ([060b0e8](https://github.com/conjoon/extjs-app-webmail/commit/060b0e836078e54dd837437c745d3e09d322d1fe)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* no accounts queried when "active" disabled/enabled during runtime ([83abf4c](https://github.com/conjoon/extjs-app-webmail/commit/83abf4c0f48b6d223d495c101cde80074f904cb1)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* test does not remove subscription for MailboxRunner ([cb6a862](https://github.com/conjoon/extjs-app-webmail/commit/cb6a86227a2a9b09b7910f1f06458d0883a17c6b)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* **tests:** add missing tests ([4f52ef4](https://github.com/conjoon/extjs-app-webmail/commit/4f52ef466e16f8c8a43484f9c55f7c07f715748a))
+
 ## [0.4.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.3.1...v0.4.0) (2022-12-15)
 
 
