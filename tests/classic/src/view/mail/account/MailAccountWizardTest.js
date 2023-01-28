@@ -146,6 +146,7 @@ StartTest(t => {
                             t.expect(rec.get("from")).toEqual({name: "fromName", address: "fromAddress"});
 
                             t.isInstanceOf(rec, "conjoon.cn_mail.model.mail.account.MailAccount");
+                            t.expect(createAccountSpy.calls.mostRecent().args[0]).toBe(view);
 
                             [loadSpy, envSpy,createAccountSpy].map(spy => spy.remove());
                         });

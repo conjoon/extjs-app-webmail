@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,9 +48,6 @@ export default [{
         }, {
             group: "fix",
             items: [{
-                name: "conjoon/extjs-app-webmail#157",
-                url: "src/_issues_/fix/extjs-app-webmail%23157.js"
-            }, {
                 name: "conjoon/extjs-app-webmail#196",
                 url: "src/_issues_/fix/extjs-app-webmail%23196.js"
             }, {
@@ -339,7 +336,8 @@ export default [{
                 group: "account",
                 items: [
                     "classic/src/view/mail/account/MailAccountViewTest.js",
-                    "classic/src/view/mail/account/MailAccountWizardTest.js"
+                    "classic/src/view/mail/account/MailAccountWizardTest.js",
+                    "classic/src/view/mail/account/MailAccountHandlerTest.js"
                 ]
             }, {
                 group: "folder",

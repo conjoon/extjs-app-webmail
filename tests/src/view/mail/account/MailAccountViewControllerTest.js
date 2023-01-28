@@ -109,11 +109,15 @@ StartTest(t => {
 
         ctrl = createCtrlMock();
 
+        const validateSpy = t.spyOn(ctrl, "validate").and.callFake(() => true);
 
         t.isCalled("savePendingChanges", ctrl.getView().getViewModel());
 
         ctrl.onSaveButtonClick();
 
+        t.expect(validateSpy.calls.count()).toBe(1);
+
+        validateSpy.remove();
     });
 
 

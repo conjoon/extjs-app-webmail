@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -66,6 +66,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
+
+    statics: {
+        required: {
+            mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+        }
+    },
 
     routes: {
 
@@ -200,6 +206,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         },
         "cn_navport-tbar > #cn_mail-nodeNavToggleFolder": {
             toggle: "onToggleFolderViewButtonClick"
+        },
+        "cn_navport-tbar > #cn_mail-addMailAccountBtn": {
+            click: "onAddMailAccountBtnClick"
         }
     },
 
@@ -227,6 +236,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     }, {
         ref: "switchReadingPaneButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
+    }, {
+        ref: "createMessageButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavCreateMessage"
     }, {
         ref: "replyToButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReplyTo"
@@ -895,14 +907,52 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
 
     /**
+     * Callback for the node navigation's "add mail account"-button.
+     *
+     * @param {Ext.Button} btn
+     *
+     * @return {Boolean}
+     */
+    onAddMailAccountBtnClick (btn) {
+
+        const me = this;
+
+        if (!me.mailAccountHandler.enabled()) {
+            return false;
+        }
+
+        me.mailAccountHandler.invoke(btn);
+        return true;
+    },
+
+
+    /**
+     * Callback for the MailAccount-Store's activemailaccountavailable event.
+     * Will enable/disable the "createMessageButton" based on available.
+     *
+     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {Boolean} available
+     */
+    onActiveMailAccountAvailable (store, available) {
+        const me = this;
+
+        me.getCreateMessageButton().setDisabled(!available);
+    },
+
+    /**
      * @inheritdoc
      */
-    postLaunchHook: function () {
+    postLaunchHook () {
 
-        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+        const
+            me = this,
+            mailAccountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+        mailAccountStore.on("activemailaccountavailable", me.onActiveMailAccountAvailable, me);
+        mailAccountStore.loadMailAccounts();
 
 
-        return {
+        const data = {
             navigation: [{
                 text: "Email",
                 route: "cn_mail/home",
@@ -911,7 +961,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                 nodeNav: [{
                     xtype: "button",
                     iconCls: "fas fa-plus",
-                    itemId: "cn_mail-nodeNavCreateMessage"
+                    itemId: "cn_mail-nodeNavCreateMessage",
+                    disabled: true
                 }, {
                     xtype: "tbseparator"
                 }, {
@@ -984,6 +1035,20 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                 }]
             }]
         };
+
+
+        if (me.mailAccountHandler.enabled()) {
+            data.navigation[0].nodeNav.push({
+                xtype: "tbseparator"
+            });
+            data.navigation[0].nodeNav.push({
+                xtype: "button",
+                iconCls: "fas fa-at",
+                itemId: "cn_mail-addMailAccountBtn"
+            });
+        }
+
+        return data;
     },
 
 
@@ -1098,9 +1163,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          * Opens the MaiLEditor for the specified id and the specified action (
          * one of edit, compose, replyTo, replyAll, forward).
          *
-         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
-         *
-         * @param {String type
+         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} key
+         * @param {String} type
          *
          * @private
          *

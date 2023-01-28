@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -115,12 +115,6 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     starvingEditors: null,
 
     /**
-     * @private
-     */
-    defaultAccountInformations: null,
-
-
-    /**
      * Constructor.
      */
     constructor: function () {
@@ -147,24 +141,22 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      * Configures this controller and the associated ViewModel with a singleton instance
      * of {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}.
      * Makes sure that for each load operation (e.g. MailAccount-nodes get expanded -> load folders)
-     * a callback is registered that processes the loaded folders and configures
-     * #defaultAccountInformations.
+     * a callback is registered that processes the loaded folders and triggers #seedFolders()
      *
      * @see onMailFolderTreeStoreLoad
      */
     configureWithMailFolderTreeStore () {
         const
             me = this,
-            treeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+            store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
-        treeStore.on("load", me.onMailFolderTreeStoreLoad, this);
-
-        // run with available data
-        if (treeStore.isLoaded()) {
-            treeStore.getRootNode().childNodes.forEach(accountNode => {
-                accountNode.childNodes && me.seedFolders(accountNode.childNodes);
-            });
+        if (!store.accountsLoaded) {
+            store.on("mailaccountsloaded", me.seedFolders, me);
+            store.loadMailAccounts();
+        } else {
+            me.seedFolders();
         }
+
     },
 
 
@@ -276,15 +268,18 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      * @return conjoon.cn_mail.view.mail.message.editor.MessageEditor
      *
      * @throws if no valid id was specified (bubbles exceptions from
-     * #getItemIdForMessageRelatedView and #buildCnHref)
+     * #getItemIdForMessageRelatedView and #buildCnHref) or if no
+     * default account for composing was found
      */
-    showMailEditor: function (key, type) {
+    showMailEditor (key, type) {
 
-        const me = this,
+        const
+            me = this,
+            store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
             view = me.getView(),
             EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
             CopyRequest  = "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
-            defInfo = me.defaultAccountInformations;
+            defInfo = me.getDefaultDraftFolderForComposing();
 
         let newView,
             initialConfig = {
@@ -294,9 +289,9 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             cn_href = me.buildCnHref(key, type),
             defaults = {};
 
-        if (me.defaultAccountInformations) {
-            defaults.defaultMailAccountId = defInfo.mailAccountId;
-            defaults.defaultMailFolderId  = defInfo.mailFolderId;
+        if (defInfo) {
+            defaults.defaultMailAccountId = defInfo.get("mailAccountId");
+            defaults.defaultMailFolderId  = defInfo.get("id");
         }
 
         // MessageDraft === MessageDraftCopyRequest
@@ -323,7 +318,10 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             break;
         default:
             initialConfig.messageDraft = me.createMessageDraftConfig(
-                key, defInfo ? defInfo : {}
+                key, defInfo ? {
+                    mailAccountId: defInfo.get("mailAccountId"),
+                    mailFolderId: defInfo.get("id")
+                } : {}
             );
             break;
         }
@@ -338,17 +336,21 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
                 cn_href: cn_href
             }));
 
-            if (!defInfo && type !== "edit") {
-                if (!me.starvingEditors) {
-                    me.starvingEditors = [];
-                }
-
+            if (!defInfo && type !== "edit" && !me.starvingEditors) {
+                me.starvingEditors = [];
                 me.starvingEditors.push(itemId);
+            } else if (type === "edit") {
+                if (!defInfo) {
+                    store.on("mailaccountsloaded", function () {
+                        me.getView().down("#"+itemId).getViewModel().loadDraft();
+                    }, me, {single: true});
+                } else {
+                    me.getView().down("#"+itemId).getViewModel().loadDraft();
+                }
             }
         }
 
         view.setActiveTab(newView);
-
         return newView;
     },
 
@@ -1278,80 +1280,89 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
 
     /**
-     * Makes sure the controller is notified of the  load of the MailFolderTreeStore.
-     * Delegates to #seedFolders()
+     * Returns the DRAFT-folder of the first MailAccount that was found "active".
      *
-     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
-     * @param {Array} records
-     *
-     * @return null if the node being loaded was of type ACCOUNT or no records where submitted,
-     * otherwise the defaultAccountInformations fetched by this operation.
-     *
-     * @see seedFolders
+     * @returns {*}
      */
-    onMailFolderTreeStoreLoad: function (store, records, success, operation) {
+    getDefaultDraftFolderForComposing (requireActiveAccount = true) {
 
         const
-            me = this;
+            store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
+            TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (!success || !records) {
-            return null;
+        let queriedIds = [], accountNode = {}, draftNode;
+
+        while (!draftNode) {
+            accountNode = store.findFirstActiveMailAccount({
+                property: "id",
+                operator: "NOT_IN",
+                value: queriedIds
+            });
+
+            if (accountNode) {
+                draftNode = accountNode.findChild("folderType", TYPES.DRAFT, false);
+                if (!draftNode) {
+                    queriedIds.push(accountNode.get("id"));
+                }
+            } else {
+                break;
+            }
+        }
+        if (!draftNode && requireActiveAccount === false) {
+            draftNode = store.getRoot()?.childNodes[0]?.findChild("folderType", TYPES.DRAFT, false);
         }
 
-        return me.seedFolders(records);
+        return draftNode;
     },
-
 
     /**
      * Seeds mailAccountId and mailFolderId amongst the editors for composing a message.
-     * Sets defaultAccountInformations used by this controller.
      * MailAccount-nodes get loaded first, subsequent calls will then call the load-
      * operations for the children. Those calls have to be considered since the method need the folder
      * information from the children.
      *
-     * @param {Array} records
+     * @param {Array} folders
      *
      * @return null if the node being loaded was of type ACCOUNT,
-     * otherwise the defaultAccountInformations fetched by this operation.
+     * otherwise the return value of getDefaultDraftFolderForComposing
      *
-     * @throws if no suitable draftNode was found
+     * @throws if no suitable MailFolder was found that can be used for serving
+     * starvingEditors
      *
      * @private
+     *
+     * @see getDefaultDraftFolderForComposing()
      */
-    seedFolders (folders) {
+    seedFolders () {
 
         const
             me    = this,
-            view  = me.getView(),
-            TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+            view  = me.getView();
 
-        if (!folders.length || folders[0].get("folderType") === TYPES.ACCOUNT) {
-            return null;
-        }
-
-        if (!me.defaultAccountInformations) {
-            let accountNode = folders[0].parentNode,
-                draftNode   = accountNode.findChild("folderType", TYPES.DRAFT, false);
-
-            if (!draftNode) {
-                Ext.raise({
-                    msg: "No suitable node found for saving drafts"
-                });
-            }
-
-            me.defaultAccountInformations = {
-                mailAccountId: accountNode.get("id"),
-                mailFolderId: draftNode.get("id")
-            };
-        }
+        // find an ACTIVE mail account with a draft folder
+        let draftNode = me.getDefaultDraftFolderForComposing();
 
         if (me.starvingEditors) {
-            let md, vm, editor,
-                defInfo = me.defaultAccountInformations;
+            let md, vm, editor;
 
             for (let i = me.starvingEditors.length - 1; i > -1; i --) {
                 editor = view.down("#" + me.starvingEditors.pop());
-                vm     = editor.getViewModel();
+                if (!editor || editor.destroyed) {
+                    continue;
+                }
+                vm = editor.getViewModel();
+
+                if (!draftNode) {
+                    let inactiveDraft = me.getDefaultDraftFolderForComposing(false);
+                    if (inactiveDraft) {
+                        draftNode = inactiveDraft;
+                        editor.showAccountInvalidNotice();
+                    } else {
+                        editor.showAccountInvalidNotice(true);
+                        continue;
+                    }
+                }
+
 
                 // trigger copyrequest
                 if (vm.hasPendingCopyRequest()) {
@@ -1362,26 +1373,24 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
                     // problem would be otehrwise changing of compoundKey during
                     // load process which would return false or null entities
                     vm.processPendingCopyRequest(
-                        defInfo.mailAccountId, defInfo.mailFolderId
+                        draftNode.get("mailAccountId"), draftNode.get("id")
                     );
                 } else {
                     // messages are composed
                     md = vm.get("messageDraft");
                     if (editor.editMode !== "CREATE") {
-                        Ext.raise({
-                            msg: "Unexpected editMode for starving editor: " + editor.editMode
-                        });
+                        throw new Error(`Unexpected editMode for starving editor: ${editor.editMode}`);
                     }
 
                     md.set({
-                        "mailAccountId": defInfo.mailAccountId,
-                        "mailFolderId": defInfo.mailFolderId
+                        "mailAccountId": draftNode.get("mailAccountId"),
+                        "mailFolderId": draftNode.get("id")
                     }, {dirty: false});
                 }
             }
         }
 
-        return me.defaultAccountInformations;
+        return draftNode;
     },
 
 

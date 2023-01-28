@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,7 +73,7 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         type: "string"
     }, {
         name: "inbox_port",
-        type: "string"
+        type: "int"
     }, {
         name: "inbox_user",
         type: "string"
@@ -90,7 +90,7 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         type: "string"
     }, {
         name: "outbox_port",
-        type: "string"
+        type: "int"
     }, {
         name: "outbox_user",
         type: "string"
@@ -101,9 +101,12 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
         name: "outbox_secure",
         type: "string"
     }, {
-        name: "inactive",
+        name: "active",
         type: "bool",
-        default: false
+        defaultValue: true
+    }, {
+        name: "subscriptions",
+        type: "array"
     }],
 
     /**
@@ -123,6 +126,71 @@ Ext.define("conjoon.cn_mail.model.mail.account.MailAccount", {
                 conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT
             ]
         }]);
+    },
+
+
+    /**
+     * Returns an array where the 0th index is the inbox-user and the 1st is the
+     * inbox password.
+     *
+     * @returns {Array}
+     */
+    getInboxAuth () {
+        const me = this;
+
+        return [me.get("inbox_user"), me.get("inbox_password")];
+    },
+
+
+    /**
+     * Returns an array where the 0th index is the outbox-user and the 1st is the
+     * outbox password.
+     *
+     * @returns {Array}
+     */
+    getOutboxAuth (mailAccount) {
+        const me = this;
+
+        return [me.get("outbox_user"), me.get("outbox_password")];
+    },
+
+
+    /**
+     * Returns an object containing connection information of the inbox server.
+     *
+     * @returns {Object}
+     */
+    getInboxInfo () {
+        const
+            me = this,
+            fields =  ["inbox_address", "inbox_port", "inbox_ssl"],
+            res = {};
+
+        fields.forEach(field => res[field] = me.get(field));
+
+        return res;
+    },
+
+
+    /**
+     * Returns an object containing connection information of the outbox server.
+     *
+     * @returns {Object}
+     */
+    getOutboxInfo (includeCredentials) {
+        const
+            me = this,
+            fields =  ["outbox_address", "outbox_port", "outbox_secure"],
+            res = {};
+
+        if (includeCredentials === true) {
+            fields.push("outbox_user");
+            fields.push("outbox_password");
+        }
+
+        fields.forEach(field => res[field] = me.get(field));
+
+        return res;
     },
 
 
