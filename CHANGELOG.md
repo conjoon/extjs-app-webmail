@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.1...v1.0.2) (2023-02-07)
+
+
+### Features
+
+* inbox_user and outbox_user default to email address of new account ([0f615da](https://github.com/conjoon/extjs-app-webmail/commit/0f615da75046fa43d50baec1a6f108a934672f33)), closes [conjoon/extjs-app-webmail#272](https://github.com/conjoon/extjs-app-webmail/issues/272)
+
+
+### Bug Fixes
+
+* inbox_type not available for "other" Mail Accounts ([b00c93d](https://github.com/conjoon/extjs-app-webmail/commit/b00c93deccf00b9f8a36ae68801e23103a65a74c)), closes [conjoon/extjs-app-localmailaccount#11](https://github.com/conjoon/extjs-app-localmailaccount/issues/11)
+
 ### [1.0.1](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.0...v1.0.1) (2023-01-28)
 
 ## [1.0.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.4.0...v1.0.0) (2023-01-28)
