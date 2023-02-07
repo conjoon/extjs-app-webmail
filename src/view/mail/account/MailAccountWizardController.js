@@ -100,20 +100,39 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
             accountName = view.down("#accountNameField").getValue(),
             name = view.down("#nameField").getValue(),
             address = view.down("#emailField").getValue(),
-            from = name ? {name, address} : {address},
-            accountModel = conjoon.cn_mail.model.mail.account.MailAccount.createFrom(
-                Object.assign(
-                    config,
-                    {
-                        name: accountName,
-                        from,
-                        replyTo: Object.assign({}, from),
-                        active: false
-                    }
-                )
-            );
+            accountModel = me.makeAccountModel({
+                config,
+                accountName,
+                name,
+                address
+            });
 
         view.fireEvent("accountavailable", view, accountModel);
+
+        return accountModel;
+    },
+
+
+    /**
+     * @return {conjoon.cn_mail.model.mail.account.MailAccount}
+     */
+    makeAccountModel ({config, accountName, name, address}) {
+
+        const from = name ? {name, address} : {address};
+
+        return conjoon.cn_mail.model.mail.account.MailAccount.createFrom(
+            Object.assign(
+                config,
+                {
+                    name: accountName,
+                    from,
+                    replyTo: Object.assign({}, from),
+                    active: true,
+                    inbox_user: address,
+                    outbox_user: address
+                }
+            )
+        );
     },
 
 

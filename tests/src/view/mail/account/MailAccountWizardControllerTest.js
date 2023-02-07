@@ -61,8 +61,24 @@ StartTest(t => {
                 "subscriptions": ["INBOX"]
             }
         });
+    });
 
 
+    t.it("makeAccountModel()", t => {
+        ctrl = create();
+
+        const address = "user@tld.com";
+        const name = "username";
+
+        const mailAccount = ctrl.makeAccountModel({
+            config: {}, accountName: "email account", name, address
+        });
+
+        t.expect(mailAccount.get("inbox_user")).toBe(address);
+        t.expect(mailAccount.get("outbox_user")).toBe(address);
+        t.expect(mailAccount.get("active")).toBe(true);
+        t.expect(mailAccount.get("from")).toEqual({name, address});
+        t.expect(mailAccount.get("replyTo")).toEqual({name, address});
     });
 
 
