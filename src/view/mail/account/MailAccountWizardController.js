@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -146,9 +146,19 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
         });
 
         configs.push({
+            /**
+             * @i18n
+             */
             displayName: "... other IMAP account",
             name: "Email Account",
-            config: {}
+            config: {
+                "inbox_type": "IMAP",
+                "inbox_port": 993,
+                "inbox_ssl": true,
+                "outbox_port": 587,
+                "outbox_secure": "tls",
+                "subscriptions": ["INBOX"]
+            }
         });
 
         return configs;

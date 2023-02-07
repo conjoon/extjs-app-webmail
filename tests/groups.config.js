@@ -268,7 +268,8 @@ export default [{
                     group: "account",
                     items: [
                         "src/view/mail/account/MailAccountViewControllerTest.js",
-                        "src/view/mail/account/MailAccountViewModelTest.js"
+                        "src/view/mail/account/MailAccountViewModelTest.js",
+                        "src/view/mail/account/MailAccountWizardControllerTest.js"
                     ]
                 },
                 {
