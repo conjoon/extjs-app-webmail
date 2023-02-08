@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.2...v1.0.3) (2023-02-08)
+
+
+### Bug Fixes
+
+* reply/forward a message applies wrong default account ([4c8f840](https://github.com/conjoon/extjs-app-webmail/commit/4c8f840fe0618135fd3d225d2e54f5173e4b592f)), closes [conjoon/extjs-app-webmail#273](https://github.com/conjoon/extjs-app-webmail/issues/273)
+* value of accountCombo not applied to messageDraft ([f0419d3](https://github.com/conjoon/extjs-app-webmail/commit/f0419d3ab5d37beea6415ac087b1f6674912d791)), closes [conjoon/extjs-app-webmail#273](https://github.com/conjoon/extjs-app-webmail/issues/273)
+
 ### [1.0.2](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.1...v1.0.2) (2023-02-07)
 
 
