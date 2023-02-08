@@ -279,7 +279,9 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             view = me.getView(),
             EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
             CopyRequest  = "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
-            defInfo = me.getDefaultDraftFolderForComposing();
+            defInfo = me.getDefaultDraftFolderForComposing(
+                l8.isFunction(key?.getMailAccountId) ? key.getMailAccountId() : true
+            );
 
         let newView,
             initialConfig = {
@@ -1282,15 +1284,25 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     /**
      * Returns the DRAFT-folder of the first MailAccount that was found "active".
      *
+     * @param {bool|String} requireActiveAccountOrAccountCandidateId bool to return a first active account's draft folder,
+     * otherwise a string representing the id of the preferred MailAccount to return teh draft from
      * @returns {*}
      */
-    getDefaultDraftFolderForComposing (requireActiveAccount = true) {
+    getDefaultDraftFolderForComposing (requireActiveAccountOrAccountCandidateId) {
 
         const
             store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
             TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
         let queriedIds = [], accountNode = {}, draftNode;
+
+        let accountCandidate = requireActiveAccountOrAccountCandidateId,
+            requireActiveAccount = requireActiveAccountOrAccountCandidateId;
+
+        if (l8.isString(accountCandidate)) {
+            accountCandidate = store.getRoot()?.findChild("id", accountCandidate, false);
+            draftNode = accountCandidate?.findChild("folderType", TYPES.DRAFT, false);
+        }
 
         while (!draftNode) {
             accountNode = store.findFirstActiveMailAccount({
@@ -1339,8 +1351,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             me    = this,
             view  = me.getView();
 
-        // find an ACTIVE mail account with a draft folder
-        let draftNode = me.getDefaultDraftFolderForComposing();
+        let draftNode;
 
         if (me.starvingEditors) {
             let md, vm, editor;
@@ -1351,6 +1362,10 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
                     continue;
                 }
                 vm = editor.getViewModel();
+
+                draftNode = me.getDefaultDraftFolderForComposing(
+                    vm.pendingCopyRequest?.getCompoundKey().getMailAccountId() || true
+                );
 
                 if (!draftNode) {
                     let inactiveDraft = me.getDefaultDraftFolderForComposing(false);

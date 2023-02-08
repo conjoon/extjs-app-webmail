@@ -66,6 +66,43 @@ StartTest(async t => {
 
 
                 },
+                selectMessage = function (panel, storeAt, shouldEqualToCK, t) {
+
+                    let message = panel.down("cn_mail-mailmessagegrid").getStore().getAt(storeAt);
+
+                    if (shouldEqualToCK) {
+                        t.expect(message.getCompoundKey().toObject()).toEqual(shouldEqualToCK.toObject());
+                    }
+
+                    panel.down("cn_mail-mailmessagegrid").getSelectionModel()
+                        .select(message);
+
+
+                    return message;
+                },
+                getFirstMessageItem = function (mailAccountId) {
+
+                    let mi;
+
+                    for (let index = 0; index <= 1000; index++) {
+                        mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(index);
+                        if (mi.mailAccountId === mailAccountId) {
+                            break;
+                        }
+                    }
+
+                    if (!mi) {
+                        t.fail();
+                    }
+
+
+                    return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                        localId: [mi.mailAccountId, mi.mailFolderId, mi.id].join("-"),
+                        id: mi.id,
+                        mailAccountId: mi.mailAccountId,
+                        mailFolderId: mi.mailFolderId
+                    });
+                },
                 createMailDesktopView = function () {
                     return Ext.create("conjoon.cn_mail.view.mail.MailDesktopView", {
                         width: 800,
@@ -315,17 +352,77 @@ StartTest(async t => {
 
                             t.expect(accounts[0].get("active")).toBe(true);
 
-                            t.expect(ctrl.getDefaultDraftFolderForComposing()?.parentNode).toBe(accounts[0]);
+                            t.expect(ctrl.getDefaultDraftFolderForComposing(true)?.parentNode).toBe(accounts[0]);
 
                             accounts[0].set("active", false);
                             accounts[1].set("active", false);
 
-                            t.expect(ctrl.getDefaultDraftFolderForComposing()).toBeUndefined();
+                            t.expect(ctrl.getDefaultDraftFolderForComposing(true)).toBeUndefined();
                             t.expect(ctrl.getDefaultDraftFolderForComposing(false)?.parentNode).toBe(accounts[0]);
+
+                            t.expect(ctrl.getDefaultDraftFolderForComposing( accounts[0].get("id"))?.parentNode).toBe(accounts[0]);
+                            t.expect(ctrl.getDefaultDraftFolderForComposing( accounts[1].get("id"))?.parentNode).toBe(accounts[1]);
+
+                            t.expect(ctrl.getDefaultDraftFolderForComposing( accounts[0].get("id"))?.parentNode).toBe(accounts[0]);
+                            t.expect(ctrl.getDefaultDraftFolderForComposing(accounts[1].get("id"))?.parentNode).toBe(accounts[1]);
+
+
                         });
 
 
                     });
 
 
-                });});});
+                    t.it("local - MailAccount of email being replied to is default mailAccountId for editor", t => {
+
+                        let panel     = createMailDesktopView(),
+                            ctrl      = panel.getController();
+
+                        t.waitForMs(t.parent.TIMEOUT, () => {
+                            selectMailFolder(panel, 10, "INBOX.Drafts", t);
+
+                            t.waitForMs(t.parent.TIMEOUT, () => {
+                                const message = selectMessage(panel, 0);
+
+                                t.waitForMs(t.parent.TIMEOUT, () => {
+
+                                    const editor = ctrl.showMailEditor(message.getCompoundKey(), "replyTo");
+                                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                                        t.expect(editor.getViewModel().get("messageDraft.mailAccountId")).toBe(
+                                            message.getCompoundKey().getMailAccountId());
+
+                                    });
+                                });
+
+                            });
+                        });
+                    });
+
+
+                    t.it("loading - MailAccount of email being replied to is default mailAccountId for editor", t => {
+
+                        let panel = createMailDesktopView(),
+                            ctrl = panel.getController();
+
+                        const messageItem = getFirstMessageItem("mail_account");
+                        const ck = messageItem.getCompoundKey();
+
+                        const editor = ctrl.showMailEditor(ck, "replyTo");
+
+                        t.expect(
+                            conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().getRoot().childNodes.length
+                        ).toBe(0);
+                        
+                        t.waitForMs(t.parent.TIMEOUT, () => {
+
+                            t.expect(editor.getViewModel().get("messageDraft.mailAccountId")).not.toBeFalsy();
+                            t.expect(editor.getViewModel().get("messageDraft.mailAccountId")).toBe(
+                                ck.getMailAccountId());
+                        });
+
+                    });
+                });
+
+
+        });});
