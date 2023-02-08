@@ -1050,7 +1050,10 @@ StartTest(async t => {
                     view = createWithMessageConfig(messageDraftConfig, "CREATE");
 
                     let combo = view.down("#accountCombo");
-                    t.expect(combo.initialConfig.bind.value).toBe("{messageDraft.mailAccountId || null}");
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+                        t.expect(combo.getValue()).toBe(null);
+                    });
                 });
 
 
@@ -1087,6 +1090,43 @@ StartTest(async t => {
                             closeSpy.remove();
                         });
 
+                    });
+
+
+                });
+
+
+                t.it("changing value in account combo applies mailAccountId to messageDraft", t => {
+                    let messageDraftConfig = Ext.create(
+                        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {mailAccountId: undefined}
+                    );
+
+                    const accountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+                    accountStore.load();
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+                        view = createWithMessageConfig(messageDraftConfig, "CREATE");
+                        let editor = view;
+                        editor.getViewModel().set("cn_mail_mailfoldertreestore", accountStore);
+
+                        let combo = editor.down("#accountCombo");
+                        editor.getViewModel().notify();
+
+                        const store = combo.getStore();
+                        const data = store.getRange();
+
+                        t.expect(data.length).toBeGreaterThan(1);
+
+                        t.expect(data[1].getId()).toBe("mail_account");
+                        combo.setValue(data[1].getId());
+
+                        t.waitForMs(t.parent.TIMEOUT, () => {
+                            t.expect(
+                                editor.getViewModel().get("messageDraft.mailAccountId")
+                            ).toBe(
+                                data[1].getId()
+                            );
+                        });
                     });
 
 

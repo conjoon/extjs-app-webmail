@@ -267,7 +267,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
             bind: {
                 disabled: "{!isPhantom}",
                 store: "{mailAccountStore}",
-                value: "{messageDraft.mailAccountId || null}"
+                value: "{messageDraft.mailAccountId}"
             },
             /**
              * @i18n
