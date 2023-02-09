@@ -247,6 +247,7 @@ StartTest(async t => {
             const
                 inst = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
+            t.expect(inst.areAccountsLoaded()).toBe(false);
             t.expect(inst.getRoot().childNodes.length).toBe(0);
 
             const observer = {
@@ -261,6 +262,7 @@ StartTest(async t => {
             inst.on("mailaccountsloaded", observer.onMailAccountsLoaded);
 
             let res = await inst.loadMailAccounts();
+            t.expect(inst.areAccountsLoaded()).toBe(true);
             let res2 = await inst.loadMailAccounts();
 
             const accounts = inst.getRoot().childNodes;
@@ -280,6 +282,26 @@ StartTest(async t => {
 
         });
 
-    });
 
-});
+        t.it("store's areAccountsLoaded() returns \"true\" even if no mail accounts returned from storage", async t => {
+
+            const
+                inst = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+            t.expect(inst.areAccountsLoaded()).toBe(false);
+            t.expect(inst.getRoot().childNodes.length).toBe(0);
+
+            const loadSpy = t.spyOn(inst, "load").and.callFake(() => {
+                inst.fireEvent("load", inst, []);
+            });
+
+            let res = await inst.loadMailAccounts();
+
+            t.expect(res).toEqual([]);
+            t.expect(inst.areAccountsLoaded()).toBe(true);
+
+            [loadSpy].map(spy => spy.remove());
+
+        });
+
+    });});

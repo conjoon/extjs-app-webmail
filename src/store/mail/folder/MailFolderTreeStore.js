@@ -325,10 +325,10 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
                 return resolve(childs);
             }
 
-            me.load();
             me.on("load", function (store, nodes) {
                 return resolve(nodes);
             }, {single: true});
+            me.load();
         });
 
         if (!accounts) {
@@ -341,8 +341,8 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
             await new Promise (function (resolve, reject) {
                 const cb = function () {
                     accountCount--;
+
                     if (accountCount === 0) {
-                        me.accountsLoaded = true;
                         resolve();
                     } else {
                         me.on("load", cb, me, {single: true});
@@ -352,10 +352,23 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
             });
         }
 
+        me.accountsLoaded = true;
         const childNodes = me.getRoot().childNodes;
         me.fireEvent("mailaccountsloaded", me, childNodes);
 
         return childNodes;
+    },
+
+
+    /**
+     * Returns true if the accounts for this store have been loaded.
+     * Returns also true if an attempt loading the nodes has been made, bit no accounts
+     * are available.
+     *
+     * @returns {boolean}
+     */
+    areAccountsLoaded () {
+        return !!this.accountsLoaded;
     }
 
 });
