@@ -304,4 +304,26 @@ StartTest(async t => {
 
         });
 
+
+        t.it("hasMailAccounts() / getMailAccounts()", t => {
+
+            const
+                inst = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+            t.expect(inst.areAccountsLoaded()).toBe(false);
+            t.expect(inst.getRoot().childNodes.length).toBe(0);
+            t.expect(inst.hasMailAccounts()).toBe(false);
+            t.expect(inst.getMailAccounts()).toEqual([]);
+
+            const FAKE_CHILDS = [1, 2];
+            const rootSpy = t.spyOn(inst, "getRoot").and.callFake(() => ({
+                childNodes: FAKE_CHILDS
+            }));
+
+            t.expect(inst.hasMailAccounts()).toBe(true);
+            t.expect(inst.getMailAccounts()).toEqual(FAKE_CHILDS);
+
+            [rootSpy].map(spy => spy.remove());
+        });
+
     });});

@@ -146,6 +146,16 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
     },
 
 
+    hasMailAccounts () {
+        return !!this.getRoot()?.childNodes?.length;
+    },
+
+
+    getMailAccounts () {
+        return this.getRoot()?.childNodes || [];
+    },
+
+
     /**
      * Finds the first active mail account managed by this store.
      * Returns undefined if no active account was found
@@ -305,7 +315,7 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         const me = this;
 
         if (me.accountsLoaded) {
-            return me.getRoot().childNodes;
+            return me.getMailAccounts();
         }
 
         if (me.acccountsAreBeingLoaded) {
@@ -319,7 +329,7 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         me.acccountsAreBeingLoaded = true;
 
         const accounts = await new Promise(function (resolve, reject) {
-            const childs = me.getRoot().childNodes;
+            const childs = me.getMailAccounts();
 
             if (childs.length) {
                 return resolve(childs);
@@ -353,7 +363,7 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
         }
 
         me.accountsLoaded = true;
-        const childNodes = me.getRoot().childNodes;
+        const childNodes = me.getMailAccounts();
         me.fireEvent("mailaccountsloaded", me, childNodes);
 
         return childNodes;
