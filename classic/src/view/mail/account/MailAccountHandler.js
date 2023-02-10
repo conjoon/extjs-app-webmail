@@ -46,7 +46,7 @@
         return true;
     },
 
-
+    
     invoke () {
         const
             me = this,
@@ -56,6 +56,7 @@
         mailView.add(accountWizard);
 
         accountWizard.show();
+        return accountWizard;
     },
 
 

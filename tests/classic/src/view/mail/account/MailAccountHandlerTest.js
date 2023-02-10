@@ -92,7 +92,7 @@ StartTest(t => {
                 viewSpy = t.spyOn(handler, "getMailMainPackageView").and.callFake(() => PANEL);
 
 
-            handler.invoke();
+            t.isInstanceOf(handler.invoke(), "conjoon.cn_mail.view.mail.account.MailAccountWizard");
 
             t.waitForMs(t.parent.TIMEOUT, () => {
                 const accountWizard = handler.accountWizard;
