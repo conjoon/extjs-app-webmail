@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,9 +32,7 @@ StartTest(t => {
 
         const CLASS_NAME = "conjoon.cn_mail.view.mail.account.MailAccountHandler";
         const PARENT_CLASS = "conjoon.cn_mail.view.mail.account.MailAccountHandler";
-        const FAKE_CMP = {
-            setDisabled: function () {}
-        };
+
         const create = () => Ext.create(CLASS_NAME);
 
         let PANEL;
@@ -91,19 +89,16 @@ StartTest(t => {
                 fakeStore = {
                     addMailAccount: function () {}
                 },
-                viewSpy = t.spyOn(handler, "getMailMainPackageView").and.callFake(() => PANEL),
-                fakeCmpSpy = t.spyOn(FAKE_CMP, "setDisabled").and.callThrough();
+                viewSpy = t.spyOn(handler, "getMailMainPackageView").and.callFake(() => PANEL);
 
 
-            handler.invoke(FAKE_CMP);
+            handler.invoke();
 
             t.waitForMs(t.parent.TIMEOUT, () => {
                 const accountWizard = handler.accountWizard;
 
                 t.isInstanceOf(accountWizard, "conjoon.cn_mail.view.mail.account.MailAccountWizard");
                 t.expect(accountWizard.isVisible()).toBe(true);
-                t.expect(fakeCmpSpy.calls.mostRecent().args[0]).toBe(true);
-
 
                 const mailAccount = Ext.create("conjoon.cn_mail.model.mail.account.MailAccount");
                 const saveSpy = t.spyOn(mailAccount, "save").and.callFake(() => {});
@@ -121,9 +116,9 @@ StartTest(t => {
                 t.expect(addMailAccountSpy.calls.mostRecent().args[0]).toBe(mailAccount);
 
                 accountWizard.close();
-                t.expect(fakeCmpSpy.calls.mostRecent().args[0]).toBe(false);
+
                 [
-                    viewSpy, fakeCmpSpy, saveSpy, storeSpy, addMailAccountSpy
+                    viewSpy, saveSpy, storeSpy, addMailAccountSpy
                 ].map(spy => spy.remove());
 
             });
@@ -143,7 +138,7 @@ StartTest(t => {
             const selModelSpy = t.spyOn(handler, "getMailFolderTreeSelectionModel").and.callFake(() => fakeSelModel);
             const selectSpy = t.spyOn(fakeSelModel, "select").and.callFake(() => {});
 
-            handler.invoke(FAKE_CMP);
+            handler.invoke();
 
             t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(handler.accountWizard.isVisible()).toBe(true);
@@ -166,7 +161,7 @@ StartTest(t => {
             const viewSpy = t.spyOn(handler, "getMailMainPackageView").and.callFake(() => PANEL);
             const maskSpy = t.spyOn(handler, "showFailureMask").and.callFake(() => {});
 
-            handler.invoke(FAKE_CMP);
+            handler.invoke();
 
             t.waitForMs(t.parent.TIMEOUT, () => {
 

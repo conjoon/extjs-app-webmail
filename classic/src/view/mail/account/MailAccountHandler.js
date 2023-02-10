@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,16 +47,13 @@
     },
 
 
-    invoke (btn) {
+    invoke () {
         const
             me = this,
             mailView = me.getMailMainPackageView();
 
         const accountWizard = me.createOrReturnAccountWizard();
-        accountWizard.on("close", () => btn.setDisabled(false), me, {single: true});
-
         mailView.add(accountWizard);
-        btn.setDisabled(true);
 
         accountWizard.show();
     },
