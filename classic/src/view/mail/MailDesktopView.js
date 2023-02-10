@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -168,6 +168,20 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopView", {
         const me = this;
 
         return me.getController().showMailAccountFor(mailAccountId);
+    },
+
+
+    /**
+     * Shows the MailAccountWizard if the current handler available for the controller
+     * allows for creating accounts.
+     *
+     * @return {conjoon.cn_mail.view.mail.account.MailAccountWizard|undefined} Returns the wizard or
+     * undefined if no wizard could be created
+     */
+    showMailAccountWizard () {
+        const me = this;
+
+        return me.getController().showMailAccountWizard();
     }
 
 });

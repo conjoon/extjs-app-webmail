@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -156,10 +156,7 @@ StartTest(async t => {
 
         t.it("showMessageMovedInfo()", t => {
 
-            /**
-         * test for extjs-app-webmail#102
-         */
-
+            //test for extjs-app-webmail#102
             view = Ext.create(
                 "conjoon.cn_mail.view.mail.MailDesktopView", viewConfig);
 
@@ -189,6 +186,26 @@ StartTest(async t => {
 
             let accountView = view.showMailAccountFor("dev_sys_conjoon_org");
             t.isInstanceOf(accountView, "conjoon.cn_mail.view.mail.account.MailAccountView");
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+
+            });
+
+        });
+
+
+        t.it("showMailAccountWizard()", t => {
+
+            const RETURNVALUE = {};
+            view = Ext.create(
+                "conjoon.cn_mail.view.mail.MailDesktopView", viewConfig);
+
+            let ctrl = view.getController();
+
+            t.spyOn(ctrl, "showMailAccountWizard").and.callFake(() => RETURNVALUE) ;
+
+            const mailAccountWizard = view.showMailAccountWizard("dev_sys_conjoon_org");
+            t.expect(mailAccountWizard).toBe(RETURNVALUE);
 
             t.waitForMs(t.parent.TIMEOUT, () => {
 
