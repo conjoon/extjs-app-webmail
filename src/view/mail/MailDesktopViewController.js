@@ -52,11 +52,17 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
     alias: "controller.cn_mail-maildesktopviewcontroller",
 
+    statics: {
+        required: {
+            mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+        }
+    },
 
     control: {
 
         "cn_mail-maildesktopview": {
-            "tabchange": "onTabChange"
+            "tabchange": "onTabChange",
+            "activate": "onMailDesktopViewShow"
         },
         "cn_mail-maildesktopview > cn_mail-mailmessagereadermessageview": {
             "cn_mail-mailmessageitemread": "onMessageItemRead"
@@ -138,6 +144,44 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
 
     /**
+      * @return {conjoon.cn_mail.view.mail.account.MailAccountWizard}
+     */
+    showMailAccountWizard () {
+        const me = this;
+
+        if (me.mailAccountHandler.enabled()) {
+            return me.mailAccountHandler.invoke();
+        }
+    },
+
+
+    /**
+     * Callback for the show event of the MailDesktopView.
+     *
+     * @return {conjoon.cn_mail.view.mail.account.MailAccountWizard}
+     */
+    onMailDesktopViewShow () {
+        const
+            me = this,
+            mailAccountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+
+        if (!mailAccountStore.areAccountsLoaded()) {
+            mailAccountStore.on(
+                "mailaccountsloaded",
+                (store, accounts) => !accounts.length && me.showMailAccountWizard(),
+                me,
+                {single: true}
+            );
+            return;
+        }
+
+        if (!mailAccountStore.hasMailAccounts()) {
+            return me.showMailAccountWizard();
+        }
+    },
+
+
+    /**
      * Configures this controller and the associated ViewModel with a singleton instance
      * of {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}.
      * Makes sure that for each load operation (e.g. MailAccount-nodes get expanded -> load folders)
@@ -150,7 +194,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             me = this,
             store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
-        if (!store.accountsLoaded) {
+        if (!store.areAccountsLoaded()) {
             store.on("mailaccountsloaded", me.seedFolders, me);
             store.loadMailAccounts();
         } else {
@@ -1321,7 +1365,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             }
         }
         if (!draftNode && requireActiveAccount === false) {
-            draftNode = store.getRoot()?.childNodes[0]?.findChild("folderType", TYPES.DRAFT, false);
+            draftNode = store.getMailAccounts()[0]?.findChild("folderType", TYPES.DRAFT, false);
         }
 
         return draftNode;

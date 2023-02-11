@@ -312,6 +312,9 @@ StartTest(async t => {
                                                                     editor.getViewModel().get("messageDraft").attachments().getRange()[0].getId()
                                                                 );
 
+                                                                panel.destroy();
+                                                                panel = null;
+
                                                             });
 
                                                         });
@@ -366,10 +369,10 @@ StartTest(async t => {
                             t.expect(ctrl.getDefaultDraftFolderForComposing( accounts[0].get("id"))?.parentNode).toBe(accounts[0]);
                             t.expect(ctrl.getDefaultDraftFolderForComposing(accounts[1].get("id"))?.parentNode).toBe(accounts[1]);
 
+                            panel.destroy();
+                            panel = null;
 
                         });
-
-
                     });
 
 
@@ -392,6 +395,8 @@ StartTest(async t => {
                                         t.expect(editor.getViewModel().get("messageDraft.mailAccountId")).toBe(
                                             message.getCompoundKey().getMailAccountId());
 
+                                        panel.destroy();
+                                        panel = null;
                                     });
                                 });
 
@@ -419,8 +424,105 @@ StartTest(async t => {
                             t.expect(editor.getViewModel().get("messageDraft.mailAccountId")).not.toBeFalsy();
                             t.expect(editor.getViewModel().get("messageDraft.mailAccountId")).toBe(
                                 ck.getMailAccountId());
+
+                            panel.destroy();
+                            panel = null;
                         });
 
+                    });
+
+
+                    t.it("event \"activate\" registered", t => {
+                        let panel = createMailDesktopView(),
+                            ctrl = panel.getController();
+
+                        t.expect(ctrl.getControl()["cn_mail-maildesktopview"].activate).toBe("onMailDesktopViewShow");
+
+                        panel.destroy();
+                        panel = null;
+                    });
+
+
+                    t.it("showMailAccountWizard()", t => {
+
+                        let panel = createMailDesktopView(),
+                            ctrl = panel.getController();
+
+                        const RETURNVALUE = {};
+
+                        t.isInstanceOf(ctrl.mailAccountHandler, "conjoon.cn_mail.view.mail.account.MailAccountHandler");
+                        t.expect(ctrl.mailAccountHandler.enabled()).toBe(true);
+
+                        const invokeSpy = t.spyOn(ctrl.mailAccountHandler, "invoke").and.callFake(() => RETURNVALUE);
+
+                        t.expect(ctrl.showMailAccountWizard()).not.toBeUndefined();
+                        t.expect(ctrl.showMailAccountWizard()).toBe(invokeSpy.calls.mostRecent().returnValue);
+
+                        const enabledSpy = t.spyOn(ctrl.mailAccountHandler, "enabled").and.callFake(() => false);
+
+                        t.expect(ctrl.mailAccountHandler.enabled()).toBe(false);
+                        t.expect(ctrl.showMailAccountWizard()).toBeUndefined();
+
+                        [enabledSpy, invokeSpy].map(spy => spy.remove());
+
+                        panel.destroy();
+                        panel = null;
+                    });
+
+
+                    t.it("ioc (mailAccountHandler)", t => {
+                        t.expect(conjoon.cn_mail.view.mail.MailDesktopViewController.required.mailAccountHandler).toBe(
+                            "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+                        );
+                    });
+
+
+                    t.it("onMailDesktopViewShow()", t => {
+
+                        let panel = createMailDesktopView(),
+                            ctrl = panel.getController();
+
+                        const RETURNVALUE = {};
+                        let HAS_MAIL_ACCOUNTS = false;
+                        let ARE_ACCOUNTS_LOADED = true;
+
+                        t.isInstanceOf(ctrl.mailAccountHandler, "conjoon.cn_mail.view.mail.account.MailAccountHandler");
+
+
+                        const showMailAccountWizardSpy = t.spyOn(ctrl, "showMailAccountWizard").and.callFake(() => RETURNVALUE);
+
+                        const store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+                        const loadSpy = t.spyOn(store, "load").and.callFake(() => {});
+                        const hasAccountsSpy = t.spyOn(store, "hasMailAccounts").and.callFake(() => HAS_MAIL_ACCOUNTS);
+                        const areAccountsLoadedSpy =  t.spyOn(store, "areAccountsLoaded").and.callFake(() => ARE_ACCOUNTS_LOADED);
+
+                        HAS_MAIL_ACCOUNTS = true;
+                        ARE_ACCOUNTS_LOADED = true;
+                        t.expect(ctrl.onMailDesktopViewShow()).toBeUndefined();
+
+                        HAS_MAIL_ACCOUNTS = false;
+                        ARE_ACCOUNTS_LOADED = true;
+                        t.expect(ctrl.onMailDesktopViewShow()).toBe(RETURNVALUE);
+                        t.expect(showMailAccountWizardSpy.calls.count()).toBe(1);
+
+                        HAS_MAIL_ACCOUNTS = false;
+                        ARE_ACCOUNTS_LOADED = false;
+                        t.expect(ctrl.onMailDesktopViewShow()).toBeUndefined();
+                        t.expect(showMailAccountWizardSpy.calls.count()).toBe(1);
+
+                        store.fireEvent("mailaccountsloaded", {}, [1]);
+                        t.expect(showMailAccountWizardSpy.calls.count()).toBe(1);
+
+                        // re-attach listener
+                        t.expect(ctrl.onMailDesktopViewShow()).toBeUndefined();
+                        t.expect(showMailAccountWizardSpy.calls.count()).toBe(1);
+                        store.fireEvent("mailaccountsloaded", {}, []);
+                        t.expect(showMailAccountWizardSpy.calls.count()).toBe(2);
+
+                        [loadSpy, showMailAccountWizardSpy, hasAccountsSpy, areAccountsLoadedSpy].map(spy => spy.remove());
+
+                        panel.destroy();
+                        panel = null;
                     });
                 });
 
