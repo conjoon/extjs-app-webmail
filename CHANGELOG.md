@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.3...v1.0.4) (2023-02-11)
+
+
+### Features
+
+* show MailAccountWizard when MailDesktopView is shown ([7ed305f](https://github.com/conjoon/extjs-app-webmail/commit/7ed305fc2b8a6ae71930375bc5dfc9c1e0b5e80b)), closes [conjoon/extjs-app-webmail#276](https://github.com/conjoon/extjs-app-webmail/issues/276)
+
+
+### Bug Fixes
+
+* accountsLoaded is not set to true if response for accounts was empty ([69c8ba8](https://github.com/conjoon/extjs-app-webmail/commit/69c8ba8d13a224629f21387e55833b47dcf8e2ed)), closes [conjoon/extjs-app-webmail#276](https://github.com/conjoon/extjs-app-webmail/issues/276)
+
 ### [1.0.3](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.2...v1.0.3) (2023-02-08)
 
 
