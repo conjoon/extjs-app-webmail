@@ -1766,23 +1766,100 @@ StartTest(async t => {
 
                     t.it("onAddMailAccountBtnClick()", t => {
 
-                        const fakeComp = {};
+                        packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
-                        let ENABLED = false;
+                        const FAKE_MAILDESKTOPVIEW = {
+                            showMailAccountWizard () {
+
+                            }
+                        };
+
+                        const viewSpy = t.spyOn(packageCtrl, "getMainPackageView").and.callFake(() => FAKE_MAILDESKTOPVIEW);
+                        const wizardSpy = t.spyOn(FAKE_MAILDESKTOPVIEW, "showMailAccountWizard").and.callFake(() => {});
+
+                        packageCtrl.onAddMailAccountBtnClick();
+
+                        t.expect(wizardSpy.calls.count()).toBe(1);
+
+                        [viewSpy, wizardSpy].map(spy => spy.remove());
+                    });
+
+
+                    t.it("onMailAccountWizardShownOrClosed()", t => {
 
                         packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
-                        let invokeSpy = t.spyOn(packageCtrl.mailAccountHandler, "invoke").and.callFake(() => {}),
-                            enabledSpy = t.spyOn(packageCtrl.mailAccountHandler, "enabled").and.callFake(() => ENABLED);
+                        t.expect(packageCtrl.getControl()["cn_navport-tbar > #cn_mail-addMailAccountBtn"].click).toBe(
+                            "onAddMailAccountBtnClick"
+                        );
 
-                        t.expect(packageCtrl.onAddMailAccountBtnClick()).toBe(false);
+                        let VISIBLE = false;
+                        let ACTIVE_ACCOUNT = null;
+                        let FAKE_ADDMAILACCOUNTBUTTON = {
+                            setDisabled () {
 
-                        ENABLED = true;
-                        t.expect(packageCtrl.onAddMailAccountBtnClick(fakeComp)).toBe(true);
-                        t.expect(invokeSpy.calls.count()).toBe(1);
-                        t.expect(invokeSpy.calls.mostRecent().args[0]).toBe(fakeComp);
+                            }
+                        };
+                        const FAKEWIZARD = {
+                            isVisible () {
+                                return VISIBLE;
+                            },
+                            on () {
 
-                        [invokeSpy, enabledSpy].map(spy => spy.remove());
+                            }
+                        };
+                        const FAKECREATEMESSAGEBUTTON = {
+                            setDisabled () {
+
+                            }
+                        };
+
+                        const store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+                        const onSpy = t.spyOn(FAKEWIZARD, "on").and.callFake(() => {});
+                        const findFirstActiveMailAccountSpy = t.spyOn(store, "findFirstActiveMailAccount").and.callFake(
+                            () => ACTIVE_ACCOUNT);
+                        const createMessageButtonSpy = t.spyOn(packageCtrl, "getCreateMessageButton").and.callFake(
+                            () => FAKECREATEMESSAGEBUTTON);
+                        const disableCreateMessageBtnSpy = t.spyOn(FAKECREATEMESSAGEBUTTON, "setDisabled").and.callFake(
+                            () => {});
+                        const contextButtonsSpy = t.spyOn(
+                            packageCtrl, "disableMessageItemContextButtons").and.callFake(() => {});
+                        const uiButtonSpy = t.spyOn(packageCtrl, "disableUiControlButtons").and.callFake(() => {});
+                        const messageGridButtonsSpy = t.spyOn(packageCtrl, "activateButtonsForMessageGrid").and.callFake(
+                            () => {});
+                        const getAddMailAccountButtonSpy = t.spyOn(packageCtrl, "getAddMailAccountButton").and.callFake(
+                            () => FAKE_ADDMAILACCOUNTBUTTON
+                        );
+                        const disableAddMailAccountButtonSpy = t.spyOn(
+                            FAKE_ADDMAILACCOUNTBUTTON, "setDisabled").and.callFake(() => {});
+
+                        [false, true].map(isVisible => {
+                            VISIBLE = isVisible;
+                            packageCtrl.onMailAccountWizardShownOrClosed(FAKEWIZARD);
+
+                            t.expect(uiButtonSpy.calls.mostRecent().args[0]).toBe(VISIBLE);
+
+                            t.expect(disableAddMailAccountButtonSpy.calls.mostRecent().args[0]).toBe(VISIBLE);
+
+                            if (VISIBLE) {
+                                t.expect(onSpy.calls.mostRecent().args).toEqual([
+                                    "close", packageCtrl.onMailAccountWizardShownOrClosed, packageCtrl, {single: true}
+                                ]);
+
+                                t.expect(contextButtonsSpy.calls.mostRecent().args[0]).toBe(true);
+                            } else {
+                                t.expect(messageGridButtonsSpy.calls.count()).toBe(1);
+                            }
+                            t.expect(disableCreateMessageBtnSpy.calls.mostRecent().args[0]).toBe(VISIBLE || !ACTIVE_ACCOUNT);
+                        });
+
+
+                        [
+                            onSpy, findFirstActiveMailAccountSpy, createMessageButtonSpy, disableCreateMessageBtnSpy,
+                            contextButtonsSpy,uiButtonSpy, messageGridButtonsSpy, getAddMailAccountButtonSpy,
+                            disableAddMailAccountButtonSpy
+                        ].map(spy => spy.remove());
+
                     });
 
 

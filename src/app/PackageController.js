@@ -164,6 +164,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     },
 
     control: {
+        "cn_mail-mailaccountwizard": {
+            "show": "onMailAccountWizardShownOrClosed"
+        },
         "cn_mail-maildesktopview": {
             tabchange: "onMailDesktopViewTabChange"
         },
@@ -234,6 +237,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         ref: "toggleGridListButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavToggleList"
     }, {
+        ref: "toggleMailFolderButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavToggleFolder"
+    }, {
         ref: "switchReadingPaneButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
     }, {
@@ -254,6 +260,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     }, {
         ref: "deleteButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavDeleteMessage"
+    }, {
+        ref: "addMailAccountButton",
+        selector: "cn_navport-tbar > #cn_mail-addMailAccountBtn"
     }],
 
 
@@ -327,9 +336,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         // we have not an inbox view. By default, disable all buttons.
         // they will either be re-activated instantly or once any of the
         // view's or editor's item/draft was loaded
-        me.disableEmailActionButtons(true);
-        me.disableEmailEditButtons(true);
-
+        me.disableMessageItemContextButtons(true);
 
         if (activatedPanel.isCnMessageEditor) {
 
@@ -418,8 +425,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         if (selection.length) {
             me.activateButtonsForMessageItem(selection[0]);
         } else {
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(true);
+            me.disableMessageItemContextButtons(true);
         }
     },
 
@@ -474,8 +480,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             toggleDisabled = true;
 
             if (accountSelected) {
-                me.disableEmailActionButtons(true);
-                me.disableEmailEditButtons(true);
+                me.disableMessageItemContextButtons(true);
             }
         } else if (me.getMailMessageGrid().getStore().isLoading()) {
             toggleDisabled = true;
@@ -634,8 +639,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         me.getToggleGridListButton().setDisabled(accountSelected);
 
         if (accountSelected) {
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(true);
+            me.disableMessageItemContextButtons(true);
         } else {
             me.activateButtonsForMessageGrid();
         }
@@ -657,8 +661,14 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             return;
         }
 
-        me.disableEmailActionButtons(true);
-        me.disableEmailEditButtons(true);
+        me.disableMessageItemContextButtons(true);
+    },
+
+
+    disableMessageItemContextButtons (disable) {
+        const me = this;
+        me.disableEmailActionButtons(disable);
+        me.disableEmailEditButtons(disable);
     },
 
 
@@ -909,20 +919,55 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     /**
      * Callback for the node navigation's "add mail account"-button.
      *
-     * @param {Ext.Button} btn
-     *
      * @return {Boolean}
      */
-    onAddMailAccountBtnClick (btn) {
-
+    onAddMailAccountBtnClick () {
         const me = this;
+        me.getMainPackageView().showMailAccountWizard();
+    },
 
-        if (!me.mailAccountHandler.enabled()) {
-            return false;
+
+    /**
+     * Callback for the show/close event of the MailAccountWizard.
+     * Will enable/disable toolbar buttons based on the visibiliyt state and the state
+     * of available MailAccounts.
+     *
+     * @param {conjoon.cn_mail.view.mail.account.MailAccountWizard} wizard
+     */
+    onMailAccountWizardShownOrClosed (wizard) {
+        const
+            me = this,
+            btn = me.getAddMailAccountButton(),
+            isVisible = wizard.isVisible(),
+            activeAccount = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().findFirstActiveMailAccount();
+
+        if (isVisible) {
+            wizard.on("close", me.onMailAccountWizardShownOrClosed, me, {single: true});
         }
 
-        me.mailAccountHandler.invoke(btn);
-        return true;
+        if (btn) {
+            btn.setDisabled(isVisible);
+        }
+        me.disableUiControlButtons(isVisible);
+
+        me.getCreateMessageButton().setDisabled(
+            isVisible || !activeAccount
+        );
+
+        if (isVisible) {
+            me.disableMessageItemContextButtons(true);
+        } else {
+            me.activateButtonsForMessageGrid();
+        }
+    },
+
+
+    disableUiControlButtons (disable) {
+        const me = this;
+
+        me.getSwitchReadingPaneButton().setDisabled(disable);
+        me.getToggleGridListButton().setDisabled(disable);
+        me.getToggleMailFolderButton().setDisabled(disable);
     },
 
 
