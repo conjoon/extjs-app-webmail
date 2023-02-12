@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.7](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.6...v1.0.7) (2023-02-12)
+
+
+### Bug Fixes
+
+* reading pane button enabled when MailAccountWizard is active ([c9d3d7b](https://github.com/conjoon/extjs-app-webmail/commit/c9d3d7bd5103237ce2e9565be949b5a0cb8aeb4a)), closes [conjoon/extjs-app-webmail#278](https://github.com/conjoon/extjs-app-webmail/issues/278)
+
 ### [1.0.6](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.5...v1.0.6) (2023-02-12)
 
 
