@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -77,7 +77,7 @@ StartTest(t => {
 
         t.expect(registerSpy.calls.mostRecent().args).toEqual([
             "mailto",
-            window.location.origin + "/#cn_mail/message/compose/%s",
+            window.location.origin + window.location.pathname + "#cn_mail/message/compose/%s",
             "mailto handler"
         ]);
 

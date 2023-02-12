@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,10 +38,12 @@ Ext.define("conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin", {
         "use strict";
 
         if (navigator.registerProtocolHandler) {
-            const origin = window.location.origin;
+            const
+                origin = window.location.origin,
+                pathname = window.location.pathname;
             navigator.registerProtocolHandler(
                 "mailto",
-                origin + "/#cn_mail/message/compose/%s",
+                origin + pathname + "#cn_mail/message/compose/%s",
                 "mailto handler"
             );
         }
