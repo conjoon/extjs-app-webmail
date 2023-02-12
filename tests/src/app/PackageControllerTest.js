@@ -798,24 +798,33 @@ StartTest(async t => {
 
 
                         t.expect(TOGGLEGRIDDISABLED).toBeUndefined();
-                        packageCtrl.onMailMessageGridBeforeLoad(null, null);
+                        packageCtrl.onMailMessageGridBeforeLoad();
 
                         t.expect(TOGGLEGRIDDISABLED).toBe(true);
-                        packageCtrl.onMailMessageGridLoad(null, null);
+                        packageCtrl.onMailMessageGridLoad();
                         t.expect(TOGGLEGRIDDISABLED).toBe(false);
 
                         TOGGLEGRIDDISABLED = true;
-                        packageCtrl.onMailMessageGridLoad(null, null);
+                        packageCtrl.onMailMessageGridLoad();
                         t.expect(TOGGLEGRIDDISABLED).toBe(false);
 
                         TOGGLEGRIDDISABLED = true;
                         ISSAME_LEFT = true;
-                        packageCtrl.onMailMessageGridLoad(null, null);
+                        packageCtrl.onMailMessageGridLoad();
                         t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
                         ISSAME_LEFT = false;
-                        packageCtrl.onMailMessageGridLoad(null, null);
+                        packageCtrl.onMailMessageGridLoad();
                         t.expect(TOGGLEGRIDDISABLED).toBe(false);
+
+                        // @see conjoon/extjs-app-webmail#277
+                        TOGGLEGRIDDISABLED = true;
+                        packageCtrl.onMailMessageGridLoad();
+                        t.expect(TOGGLEGRIDDISABLED).toBe(false);
+                        packageCtrl.mailAccountWizardShown = true;
+                        TOGGLEGRIDDISABLED = true;
+                        packageCtrl.onMailMessageGridLoad();
+                        t.expect(TOGGLEGRIDDISABLED).toBe(true);
 
                     });
 
@@ -1837,6 +1846,7 @@ StartTest(async t => {
                             VISIBLE = isVisible;
                             packageCtrl.onMailAccountWizardShownOrClosed(FAKEWIZARD);
 
+                            t.expect(packageCtrl.mailAccountWizardShown).toBe(VISIBLE);
                             t.expect(uiButtonSpy.calls.mostRecent().args[0]).toBe(VISIBLE);
 
                             t.expect(disableAddMailAccountButtonSpy.calls.mostRecent().args[0]).toBe(VISIBLE);

@@ -276,6 +276,11 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      */
     observedMessageEditor: null,
 
+    /**
+     * @private
+     * @type bool mailAccountWizardShown
+     */
+
 
     /**
      * Configures the urlPrefix from the base-address found in the package-configuration.
@@ -528,14 +533,16 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridLoad: function (store) {
+    onMailMessageGridLoad: function () {
         var me = this;
 
         if (me.getMailDesktopView().getLayout().getActiveItem() !== me.getMailInboxView()) {
             return;
         }
 
-        me.getToggleGridListButton().setDisabled(false);
+        if (!me.mailAccountWizardShown) {
+            me.getToggleGridListButton().setDisabled(false);
+        }
     },
 
 
@@ -954,6 +961,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             isVisible || !activeAccount
         );
 
+        me.mailAccountWizardShown = isVisible;
         if (isVisible) {
             me.disableMessageItemContextButtons(true);
         } else {
