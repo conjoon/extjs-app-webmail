@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.4...v1.0.5) (2023-02-12)
+
+
+### Bug Fixes
+
+* button for toggling gridlist gets activated when MailAccountWizard is shown ([9c9748f](https://github.com/conjoon/extjs-app-webmail/commit/9c9748f9eb224ff3ac6b56f5c5d3eb9e30c88ac4)), closes [conjoon/extjs-app-webmail#277](https://github.com/conjoon/extjs-app-webmail/issues/277)
+
 ### [1.0.4](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.3...v1.0.4) (2023-02-11)
 
 
