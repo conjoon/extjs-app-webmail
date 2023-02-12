@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.6](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.5...v1.0.6) (2023-02-12)
+
+
+### Bug Fixes
+
+* protocol handler for mailto does not consider instance's pathname ([bd4a8e9](https://github.com/conjoon/extjs-app-webmail/commit/bd4a8e987a253b1a872dcc01636a5d6ac94a9c6d)), closes [conjoon/extjs-app-webmail#268](https://github.com/conjoon/extjs-app-webmail/issues/268)
+
 ### [1.0.5](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.4...v1.0.5) (2023-02-12)
 
 
