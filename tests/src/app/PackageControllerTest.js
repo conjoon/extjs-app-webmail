@@ -526,6 +526,15 @@ StartTest(async t => {
                         t.expect(FORWARDDISABLED).toBe(true);
                         t.expect(DELETEDISABLED).toBe(false);
                         t.expect(EDITDISABLED).toBe(false);
+
+                        // @see conjoon/extjs-app-webmail#278
+                        packageCtrl.mailAccountWizardShown = true;
+                        t.expect(READINGPANEDISABLED).toBe(false);
+                        packageCtrl.onMailFolderTreeSelectionChange(null, [rec1]);
+                        t.expect(READINGPANEDISABLED).toBe(false);
+                        packageCtrl.onMailFolderTreeSelectionChange(null, [rec2]);
+                        t.expect(READINGPANEDISABLED).toBe(false);
+                        //onMailFolderTreeSelectionChange
                     });
 
 
