@@ -58,6 +58,13 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         }
     },
 
+    routes: {
+        "*": {
+            action: "onRouteChange"
+        }
+    },
+
+
     control: {
 
         "cn_mail-maildesktopview": {
@@ -140,6 +147,16 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
      */
     init () {
         this.configureWithMailFolderTreeStore();
+    },
+
+
+    onRouteChange () {
+
+        const me = this;
+        if (me.mailAccountHandler.enabled()) {
+            return me.mailAccountHandler.forceCloseAccountWizard();
+        }
+
     },
 
 

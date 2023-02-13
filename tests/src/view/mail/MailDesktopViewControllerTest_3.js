@@ -31,6 +31,8 @@ StartTest(async t => {
     await helper.registerIoC().setupSimlets().mockUpMailTemplates()
         .mockUpServices("coon.core.service.UserImageService").andRun((t) => {
 
+            let panel;
+
             const selectMailFolder = function (panel, storeAt, shouldBeId, t) {
 
                     let folder = storeAt instanceof Ext.data.TreeModel
@@ -121,6 +123,11 @@ StartTest(async t => {
                 Ext.ux.ajax.SimManager.init({
                     delay: 1
                 });
+
+                if (panel) {
+                    panel.destroy();
+                    panel = null;
+                }
             });
 
             t.requireOk(
@@ -130,9 +137,10 @@ StartTest(async t => {
 
                     t.it("extjs-app-webmail#83 - showMailAccountFor()", t => {
 
-                        let panel     = createMailDesktopView(),
-                            ctrl      = panel.getController(),
-                            accountId = "dev_sys_conjoon_org",
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
+
+                        let accountId = "dev_sys_conjoon_org",
                             accountView;
 
                         accountView = ctrl.showMailAccountFor(accountId);
@@ -159,8 +167,8 @@ StartTest(async t => {
 
                     t.it("onMailMessageGridRefreshClick()", t => {
 
-                        let panel = createMailDesktopView(),
-                            ctrl  = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         let CALLED = false,
                             ISAVAILABLE = true;
@@ -211,8 +219,8 @@ StartTest(async t => {
 
                     t.it("onMailMessageGridRefreshClick() - click event observed", t => {
 
-                        let panel     = createMailDesktopView(),
-                            ctrl      = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         t.isCalledOnce("onMailMessageGridRefreshClick", ctrl);
 
@@ -240,9 +248,10 @@ StartTest(async t => {
 
                     t.it("changes in attachments are reflected across all MessageViews", t => {
 
-                        let panel            = createMailDesktopView(),
-                            ctrl             = panel.getController(),
-                            inboxView        = panel.down("cn_mail-mailinboxview"),
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
+
+                        let   inboxView        = panel.down("cn_mail-mailinboxview"),
                             inboxMessageView = inboxView.down("cn_mail-mailmessagereadermessageview"),
                             grid             = panel.down("cn_mail-mailmessagegrid");
 
@@ -342,9 +351,8 @@ StartTest(async t => {
 
                     t.it("getDefaultDraftFolderForComposing()", t => {
 
-                        let panel     = createMailDesktopView(),
-                            ctrl      = panel.getController();
-
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
                         const store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
 
@@ -378,8 +386,8 @@ StartTest(async t => {
 
                     t.it("local - MailAccount of email being replied to is default mailAccountId for editor", t => {
 
-                        let panel     = createMailDesktopView(),
-                            ctrl      = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
                             selectMailFolder(panel, 10, "INBOX.Drafts", t);
@@ -407,8 +415,8 @@ StartTest(async t => {
 
                     t.it("loading - MailAccount of email being replied to is default mailAccountId for editor", t => {
 
-                        let panel = createMailDesktopView(),
-                            ctrl = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         const messageItem = getFirstMessageItem("mail_account");
                         const ck = messageItem.getCompoundKey();
@@ -433,8 +441,8 @@ StartTest(async t => {
 
 
                     t.it("event \"activate\" registered", t => {
-                        let panel = createMailDesktopView(),
-                            ctrl = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         t.expect(ctrl.getControl()["cn_mail-maildesktopview"].activate).toBe("onMailDesktopViewShow");
 
@@ -445,8 +453,8 @@ StartTest(async t => {
 
                     t.it("showMailAccountWizard()", t => {
 
-                        let panel = createMailDesktopView(),
-                            ctrl = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         const RETURNVALUE = {};
 
@@ -479,8 +487,8 @@ StartTest(async t => {
 
                     t.it("onMailDesktopViewShow()", t => {
 
-                        let panel = createMailDesktopView(),
-                            ctrl = panel.getController();
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
 
                         const RETURNVALUE = {};
                         let HAS_MAIL_ACCOUNTS = false;
@@ -521,10 +529,30 @@ StartTest(async t => {
 
                         [loadSpy, showMailAccountWizardSpy, hasAccountsSpy, areAccountsLoadedSpy].map(spy => spy.remove());
 
-                        panel.destroy();
-                        panel = null;
+
                     });
-                });
 
 
-        });});
+                    t.it("onRouteChange()", t => {
+
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
+
+                        t.expect(ctrl.getRoutes()["*"].action).toBe("onRouteChange");
+
+                        let ENABLED = false;
+
+                        const enableSpy = t.spyOn(ctrl.mailAccountHandler, "enabled").and.callFake(() => ENABLED);
+
+                        t.expect(ctrl.onRouteChange()).toBeUndefined();
+
+                        ENABLED = true;
+
+                        const invokeSpy = t.spyOn(ctrl.mailAccountHandler, "forceCloseAccountWizard").and.callFake(() => "FAKERETURN");
+
+                        t.expect(ctrl.onRouteChange()).toBe(invokeSpy.calls.mostRecent().returnValue);
+
+                        [enableSpy, invokeSpy].map(spy => spy.remove());
+                    });
+
+                });});});
