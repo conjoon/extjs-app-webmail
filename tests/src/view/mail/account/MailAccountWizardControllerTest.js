@@ -82,4 +82,33 @@ StartTest(t => {
     });
 
 
+    t.it("onConfigsLoad()", t => {
+
+        ctrl = create();
+
+        const CONFIGS = {};
+
+        const FAKEVIEW = {
+            setBusy () {
+            }
+
+        };
+
+        const getViewSpy = t.spyOn(ctrl, "getView").and.callFake(() => FAKEVIEW);
+        const setBusySpy = t.spyOn(FAKEVIEW, "setBusy");
+        const setStoreDataSpy = t.spyOn(ctrl, "setStoreData").and.callFake(() => {});
+
+        t.expect(ctrl.onConfigsLoad(CONFIGS)).toBe(true);
+        t.expect(setStoreDataSpy.calls.mostRecent().args[0]).toBe(CONFIGS);
+        t.expect(setBusySpy.calls.mostRecent().args[0]).toBe(false);
+
+        ctrl.destroyed = true;
+        t.expect(ctrl.onConfigsLoad(CONFIGS)).toBe(false);
+        t.expect(setStoreDataSpy.calls.count()).toBe(1);
+        t.expect(setBusySpy.calls.count()).toBe(1);
+
+        [getViewSpy, setBusySpy, setStoreDataSpy].map(spy => spy.remove());
+    });
+
+
 });

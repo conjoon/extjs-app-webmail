@@ -185,18 +185,27 @@ Ext.define("conjoon.cn_mail.view.mail.account.MailAccountWizardController", {
 
 
     onConfigsLoad (configs) {
+        const me = this;
+
+        if (me.destroyed) {
+            return false;
+        }
+
+        me.setStoreData(configs);
+        me.getView().setBusy(false);
+
+        return true;
+    },
+
+
+    setStoreData (configs) {
         const
             me = this,
-            view = me.getView();
-
-        const store = view.down("#presets").getStore();
+            view = me.getView(),
+            store = view.down("#presets").getStore();
 
         configs = me.prepareConfig(configs);
-
         store.add(configs);
-
-        view.setBusy(false);
-
     },
 
 
