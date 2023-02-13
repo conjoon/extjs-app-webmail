@@ -60,6 +60,18 @@
     },
 
 
+    forceCloseAccountWizard () {
+        const me = this;
+
+        if (me.accountWizard) {
+            me.accountWizard.close();
+            return true;
+        }
+
+        return false;
+    },
+
+
     createOrReturnAccountWizard () {
         const me = this;
 
@@ -67,6 +79,7 @@
             me.accountWizard = null;
             let accountWizard = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountWizard");
             accountWizard.on("accountavailable", me.onAccountAvailable, me);
+            accountWizard.on("destroy", () => me.accountWizard = null, {single: true});
             me.accountWizard = accountWizard;
         }
 

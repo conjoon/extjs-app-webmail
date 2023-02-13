@@ -146,7 +146,7 @@ StartTest(t => {
                 handler.onMailAccountSaveSuccess(fakeMailAccount);
 
                 t.expect(selectSpy.calls.mostRecent().args[0]).toBe(fakeMailAccount);
-                t.expect(handler.accountWizard.destroyed).toBe(true);
+                t.expect(handler.accountWizard).toBe(null);
 
                 [viewSpy, selModelSpy, selectSpy].map(spy => spy.remove());
             });
@@ -171,6 +171,22 @@ StartTest(t => {
 
                 [viewSpy, maskSpy].map(spy => spy.remove());
             });
+
+        });
+
+
+        t.it("forceCloseAccountWizard()", t => {
+
+            handler = create();
+            const viewSpy = t.spyOn(handler, "getMailMainPackageView").and.callFake(() => PANEL);
+            const maskSpy = t.spyOn(handler, "showFailureMask").and.callFake(() => {});
+
+            handler.invoke();
+
+            t.expect(handler.forceCloseAccountWizard()).toBe(true);
+            t.expect(handler.forceCloseAccountWizard()).toBe(false);
+
+            [viewSpy, maskSpy].map(spy => spy.remove());
 
         });
 
