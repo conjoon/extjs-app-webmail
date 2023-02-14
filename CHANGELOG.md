@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.8](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.7...v1.0.8) (2023-02-14)
+
+
+### Bug Fixes
+
+* error thrown when MailAccountWizard is destroyed and configs are loaded ([b43cc78](https://github.com/conjoon/extjs-app-webmail/commit/b43cc783cd4e5d1bd85b9b0a71e07c2df2e8d122)), closes [conjoon/extjs-app-webmail#280](https://github.com/conjoon/extjs-app-webmail/issues/280)
+
 ### [1.0.7](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.6...v1.0.7) (2023-02-12)
 
 
