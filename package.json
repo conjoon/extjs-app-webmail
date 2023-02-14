@@ -73,7 +73,7 @@
         "@conjoon/extjs-dev-webmailsim": "^1.0.2",
         "@coon-js/extjs-app-user": "^0.1.7",
         "@coon-js/extjs-comp-navport": "^0.2.4",
-        "@coon-js/extjs-lib-comp": "^0.3.0",
+        "@coon-js/extjs-lib-comp": "^1.0.1",
         "@coon-js/extjs-lib-core": "^1.0.5",
         "@l8js/l8": "^0.10.1"
     },
@@ -104,7 +104,8 @@
         "preversion": "npx delorean -r",
         "release:patch": "npm run preversion && standard-version --release-as patch && npm run postversion",
         "release:minor": "npm run preversion && standard-version --release-as minor && npm run postversion",
-        "release:major": "npm run preversion && standard-version --release-as major && npm run postversion"
+        "release:major": "npm run preversion && standard-version --release-as major && npm run postversion",
+        "deps:prod:latest": "npm i -P @conjoon/extjs-dev-webmailsim@latest @coon-js/extjs-app-user@latest @coon-js/extjs-comp-navport@latest @coon-js/extjs-lib-comp@latest @coon-js/extjs-lib-core @l8js/l8@latest"
     },
     "repository": {
         "type": "git",
