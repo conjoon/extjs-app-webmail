@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -77,14 +77,29 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
         "</tpl>",
         "</tpl>",
         "</tpl>",
+
+        // account node - expander left
+        "<tpl if=\"this.isAccount(record)\">" ,
+        "<div class=\"{childCls} {elbowCls}-img {elbowCls}",
+        "<tpl if=\"isLast\">-end</tpl>" +
+        "<tpl if=\"expandable\">-plus {expanderCls}</tpl>\" role=\"presentation\"></div>",
+        "</tpl>" ,
+
         "<tpl if=\"href\">",
         "<a href=\"{href}\" role=\"link\" target=\"{hrefTarget}\" class=\"{textCls} {childCls}\">{value}</a>",
         "<tpl else>",
         "<span class=\"{textCls} {childCls}\">{value}</span>",
         "</tpl>",
+
+        // child node - expander right
+        "<tpl if=\"!this.isAccount(record)\">" ,
         "<div class=\"{childCls} {elbowCls}-img {elbowCls}",
         "<tpl if=\"isLast\">-end</tpl>" +
-        "<tpl if=\"expandable\">-plus {expanderCls}</tpl>\" role=\"presentation\"></div>"
+        "<tpl if=\"expandable\">-plus {expanderCls}</tpl>\" role=\"presentation\"></div>",
+        "</tpl>" ,
+        { 
+            isAccount: record => record.get("folderType") === "ACCOUNT"
+        }
     ],
 
 
