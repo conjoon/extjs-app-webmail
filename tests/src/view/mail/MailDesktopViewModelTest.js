@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,13 +73,13 @@ StartTest(async t => {
         t.it("Should properly autoload the MailFolderTreeStore", t => {
 
             const
-                loadSpy = t.spyOn(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(), "load");
+                loadMailAccountsSpy = t.spyOn(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(), "loadMailAccounts");
 
             Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
 
-            t.expect(loadSpy.calls.count()).toBe(1);
+            t.expect(loadMailAccountsSpy.calls.count()).toBe(1);
 
-            loadSpy.remove();
+            loadMailAccountsSpy.remove();
         });
 
     });});

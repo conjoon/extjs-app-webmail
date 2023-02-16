@@ -258,19 +258,13 @@ Ext.define("conjoon.cn_mail.store.mail.folder.MailFolderTreeStore", {
 
     /**
      * Callback for the tree's load event, to make sure the child nodes are loaded.
-     * Child Nodes are Mail Accounts that have to load their child folders.
-     * subsequent collapsing/expanding is required in some cases to properly display
-     * node icons.
+     * Child Nodes are Mail Accounts that have to load their child folders (mailboxes).
      *
      * @param store
      */
     onStoreHasLoadedRootNode (store) {
         store.getRootNode().childNodes.forEach(
-            // close / collapse to make sure icons are rendered
-            (node) => node.expand(false, () => {
-                node.collapse();
-                node.expand();
-            })
+            node => node.expand(false)
         );
     },
 
