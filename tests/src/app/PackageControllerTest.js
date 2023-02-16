@@ -1162,6 +1162,24 @@ StartTest(async t => {
                     });
 
 
+                    t.it("onMailMessageItemLoadForActivatedView() - missing messageItem", t => {
+                        packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+                        const funcSpy = t.spyOn(packageCtrl, "onMailMessageItemLoadForActivatedView");
+
+                        let activatedPanel = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageView");
+                        activatedPanel.loadingItem = {};
+                        configurePackageCtrlWithButtonMocks(packageCtrl, configureButtonMockCaller());
+                        packageCtrl.onMailDesktopViewTabChange(null, activatedPanel);
+
+                        t.spyOn(activatedPanel.getViewModel(), "get").and.callFake(() => undefined);
+
+                        activatedPanel.fireEvent("cn_mail-messageitemload", activatedPanel, undefined);
+
+                        t.expect(funcSpy.calls.mostRecent().args[1]).toBeUndefined();
+                    });
+
+
                     t.it("onMailDesktopViewTabChange() - panel is MessageView with loading item, panel switched before loading finishes", t => {
 
                         let ISDRAFT,
