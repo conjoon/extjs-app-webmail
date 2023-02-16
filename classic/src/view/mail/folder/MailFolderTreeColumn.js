@@ -126,7 +126,7 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn", {
         } else {
             record.data.iconCls = "";
         }
-
+        ret.iconCls = record.data.iconCls;
         if (ret.lines && ret.lines.length < 2) {
             ret.lines = [];
         }
