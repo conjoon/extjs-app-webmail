@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.10](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.9...v1.0.10) (2023-02-16)
+
+
+### Bug Fixes
+
+* child-folders not loaded when MailDesktopView is not opened via route ([a49a347](https://github.com/conjoon/extjs-app-webmail/commit/a49a347575e06acf8120bba079873b4dab040269)), closes [conjoon/extjs-app-webmail#256](https://github.com/conjoon/extjs-app-webmail/issues/256)
+* icons for mail folder missing upon first expand ([abddf6d](https://github.com/conjoon/extjs-app-webmail/commit/abddf6d70a4060e9a39075d71da4e0b8d9eccb7d)), closes [conjoon/extjs-app-webmail#281](https://github.com/conjoon/extjs-app-webmail/issues/281)
+* **tests:** test for accounts available/mail folders load pending is failing ([cb8e94e](https://github.com/conjoon/extjs-app-webmail/commit/cb8e94e74acc15657aae39a4c86527e9948e53c2))
+
 ### [1.0.9](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.8...v1.0.9) (2023-02-16)
 
 ### [1.0.8](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.7...v1.0.8) (2023-02-14)
