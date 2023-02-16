@@ -105,7 +105,13 @@
         "release:patch": "npm run preversion && standard-version --release-as patch && npm run postversion",
         "release:minor": "npm run preversion && standard-version --release-as minor && npm run postversion",
         "release:major": "npm run preversion && standard-version --release-as major && npm run postversion",
-        "deps:prod:latest": "npm i -P @conjoon/extjs-dev-webmailsim@latest @coon-js/extjs-app-user@latest @coon-js/extjs-comp-navport@latest @coon-js/extjs-lib-comp@latest @coon-js/extjs-lib-core @l8js/l8@latest"
+        "deps:prod:latest": "npm i -P @conjoon/extjs-dev-webmailsim@latest @coon-js/extjs-app-user@latest @coon-js/extjs-comp-navport@latest @coon-js/extjs-lib-comp@latest @coon-js/extjs-lib-core @l8js/l8@latest",
+        "update:package.json": "node bin/updatePackageJson.mjs"
+    },
+    "standard-version": {
+        "scripts": {
+            "postbump": "npm run update:package.json"
+        }
     },
     "repository": {
         "type": "git",
