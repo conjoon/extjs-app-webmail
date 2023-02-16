@@ -45,7 +45,7 @@ StartTest(async t => {
                 }
                 return Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", cfg);
             },
-            MailFolderTreeStore = () => conjoon.cn_mail.store.mail.folder.MailFolderTreeStore;
+            MailFolderTreeStore = () => conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
         t.beforeEach(() => {
 
@@ -56,8 +56,9 @@ StartTest(async t => {
                 mailboxRunner.destroy();
                 mailboxRunner = null;
             }
-            MailFolderTreeStore().getInstance().getRoot().removeAll();
-            Ext.StoreManager.unregister(MailFolderTreeStore().getInstance());
+            MailFolderTreeStore().getRoot().removeAll();
+
+            Ext.StoreManager.unregister(MailFolderTreeStore());
         });
 
 
@@ -84,14 +85,14 @@ StartTest(async t => {
 
             let spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
             mailboxRunner = createMailboxRunner({
-                mailFolderTreeStore: MailFolderTreeStore().getInstance(),
+                mailFolderTreeStore: MailFolderTreeStore(),
                 interval: 1000
             });
 
             t.expect(mailboxRunner.interval).toBe(1000);
 
             t.expect(spy.calls.count()).toBe(1);
-            t.expect(spy.calls.mostRecent().args[0]).toBe(MailFolderTreeStore().getInstance());
+            t.expect(spy.calls.mostRecent().args[0]).toBe(MailFolderTreeStore());
 
             spy.remove();
         });
@@ -118,11 +119,11 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             t.expect(mailboxRunner.mailFolderTreeStore).toBeUndefined();
-            mailboxRunner.mailFolderTreeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+            mailboxRunner.mailFolderTreeStore = MailFolderTreeStore();
 
             try {
                 mailboxRunner.init(
-                    conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+                    MailFolderTreeStore()
                 );
             } catch (e) {
                 exc = e;
@@ -137,7 +138,7 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
+                treeStore = MailFolderTreeStore(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
                 loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
@@ -156,7 +157,7 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
+                treeStore = MailFolderTreeStore(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
                 loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
@@ -180,7 +181,7 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
+                treeStore = MailFolderTreeStore(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
                 pauseSpy = t.spyOn(mailboxRunner, "pause").and.callFake(() => {}),
                 loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
@@ -206,9 +207,21 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
-                subSpy = t.spyOn(mailboxRunner, "createSubscription"),
+                treeStore = MailFolderTreeStore(),
+                subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(
+                    (node) => {node.childNodes = [];}
+                ),
                 loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd");
+
+
+            t.expect(treeStore.getRoot().childNodes.length).toBe(0);
+
+            const FAKE_ACCOUNT = {
+                get (key){return key === "active" ? true : "ACCOUNT";}
+            };
+
+            treeStore.getRoot().childNodes = [FAKE_ACCOUNT, FAKE_ACCOUNT];
+
 
             mailboxRunner.init(treeStore);
             treeStore.load();
@@ -218,7 +231,11 @@ StartTest(async t => {
                 const ACCOUNTNODES = 2;
                 const CHILDNODES = 2;
                 const NODEHIERARCHYCOUNT = ACCOUNTNODES * CHILDNODES;
+
                 t.expect(subSpy.calls.count()).toBe(NODEHIERARCHYCOUNT);
+
+                [0,1].map(id => t.expect(subSpy.calls.all()[id].args[0]).toBe(FAKE_ACCOUNT));
+                [2,3].map(id => t.expect(subSpy.calls.all()[id].args[0]).not.toBe(FAKE_ACCOUNT));
 
                 t.expect(loadSpy.calls.count()).toBeGreaterThan(0);
 
@@ -233,7 +250,7 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
+                treeStore = MailFolderTreeStore(),
                 pauseSpy = t.spyOn(mailboxRunner, "pause"),
                 resumeSpy = t.spyOn(mailboxRunner, "resume");
 
