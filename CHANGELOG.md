@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.12](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.11...v1.0.12) (2023-02-17)
+
+
+### Bug Fixes
+
+* onMailDesktopViewShow's internal callback cancels events ([b280801](https://github.com/conjoon/extjs-app-webmail/commit/b280801171373420dcb413f8dab2e55e76e17564)), closes [conjoon/extjs-app-webmail#283](https://github.com/conjoon/extjs-app-webmail/issues/283)
+* opening a message with erroneous key-fragments triggers error ([9e58c00](https://github.com/conjoon/extjs-app-webmail/commit/9e58c00782337d8d66124e77b74af0c1a69d5636)), closes [conjoon/extjs-app-webmail#282](https://github.com/conjoon/extjs-app-webmail/issues/282)
+
 ### [1.0.11](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.10...v1.0.11) (2023-02-17)
 
 
