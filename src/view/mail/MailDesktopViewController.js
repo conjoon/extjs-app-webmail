@@ -162,7 +162,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
     /**
       * @return {conjoon.cn_mail.view.mail.account.MailAccountWizard}
-     */
+      */
     showMailAccountWizard () {
         const me = this;
 
@@ -180,7 +180,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     onMailDesktopViewShow () {
         const
             me = this,
-            mailAccountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+            mailAccountStore = me.getMailAccountRepository();
 
         if (!mailAccountStore.areAccountsLoaded()) {
             mailAccountStore.on(
@@ -214,7 +214,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     configureWithMailFolderTreeStore () {
         const
             me = this,
-            store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+            store = me.getMailAccountRepository();
 
         if (!store.areAccountsLoaded()) {
             store.on("mailaccountsloaded", me.seedFolders, me);
@@ -341,7 +341,7 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
         const
             me = this,
-            store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
+            store = me.getMailAccountRepository(),
             view = me.getView(),
             EditingModes = conjoon.cn_mail.data.mail.message.EditingModes,
             CopyRequest  = "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
@@ -576,8 +576,9 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             store   = msgGrid ? msgGrid.getStore(): null,
             recInd  = store && !store.isEmptyStore ? store.findByCompoundKey(compoundKey) : -1;
 
-        if (!newView) {
-
+        if (newView) {
+            view.setActiveTab(newView);
+        } else  {
             newView = view.add({
                 xtype: "cn_mail-mailmessagereadermessageview",
                 itemId: itemId,
@@ -585,15 +586,29 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
                 margin: "12 5 5 0"
             });
 
+            view.setActiveTab(newView);
             if (recInd > -1) {
                 newView.setMessageItem(store.getAt(recInd));
             } else {
                 // most likely opened via deeplinking
-                newView.loadMessageItem(compoundKey);
+
+                // wait for MailAccounts in case any subsequent request relies
+                // on information from them
+                const
+                    mailAccountRepository = me.getMailAccountRepository(),
+                    loadMessageItem = () => {
+                        newView.loadMessageItem(compoundKey);
+                    };
+
+                if (mailAccountRepository.areAccountsLoaded()) {
+                    loadMessageItem();
+                } else {
+                    newView.busyWithLoading();
+                    mailAccountRepository.on("mailaccountsloaded", loadMessageItem, me, {single: true});
+                }
             }
         }
 
-        me.getView().setActiveTab(newView);
 
         return newView;
     },
@@ -1357,7 +1372,8 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
     getDefaultDraftFolderForComposing (requireActiveAccountOrAccountCandidateId) {
 
         const
-            store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(),
+            me = this,
+            store = me.getMailAccountRepository(),
             TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
         let queriedIds = [], accountNode = {}, draftNode;
@@ -1497,6 +1513,15 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             store.reload();
         }
 
+    },
+
+
+    /**
+     * @private
+     * @returns {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore}
+     */
+    getMailAccountRepository () {
+        return conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
     }
 
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -331,7 +331,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
     /**
      * @inheritdoc
      */
-    initComponent: function () {
+    initComponent () {
 
         var me = this;
 
@@ -344,7 +344,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
                     hidden: "{!isLoading}"
                 },
                 listeners: {
-                    hide: function (mask) {
+                    hide (mask) {
                         mask.destroy();
                         me.loadingMask = null;
                     }
@@ -389,7 +389,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @return {null|conjoon.cn_mail.model.mail.message.MessageItem}
      */
-    getMessageItem: function () {
+    getMessageItem () {
         const me = this;
 
         return me.getViewModel().get("messageItem");
@@ -404,7 +404,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @see {conjoon.cn_amil.view.mail.message.reader.MessageViewModel}
      */
-    setMessageItem: function (messageItem) {
+    setMessageItem (messageItem) {
 
         var me = this;
 
@@ -420,6 +420,17 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
 
 
     /**
+     * Makes sure vm is updated so that loading masks are shown for this view.
+     */
+    busyWithLoading () {
+        const
+            me = this,
+            vm = me.getViewModel();
+        vm.set("isLoading", true);
+    },
+
+
+    /**
      * Loads the MessageItem with the specified compoundKey into this view.
      *
      * @param {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
@@ -428,10 +439,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
-    loadMessageItem: function (compoundKey) {
+    loadMessageItem (compoundKey) {
 
-        var me = this,
-            vm = me.getViewModel();
+        const me = this;
 
         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
             Ext.raise({
@@ -440,17 +450,21 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
             });
         }
 
-        vm.set("isLoading", true);
+        me.busyWithLoading();
 
         if (me.loadingItem) {
             me.loadingItem.abort();
         }
 
-        me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
-            success: me.onMessageItemLoaded,
-            failure: me.onMessageItemLoadFailure,
-            scope: me
-        });
+        try {
+            me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
+                success: me.onMessageItemLoaded,
+                failure: me.onMessageItemLoadFailure,
+                scope: me
+            });
+        } catch (e) {
+            me.onMessageItemLoadFailure();
+        }
     },
 
 
@@ -467,7 +481,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * not a messageItem available, or if the id of the
      * MessageDraft does not equal to the id of the messageItem.
      */
-    updateMessageItem: function (messageDraft) {
+    updateMessageItem (messageDraft) {
         var me = this;
 
         me.getViewModel().updateMessageItem(messageDraft);
@@ -485,17 +499,18 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
          *
          * @return {coon.comp.component.MessageMask}
          */
-        onMessageItemLoadFailure: function (messageItem, operation) {
+        onMessageItemLoadFailure (messageItem, operation) {
 
-            const me               = this,
-                vm               = me.getViewModel();
+            const
+                me = this,
+                vm = me.getViewModel();
 
             vm.set("isLoading", false);
             vm.notify();
 
             // do not show dialog if status of error is -1, which
             // hints to a cancelled request
-            if (operation.error && operation.error.status === -1) {
+            if (operation?.error?.status === -1) {
                 return;
             }
 
@@ -509,7 +524,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
          * Callback for the load-event of a MessageItem, registered by #loadMessageItem
          * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
          */
-        onMessageItemLoaded: function (messageItem) {
+        onMessageItemLoaded (messageItem) {
 
             const me = this,
                 vm = me.getViewModel();
@@ -531,7 +546,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @private
      */
-    updateContextButtonsEnabled: function (value) {
+    updateContextButtonsEnabled (value) {
 
         const me = this;
 

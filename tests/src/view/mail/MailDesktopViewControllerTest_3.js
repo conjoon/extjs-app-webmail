@@ -582,4 +582,40 @@ StartTest(async t => {
                         [enableSpy, invokeSpy].map(spy => spy.remove());
                     });
 
+                    t.it("showMailMessageViewFor() registers callback if MailAccountRepository is still loading", t => {
+
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
+                        const setActiveTabSpy = t.spyOn(panel, "setActiveTab");
+
+                        const repository = ctrl.getMailAccountRepository();
+
+                        t.expect(repository.areAccountsLoaded()).toBe(false);
+
+                        const busyWithLoadingSpy = t.spyOn(
+                            conjoon.cn_mail.view.mail.message.reader.MessageView.prototype, "busyWithLoading"
+                        ).and.callFake(() => {
+                            // make sure setActiveTab was called somewhen before busyWithLoading()
+                            // method on the view was called
+                            // this is required to make sure the tab is active so that error masks are properly applied
+                            // in cases where messages fail to load
+                            t.expect(setActiveTabSpy.calls.count()).toBe(1);
+                        });
+                        const loadMessageItemSpy = t.spyOn(
+                            conjoon.cn_mail.view.mail.message.reader.MessageView.prototype, "loadMessageItem"
+                        );
+                        const COMPOUND_KEY = getFirstMessageItem("dev_sys_conjoon_org").getCompoundKey();
+
+                        ctrl.showMailMessageViewFor(COMPOUND_KEY);
+
+                        t.expect(loadMessageItemSpy.calls.count()).toBe(0);
+
+                        t.waitForMs(t.parent.TIMEOUT, () => {
+                            t.expect(busyWithLoadingSpy.calls.count()).toBe(2);
+                            t.expect(loadMessageItemSpy.calls.mostRecent().args[0]).toBe(COMPOUND_KEY);
+                            [setActiveTabSpy, busyWithLoadingSpy, loadMessageItemSpy].map(spy => spy.remove());
+                        });
+
+                    });
+
                 });});});

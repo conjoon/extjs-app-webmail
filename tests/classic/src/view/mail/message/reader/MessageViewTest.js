@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -306,9 +306,26 @@ StartTest(async t => {
 
             });
 
+
+            t.it("busyWithLoading()", t => {
+
+                view = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.reader.MessageView", viewConfig);
+
+                t.expect(view.getViewModel().get("isLoading")).toBeFalsy();
+
+                view.busyWithLoading();
+
+                t.expect(view.getViewModel().get("isLoading")).toBe(true);
+
+            });
+
+
             t.it("loadMessageItem()", t => {
                 view = Ext.create(
                     "conjoon.cn_mail.view.mail.message.reader.MessageView", viewConfig);
+
+                const busyWithLoadingSpy = t.spyOn(view, "busyWithLoading");
 
                 t.expect(view.getTitle().toLowerCase()).toContain("loading");
 
@@ -323,7 +340,27 @@ StartTest(async t => {
                 t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(view.getTitle()).toBe(view.getViewModel().get("messageItem.subject"));
                     t.expect(view.getViewModel().get("messageItem")).toBeTruthy();
+                    t.expect(busyWithLoadingSpy.calls.count()).toBe(1);
+                    busyWithLoadingSpy.remove();
                 });
+            });
+
+
+            t.it("loadMessageItem() calls failure callback if loadEntity() triggers error", t => {
+
+                const loadEntitySpy = t.spyOn(
+                    conjoon.cn_mail.model.mail.message.MessageItem, "loadEntity"
+                ).and.callFake(() => {throw new Error();});
+
+                view = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.reader.MessageView", viewConfig);
+
+                const onMessageItemLoadFailureSpy = t.spyOn(view, "onMessageItemLoadFailure");
+
+                view.loadMessageItem(createKeyForExistingMessage(1));
+                t.expect(onMessageItemLoadFailureSpy.calls.count()).toBe(1);
+
+                [loadEntitySpy, onMessageItemLoadFailureSpy].map(spy => spy.remove());
             });
 
 
