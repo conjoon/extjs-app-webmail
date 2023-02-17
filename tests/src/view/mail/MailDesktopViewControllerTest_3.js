@@ -528,8 +528,35 @@ StartTest(async t => {
                         t.expect(showMailAccountWizardSpy.calls.count()).toBe(2);
 
                         [loadSpy, showMailAccountWizardSpy, hasAccountsSpy, areAccountsLoadedSpy].map(spy => spy.remove());
+                    });
 
 
+                    t.it("onMailDesktopVieShow() - callback does not cancel subsequent events", t => {
+                        panel = createMailDesktopView();
+                        let ctrl = panel.getController();
+
+                        const RETURNVALUE = undefined;
+
+                        const showMailAccountWizardSpy = t.spyOn(ctrl, "showMailAccountWizard").and.callFake(() => RETURNVALUE);
+
+                        const observer = {
+                            callback () {
+                            }
+                        };
+                        const observerSpy = t.spyOn(observer, "callback");
+
+                        const store = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+                        const areAccountsLoadedSpy =  t.spyOn(store, "areAccountsLoaded").and.callFake(() => false);
+
+                        t.expect(ctrl.onMailDesktopViewShow()).toBeUndefined();
+
+                        store.on("mailaccountsloaded", observer.callback);
+
+                        t.waitForMs(t.parent.TIMEOUT, () => {
+
+                            t.expect(observerSpy.calls.count()).toBe(1);
+                            [showMailAccountWizardSpy, areAccountsLoadedSpy, observerSpy].map(spy => spy.remove());
+                        });
                     });
 
 

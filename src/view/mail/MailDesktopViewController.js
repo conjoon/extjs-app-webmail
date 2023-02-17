@@ -185,7 +185,12 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         if (!mailAccountStore.areAccountsLoaded()) {
             mailAccountStore.on(
                 "mailaccountsloaded",
-                (store, accounts) => !accounts.length && me.showMailAccountWizard(),
+                (store, accounts) => {
+                    if (!accounts.length) {
+                        me.showMailAccountWizard();
+                    }
+                    return true;
+                },
                 me,
                 {single: true}
             );
