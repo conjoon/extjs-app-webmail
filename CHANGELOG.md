@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.11](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.10...v1.0.11) (2023-02-17)
+
+
+### Bug Fixes
+
+* onMailAccountActiveChange triggers error if editor with error state is opened ([00a2ba4](https://github.com/conjoon/extjs-app-webmail/commit/00a2ba42dbdfae64eed38bfb25837c68136d7fdf)), closes [conjoon/extjs-app-webmail#274](https://github.com/conjoon/extjs-app-webmail/issues/274)
+
 ### [1.0.10](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.9...v1.0.10) (2023-02-16)
 
 
