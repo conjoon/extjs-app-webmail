@@ -1055,7 +1055,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                     cls: "toggleFolderViewBtn",
                     itemId: "cn_mail-nodeNavToggleFolder",
                     enableToggle: true,
-                    pressed: true
+                    pressed: true,
+                    stateId: "cn_mail-nodeNavToggleFolder",
+                    stateEvents: ["click"],
+                    stateful: {
+                        pressed: true
+                    }
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-list",

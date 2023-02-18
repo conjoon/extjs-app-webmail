@@ -189,6 +189,21 @@ StartTest(async t => {
                     });
 
 
+                    t.it("postLaunchHook() applies component state configuration", t => {
+                        packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+                        const nodeNav = packageCtrl.postLaunchHook().navigation[0].nodeNav;
+
+                        t.expect(nodeNav.some(node => {
+                            if (node.itemId === "cn_mail-nodeNavToggleFolder") {
+                                t.expect(node.stateId).toBe("cn_mail-nodeNavToggleFolder");
+                                t.expect(node.stateEvents).toEqual(["click"]);
+                                t.expect(node.stateful.pressed).toBe(true);
+                                return true;
+                            }
+                        })).toBe(true);
+                    });
+
+
                     t.it("onActiveMailAccountAvailable()", t => {
 
                         const FAKE_STORE = {};
