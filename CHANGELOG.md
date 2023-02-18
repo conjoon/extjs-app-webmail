@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.13](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.12...v1.0.13) (2023-02-18)
+
+
+### Features
+
+* add basic support for stateful MailFolderTree ([fa04b3c](https://github.com/conjoon/extjs-app-webmail/commit/fa04b3c2a9c39c674e59e26e43c7cdbbd3a506b0))
+* apply component state configuration in postLaunchHook() ([74c11af](https://github.com/conjoon/extjs-app-webmail/commit/74c11af5bd21635a7f0fb2a52e759ab60fa4e40d))
+
 ### [1.0.12](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.11...v1.0.12) (2023-02-17)
 
 
