@@ -64,6 +64,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} item
      */
 
+    /**
+     * @event cn_mail-messageviewitemchange
+     * Fires when the message item loaded to this view changes, that is when the
+     * MessageViewModel gets a new MesgsageItem assigned. This item can also be null
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem|null} item
+     */
+
     config: {
         /**
          * Whether the buttons in this MessageView (reply all, edit / delete draft)
@@ -402,7 +410,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * @throws exception if messageItem is neither null and not of type
      * {@link conjoon.cn_mail.model.mail.message.MessageItem}
      *
-     * @see {conjoon.cn_amil.view.mail.message.reader.MessageViewModel}
+     * @see {conjoon.cn_mqil.view.mail.message.reader.MessageViewModel}
      */
     setMessageItem (messageItem) {
 
@@ -416,6 +424,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
         me.getViewModel().setMessageItem(
             messageItem ? messageItem : null
         );
+
+        me.fireEvent("cn_mail-messageviewitemchange", me, messageItem);
     },
 
 

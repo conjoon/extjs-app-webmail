@@ -196,13 +196,22 @@ StartTest(async t => {
 
                 let msgItem = createMessageItem();
 
+                const observer = {
+                    onMessageViewItemChange () {}
+                };
+                const observerSpy = t.spyOn(observer, "onMessageViewItemChange");
+                view.on("cn_mail-messageviewitemchange", observer.onMessageViewItemChange);
+
                 view.setMessageItem(msgItem);
+
+                t.expect(observerSpy.calls.mostRecent().args).toEqual([view, msgItem]);
 
                 view.getViewModel().notify();
 
                 t.waitForMs(t.parent.TIMEOUT, () => {
                     checkHtmlForValidData(t, view);
                     t.expect(view.callbackWasCalled[0].get("id")).toBe("1");
+                    observerSpy.remove();
                 });
             });
 
@@ -220,10 +229,18 @@ StartTest(async t => {
                     checkHtmlForValidData(t, view);
                     t.expect(view.callbackWasCalled[0].get("id")).toBe("1");
                     view.callbackWasCalled = false;
+                    const observer = {
+                        onMessageViewItemChange () {}
+                    };
+                    const observerSpy = t.spyOn(observer, "onMessageViewItemChange");
+                    view.on("cn_mail-messageviewitemchange", observer.onMessageViewItemChange);
                     view.setMessageItem(null);
+                    t.expect(observerSpy.calls.mostRecent().args).toEqual([view, null]);
+                    
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         checkHtmlDataNotPresent(t, view);
                         t.expect(view.callbackWasCalled).toBe(false);
+                        observerSpy.remove();
                     });
                 });
             });
