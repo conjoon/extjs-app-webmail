@@ -110,6 +110,10 @@ StartTest(async t => {
                         packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
                         t.expect(packageCtrl instanceof coon.core.app.PackageController).toBe(true);
 
+                        t.expect(packageCtrl.getControl()["cn_mail-maildesktopview > cn_mail-mailinboxview cn_mail-mailmessagereadermessageview"]).toEqual(
+                            {"cn_mail-messageviewitemchange": "onMailMessageViewItemChange"}
+                        );
+
                         t.expect(conjoon.cn_mail.app.PackageController.required).toEqual({
                             mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
                         });
@@ -258,6 +262,7 @@ StartTest(async t => {
                     t.it("showMailEditor()", t => {
 
                         let CN_HREF = "foo";
+                        const FAKE_EDITOR = {};
 
                         packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
                         let mvp = {
@@ -267,6 +272,7 @@ StartTest(async t => {
                                 };
                             },
                             showMailEditor: function () {
+                                return FAKE_EDITOR;
                             }
                         };
                         packageCtrl.getMainPackageView = function () {
@@ -275,13 +281,9 @@ StartTest(async t => {
 
                         t.isCalledNTimes("showMailEditor", mvp, 1);
 
-                        packageCtrl.showMailEditor("a", "compose");
+                        t.expect(packageCtrl.showMailEditor("a", "compose")).toBe(FAKE_EDITOR);
 
-                        let exc;
-                        try {packageCtrl.showMailEditor();}catch(e){exc=e;}
-                        t.expect(exc).toBeDefined();
-                        t.expect(exc.msg).toBeDefined();
-                        t.expect(exc.msg.toLowerCase()).toContain("expects an instance");
+                        t.expect(packageCtrl.showMailEditor()).toBeUndefined();
 
                     });
 
@@ -407,7 +409,7 @@ StartTest(async t => {
                             };
                         };
 
-                        packageCtrl.getItemOrDraftFromActiveView = function () {
+                        packageCtrl.getDraftOrItemFromActiveView = function () {
                             return "foo";
                         };
 
@@ -1332,9 +1334,22 @@ StartTest(async t => {
                             packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
 
                             let activeTab = null,
+                                mailInboxMessageView,
                                 COMPOUNDKEY = MessageEntityCompoundKey.createFor(
                                     1, 2, 3), SETKEY = null;
 
+                            let FAKE_MESSAGE_ITEM = {
+                                getCompoundKey: function () {
+                                    return COMPOUNDKEY;
+                                }
+                            };
+
+                            let SELECTION = [FAKE_MESSAGE_ITEM];
+                            let FAKE_MAIL_MESSAGE_GRID = {
+                                getSelection () {
+                                    return SELECTION;
+                                }
+                            };
                             packageCtrl.getMailDesktopView = function () {
                                 return {
                                     getActiveTab: function () {
@@ -1353,22 +1368,51 @@ StartTest(async t => {
 
                             activeTab = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageView");
                             activeTab.getMessageItem = function () {
-                                return {
-                                    getCompoundKey: function () {
-                                        return COMPOUNDKEY;
-                                    }
-                                };
+                                return FAKE_MESSAGE_ITEM;
                             };
                             packageCtrl.getMailInboxView = function () {
                                 return activeTab;
                             };
+                            mailInboxMessageView = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageView");
+                            mailInboxMessageView.getMessageItem = function () {
+                                return FAKE_MESSAGE_ITEM;
+                            };
+                            packageCtrl.getMailInboxMessageView = function () {
+                                return mailInboxMessageView;
+                            };
 
-                            t.isCalledOnce("getCompoundKeyFromGridOrMessageView", packageCtrl);
+                            t.isCalledNTimes("getCompoundKeyFromGridOrMessageView", packageCtrl, 3);
+                            t.isCalledNTimes("getMailInboxMessageView", packageCtrl, 1);
 
+                            // return item from MailDesktopView's active MessageView
                             t.expect(SETKEY).toBe(null);
                             packageCtrl.onMessageEditButtonClick();
                             t.expect(SETKEY).toBe(COMPOUNDKEY);
 
+
+                            // return MessageItem from MessageGrid
+                            packageCtrl.getMailMessageGrid = function () {
+                                return FAKE_MAIL_MESSAGE_GRID;
+                            };
+                            let selectionSpy = t.spyOn(FAKE_MAIL_MESSAGE_GRID, "getSelection");
+                            activeTab = null;
+                            SETKEY = null;
+                            t.expect(SETKEY).toBe(null);
+                            packageCtrl.onMessageEditButtonClick();
+                            t.expect(selectionSpy.calls.count()).toBe(2);
+                            t.expect(SETKEY).toBe(COMPOUNDKEY);
+
+                            // selection = null
+                            // returns messageItem from MessageView embedded in MailInboxView
+                            SELECTION = null;
+                            activeTab = null;
+                            SETKEY = null;
+                            t.expect(SETKEY).toBe(null);
+                            packageCtrl.onMessageEditButtonClick();
+                            t.expect(selectionSpy.calls.count()).toBe(3);
+                            t.expect(SETKEY).toBe(COMPOUNDKEY);
+
+                            selectionSpy.remove();
                         });
                     });
 
@@ -1514,7 +1558,7 @@ StartTest(async t => {
                     });
 
 
-                    t.it("getItemOrDraftFromActiveView()", t => {
+                    t.it("getDraftOrItemFromActiveView()", t => {
 
                         let ACTIVETAB = "";
 
@@ -1544,17 +1588,16 @@ StartTest(async t => {
                             messageDraft: 1
                         });
                         ACTIVETAB.getMessageDraft = function () { return 1;};
-                        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(1);
+                        t.expect(packageCtrl.getDraftOrItemFromActiveView()).toBe(1);
 
-                        ACTIVETAB = Ext.create("conjoon.cn_mail.view.mail.message.reader.MessageView");
-                        ACTIVETAB.getMessageItem = function () { return 2;};
-                        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(2);
+                        const getItemFromGridOrMessageViewSpy = t.spyOn(
+                            packageCtrl, "getItemFromGridOrMessageView").and.callFake(() => ({}));
+                        ACTIVETAB = {};
+                        t.expect(packageCtrl.getDraftOrItemFromActiveView()).toBe(
+                            getItemFromGridOrMessageViewSpy.calls.mostRecent().returnValue
+                        );
 
-                        ACTIVETAB = 3;
-                        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(4);
-
-                        ACTIVETAB = 4;
-                        t.expect(packageCtrl.getItemOrDraftFromActiveView()).toBe(null);
+                        getItemFromGridOrMessageViewSpy.remove();
                     });
 
 
@@ -1912,6 +1955,36 @@ StartTest(async t => {
                             disableAddMailAccountButtonSpy
                         ].map(spy => spy.remove());
 
+                    });
+
+                    t.it("onMailMessageViewItemChange", t => {
+
+                        packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+                        const contextSpy = t.spyOn(packageCtrl, "disableMessageItemContextButtons").and.callFake(() => {});
+
+                        packageCtrl.onMailMessageViewItemChange ({}, null);
+                        t.expect(contextSpy.calls.mostRecent().args[0]).toBe(true);
+
+                        packageCtrl.onMailMessageViewItemChange ({}, {});
+                        t.expect(contextSpy.calls.count()).toBe(1);
+                    });
+
+
+                    t.it("onMessageDeleteButtonClick", t => {
+
+                        packageCtrl = Ext.create("conjoon.cn_mail.app.PackageController");
+
+                        let DRAFT = null;
+                        const draftSpy = t.spyOn(packageCtrl, "getDraftOrItemFromActiveView").and.callFake(() => DRAFT);
+                        const moveSpy = t.spyOn(packageCtrl, "moveOrDeleteMessage").and.callFake(() => {});
+
+                        t.expect(packageCtrl.onMessageDeleteButtonClick()).toBeUndefined();
+                        DRAFT = {};
+                        t.expect(moveSpy.calls.count()).toBe(0);
+                        t.expect(packageCtrl.onMessageDeleteButtonClick()).toBe(true);
+                        t.expect(moveSpy.calls.mostRecent().args[0]).toBe(DRAFT);
+                        [draftSpy, moveSpy].map(spy => spy.remove());
                     });
 
 

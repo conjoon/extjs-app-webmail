@@ -183,6 +183,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             "cn_mail-mailmessagegridbeforeload": "onMailMessageGridBeforeLoad",
             "cn_mail-mailmessagegridload": "onMailMessageGridLoad"
         },
+        "cn_mail-maildesktopview > cn_mail-mailinboxview cn_mail-mailmessagereadermessageview": {
+            "cn_mail-messageviewitemchange": "onMailMessageViewItemChange"
+        },
         "cn_navport-tbar > #cn_mail-nodeNavCreateMessage": {
             click: "onMessageComposeButtonClick"
         },
@@ -221,6 +224,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     }, {
         ref: "mailInboxView",
         selector: "cn_mail-maildesktopview > cn_mail-mailinboxview"
+    }, {
+        ref: "mailInboxMessageView",
+        selector: "cn_mail-maildesktopview > cn_mail-mailinboxview cn_mail-mailmessagereadermessageview"
     }, {
         ref: "mailMessageGrid",
         selector: "cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid"
@@ -675,6 +681,16 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     },
 
 
+    onMailMessageViewItemChange (messageView, messageItem) {
+        const me = this;
+        // unloaded. disable context buttons, since this most likely means the
+        // selection in the sibling grid is lost
+        // (The vm of the MessageView is bound to the selection of the grid)
+        if (!messageItem) {
+            me.disableMessageItemContextButtons(true);
+        }
+    } ,
+
     disableMessageItemContextButtons (disable) {
         const me = this;
         me.disableEmailActionButtons(disable);
@@ -873,11 +889,20 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      */
     onMessageDeleteButtonClick (btn) {
         const me   = this,
-            item = me.getItemOrDraftFromActiveView();
+            item = me.getDraftOrItemFromActiveView();
 
-        if (item === null) {
-            Ext.raise("Unexpected null-value for item.");
+        if (!item) {
+            console.error ("no item found that could be referenced");
+            return;
         }
+
+        me.moveOrDeleteMessage(item);
+
+        return true;
+    },
+
+    moveOrDeleteMessage (item) {
+        const me = this;
 
         me.getMailInboxView().getController().moveOrDeleteMessage(
             item,
@@ -885,7 +910,6 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             me.getMailDesktopView().getActiveTab()
         );
     },
-
 
     /**
      * Callback for the node navigation's "replyTo message button".
@@ -1148,27 +1172,39 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          *
          * @return {null|conjoon.cn_mail.model.mail.message.AbstractMessageItem}
          */
-        getItemOrDraftFromActiveView () {
+        getDraftOrItemFromActiveView () {
 
             const me  = this,
                 tab = me.getMailDesktopView().getActiveTab();
 
             if (tab instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditor) {
                 return tab.getMessageDraft();
-            } else if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
-                return tab.getMessageItem();
-            } else if (tab === me.getMailInboxView()) {
-                return me.getMailMessageGrid().getSelection()[0];
             }
 
-            return null;
+            return me.getItemFromGridOrMessageView();
         },
 
 
+        getItemFromGridOrMessageView () {
+            const
+                me  = this,
+                tab = me.getMailDesktopView().getActiveTab();
+
+            if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+                return  tab.getMessageItem();
+            } else if (tab === me.getMailInboxView()) {
+                if (me.getMailMessageGrid().getSelection()) {
+                    return me.getMailMessageGrid().getSelection()[0];
+                }
+                return me.getMailInboxMessageView().getMessageItem();
+            }
+        },
+
         /**
          * Helper function to retrieve the compound key of the selected record in
-         * the MessageGrid in the InboxView OR of the MessageItem of a MessageView,
+         * the InboxView's MessageGrid, MessageView OR of the MessageItem of a MailDesktopView's MessageView,
          * depending on which tab is currently active in the MailDesktopView.
+         * The method will first query the MailDesktopView, then the embedded InboxView.
          *
          * @return {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
          *
@@ -1176,16 +1212,11 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          */
         getCompoundKeyFromGridOrMessageView () {
 
-            const me  = this,
-                tab = me.getMailDesktopView().getActiveTab();
+            const
+                me  = this,
+                item = me.getItemFromGridOrMessageView ();
 
-            if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
-                return  tab.getMessageItem().getCompoundKey();
-            } else if (tab === me.getMailInboxView()) {
-                return me.getMailMessageGrid().getSelection()[0].getCompoundKey();
-            }
-
-            return null;
+            return item?.getCompoundKey();
         },
 
 
@@ -1238,14 +1269,15 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
             if (type !== "compose" &&
                 !(key instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
-                Ext.raise({
+                console.error ({
                     msg: "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
                     key: key,
                     type: type
                 });
+                return;
             }
 
-            mailDesktopView.showMailEditor(key, type);
+            return mailDesktopView.showMailEditor(key, type);
         }
 
     },
