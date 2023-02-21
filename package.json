@@ -16,8 +16,8 @@
         "creator": "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>",
         "summary": "JavaScript Sencha ExtJS Webmail client.",
         "detailedDescription": "This package contains an email client to be used with the conjoon project.",
-        "version": "1.0.13",
-        "compatVersion": "1.0.13",
+        "version": "1.0.14",
+        "compatVersion": "1.0.14",
         "format": "1",
         "slicer": {
             "js": [
@@ -90,7 +90,7 @@
         "standard-version": "^9.3.1"
     },
     "description": "JavaScript email client for conjoon, powered by Sencha Ext JS and coon.js",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "main": "index.js",
     "directories": {
         "test": "tests"

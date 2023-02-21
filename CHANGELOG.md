@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.14](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.13...v1.0.14) (2023-02-21)
+
+
+### Bug Fixes
+
+* replying to email fails after sorting a large grid ([b488fd7](https://github.com/conjoon/extjs-app-webmail/commit/b488fd7cd759e978a8adf0151df69e43326dca21)), closes [conjoon/extjs-app-webmail#270](https://github.com/conjoon/extjs-app-webmail/issues/270)
+
 ### [1.0.13](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.12...v1.0.13) (2023-02-18)
 
 
