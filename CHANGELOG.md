@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.15](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.14...v1.0.15) (2023-02-26)
+
+
+### Bug Fixes
+
+* blocked bg-images do not trigger external content warning ([3075123](https://github.com/conjoon/extjs-app-webmail/commit/3075123c60db372374d0d72856ba96f2d8753ca3)), closes [conjoon/extjs-app-webmail#284](https://github.com/conjoon/extjs-app-webmail/issues/284)
+
 ### [1.0.14](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.13...v1.0.14) (2023-02-21)
 
 
