@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -117,7 +117,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewIframe", {
     /**
      * Returns this instance's value of imagesAllowed
      *
-     * @param {Boolen} value
+     * @param {Boolean} value
      */
     getImagesAllowed: function () {
         return this.imagesAllowed;
