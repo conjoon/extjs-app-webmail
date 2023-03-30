@@ -252,6 +252,7 @@ export default [{
                 ]
             }]
         },
+        "src/text/EmailAddressStringParserTest.js",
         "src/text/QueryStringParserTest.js"
         ]
     }, {
