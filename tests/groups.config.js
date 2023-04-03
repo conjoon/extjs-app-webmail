@@ -390,7 +390,8 @@ export default [{
                     "classic/src/view/mail/mixin/LoadingFailedDialogTest.js"
                 ]
             },
-            "classic/src/view/mail/MailDesktopViewTest.js"
+            "classic/src/view/mail/MailDesktopViewTest.js",
+            "classic/src/view/mail/EmailAddressLinkRendererTest.js"
             ]
         }]
     }]
