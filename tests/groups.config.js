@@ -391,7 +391,8 @@ export default [{
                 ]
             },
             "classic/src/view/mail/MailDesktopViewTest.js",
-            "classic/src/view/mail/EmailAddressLinkRendererTest.js"
+            "classic/src/view/mail/EmailAddressLinkRendererTest.js",
+            "classic/src/view/mail/EmailAddressTipTest.js"
             ]
         }]
     }]
