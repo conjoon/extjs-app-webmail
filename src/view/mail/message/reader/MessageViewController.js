@@ -24,11 +24,7 @@
  */
 
 /**
- * This is the view controller for
- * {@link conjoon.cn_mail.view.mail.message.reader.MessageViewC}.
- * It takes care of resizing the view properly according to the contents of the
- * iframe.
- *
+ * This is the view controller for {@link conjoon.cn_mail.view.mail.message.reader.MessageView}. *
  */
 
 Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
@@ -53,8 +49,55 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
         },
 
         "cn_mail-mailmessagereadermessageview": {
-            resize: "onViewResize"
+            afterrender: "onMessageViewAfterrender",
+            resize: "onViewResize",
+            beforedestroy: "onBeforeMessageViewDestroy"
         }
+
+    },
+
+
+    onMessageViewAfterrender ()  {
+
+        const
+            me = this,
+            view = me.getView();
+
+
+        view.showLoadingMask();
+        view.initTip();
+    },
+
+
+    onBeforeMessageViewDestroy (view) {
+
+        const
+            me = this,
+            vm = me.getViewModel();
+
+        if (view.loadingMask) {
+            view.loadingMask.destroy();
+            view.loadingMask = null;
+        }
+
+        if (view.loadingFailedMask) {
+            view.loadingFailedMask.destroy();
+            view.loadingFailedMask = null;
+        }
+
+        if (view.loadingItem) {
+            view.loadingItem.abort();
+            view.loadingItem = null;
+        }
+
+        if (view.addressTip) {
+            view.addressTip.destroy();
+            view.addressTip = null;
+        }
+
+        vm.abortMessageBodyLoad();
+        vm.abortMessageAttachmentsLoad();
+
 
     },
 

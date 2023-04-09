@@ -61,6 +61,70 @@ StartTest(async t => {
             controller = createController();
 
             t.isInstanceOf(controller, "Ext.app.ViewController");
+
+
+            t.expect(controller.getControl()["cn_mail-mailmessagereadermessageview"]).toEqual({
+                resize: "onViewResize",
+                afterrender: "onMessageViewAfterrender",
+                beforedestroy: "onBeforeMessageViewDestroy"
+            });
+        });
+
+
+        t.it("methods called after render", t => {
+
+            controller = createController();
+
+            const FAKE_VIEW = {
+                showLoadingMask () {
+                },
+                initTip () {
+
+                }
+            };
+
+            controller.getView = () => FAKE_VIEW;
+
+            const view = controller.getView();
+
+            const loadMaskSpy = t.spyOn(view, "showLoadingMask");
+            const initTipSpy = t.spyOn(view, "initTip");
+
+            controller.onMessageViewAfterrender();
+
+            t.expect(loadMaskSpy.calls.count()).toBe(1);
+            t.expect(initTipSpy.calls.count()).toBe(1);
+
+            [initTipSpy, loadMaskSpy].map(spy => spy.remove());
+        });
+
+
+        t.it("tip destroyed when before destroy is called", t => {
+
+            controller = createController();
+
+            const FAKE_VIEW_MODEL = {
+                abortMessageBodyLoad () {
+                },
+                abortMessageAttachmentsLoad () {
+                }
+            };
+            const FAKE_VIEW = {
+                addressTip: {
+                    destroy () {
+                    }
+                }
+            };
+
+            controller.getViewModel = () => FAKE_VIEW_MODEL;
+
+            const destroyTipSpy = t.spyOn(FAKE_VIEW.addressTip, "destroy");
+
+            controller.onBeforeMessageViewDestroy(FAKE_VIEW);
+
+            t.expect(destroyTipSpy.calls.count()).toBe(1);
+
+            [destroyTipSpy].map(spy => spy.remove());
         });
 
 
@@ -129,10 +193,6 @@ StartTest(async t => {
         t.it("onViewResize()", t => {
 
             controller = createController();
-
-            t.expect(controller.getControl()["cn_mail-mailmessagereadermessageview"]).toEqual({
-                resize: "onViewResize"
-            });
 
             let CALLED = 0;
 

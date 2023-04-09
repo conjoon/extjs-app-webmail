@@ -955,4 +955,38 @@ StartTest(async t => {
             });
 
 
+            t.it("initTip()", t => {
+
+                view = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.reader.MessageView", {
+                        height: 600,
+                        width: 800,
+                        renderTo: document.body
+                    });
+
+                const tip = view.addressTip;
+                t.isInstanceOf(tip, "conjoon.cn_mail.view.mail.EmailAddressTip");
+
+                t.expect(tip.target).toBe(view.el);
+                t.expect(tip.delegate).toBe( "div.message-subject a.address");
+
+                const address = "email@address.com";
+                const name = "firstname, lastname";
+
+                view.getViewModel().get = () => ({ get: () => [{name, address}]});
+
+                const FAKE_NODE = {
+                    parentNode: {
+                        className: "to"
+                    },
+                    getAttribute: () => 1
+                };
+
+
+                t.expect(tip.queryAddress(FAKE_NODE)).toEqual({
+                    address, name
+                });
+            });
+
+
         });});});
