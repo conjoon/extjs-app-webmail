@@ -45,10 +45,20 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
         "conjoon.cn_mail.model.mail.message.MessageItem",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.view.mail.message.reader.MessageViewIframe",
-        "conjoon.cn_mail.view.mail.message.reader.MessageViewController"
+        "conjoon.cn_mail.view.mail.message.reader.MessageViewController",
+        "conjoon.cn_mail.view.mail.EmailAddressTip"
     ],
 
     alias: "widget.cn_mail-mailmessagereadermessageview",
+
+    statics: {
+        required: {
+            /**
+             * @type {conjoon.cn_mail.view.mail.EmailAddressLinkRenderer}
+             */
+            emailAddressLinkRenderer: "conjoon.cn_mail.view.mail.EmailAddressLinkRenderer"
+        }
+    },
 
     /**
      * @event cn_mail-messageitemread
@@ -128,13 +138,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * to the current record being loaded to be able to abort load operations
      * when needed.
      */
-    loadingItem: null,
+
 
     /**
      * @type {Ext.LoadMask}
      * @private
      */
-    loadingMask: null,
+
+    /**
+     * @param addressTip
+     * @type {conjoon.cn_mail.view.mail.EmailAddressTip}
+     * @private
+     */
+
 
     items: [{
         xtype: "container",
@@ -176,9 +192,28 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
                             displayFromAddress: "{getDisplayFromAddress}"
                         }
                     },
+                    listeners: {
+                        afterrender: {
+                            fn (cmp) {
+                                const view = cmp.up("cn_mail-mailmessagereadermessageview");
+                                this.tpl.emailAddressLinkRenderer = view.emailAddressLinkRenderer;
+                            },
+                            single: true
+                        }
+                    },
                     tpl: [
-                        "<div class=\"from\">{displayFromAddress}</div>",
-                        "<div class=\"to\">to {displayToAddress} on {date}</div>"
+                        "<div class=\"from\">",
+                        "<tpl if=\"displayFromAddress\">",
+                        "{[this.emailAddressLinkRenderer.render(values.displayFromAddress)]}",
+                        "</tpl>",
+                        "</div>",
+                        "<div class=\"to\">",
+                        "to ",
+                        "<tpl for=\"displayToAddress\">",
+                        "{[this.emailAddressLinkRenderer.render(values)]}",
+                        "</tpl>",
+                        " on {date}",
+                        "</div>"
                     ]
 
                 }, {
@@ -336,16 +371,36 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
     }],
 
 
-    /**
-     * @inheritdoc
-     */
-    initComponent () {
+    initTip () {
 
-        var me = this;
+        const
+            me = this;
 
-        me.on("afterrender", function () {
-            var me = this;
+        me.addressTip = Ext.create("conjoon.cn_mail.view.mail.EmailAddressTip", {
+            target: me.el,
+            delegate: "div.message-subject a.address",
+            queryAddress (node) {
 
+                const addrIndex = node.getAttribute("address-idx");
+                const type = node.parentNode.className;
+
+                const
+                    record = me.getViewModel().get("messageItem"),
+                    address = record.get(type);
+
+                /**
+                 * MessageViewModel uses index starting at 1
+                 */
+                return (address.length && address[addrIndex - 1]) ? address[addrIndex - 1] : address;
+            }
+        });
+    },
+
+
+    showLoadingMask () {
+        const me = this;
+
+        if (!me.loadingMask) {
             me.loadingMask = Ext.create("Ext.LoadMask", {
                 target: me,
                 bind: {
@@ -358,35 +413,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
                     }
                 }
             });
+        }
 
-            me.loadingMask.show();
-        }, me, {single: true});
-
-        me.on("beforedestroy", function () {
-            var me = this,
-                vm = me.getViewModel();
-
-            if (me.loadingMask) {
-                me.loadingMask.destroy();
-                me.loadingMask = null;
-            }
-
-            if (me.loadingFailedMask) {
-                me.loadingFailedMask.destroy();
-                me.loadingFailedMask = null;
-            }
-
-            if (me.loadingItem) {
-                me.loadingItem.abort();
-                me.loadingItem = null;
-            }
-
-            vm.abortMessageBodyLoad();
-            vm.abortMessageAttachmentsLoad();
-
-        }, me);
-
-        me.callParent(arguments);
+        me.loadingMask.show();
     },
 
 
