@@ -29,9 +29,31 @@ StartTest(t => {
 
         const parser = Ext.create("conjoon.cn_mail.text.EmailAddressStringParser");
 
-        const str = "foo bar <foo@bar.com>";
+        let str = "foo bar <foo@bar.com>";
+
+        t.expect(parser.parse()).toEqual({});
+
 
         t.expect(parser.parse(str)).toEqual([{name: "foo bar", address: "foo@bar.com"}]);
+
+        str = "foo@bar.com";
+
+        t.expect(parser.parse(str)).toEqual([{name: "foo@bar.com", address: "foo@bar.com"}]);
+
+        str = "foo@bar.com,foo2bar@com.com";
+
+        t.expect(parser.parse(str)).toEqual([
+            {name: "foo@bar.com", address: "foo@bar.com"},
+            {name: "foo2bar@com.com", address: "foo2bar@com.com"}
+        ]);
+
+        str = "foo@bar.com <foofoo@bar.com>, foo2bar@com.com";
+
+        t.expect(parser.parse(str)).toEqual([
+            {name: "foo@bar.com", address: "foofoo@bar.com"},
+            {name: "foo2bar@com.com", address: "foo2bar@com.com"}
+        ]);
+
 
     });
 

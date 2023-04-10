@@ -49,17 +49,23 @@ Ext.define("conjoon.cn_mail.text.EmailAddressStringParser", {
      *
      * @throws if no addresses where found
      */
-    parse: function (text) {
+    parse (text = "") {
 
-        text = decodeURIComponent(text);
+        text = text && decodeURIComponent(text);
 
-        let parts = text.indexOf(">,") !== -1 ? text.split(">,") : [text.replace(">", "")];
+        if (!text) {
+            return {};
+        }
+
+        const SEP = text.indexOf(">") !== -1 ? ">," : ",";
+
+        let parts = text.indexOf(SEP) !== -1 ? text.split(SEP) : [text.replace(">", "")];
 
         let addresses = parts.map(item => {
 
             let [name, address] = item.indexOf(" <") !== -1 ? item.split(" <") : [item, item];
 
-            return {name, address};
+            return {name: name.trim(), address: address.trim()};
         });
 
         if (!addresses.length) {
