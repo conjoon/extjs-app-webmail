@@ -211,6 +211,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
 
         view.showMessageDraftLoadingNotice(view.editMode === "CREATE");
 
+        view.initTip();
+
         if (view.editMode === conjoon.cn_mail.data.mail.message.EditingModes.FORWARD) {
             toField = view.down("#toField");
             me.deferTimers["toFieldFocus"] = Ext.Function.defer(
@@ -291,6 +293,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             me.ddListener = null;
         }
 
+        if (view.addressTip) {
+            view.addressTip.destroy();
+            view.addressTip = null;
+        }
     },
 
 
