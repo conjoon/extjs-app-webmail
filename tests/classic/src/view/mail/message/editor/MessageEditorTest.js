@@ -1133,4 +1133,58 @@ StartTest(async t => {
                 });
 
 
+                t.it("initTip()", t => {
+
+                    let messageDraftConfig = Ext.create(
+                        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig", {mailAccountId: undefined}
+                    );
+                    view = createWithMessageConfig(messageDraftConfig, "CREATE");
+
+
+                    const tip = view.addressTip;
+                    t.isInstanceOf(tip, "conjoon.cn_mail.view.mail.EmailAddressTip");
+
+                    t.expect(tip.target).toBe(view.el);
+                    t.expect(tip.delegate).toBe("div.cn_mail-mailmessageeditoraddressfield li.x-tagfield-item div.x-tagfield-item-text");
+
+                    const address = "email@address.com";
+                    const name = "firstname, lastname";
+
+                    const FAKE_NODE = {};
+                    const FAKE_UL = {
+                        childNodes: [{}, {}]
+                    };
+                    const FAKE_LI = {};
+                    FAKE_UL.childNodes[2] = FAKE_LI;
+                    FAKE_LI.parentNode = FAKE_UL;
+                    FAKE_NODE.parentNode = FAKE_LI;
+
+                    view.down = function (itemId) {
+                        return {
+                            el: {
+                                contains () {
+                                    return true;
+                                }
+                            }
+                        };
+                    };
+
+                    view.getViewModel = function () {
+                        return {
+                            get () {
+                                return {
+                                    get () {
+                                        return [{}, {}, {address, name}];
+                                    }
+                                };
+                            }
+                        };
+                    };
+
+                    t.expect(tip.queryAddress(FAKE_NODE)).toEqual({
+                        address, name
+                    });
+                });
+
+
             });});});

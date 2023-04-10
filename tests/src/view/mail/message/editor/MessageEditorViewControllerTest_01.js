@@ -447,7 +447,16 @@ StartTest(async t => {
                         t.expect(controller.ddListener).toBeDefined();
                         t.isCalledNTimes("destroy", controller.ddListener, 1);
 
+
+                        t.expect(view.addressTip).toBeTruthy();
+                        const addressTipSpy = t.spyOn(view.addressTip, "destroy");
+
                         controller.onMailMessageEditorBeforeDestroy();
+
+                        t.expect(addressTipSpy.calls.count()).toBe(1);
+                        t.expect(view.addressTip).toBeFalsy();
+
+                        addressTipSpy.remove();
 
                         t.expect(controller.deferTimers["test"]).toBeUndefined();
                     });

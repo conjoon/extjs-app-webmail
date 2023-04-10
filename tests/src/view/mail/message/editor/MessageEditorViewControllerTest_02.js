@@ -496,6 +496,30 @@ StartTest(async t => {
                 });
 
 
+                t.it("onMessageEditorAfterrender()", t => {
+
+                    controller = Ext.create(
+                        "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController", {
+                        });
+
+                    view = createEditorForController(controller, null, Ext.create(
+                        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig"));
+
+                    const initSpy = t.spyOn(view, "initTip");
+
+                    t.waitForMs(t.parent.TIMEOUT, () => {
+
+                        view.render(document.body);
+
+                        t.expect(initSpy.calls.count()).toBe(1);
+
+                        initSpy.remove();
+                    });
+
+
+                });
+
+
                 t.it("onMessageEditorAfterrender() - editMode: CREATE", t => {
 
                     controller = Ext.create(
