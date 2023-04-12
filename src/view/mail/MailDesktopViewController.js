@@ -41,7 +41,6 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
         "conjoon.cn_mail.view.mail.message.reader.MessageView",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditor",
         "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel",
-        "conjoon.cn_mail.text.QueryStringParser",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig",
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
@@ -54,7 +53,9 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
     statics: {
         required: {
-            mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+            mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler",
+            emailAddressStringParser: "conjoon.cn_mail.text.EmailAddressStringParser",
+            parser: "conjoon.cn_mail.text.QueryStringParser"
         }
     },
 
@@ -103,29 +104,26 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
 
     },
 
-    /**
-     * @private
-     */
-    mailInboxView: null,
 
     /**
+     * @var mailInboxView
+     * @private
+     */
+
+    /**
+     * @var messageViewIdMap
      * Used to map itemIds to localIds of MessageItems/Drafts represented in editors/
      * views; localIds may change during the lifespan of a view, itemIds must alsways stay
      * the same.
      * @private
      */
-    messageViewIdMap: null,
+
 
     /**
-     * @type {conjoon.cn_mail.text.QueryStringParser}
+     * @var starvingEditors
      * @private
      */
-    parser: null,
 
-    /**
-     * @private
-     */
-    starvingEditors: null,
 
     /**
      * Constructor.
@@ -944,9 +942,11 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             addresses = encodedId.substring(0, pos).split(",");
             encodedId = encodedId.substring(pos);
         } else {
-            addresses = encodedId ? encodedId.split(",") : [];
+            addresses = encodedId ? encodedId : [];
             encodedId = "";
         }
+
+        addresses = me.emailAddressStringParser.parse(addresses);
 
         if (!encodedId) {
             if (addresses && addresses.length) {
@@ -961,9 +961,6 @@ Ext.define("conjoon.cn_mail.view.mail.MailDesktopViewController", {
             );
         }
 
-        if (!me.parser) {
-            me.parser = Ext.create("conjoon.cn_mail.text.QueryStringParser");
-        }
         res = me.parser.parse(encodedId);
 
         for (var i in res) {
