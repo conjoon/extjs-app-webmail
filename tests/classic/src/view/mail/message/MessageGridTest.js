@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -60,8 +60,11 @@ StartTest(async t => {
         });
 
 
-        t.requireOk("conjoon.cn_mail.model.mail.message.MessageItem", () => {
-            t.requireOk("conjoon.cn_mail.store.mail.message.MessageItemStore", () => {
+        t.requireOk(
+            "conjoon.cn_mail.model.mail.message.MessageItem",
+            "conjoon.cn_mail.view.mail.EmailAddressLinkRenderer",
+            "conjoon.cn_mail.view.mail.message.MessageGrid",
+            "conjoon.cn_mail.store.mail.message.MessageItemStore", () => {
 
                 conjoon.dev.cn_mailsim.data.table.MessageTable.ITEM_LENGTH = 1000;
 
@@ -510,7 +513,7 @@ StartTest(async t => {
                 });
 
 
-                t.it("stringifyTo", t => {
+                t.it("renderAddress", t => {
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
                         height: 400,
@@ -530,13 +533,23 @@ StartTest(async t => {
 
                     t.waitForMs(t.parent.TIMEOUT, () => {
 
-                        t.expect(grid.stringifyTo([{
-                            address: "foobar",
-                            name: "bar"
-                        }, {
-                            address: "barfoo",
-                            name: "foo"
-                        }])).toBe("bar, foo");
+                        const
+                            renderSpy = t.spyOn(grid.emailAddressLinkRenderer, "render"),
+                            addr = [{
+                                address: "foobar",
+                                name: "bar"
+                            }, {
+                                address: "barfoo",
+                                name: "foo"
+                            }],
+                            res = grid.renderAddress(addr);
+
+                        t.expect(res).toBe(renderSpy.calls.all().map((val, index) => {
+                            t.expect(renderSpy.calls.all()[index].args).toEqual([{...addr[index], index}]);
+                            return val.returnValue;
+                        }).join(""));
+
+                        renderSpy.remove();
                     });
 
                 });
@@ -558,7 +571,28 @@ StartTest(async t => {
                 });
 
 
-                t.it("extjs-app-webmail#39 - renderDraftDisplayAddress()", t => {
+                t.it("getAddressBasedOnCurrentInboxContext()", t => {
+
+                    grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid");
+
+                    const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                        mailFolderId: 2,
+                        draft: true,
+                        to: "TO",
+                        from: "FROM"
+                    });
+
+                    draft.set("draft", true);
+                    t.expect(grid.getAddressBasedOnCurrentInboxContext(draft)).toBe(draft.get("to"));
+                    draft.set("draft", false);
+                    t.expect(grid.getAddressBasedOnCurrentInboxContext(draft, "SENT")).toBe(draft.get("to"));
+
+                    draft.set("draft", false);
+                    t.expect(grid.getAddressBasedOnCurrentInboxContext(draft)).toBe(draft.get("from"));
+                });
+
+
+                t.it("renderDisplayAddress()", t => {
 
                     grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
                         width: 400,
@@ -587,27 +621,80 @@ StartTest(async t => {
                     feature.disable();
                     grid.representedFolderType = "";
 
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("");
+                    t.expect(grid.renderDisplayAddress(null, {}, rec, null, null, null, view)).toBe("");
                     from = {name: "foo"};
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+                    t.expect(grid.renderDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
 
                     feature.enable();
 
+                    const contextSpy = t.spyOn(grid, "renderAddress");
+
                     from = "";
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("");
-                    from = {name: "foo"};
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+                    const meta = {tdCls: ""};
 
-                    isDraft = true;
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("a, b");
+                    t.expect(grid.renderDisplayAddress(null, meta, rec, null, null, null, view)).toBe(
+                        contextSpy.calls.mostRecent().returnValue);
+                    from = {name: "foo", index: 0, address: "address"};
+                    t.expect(meta.tdCls).toBe(" previewLarge");
+                    t.expect(grid.renderDisplayAddress(null, {}, rec, null, null, null, view)).toBe(
+                        contextSpy.calls.mostRecent().returnValue);
 
-                    isDraft = false;
+                    contextSpy.remove();
+                });
+
+
+                t.it("initTip()", t => {
+
+                    grid = Ext.create("conjoon.cn_mail.view.mail.message.MessageGrid", {
+                        width: 400,
+                        height: 400,
+                        renderTo: document.body
+                    });
+
+                    // InboxViewController not available here
+                    grid.initTip();
+
+                    const tip = grid.addressTip;
+                    t.isInstanceOf(tip, "conjoon.cn_mail.view.mail.EmailAddressTip");
+
+                    t.expect(tip.target).toBe(grid.getView().el);
+                    t.expect(tip.delegate).toBe(grid.getView().itemSelector + " a.address");
+
+
+                    const address = "email@address.com";
+                    const name = "firstname, lastname";
+
                     grid.representedFolderType = "SENT";
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("a, b");
 
-                    isDraft = false;
-                    grid.representedFolderType = "";
-                    t.expect(grid.renderDraftDisplayAddress(null, {}, rec, null, null, null, view)).toBe("foo");
+                    const draft = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                        mailFolderId: 2,
+                        draft: true,
+                        to: [{}, {address, name}],
+                        from: "FROM"
+                    });
+
+                    const FAKE_PARENT_NODE = {
+                        "data-recordId": 1,
+                        getAttribute (key) {
+                            return this[key];
+                        }
+                    };
+
+                    const FAKE_NODE = {
+                        "address-idx": 1,
+                        parentNode: FAKE_PARENT_NODE,
+                        getAttribute (key) {
+                            return this[key];
+                        }
+                    };
+
+                    const getRecordSpy = t.spyOn(grid.getView(), "getRecord").and.callFake(node => node === FAKE_PARENT_NODE ? draft : []);
+
+                    t.expect(tip.queryAddress(FAKE_NODE)).toEqual({
+                        address, name
+                    });
+
+                    getRecordSpy.remove();
                 });
 
 
@@ -663,4 +750,4 @@ StartTest(async t => {
                 });
 
 
-            });});});});
+            });});});
