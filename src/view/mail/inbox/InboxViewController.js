@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -63,6 +63,8 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
         },
 
         "cn_mail-mailmessagegrid": {
+            "afterrender": "onGridAfterRender",
+            "beforedestroy": "onBeforeGridDestroy",
             "cn_comp-rowflymenu-itemclick": "onRowFlyMenuItemClick",
             "cn_comp-rowflymenu-beforemenushow": "onRowFlyMenuBeforeShow"
         }
@@ -82,6 +84,20 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewController", {
      * @private
      */
     mailFolderTree: null,
+
+
+    onGridAfterRender (grid) {
+        grid.initTip();
+    },
+
+
+    onBeforeGridDestroy (grid) {
+        if (!grid.addressTip) {
+            return;
+        }
+        grid.addressTip.destroy();
+        grid.addressTip = null;
+    },
 
 
     /**
