@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,20 +25,39 @@
 
 .cn_mail-mailmessagegrid {
 
-    .previewEnabled {
-        .x-grid-item-focused .x-grid-cell-inner:before {
-            border : 0;
-        }
-    }
 
     .x-grid-cell {
         position:inherit;
     }
 
     .x-grid-cell-inner {
-        padding: 7px 10px 2px;
+        padding: 7px 8px 2px;
         color:var(--accent-dark-color);
+        display:flex;
+        a.address {
+            border: 1px solid var(--accent-foreground-color);
+            border-radius: 4px;
+            margin-right: 4px;
+            padding: 0 6px 0 6px;
+            color: var(--accent-dark-color);
+            text-decoration:none;
+            &:hover {
+                color:var(--accent-color);
+                text-decoration:underline;
+            }
+        }
     }
+
+    .previewEnabled {
+
+        .x-grid-item-focused .x-grid-cell-inner:before {
+            border : 0;
+        }
+        a.address {
+            color: var(--highlight-color);
+        }
+    }
+
 
     .x-grid-item-over {
         .x-grid-cell-inner {
