@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.16...v1.1.0) (2023-04-20)
+
+
+### Features
+
+* add EmailAddressStringParser for parsing strings into email addresses ([60ae524](https://github.com/conjoon/extjs-app-webmail/commit/60ae524be30e5bf64fa02f839b12dc707a76ddb5))
+* add renderer for Email Addresses ([e912734](https://github.com/conjoon/extjs-app-webmail/commit/e9127341bbe334e583d22811764a88d0244fa921)), closes [conjoon/extjs-app-webmail#291](https://github.com/conjoon/extjs-app-webmail/issues/291)
+* compose route allows for passing "name <address>" values with route ([0c10e10](https://github.com/conjoon/extjs-app-webmail/commit/0c10e10c73a53a28fecb97fa0b219b213f1774b4)), closes [conjoon/extjs-app-webmail#290](https://github.com/conjoon/extjs-app-webmail/issues/290)
+* make addresses in message grid clickable ([51a55c2](https://github.com/conjoon/extjs-app-webmail/commit/51a55c258732f1455ce4ad9e4c97982530b812cf)), closes [conjoon/extjs-app-webmail#291](https://github.com/conjoon/extjs-app-webmail/issues/291)
+* show email address as tip for tag field of email address ([f4b88d1](https://github.com/conjoon/extjs-app-webmail/commit/f4b88d1726017550d4db7777cfc0b969d1ce335a)), closes [conjoon/extjs-app-webmail#292](https://github.com/conjoon/extjs-app-webmail/issues/292)
+* show tooltip for addresses in MessageView's header ([1e21e5a](https://github.com/conjoon/extjs-app-webmail/commit/1e21e5aaa3b456337234788026121c3c6d72980f)), closes [conjoon/extjs-app-webmail#293](https://github.com/conjoon/extjs-app-webmail/issues/293)
+* update styles for email addresses in headers to indicate interactivity ([34bc2a6](https://github.com/conjoon/extjs-app-webmail/commit/34bc2a65725fba744c5ec5d0f63189e606e8f96f)), closes [conjoon/extjs-app-webmail#302](https://github.com/conjoon/extjs-app-webmail/issues/302)
+
+
+### Bug Fixes
+
+* parser fails for Email-Addresses without name-parts ([9977ab5](https://github.com/conjoon/extjs-app-webmail/commit/9977ab576bb0f6e243f52dbb109d72f68faca09a))
+
 ### [1.0.16](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.15...v1.0.16) (2023-02-26)
 
 ### [1.0.15](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.14...v1.0.15) (2023-02-26)
