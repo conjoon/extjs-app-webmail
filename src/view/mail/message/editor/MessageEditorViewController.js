@@ -60,6 +60,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
             click: "onShowCcBccButtonClick"
         },
 
+        "#ccField": {
+            focusleave: "onAddressFieldFocusLeave"
+        },
+
+        "#bccField": {
+            focusleave: "onAddressFieldFocusLeave"
+        },
+
         "#sendButton": {
             click: "onSendButtonClick"
         },
@@ -148,6 +156,22 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
         me.registerMailAccountRelatedFunctionality();
 
         me.ddListener.init();
+    },
+
+
+    /**
+     * Checks if the new focus target is the showCcBccButton. We assume it's a "click"
+     * then and clear the tagFields inputEl so the createNewOnBlur-setting of the addressfield
+     * cannot create a new recipient address, and the ViewModel properly hides the cc/bcc-button
+     * if appropriate.
+     *
+     * @param {Ext.form.field.Tag} src
+     * @param {Ext.event.Event} evt
+     */
+    onAddressFieldFocusLeave (src, evt) {
+        if (evt.toComponent === this.getView().down("#showCcBccButton")) {
+            src.inputEl.dom.value = null;
+        }
     },
 
 
