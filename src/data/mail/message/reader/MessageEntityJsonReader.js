@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -101,6 +101,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
     applyCompoundKey: function (data, action) {
 
         const
+            me = this,
             MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey,
             valChk                   = ["create", "update", "read", "destroy"];
 
@@ -110,14 +111,20 @@ Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
             Ext.raise(`unexpected value for "action", expected any of "${exp}", but got "${action}"`);
         }
 
+
         if (Ext.isObject(data)) {
+
+            let keys = me.extractRelationships(data);
 
             if (Ext.isArray(data.data)) {
 
                 let records = data.data, i, len = records.length, rec;
 
                 for (i = 0; i < len; i++) {
-                    rec = records[i];
+                    rec = Object.assign(records[i], {
+                        mailAccountId: keys.mailAccountId,
+                        mailFolderId: keys.mailFolderId
+                    });
                     rec.localId = MessageEntityCompoundKey.createFor(
                         rec.mailAccountId, rec.mailFolderId, rec.id
                     ).toLocalId();
@@ -127,16 +134,17 @@ Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
 
             } else if (Ext.isObject(data.data)) {
                 // POST / PUT
-                data.data.localId = MessageEntityCompoundKey.createFor(
-                    data.data.mailAccountId, data.data.mailFolderId, data.data.id
-                ).toLocalId();
+                let d = data.data;
+                data.data = Object.assign(d, {
+                    mailAccountId: keys.mailAccountId,
+                    mailFolderId: keys.mailFolderId,
+                    localId: MessageEntityCompoundKey.createFor(
+                        keys.mailAccountId, keys.mailFolderId, d.id
+                    ).toLocalId()
+                });
 
                 return data;
             }
-        }
-
-        if (Ext.isObject(data) && data.success === false) {
-            return data;
         }
 
         Ext.raise({
@@ -144,7 +152,41 @@ Ext.define("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader", {
             data: data
         });
 
-    }
+    },
 
+
+    /**
+     * Returns the keys for the retaionships available with the data response object.
+     *
+     * @returns {{mailFolderId, mailAccountId}}
+     */
+    extractRelationships (data) {
+        "use strict";
+
+        let mailFolderId, mailAccountId;
+
+        try {
+            mailFolderId = data.included[0].id;
+        } catch (e) {
+            Ext.raise("malformed data: missing \"MailFolder\" in \"included\" property");
+        }
+
+        if (data.included[0].type !== "MailFolder") {
+            Ext.raise("malformed data: missing \"MailFolder\" in \"included\" property");
+        }
+
+        try {
+            mailAccountId = data.included[0].relationships.MailAccount.data.id;
+        } catch (e) {
+            Ext.raise("malformed data: missing \"MailAccount\" relationship");
+        }
+
+
+        return {
+            mailAccountId: mailAccountId,
+            mailFolderId: mailFolderId
+        };
+
+    }
 
 });

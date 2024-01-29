@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -82,31 +82,38 @@ StartTest(t => {
 
         let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
             ret,
-            keys = {
+            keys = () => ({
+                id: "c",
+                localId: "f-t-l"
+            }),
+            data = () => ({
+                included: [{
+                    type: "MailFolder",
+                    id: "b",
+                    relationships: {
+                        MailAccount: {
+                            data: {
+                                id: "a",
+                                type: "MailAccount"
+                            }
+                        }
+                    }
+                }],
+                data: [keys()]
+            }), result = [{
                 mailAccountId: "a",
                 mailFolderId: "b",
                 id: "c",
-                localId: "f-t-l"
-            },
-            data = {
-                data: [keys]
-            }, result = {
-                data: [{
-                    mailAccountId: "a",
-                    mailFolderId: "b",
-                    id: "c",
-                    localId: MessageEntityCompoundKey.createFor(keys.mailAccountId, keys.mailFolderId, keys.id).toLocalId()
-                }]
-            };
+                localId: MessageEntityCompoundKey.createFor("a", "b", "c").toLocalId()
+            }];
 
-        ret = reader.applyCompoundKey(data, "read");
+        ret = reader.applyCompoundKey(data(), "read");
 
-        t.expect(ret).toEqual(result);
+        t.expect(ret.data).toEqual(result);
 
-        data = {data: data.data[0]};
-        ret = reader.applyCompoundKey(data, "read");
-        result = {data: result.data[0]};
-        t.expect(ret).toEqual(result);
+        let tData = {included: data().included, data: data().data[0]};
+        ret = reader.applyCompoundKey(tData, "read");
+        t.expect(ret.data).toEqual(result[0]);
 
 
     });
@@ -114,9 +121,16 @@ StartTest(t => {
 
     t.it("applyCompoundKey() - success false", t => {
 
-        let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
-            ret = reader.applyCompoundKey({success: false}, "read");
-        t.expect(ret).toEqual({success: false});
+        // not considered with conjoon/php-lib-conjoon#8 anymore
+        try {
+            let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader"),
+                ret = reader.applyCompoundKey({success: false}, "read");
+            t.expect(ret).toEqual({success: false});
+            t.fail("Exception was never thrown");
+        } catch (e) {
+            t.expect(e).toBeDefined();
+        }
+
     });
 
 
