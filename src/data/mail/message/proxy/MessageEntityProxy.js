@@ -138,7 +138,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
                 {},
                 me.getDefaultParameters("MessageItem"),
                 me.getDefaultParameters("MessageDraft"),
-                {"field[MailFolder]": ""}
+                {"fields[MailFolder]": ""}
             );
             break;
         case "update":
