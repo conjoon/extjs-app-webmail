@@ -209,6 +209,12 @@ StartTest(t => {
             proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
                 entityName: "MessageItem"
             }),
+            jsonApiParams = Object.assign(
+                {},
+                proxy.getDefaultParameters("MessageItem"),
+                proxy.getDefaultParameters("MessageDraft"),
+                {"field[MailFolder]": ""}
+            ),
             request = Ext.create("Ext.data.Request", {
                 action: "create",
                 params: {
@@ -231,7 +237,7 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams()).toEqual({foo: "bar"});
+        t.expect(request.getParams()).toEqual(Object.assign({foo: "bar"}, jsonApiParams));
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
@@ -241,7 +247,7 @@ StartTest(t => {
         proxy.buildUrl(request);
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().action).toBeUndefined();
-        t.expect(request.getParams()).toEqual({foo: "bar"});
+        t.expect(request.getParams()).toEqual(Object.assign({foo: "bar"}, jsonApiParams));
 
         // modified
         t.expect(request.getRecords()[0].phantom).toBe(true);
@@ -252,7 +258,7 @@ StartTest(t => {
         proxy.entityName = "MessageDraft";
         request.setUrl("");
         proxy.buildUrl(request);
-        t.expect(request.getParams()).toEqual({foo: "bar"});
+        t.expect(request.getParams()).toEqual(Object.assign({foo: "bar"}, jsonApiParams));
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getUrl()).toBe(targetUrl);
 
