@@ -45,12 +45,14 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageBody", {
 
     fields: [{
         name: "textPlain",
-        type: "string"
+        type: "string",
+        mapping: "attributes.textPlain"
     }, {
         name: "textHtml",
-        type: "string"
+        type: "string",
+        mapping: "attributes.textHtml"
     }, {
-        // we are hardcoding a messageDraftId-field here, although the
+        // we are hardcoding a messageDraftId-field here, although
         // a MessageBody related with any item might NOT be a draft.
         // however, we keep this field here to make sure
         // associations (MessageDraft <-> MessageBody) work in both directions

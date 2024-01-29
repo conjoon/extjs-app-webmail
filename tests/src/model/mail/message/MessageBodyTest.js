@@ -79,8 +79,13 @@ StartTest(async t => {
                             delay: 1
                         });
 
-                        t.it("Should create instance", t => {
+                        t.it("test class", t => {
                             t.isInstanceOf(model, "conjoon.cn_mail.model.mail.message.CompoundKeyedModel");
+
+                            ["textPlain", "textHtml"].forEach(fieldName =>
+                                t.expect(model.getField(fieldName).getMapping()).toBe(`attributes.${fieldName}`)
+                            );
+
                         });
 
                         t.it("Test Entity Name", t => {
