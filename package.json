@@ -70,7 +70,7 @@
         ]
     },
     "dependencies": {
-        "@conjoon/extjs-dev-webmailsim": "^1.0.5",
+        "@conjoon/extjs-dev-webmailsim": "file:../extjs-dev-webmailsim",
         "@coon-js/extjs-app-user": "^0.1.7",
         "@coon-js/extjs-comp-navport": "^0.2.4",
         "@coon-js/extjs-lib-comp": "^1.0.1",

@@ -160,4 +160,14 @@ StartTest(t => {
     });
 
 
+    t.it("test mappings php-lib-conjoon#8", t => {
+
+        model.fields.forEach(field => {
+            if (field.getName() !== "id" && Object.prototype.hasOwnProperty.call(field, "definedBy")) {
+                t.expect(field.getMapping()).toBe(`attributes.${field.getName()}`);
+            }
+        });
+
+    });
+
 });
