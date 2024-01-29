@@ -480,7 +480,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             method: "get",
             url: url,
             params: {
-                attributes: "previewText",
+                "fields[MessageItem]": "previewText",
                 options: options,
                 filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
             }

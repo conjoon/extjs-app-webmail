@@ -491,7 +491,7 @@ StartTest(t => {
                     method: "get",
                     url,
                     params: {
-                        attributes: "previewText",
+                        "fields[MessageItem]": "previewText",
                         options,
                         filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
                     }
@@ -504,7 +504,16 @@ StartTest(t => {
                 const
                     feature = createFeature(),
                     proxyMock = {
-                        getDefaultParameters: (key) => ( key === "ListMessageItem.options" ? {"foo": "bar"} : {})
+                        getDefaultParameters: (key) => {
+                            switch (key) {
+                                case "ListMessageItem.options":
+                                    return {"foo": "bar"};
+                                case "MessageItem":
+                                    return {"test": "mock"};
+                                default:
+                                    return {0: 1};
+                            }
+                        }
                     },
                     storeMock = {getProxy: () => proxyMock},
                     grid = getGrid();
