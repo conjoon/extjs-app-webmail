@@ -813,7 +813,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             }
 
-            saveBatch = session.getSaveBatch();
+            saveBatch = session.getSaveBatch(true);
             saveBatch.setPauseOnException(true);
 
             saveBatch.on({

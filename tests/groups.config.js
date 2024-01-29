@@ -44,6 +44,9 @@ export default [{
             }, {
                 name: "conjoon/extjs-app-webmail#194",
                 url: "src/_issues_/refactor/extjs-app-webmail%23194.js"
+            }, {
+                name: "conjoon/php-lib-conjoon#8",
+                url: "src/_issues_/refactor/php-lib-conjoon%238.js"
             }]
         }, {
             group: "fix",
