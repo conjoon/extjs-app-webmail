@@ -605,6 +605,7 @@ StartTest(async t => {
                     let view = createWithViewConfig(viewConfig);
 
                     view.getViewModel().notify();
+                    const toFocusSpy = t.spyOn(view.down("#toField"), "focus").and.callThrough();
 
                     var iconCls = view.getIconCls();
 
@@ -631,6 +632,8 @@ StartTest(async t => {
                             t.expect(view.getIconCls()).toBe(iconCls);
                             t.expect(view.getClosable()).toBe(true);
 
+                            t.expect(toFocusSpy.calls.all().length).toBe(1);
+                            toFocusSpy.remove();
                             view.hide();// destroying the view triggers error with Siesta 5.3.1,
                         // wrong implementation of overrides for parentNode.removeChild
                         // and synthetic mouse events?
