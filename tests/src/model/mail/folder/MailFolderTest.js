@@ -51,7 +51,7 @@ StartTest(t => {
         t.expect(model.getField("totalMessages").getPersist()).toBe(false);
         t.expect(model.getField("data").getPersist()).toBe(false);
         t.expect(model.getField("mailAccountId").critical).toBe(true);
-        t.expect(model.getField("mailAccountId").getMapping()).toBe("relationships.MailAccounts.data.id");
+        t.expect(model.getField("mailAccountId").getMapping()).toBe("relationships.MailAccount.data.id");
 
         ["name", "totalMessages", "data", "unreadMessages", "folderType"].forEach(
             fieldName => t.expect(model.getField(fieldName).getMapping()).toBe(`attributes.${fieldName}`)
