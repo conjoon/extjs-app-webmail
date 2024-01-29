@@ -58,6 +58,23 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         "MessageBody"
     ],
 
+    /**
+     * Do not send the page parameter
+     */
+    pageParam: "",
+
+
+    /**
+     * @type {String}
+     */
+    startParam: "page[start]",
+
+    /**
+     * @type {String}
+     */
+    limitParam: "page[limit]",
+
+    simpleSort: true,
 
     /**
      * Assembles the url in preparation for #buildUrl.
@@ -234,6 +251,33 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         return l8.unchain(type, defs, {});
     },
 
+    /**
+     * Overrides the parent implementation by assembling a JSON:API compliant value for the sort parameter.
+     * The sort parameter will represent a comma-separated list of fields that should be sorted.
+     * First values appearing in the list are sorted first. A field prefixed with a "-" will be sorted in
+     * descending direction.
+     *
+     * @param sorters
+     * @param preventArray
+     *
+     * @return {String}
+     */
+    encodeSorters (sorters, preventArray) {
+
+        const res = [];
+        let field, dir;
+        sorters.forEach(sorter => {
+            field = sorter.getProperty();
+            dir   = sorter.getDirection();
+
+            res.push(
+                (dir === "DESC" ? "-" : "") + field
+            );
+        });
+
+
+        return res.join(",");
+    },
 
     /**
      * Returns the base configuration for a request for sending a POST to an
