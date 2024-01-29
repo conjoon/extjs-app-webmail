@@ -109,16 +109,6 @@ StartTest(t => {
         });
         request.setJsonData(defaultData);
 
-
-        // this is the value from the "modified"-object, which will be re-written
-        // into the data.mailFolderId. It denotes the source folder. The actual value will
-        // be written into the attributes-bag - see above!
-        resultJson.data.relationships.MailFolder.data.id = "sourceMailFolder";
-        resultJson.meta.included[0].id = "sourceMailFolder";
-
-        t.spyOn(request, "getOperation").and.callFake(() => ({
-            getRecords: () => [{modified: {mailFolderId: "sourceMailFolder"}}]
-        }));
         request = writer.writeRecords(request, {});
 
         t.expect(request.getJsonData()).toEqual(resultJson);
