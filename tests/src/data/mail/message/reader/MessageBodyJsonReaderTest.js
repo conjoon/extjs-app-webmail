@@ -46,12 +46,24 @@ StartTest(t => {
         let reader = Ext.create("conjoon.cn_mail.data.mail.message.reader.MessageBodyJsonReader"),
             ret,
             keys = function (){return {
-                mailAccountId: "a",
-                mailFolderId: "b",
                 id: "c"
             };},
             data = function () {
-                return {data: [keys()]};
+                return {
+                    included: [{
+                        type: "MailFolder",
+                        id: "b",
+                        relationships: {
+                            MailAccount: {
+                                data: {
+                                    id: "a",
+                                    type: "MailAccount"
+                                }
+                            }
+                        }
+                    }],
+                    data: [keys()]
+                };
             },
             result = function (){
                 return {
@@ -59,7 +71,8 @@ StartTest(t => {
                         mailAccountId: "a",
                         mailFolderId: "b",
                         id: "c",
-                        messageDraftId: MessageEntityCompoundKey.createFor(keys().mailAccountId, keys().mailFolderId, keys().id).toLocalId()
+                        messageDraftId: MessageEntityCompoundKey.createFor(
+                            "a", "b", "c").toLocalId()
                     }]
                 };
             }, pResult, pData;
@@ -75,7 +88,7 @@ StartTest(t => {
 
         // Object
         pData = data();
-        pData = {data: pData.data[0]};
+        pData = {included: pData.included, data: pData.data[0]};
         ret = reader.applyCompoundKey(pData, "read");
         pResult = {data: result().data[0]};
         t.expect(ret.data.messageDraftId).not.toBeUndefined();
