@@ -485,7 +485,10 @@ StartTest(t => {
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({
             filter: "[{\"property\":\"id\",\"value\":\"c\"}]",
-            attributes: "*,previewText,replyTo,cc,bcc"
+            "fields[MessageItem]": "*,previewText,replyTo,cc,bcc",
+            "fields[MailFolder]": "unreadMessages,totalMessages",
+            include: "MailFolder"
+
         });
 
         paramSpy.remove();
@@ -554,8 +557,12 @@ StartTest(t => {
 
         t.expect(proxy.getDefaultParameters("notthere")).toEqual({});
 
-        t.expect(proxy.getDefaultParameters("MessageDraft").attributes).toBe("*,previewText,hasAttachments,size");
-        t.expect(proxy.getDefaultParameters("MessageItem").attributes).toBe("*,previewText,replyTo,cc,bcc");
+        t.expect(proxy.getDefaultParameters("MessageDraft")["fields[MessageItem]"]).toBe("*,previewText,hasAttachments,size");
+        t.expect(proxy.getDefaultParameters("MessageItem")).toEqual({
+            include: "MailFolder",
+            "fields[MailFolder]": "unreadMessages,totalMessages",
+            "fields[MessageItem]": "*,previewText,replyTo,cc,bcc"
+        });
     });
 
 
