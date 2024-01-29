@@ -914,7 +914,7 @@ StartTest(async t => {
 
                 t.it("extjs-app-webmail#67", t => {
 
-                    let item  = createMessageItem(1, "INBOX.Drafts"),
+                    let item  = createMessageItem(1, "INBOX.Drafts", true),
                         editor;
                     
                     item.loadAttachments();
