@@ -51,14 +51,33 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
      *     {
      *         data: {
      *             type: [proxy.entityName],
-     *             mailAccountId: "dev",
-     *             mailFolderId: "INBOX.Drafts",
      *             id: "123",
      *             attributes: {
      *                 subject: "Hello World",
      *                 date: "123445565"
+     *             },
+     *             relationships: {
+     *                  MailFolder: {
+     *                      data: {
+     *                          type: "MailFolder",
+     *                          id: "INBOX.Drafts"
+     *                     }
+     *                  }
      *             }
-     *         }
+     *         },
+     *         meta: {
+     *              included: [{
+     *                 type: "MailFolder",
+     *                 id: "INBOX.Drafts",
+     *                 relationships: {
+     *                     MailAccount: {
+     *                         data: {
+     *                             type: "MailAccount", id: "dev"
+     *                         }
+     *                     }
+     *                 }
+     *             }]
+     *        }
      *     }
      *
      * @param {Ext.data.Request} request
@@ -84,19 +103,49 @@ Ext.define("conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter", {
 
         root.data = Object.fromEntries(
             Object.entries(jsonData).filter(entry => {
-                return ["id", "mailAccountId", "mailFolderId"].includes(entry[0]);
+                return ["id"].includes(entry[0]);
             })
         );
 
-        root.data.type = request.getProxy().entityName;
-
-        // if we detect a move operation, we will rewrite the mailFolderId in the root to the origin,
-        // and add a mailFolderId to the data-bag
+        // we will update the relationship if the mailFolderId was identified as modified
+        // we are optimistically assuming that the target folder belongs to the existing
+        // mail account. Everything else is up to the server...
+        let mailFolderId = jsonData.mailFolderId;
         if (request.getParams() && request.getParams().action === "move") {
-            attributes.mailFolderId = root.data.mailFolderId;
-            root.data.mailFolderId = request.getOperation().getRecords()[0].modified.mailFolderId;
+            mailFolderId = request.getOperation().getRecords()[0].modified.mailFolderId;
             delete request.getParams().action;
         }
+
+        root.data.relationships = {
+            MailFolder: {
+                data: {
+                    type: "MailFolder",
+                    id: mailFolderId
+                }
+            }
+        };
+
+        root.meta = {
+            included: [{
+                type: "MailFolder",
+                id: mailFolderId,
+                relationships: {
+                    MailAccount: {
+                        data: {
+                            type: "MailAccount", id: jsonData.mailAccountId
+                        }
+                    }
+                }
+            }]
+        };
+
+        const
+            en = request.getProxy().entityName,
+            map = {
+                "MessageBodyDraft": "MessageBody",
+                "MessageDraft": "MessageItem"
+            };
+        root.data.type = map[en] ? map[en] : en;
 
         root.data.attributes = attributes;
 
