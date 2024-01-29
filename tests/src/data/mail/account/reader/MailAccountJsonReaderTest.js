@@ -127,7 +127,7 @@ StartTest(t => {
                 data: [{
                     id: "bar",
                     relationships: {
-                        MailAccounts: {
+                        MailAccount: {
                             data: {id: "foo", type: "MailAccount"}
                         }
                     }
@@ -139,7 +139,7 @@ StartTest(t => {
                     id: "bar",
                     localId: "foo-bar",
                     relationships: {
-                        MailAccounts: {
+                        MailAccount: {
                             data: {id: "foo", type: "MailAccount"}
                         }
                     }
