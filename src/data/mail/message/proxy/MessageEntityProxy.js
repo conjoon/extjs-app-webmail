@@ -211,6 +211,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
                 "fields[MessageItem]": "*,previewText,replyTo,cc,bcc"
             },
             MessageDraft: {
+                "include": "MailFolder",
+                "fields[MailFolder]": "",
                 "fields[MessageItem]": "*,previewText,hasAttachments,size"
             },
             ListMessageItem: {
@@ -230,5 +232,53 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         };
 
         return l8.unchain(type, defs, {});
+    },
+
+
+    /**
+     * Returns the base configuration for a request for sending a POST to an
+     * endpoint for sending a message flagged as DRAFT.
+     *
+     * @param {conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
+     *
+     * @returns {{method: string, url: *}}
+     *
+     * @throws if no base address for the "send" endpoint is available
+     */
+    getSendMessageDraftRequestConfig (messageDraft) {
+
+        const
+            me = this,
+            baseAddress = messageDraft.schema.getUrlPrefix();
+
+
+        if (messageDraft.phantom === true) {
+            throw("\"MessageDraft\" must be existing");
+        }
+
+        if (!l8.isString(baseAddress)) {
+            throw("\"baseAddress\" must be a string");
+        }
+
+        let url = [
+            baseAddress,
+            "MailAccounts",
+            encodeURIComponent(messageDraft.getCompoundKey().getMailAccountId()),
+            "MailFolders",
+            encodeURIComponent(messageDraft.getCompoundKey().getMailFolderId()),
+            "MessageItems",
+            encodeURIComponent(messageDraft.getCompoundKey().getId()),
+            "send"
+        ].join("/");
+
+        return {
+            url: l8.unify(url, "/", "://"),
+            method: "POST",
+            params: Object.assign(
+                me.getDefaultParameters("MessageItem"),
+                me.getDefaultParameters("MessageDraft")
+            )
+        };
     }
+
 });

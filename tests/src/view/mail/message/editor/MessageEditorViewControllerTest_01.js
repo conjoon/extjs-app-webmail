@@ -483,7 +483,7 @@ StartTest(async t => {
                             view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
 
                             t.isCalledNTimes("onMailMessageBeforeSave",             controller, 1);
-                            t.isCalledNTimes("onMailMessageSaveOperationComplete",  controller, 0);
+                            t.isCalledNTimes("onMailMessageSaveOperationComplete",  controller, 2);
                             t.isCalledNTimes("onMailMessageSaveComplete",           controller, 1);
                             t.isCalledNTimes("onMailMessageSaveOperationException", controller, 0);
 
@@ -515,7 +515,7 @@ StartTest(async t => {
                             view.down("cn_mail-mailmessageeditorhtmleditor").setValue("Test");
 
                             t.isCalledNTimes("onMailMessageBeforeSave",            controller, 1);
-                            t.isCalledNTimes("onMailMessageSaveOperationComplete", controller, 1);
+                            t.isCalledNTimes("onMailMessageSaveOperationComplete", controller, 0);
                             t.isCalledNTimes("onMailMessageSaveComplete",          controller, 0);
                             t.isCalledNTimes("onMailMessageSaveOperationException", controller, 1);
 

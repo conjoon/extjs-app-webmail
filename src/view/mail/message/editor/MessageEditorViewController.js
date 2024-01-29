@@ -686,35 +686,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
          * for sending a MessageDraft.
          *
          * @param {!conjoon.cn_mail.model.mail.message.MessageDraft} messageDraft
-         * @param {!String} baseAddress The base address that should be used for the SendMessage-endpoint
          *
          * @returns {Object}
-         *
-         * @throws if baseAddress is undefined or null
          */
-        getSendMessageDraftRequestConfig: function (messageDraft, baseAddress) {
-
-            const me = this;
-
-            if (!l8.isString(baseAddress)) {
-                throw("\"baseAddress\" must be a string");
-            }
-
-            let url = [
-                baseAddress,
-                "MailAccounts",
-                encodeURIComponent(messageDraft.getCompoundKey().getMailAccountId()),
-                "MailFolders",
-                encodeURIComponent(messageDraft.getCompoundKey().getMailFolderId()),
-                "MessageItems",
-                encodeURIComponent(messageDraft.getCompoundKey().getId())
-            ].join("/");
-
-            return me.requestConfigurator.configure({
-                url: l8.unify(url, "/", "://"),
-                method: "POST"
-            });
-
+        getSendMessageDraftRequestConfig: function (messageDraft) {
+            return messageDraft.getProxy().getSendMessageDraftRequestConfig(
+                messageDraft
+            );
         },
 
 
@@ -764,9 +742,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController
                 return false;
             }
 
-            const baseAddress  = coon.core.ConfigManager.get("extjs-app-webmail", "service.rest-api-email.base");
-
-            Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft, baseAddress)).then(
+            Ext.Ajax.request(me.getSendMessageDraftRequestConfig(messageDraft)).then(
                 function (response, opts) {
                     view.fireEvent("cn_mail-mailmessagesendcomplete", view, messageDraft);
                 },

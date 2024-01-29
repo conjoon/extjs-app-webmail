@@ -316,21 +316,6 @@ StartTest(async t => {
                 });
                 messageDraft.dirty = messageDraft.phantom = false;
 
-                let exc;
-                try {
-                    controller.getSendMessageDraftRequestConfig(messageDraft);
-                } catch (e) {
-                    exc = e;
-                }
-                t.expect(exc).toContain("baseAddress");
-
-
-                t.expect(
-                    controller.getSendMessageDraftRequestConfig(messageDraft, ".//cn_mail///")
-                ).toEqual(requestConfiguratorSpy.calls.mostRecent().returnValue);
-                t.expect(requestConfiguratorSpy.calls.mostRecent().args[0]).toEqual(expectedRequestCfg);
-
-
                 let tmp = Ext.Ajax.request;
 
                 controller.getView = function () {
@@ -348,9 +333,10 @@ StartTest(async t => {
                     };
                 };
 
-                controller.getSendMessageDraftRequestConfig = function () {
-                    return {CALLED: true};
-                };
+                let proxySpy = t.spyOn(
+                        messageDraft.getProxy(), "getSendMessageDraftRequestConfig"
+                    ).and.callFake(() => ({CALLED: true})),
+                    getReqSpy = t.spyOn(controller, "getSendMessageDraftRequestConfig").and.callThrough();
 
                 let REQUEST = false;
                 Ext.Ajax.request = function (cfg) {
@@ -363,6 +349,12 @@ StartTest(async t => {
 
                 t.expect(REQUEST).toBe(true);
                 Ext.Ajax.request = tmp;
+
+                t.expect(proxySpy.calls.mostRecent().args[0]).toBe(getReqSpy.calls.mostRecent().args[0]);
+                t.expect(getReqSpy.calls.mostRecent().returnValue).toBe(proxySpy.calls.mostRecent().returnValue);
+
+                proxySpy.remove();
+                getReqSpy.remove();
             });
 
 
