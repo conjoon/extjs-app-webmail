@@ -201,11 +201,11 @@ StartTest(async t => {
                     controller: viewController,
 
                     viewModel: {
-                        updateUnreadMessageCount: function (mailAccountId, mailFolderId, unreadCount) {
+                        updateUnreadMessageCount: function (mailAccountId, mailFolderId, unreadMessages) {
                             if (!_testMailFolderId[mailAccountId]) {
                                 _testMailFolderId[mailAccountId] = {};
                             }
-                            _testMailFolderId[mailAccountId][mailFolderId] = unreadCount;
+                            _testMailFolderId[mailAccountId][mailFolderId] = unreadMessages;
                         }
                     },
 

@@ -34,6 +34,7 @@ StartTest(async t => {
 
                 return Ext.create("conjoon.cn_mail.model.mail.account.MailAccount", {
                     id: id ? id : undefined,
+                    type: "MailAccount",
                     name: "name",
                     from: "from",
                     replyTo: "replyTo",

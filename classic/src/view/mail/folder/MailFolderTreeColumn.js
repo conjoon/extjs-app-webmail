@@ -28,7 +28,7 @@
  * {@link conjoon.cn_mail.view.mail.FolderTree}.
  *
  * The {@link #tpl} config is a customized template which is capable of
- * displaying a badge representing the unreadCount property of the record
+ * displaying a badge representing the unreadMessages property of the record
  * currently being rendered. Ideally, the record type being used with this
  * column is the {@link conjoon.cn_mail.model.mail.folder.MailFolder}.
  *

@@ -169,9 +169,9 @@ StartTest(async t => {
 
                         t.waitForMs(t.parent.TIMEOUT, function (){
                             var mailFolder = getChildAt(view, "dev_sys_conjoon_org", 0, "INBOX", t),
-                                unreadCount =  mailFolder.get("unreadCount");
+                                unreadMessages =  mailFolder.get("unreadMessages");
 
-                            t.expect(unreadCount).not.toBe(0);
+                            t.expect(unreadMessages).not.toBe(0);
                             tree.getSelectionModel().select(mailFolder);
 
                             t.expect(grid.representedFolderType).toBeFalsy();
@@ -193,7 +193,7 @@ StartTest(async t => {
                                 t.waitForMs(t.parent.TIMEOUT, function (){
                                     t.expect(messageView.getViewModel().get("messageItem")).toBe(messageItem);
 
-                                    t.expect(mailFolder.get("unreadCount")).toBe(unreadCount - 1);
+                                    t.expect(mailFolder.get("unreadMessages")).toBe(unreadMessages - 1);
 
                                     discardView(t);
                                 });

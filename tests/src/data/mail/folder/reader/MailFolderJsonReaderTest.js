@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -67,23 +67,39 @@ StartTest(t => {
             ret,
             data = {
                 data: [{
-                    mailAccountId: "foo",
-                    id: "bar"
+                    id: "bar",
+                    relationships: {
+                        MailAccounts: {
+                            data: {type: "MailAccount", id: "foo"}
+                        }
+                    }
                 }, {
-                    mailAccountId: "foo2",
-                    id: "bar2"
+                    id: "bar2",
+                    relationships: {
+                        MailAccounts: {
+                            data: {type: "MailAccount", id: "foo2"}
+                        }
+                    }
                 }]
             }, result = {
                 data: [{
                     modelType: "conjoon.cn_mail.model.mail.folder.MailFolder",
                     localId: "foo-bar",
-                    mailAccountId: "foo",
-                    id: "bar"
+                    id: "bar",
+                    relationships: {
+                        MailAccounts: {
+                            data: {type: "MailAccount", id: "foo"}
+                        }
+                    }
                 }, {
                     modelType: "conjoon.cn_mail.model.mail.folder.MailFolder",
                     localId: "foo2-bar2",
-                    mailAccountId: "foo2",
-                    id: "bar2"
+                    id: "bar2",
+                    relationships: {
+                        MailAccounts: {
+                            data: {type: "MailAccount", id: "foo2"}
+                        }
+                    }
                 }]
             };
 
@@ -97,9 +113,15 @@ StartTest(t => {
 
     t.it("applyCompoundKey() - success false", t => {
 
-        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader"),
-            ret = reader.applyCompoundKey({success: false});
-        t.expect(ret).toEqual({success: false});
+        let reader = Ext.create("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader");
+
+        try {
+            reader.applyCompoundKey({success: false});
+            t.fail("Exception was never thrown.");
+        } catch (e) {
+            t.expect(e.msg).toContain("malformed");
+        }
+
     });
 
 

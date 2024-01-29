@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -111,16 +111,16 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewModel", {
     },
 
     /**
-     * Updates the unreadCount of the associated {@link conjoon.cn_mail.model.mail.folder.MailFolder}
+     * Updates the unreadMessages of the associated {@link conjoon.cn_mail.model.mail.folder.MailFolder}
      * found under the given mailFolderId and the given mailAccountId by the number
-     * specified in unreadCount.
+     * specified in unreadMessages.
      * A positive value will increase the unread count, a negative value
      * decrease it.
      *
      * @param {String} mailFolderId
-     * @param {Number} unreadCount
+     * @param {Number} unreadMessages
      */
-    updateUnreadMessageCount: function (mailAccountId, mailFolderId, unreadCount) {
+    updateUnreadMessageCount: function (mailAccountId, mailFolderId, unreadMessages) {
 
         var me    = this,
             store = me.get("cn_mail_mailfoldertreestore"),
@@ -136,7 +136,7 @@ Ext.define("conjoon.cn_mail.view.mail.inbox.InboxViewModel", {
         if (!folder) {
             return;
         }
-        folder.set("unreadCount", folder.get("unreadCount") + unreadCount);
+        folder.set("unreadMessages", folder.get("unreadMessages") + unreadMessages);
     }
 
 

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -519,8 +519,8 @@ StartTest(async t => {
                 let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId),
                     targetFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, targetFolderId);
 
-                sourceFolder.set("unreadCount", 5);
-                targetFolder.set("unreadCount", 0);
+                sourceFolder.set("unreadMessages", 5);
+                targetFolder.set("unreadMessages", 0);
 
                 messageItem.set("seen", false);
 
@@ -538,8 +538,8 @@ StartTest(async t => {
                 t.expect(messageItem.get("messageBodyId")).not.toBeFalsy();
                 t.expect(oldMessageBodyId).not.toBe(messageItem.get("messageBodyId"));
 
-                t.expect(sourceFolder.get("unreadCount")).toBe(4);
-                t.expect(targetFolder.get("unreadCount")).toBe(1);
+                t.expect(sourceFolder.get("unreadMessages")).toBe(4);
+                t.expect(targetFolder.get("unreadMessages")).toBe(1);
 
                 t.expect(sourceFolder.dirty).toBe(false);
                 t.expect(targetFolder.dirty).toBe(false);
@@ -559,8 +559,8 @@ StartTest(async t => {
 
                 t.expect(service.moveCallback(op)).toBe(false);
 
-                t.expect(sourceFolder.get("unreadCount")).toBe(4);
-                t.expect(targetFolder.get("unreadCount")).toBe(1);
+                t.expect(sourceFolder.get("unreadMessages")).toBe(4);
+                t.expect(targetFolder.get("unreadMessages")).toBe(1);
             });
         });
 
@@ -575,7 +575,7 @@ StartTest(async t => {
 
                 let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId);
 
-                sourceFolder.set("unreadCount", 5);
+                sourceFolder.set("unreadMessages", 5);
 
                 messageItem.set("seen", false);
 
@@ -588,7 +588,7 @@ StartTest(async t => {
 
                 t.expect(service.deleteCallback(op)).toBe(true);
 
-                t.expect(sourceFolder.get("unreadCount")).toBe(4);
+                t.expect(sourceFolder.get("unreadMessages")).toBe(4);
 
                 t.expect(sourceFolder.dirty).toBe(false);
 
@@ -605,7 +605,7 @@ StartTest(async t => {
 
                 t.expect(service.deleteCallback(op)).toBe(false);
 
-                t.expect(sourceFolder.get("unreadCount")).toBe(4);
+                t.expect(sourceFolder.get("unreadMessages")).toBe(4);
 
 
             });
@@ -659,7 +659,7 @@ StartTest(async t => {
         });
 
 
-        t.it("deleteCallback() - max 0 unreadCount", t => {
+        t.it("deleteCallback() - max 0 unreadMessages", t => {
             let service        = createService(),
                 sourceFolderId = "INBOX.Trash",
                 messageItem    = createMessageItem(4, sourceFolderId);
@@ -669,7 +669,7 @@ StartTest(async t => {
 
                 let sourceFolder = service.getMailFolderHelper().getMailFolder(ACCOUNTID, sourceFolderId);
 
-                sourceFolder.set("unreadCount", 0);
+                sourceFolder.set("unreadMessages", 0);
 
                 messageItem.set("seen", false);
 
@@ -682,7 +682,7 @@ StartTest(async t => {
 
                 t.expect(service.deleteCallback(op)).toBe(true);
 
-                t.expect(sourceFolder.get("unreadCount")).toBe(0);
+                t.expect(sourceFolder.get("unreadMessages")).toBe(0);
             });
 
         });

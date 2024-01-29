@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,10 +31,13 @@ Ext.define("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
     extend: "Ext.data.reader.Json",
 
     requires: [
+        // @define l8
+        "l8",
         "conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey"
     ],
 
     alias: "reader.cn_mail-mailfolderjsonreader",
+
 
     mailFolderModelClass: "conjoon.cn_mail.model.mail.folder.MailFolder",
 
@@ -73,10 +76,7 @@ Ext.define("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
         const me = this;
 
         if (Ext.isObject(data)) {
-            
-            if (data.success !== false) {
-                me.recurseChildren([].concat(data.data));
-            }
+            me.recurseChildren([].concat(data.data));
 
             return data;
         }
@@ -104,13 +104,14 @@ Ext.define("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
         const me = this,
             MailFolderCompoundKey = conjoon.cn_mail.data.mail.folder.compoundKey.MailFolderCompoundKey;
 
-        let rec;
+        let rec, mailAccountId;
 
         for (let i = 0, len = records.length; i < len; i++) {
 
             rec = records[i];
+            mailAccountId = l8.unchain("relationships.MailAccounts.data.id", rec);
 
-            if (!rec || !rec.mailAccountId || !rec.id) {
+            if (!rec || !mailAccountId || !rec.id) {
                 Ext.raise({
                     msg: "The \"data\" property was malformed and could not be processed by this Reader",
                     data: records
@@ -119,10 +120,10 @@ Ext.define("conjoon.cn_mail.data.mail.folder.reader.MailFolderJsonReader", {
 
             rec.modelType = me.mailFolderModelClass;
             rec.localId   = MailFolderCompoundKey.createFor(
-                rec.mailAccountId, rec.id
+                mailAccountId, rec.id
             ).toLocalId();
 
-            me.recurseChildren(rec.data);
+            rec.attributes && me.recurseChildren(rec.attributes.data);
 
         }
     }
