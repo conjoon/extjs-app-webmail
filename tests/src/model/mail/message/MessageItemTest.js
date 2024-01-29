@@ -80,6 +80,15 @@ StartTest(async t => {
         // |                    =~. Unit Tests .~=
         // +----------------------------------------------------------------------------
 
+        t.it("test class", t => {
+            t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
+
+            ["hasAttachments", "to", "previewText", "size"].forEach(field => {
+                t.expect(model.getField(field).getMapping()).toBe(`attributes.${field}`);
+            });
+
+        });
+
         t.it("Should create instance", t => {
             t.expect(model instanceof conjoon.cn_mail.model.mail.message.AbstractMessageItem).toBeTruthy();
         });
@@ -120,6 +129,7 @@ StartTest(async t => {
             m.set("foo", "bar");
             op = m.save();
             t.expect(op.getRequest().getUrl()).toContain("cn_mail/MailAccounts/a2/MailFolders/b2/MessageItems/c2/MessageItem?");
+            t.expect(op.getRequest().getUrl()).not.toContain("include");
 
             // CREATE
             m = Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {

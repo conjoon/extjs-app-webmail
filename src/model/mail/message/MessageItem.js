@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -54,10 +54,12 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
         // field is required to indicate that attachments are available
         // ~before~ attachment associations are loaded
         name: "hasAttachments",
-        type: "bool"
+        type: "bool",
+        mapping: "attributes.hasAttachments"
     }, {
         name: "to",
-        type: "cn_core-datafieldemailaddresscollection"
+        type: "cn_core-datafieldemailaddresscollection",
+        mapping: "attributes.to"
     }, {
         name: "previewText",
         type: "string",
@@ -71,11 +73,13 @@ Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
          */
         convert: function (v, record) {
             return v === undefined ? undefined : (l8.isNumber(v) || l8.isString(v) ? "" + v : "");
-        }
+        },
+        mapping: "attributes.previewText"
     }, {
         name: "size",
         type: "int",
-        persist: false
+        persist: false,
+        mapping: "attributes.size"
     }, {
         name: "cn_deleted",
         type: "bool",
