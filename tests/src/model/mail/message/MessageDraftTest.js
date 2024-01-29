@@ -530,11 +530,12 @@ StartTest(async t => {
 
                         t.expect(draft.phantom).toBe(false);
 
+                        t.expect(draft.get("mailFolderId")).not.toBe("foo");
                         draft.set("mailFolderId", "foo");
 
                         let ret = draft.save();
 
-                        t.expect(ret.request.getJsonData().data.mailFolderId).toBe("foo");
+                        t.expect(ret.request.getJsonData().data.relationships.MailFolder.data.id).toBe("foo");
                         t.expect(ret.request.getUrl()).toContain("MailFolders/" + encodeURIComponent(messageItem.mailFolderId) + "/");
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
