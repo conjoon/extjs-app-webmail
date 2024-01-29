@@ -63,25 +63,7 @@ StartTest(t => {
                     attributes: {
                         subject: "Hello World",
                         date: "123445565"
-                    },
-                    relationships: {
-                        MailFolder: {
-                            data: {type: "MailFolder", id: "INBOX.Drafts"}
-                        }
                     }
-                },
-                meta: {
-                    included: [{
-                        type: "MailFolder",
-                        id: "INBOX.Drafts",
-                        relationships: {
-                            MailAccount: {
-                                data: {
-                                    type: "MailAccount", id: "dev"
-                                }
-                            }
-                        }
-                    }]
                 }
             },
             getProxySpy = t.spyOn(request, "getProxy").and.callFake(() => proxy),
@@ -104,14 +86,27 @@ StartTest(t => {
             t.expect(request.getJsonData()).toEqual(resultJson);
         });
 
+
+        request.setJsonData(defaultData);
+
+        // this is the value from the "modified"-object, which will be re-written
+        // into the data.mailFolderId. It denotes the source folder. The actual value will
+        // be written into the relationships object.
+        l8.chain("data.relationships.MailFolder.data.id", resultJson, defaultData.mailFolderId);
+        resultJson.data.relationships.MailFolder.data.type = "MailFolder";
+
+        t.spyOn(request, "getOperation").and.callFake(() => ({
+            getRecords: () => [{modified: {mailFolderId: "sourceMailFolder"}}]
+        }));
+        request = writer.writeRecords(request, {});
+
+        t.expect(request.getJsonData()).toEqual(resultJson);
+
         request.setParams({
             action: "move"
         });
         request.setJsonData(defaultData);
-
         request = writer.writeRecords(request, {});
-
-        t.expect(request.getJsonData()).toEqual(resultJson);
 
         t.expect(request.getParams().action).toBeUndefined();
 
