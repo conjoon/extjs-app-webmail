@@ -85,7 +85,7 @@ StartTest(async t => {
 
                     for (; i <= upper; i++) {
                         mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
-                        if (mi.mailFolderId === mailFolderId) {
+                        if (mi && mi.mailFolderId === mailFolderId) {
                             break;
                         }
                     }
@@ -100,12 +100,22 @@ StartTest(async t => {
                 });
             },
             getRecordCollection = function () {
+                /**
+                 * We usually pick items in the grid that are in the visible range for the
+                 * tests. For comparison, we need some records from the bottom range.
+                 * This is a cause for error as recent changes with creating message items
+                 * with the MessageTable grouped ids in a way that the message items returned
+                 * with this method referenced the same items that where used in some tests,
+                 * which must not happen. Some test make tehrefore sure that - where required -
+                 * the compound key of the record to be testes is not the same as a record created
+                 * with this method.
+                 */
                 return [
-                    createMessageItem(1, "INBOX"),
-                    createMessageItem(2, "INBOX.Drafts"),
-                    createMessageItem(3, "INBOX.Sent Messages"),
-                    createMessageItem(4, "INBOX.Drafts"),
-                    createMessageItem(5, "INBOX.Drafts")
+                    createMessageItem(10, "INBOX"),
+                    createMessageItem(12, "INBOX.Drafts"),
+                    createMessageItem(13, "INBOX.Sent Messages"),
+                    createMessageItem(14, "INBOX.Drafts"),
+                    createMessageItem(15, "INBOX.Drafts")
                 ];
             };
 
@@ -184,6 +194,11 @@ StartTest(async t => {
 
                         t.waitForMs(t.parent.TIMEOUT, () => {
 
+
+                            t.expect(DRAFTCK.getId()).not.toBe(compoundKey.getId());
+                            t.expect(DRAFTCK.getId()).not.toBe(compoundKey2.getId());
+                            t.expect(compoundKey.getId()).not.toBe(compoundKey2.getId());
+
                             let view      = viewController.showMailMessageViewFor(compoundKey),
                                 edit      = viewController.showMailEditor(compoundKey, "edit");
 
@@ -215,6 +230,8 @@ StartTest(async t => {
 
                             t.waitForMs(t.parent.TIMEOUT, () => {
 
+                                t.expect(DRAFTMESSAGE.getCompoundKey().getId()).toBe("101");
+                                t.expect(DRAFTMESSAGE.getCompoundKey().getMailFolderId()).toBe("INBOX.Trash");
 
                                 t.expect(viewController.onBeforeMessageItemDelete(inboxView, DRAFTMESSAGE)).toBe(false);
 
