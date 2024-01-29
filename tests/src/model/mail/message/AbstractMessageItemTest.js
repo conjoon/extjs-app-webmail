@@ -123,6 +123,16 @@ StartTest(async t => {
             t.expect(model.getIdProperty()).toBe("localId");
         });
 
+        t.it("mappings should be configured", t => {
+
+            ["subject", "date", "from", "seen", "answered", "flagged", "draft", "recent"].forEach(field => {
+
+                t.expect(model.getField(field).getMapping()).toBe(`attributes.${field}`);
+
+            });
+        });
+
+
         t.it("loadAttachments()", t => {
             t.isInstanceOf(model.attachments(), "conjoon.cn_mail.store.mail.message.MessageAttachmentStore");
 
