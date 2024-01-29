@@ -139,8 +139,8 @@ Ext.define("conjoon.cn_mail.data.mail.message.session.MessageCompoundBatchVisito
 
     /**
      * Swaps a CREATE operation with an UPDATE operation if the previous operation
-     * applied a compound key to the record that is part of the following
-     * operation.
+     * applied a compound key to the record that is required by the following
+     * UPDATE-operation, if any.
      * Will assign the id returned by the DESTROY operation and update the
      * MessageDraft this class was configured with.
      * Makes sure that data that is about to be destroyed gets the current
