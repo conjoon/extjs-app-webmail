@@ -308,20 +308,10 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
                 let options = {
                     params: messageDraft.toObject(),
                     success: function (record) {
-                        const me = this,
-                            view = me.getView();
+                        const me = this;
 
                         me.getSession().setMessageDraft(record);
-
-                        record.loadMessageBody({
-                            success: function (mb) {
-                                me.set("messageDraft", record);
-                                me.notify();
-                                me.loadingDraft = null;
-                                view.fireEvent("cn_mail-messagedraftload", view, record);
-                            },
-                            scope: me
-                        });
+                        me.processMessageBodyLoad(record);
                     },
                     failure: me.processMessageDraftLoadFailure,
                     scope: me
@@ -363,6 +353,28 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditorViewModel", {
             msg: "\"messageDraft\" must either be an instance of " +
                            "MessageDraftConfig, of MessageDraftCopyRequest or of " +
                            "MessageEntityCompoundKey."
+        });
+    },
+
+
+    /**
+     * @private
+     */
+    processMessageBodyLoad (record) {
+
+        const
+            me = this,
+            view = me.getView();
+
+        record.loadMessageBody({
+            failure: me.processMessageDraftLoadFailure,
+            success: function (mb) {
+                me.set("messageDraft", record);
+                me.notify();
+                me.loadingDraft = null;
+                view.fireEvent("cn_mail-messagedraftload", view, record);
+            },
+            scope: me
         });
     },
 
