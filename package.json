@@ -70,7 +70,7 @@
         ]
     },
     "dependencies": {
-        "@conjoon/extjs-dev-webmailsim": "file:../extjs-dev-webmailsim",
+        "@conjoon/extjs-dev-webmailsim": "^2.0.0-alpha.0",
         "@coon-js/extjs-app-user": "^0.1.7",
         "@coon-js/extjs-comp-navport": "^0.2.4",
         "@coon-js/extjs-lib-comp": "^1.0.1",
@@ -80,7 +80,7 @@
     "devDependencies": {
         "@commitlint/cli": "^17.6.1",
         "@commitlint/config-conventional": "^13.2.0",
-        "@coon-js/delorean": "^0.3.3",
+        "@coon-js/delorean": "^0.3.4",
         "@coon-js/extjs-link": "^0.1.10",
         "@coon-js/siesta-lib-helper": "^0.1.16",
         "eslint": "^7.28.0",
@@ -101,10 +101,11 @@
         "postversion": "git push && git push --tags",
         "test": "npx ws --port 8093 --static.index tests.redirect.html --open",
         "release": "standard-version",
-        "preversion": "npm run deps:prod:latest && npx delorean -r",
+        "preversion": "npm run deps:prod:latest && npm run deps:dev:latest && npx delorean -r",
         "release:patch": "npm run preversion && standard-version --release-as patch && npm run postversion",
         "release:minor": "npm run preversion && standard-version --release-as minor && npm run postversion",
         "release:major": "npm run preversion && standard-version --release-as major && npm run postversion",
+        "deps:dev:latest": "npm i -D @coon-js/delorean@latest",
         "deps:prod:latest": "npm i -P @conjoon/extjs-dev-webmailsim@latest @coon-js/extjs-app-user@latest @coon-js/extjs-comp-navport@latest @coon-js/extjs-lib-comp@latest @coon-js/extjs-lib-core @l8js/l8@latest",
         "update:package.json": "node bin/updatePackageJson.mjs"
     },
