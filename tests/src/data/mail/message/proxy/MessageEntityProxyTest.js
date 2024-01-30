@@ -495,7 +495,6 @@ StartTest(t => {
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({
             filter: JSON.stringify({"=": {id: "c"}}),
-            "fields[MessageItem]": "*,previewText,replyTo,cc,bcc",
             "fields[MailFolder]": "unreadMessages,totalMessages",
             include: "MailFolder"
 
@@ -549,11 +548,10 @@ StartTest(t => {
 
         t.expect(proxy.getDefaultParameters("notthere")).toEqual({});
 
-        t.expect(proxy.getDefaultParameters("MessageDraft")["fields[MessageItem]"]).toBe("*,previewText,hasAttachments,size");
+        t.expect(proxy.getDefaultParameters("MessageDraft")["relfield:fields[MessageItem]"]).toBe("+cc,+bcc,+replyTo,-hasAttachments,-size");
         t.expect(proxy.getDefaultParameters("MessageItem")).toEqual({
             include: "MailFolder",
-            "fields[MailFolder]": "unreadMessages,totalMessages",
-            "fields[MessageItem]": "*,previewText,replyTo,cc,bcc"
+            "fields[MailFolder]": "unreadMessages,totalMessages"
         });
     });
 

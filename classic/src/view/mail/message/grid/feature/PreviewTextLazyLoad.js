@@ -75,12 +75,6 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
     /**
      * Inits this plugin.
-     * Updates the getPreviewTextRow() of the rowbodyswitch-feature to show a loading
-     * indicator and changes the MessageItem's store proxy to send additional
-     * "fields[MessageItem]"-query-param to the MessageItem-store to exclude the previewText from the
-     * set of fields.
-     * Observer will then lazyLoad the previewText of items that are not in the view via
-     * requestPreviewText().
      *
      * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
      *
@@ -96,8 +90,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
 
     /**
+     * Installs various listeners for handling loading behavior of the previewText.
     *
-     *
      * @param {conjoon.cn_mail.view.mail.message.MessageGrid} grid
      */
     installListeners () {
@@ -113,15 +107,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         const feat = grid.view.getFeature("cn_mail-mailMessageFeature-messagePreview");
 
-        // set store's extraParams to all fields excluding previewText (see conjoon/rest-api-email)
         grid.on(
             "cn_mail-mailmessagegridbeforeload",
             store => {
-                store.getProxy().extraParams = Object.assign(
-                    store.getProxy().getDefaultParameters("MessageItem"), {
-                        "fields[MessageItem]": "*,previewText"
-                    });
-
                 /**
                  * @see conjoon/extjs-app-webmail#216
                  */

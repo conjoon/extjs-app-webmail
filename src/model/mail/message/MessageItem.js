@@ -30,11 +30,6 @@
  * for providing information about a message. Further data can be requested
  * by loading MessageBody-models.
  *
- * Note:
- * =====
- * When setting the previewText-field, it's length is automatically adjusted by
- * previewText-field's "convert()"-method.
- *
  */
 Ext.define("conjoon.cn_mail.model.mail.message.MessageItem", {
 

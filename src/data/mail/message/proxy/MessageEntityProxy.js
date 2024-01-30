@@ -243,13 +243,12 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         const defs = {
             MessageItem: {
                 include: "MailFolder",
-                "fields[MailFolder]": "unreadMessages,totalMessages",
-                "fields[MessageItem]": "*,previewText,replyTo,cc,bcc"
+                "fields[MailFolder]": "unreadMessages,totalMessages"
             },
             MessageDraft: {
                 "include": "MailFolder",
                 "fields[MailFolder]": "",
-                "fields[MessageItem]": "*,previewText,hasAttachments,size"
+                "relfield:fields[MessageItem]": "+cc,+bcc,+replyTo,-hasAttachments,-size"
             }
         };
 
