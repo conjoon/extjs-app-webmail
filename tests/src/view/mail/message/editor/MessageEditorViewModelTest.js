@@ -390,7 +390,7 @@ StartTest(async t => {
                                     session: createSession(),
                                     messageDraft: createKeyForExistingMessage(index)
                                 });
-
+                                viewModel.loadDraft();
                                 t.waitForMs(t.parent.TIMEOUT, () => {
 
                                     t.expect(processMessageDraftLoadFailure.calls.count()).toBe(1);
