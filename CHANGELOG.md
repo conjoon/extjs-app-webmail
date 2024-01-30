@@ -2,6 +2,211 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.0](https://github.com/conjoon/extjs-app-webmail/compare/v1.1.1...v2.0.0-alpha.0) (2024-01-30)
+
+
+### Bug Fixes
+
+* PreviewTextLazyLoad does not consider recent data structure changes ([08d5bfc](https://github.com/conjoon/extjs-app-webmail/commit/08d5bfc03a48b39899591acf3116a2df93118674)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** add missing call to loadDraft ([ac19506](https://github.com/conjoon/extjs-app-webmail/commit/ac195068d0efb2a95e9a943d189b90c1fdacbe9b))
+* **tests:** adjust MessageItemStore page size to prevent prefetches ([076d0d3](https://github.com/conjoon/extjs-app-webmail/commit/076d0d3ea46110625f9199ac5ad3fb2afd0c856f)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** focus of input field is not determinable ([4a5618d](https://github.com/conjoon/extjs-app-webmail/commit/4a5618d159653da6cc77a061e3dc331b8e80c43a))
+* **tests:** new data structure from mocked data shares references where it shouldnt ([cfddfb2](https://github.com/conjoon/extjs-app-webmail/commit/cfddfb2dc45cfb9b8dabec6940f348db25f3e534))
+* **tests:** test with draft would fail if replyTo- and from-addresses are available ([296b539](https://github.com/conjoon/extjs-app-webmail/commit/296b539dc985b100079911d5c14cf0ac0a5d2bb1))
+* **tests:** tests do not consider updated behavior of MessageCompoundBatchVisitor ([7d8311b](https://github.com/conjoon/extjs-app-webmail/commit/7d8311b728e7f1e46083fcb1e88c1ed6a19e7e0d)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** tests does not work with changed order in batch ([e611c28](https://github.com/conjoon/extjs-app-webmail/commit/e611c289fe9687cb97e5876f480bbf8a008da3e8)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** tests fails if initial message was generated w/o attachments ([285ebea](https://github.com/conjoon/extjs-app-webmail/commit/285ebea289d1f55c3f69b9d2ce23054558a31a47))
+* wrong parameters passed to endpoint when visiting subscriptions ([dd92158](https://github.com/conjoon/extjs-app-webmail/commit/dd921589374ff19c5f3130502c3cd16778e1959a)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+
+### [1.1.1](https://github.com/conjoon/extjs-app-webmail/compare/v1.1.0...v1.1.1) (2023-05-02)
+
+## [1.1.0](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.16...v1.1.0) (2023-04-20)
+
+
+### Features
+
+* add EmailAddressStringParser for parsing strings into email addresses ([60ae524](https://github.com/conjoon/extjs-app-webmail/commit/60ae524be30e5bf64fa02f839b12dc707a76ddb5))
+* add renderer for Email Addresses ([e912734](https://github.com/conjoon/extjs-app-webmail/commit/e9127341bbe334e583d22811764a88d0244fa921)), closes [conjoon/extjs-app-webmail#291](https://github.com/conjoon/extjs-app-webmail/issues/291)
+* compose route allows for passing "name <address>" values with route ([0c10e10](https://github.com/conjoon/extjs-app-webmail/commit/0c10e10c73a53a28fecb97fa0b219b213f1774b4)), closes [conjoon/extjs-app-webmail#290](https://github.com/conjoon/extjs-app-webmail/issues/290)
+* make addresses in message grid clickable ([51a55c2](https://github.com/conjoon/extjs-app-webmail/commit/51a55c258732f1455ce4ad9e4c97982530b812cf)), closes [conjoon/extjs-app-webmail#291](https://github.com/conjoon/extjs-app-webmail/issues/291)
+* show email address as tip for tag field of email address ([f4b88d1](https://github.com/conjoon/extjs-app-webmail/commit/f4b88d1726017550d4db7777cfc0b969d1ce335a)), closes [conjoon/extjs-app-webmail#292](https://github.com/conjoon/extjs-app-webmail/issues/292)
+* show tooltip for addresses in MessageView's header ([1e21e5a](https://github.com/conjoon/extjs-app-webmail/commit/1e21e5aaa3b456337234788026121c3c6d72980f)), closes [conjoon/extjs-app-webmail#293](https://github.com/conjoon/extjs-app-webmail/issues/293)
+* update styles for email addresses in headers to indicate interactivity ([34bc2a6](https://github.com/conjoon/extjs-app-webmail/commit/34bc2a65725fba744c5ec5d0f63189e606e8f96f)), closes [conjoon/extjs-app-webmail#302](https://github.com/conjoon/extjs-app-webmail/issues/302)
+
+
+### Bug Fixes
+
+* parser fails for Email-Addresses without name-parts ([9977ab5](https://github.com/conjoon/extjs-app-webmail/commit/9977ab576bb0f6e243f52dbb109d72f68faca09a))
+
+### [1.0.16](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.15...v1.0.16) (2023-02-26)
+
+### [1.0.15](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.14...v1.0.15) (2023-02-26)
+
+
+### Bug Fixes
+
+* blocked bg-images do not trigger external content warning ([3075123](https://github.com/conjoon/extjs-app-webmail/commit/3075123c60db372374d0d72856ba96f2d8753ca3)), closes [conjoon/extjs-app-webmail#284](https://github.com/conjoon/extjs-app-webmail/issues/284)
+
+### [1.0.14](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.13...v1.0.14) (2023-02-21)
+
+
+### Bug Fixes
+
+* replying to email fails after sorting a large grid ([b488fd7](https://github.com/conjoon/extjs-app-webmail/commit/b488fd7cd759e978a8adf0151df69e43326dca21)), closes [conjoon/extjs-app-webmail#270](https://github.com/conjoon/extjs-app-webmail/issues/270)
+
+### [1.0.13](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.12...v1.0.13) (2023-02-18)
+
+
+### Features
+
+* add basic support for stateful MailFolderTree ([fa04b3c](https://github.com/conjoon/extjs-app-webmail/commit/fa04b3c2a9c39c674e59e26e43c7cdbbd3a506b0))
+* apply component state configuration in postLaunchHook() ([74c11af](https://github.com/conjoon/extjs-app-webmail/commit/74c11af5bd21635a7f0fb2a52e759ab60fa4e40d))
+
+### [1.0.12](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.11...v1.0.12) (2023-02-17)
+
+
+### Bug Fixes
+
+* onMailDesktopViewShow's internal callback cancels events ([b280801](https://github.com/conjoon/extjs-app-webmail/commit/b280801171373420dcb413f8dab2e55e76e17564)), closes [conjoon/extjs-app-webmail#283](https://github.com/conjoon/extjs-app-webmail/issues/283)
+* opening a message with erroneous key-fragments triggers error ([9e58c00](https://github.com/conjoon/extjs-app-webmail/commit/9e58c00782337d8d66124e77b74af0c1a69d5636)), closes [conjoon/extjs-app-webmail#282](https://github.com/conjoon/extjs-app-webmail/issues/282)
+
+### [1.0.11](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.10...v1.0.11) (2023-02-17)
+
+
+### Bug Fixes
+
+* onMailAccountActiveChange triggers error if editor with error state is opened ([00a2ba4](https://github.com/conjoon/extjs-app-webmail/commit/00a2ba42dbdfae64eed38bfb25837c68136d7fdf)), closes [conjoon/extjs-app-webmail#274](https://github.com/conjoon/extjs-app-webmail/issues/274)
+
+### [1.0.10](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.9...v1.0.10) (2023-02-16)
+
+
+### Bug Fixes
+
+* child-folders not loaded when MailDesktopView is not opened via route ([a49a347](https://github.com/conjoon/extjs-app-webmail/commit/a49a347575e06acf8120bba079873b4dab040269)), closes [conjoon/extjs-app-webmail#256](https://github.com/conjoon/extjs-app-webmail/issues/256)
+* icons for mail folder missing upon first expand ([abddf6d](https://github.com/conjoon/extjs-app-webmail/commit/abddf6d70a4060e9a39075d71da4e0b8d9eccb7d)), closes [conjoon/extjs-app-webmail#281](https://github.com/conjoon/extjs-app-webmail/issues/281)
+* **tests:** test for accounts available/mail folders load pending is failing ([cb8e94e](https://github.com/conjoon/extjs-app-webmail/commit/cb8e94e74acc15657aae39a4c86527e9948e53c2))
+
+### [1.0.9](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.8...v1.0.9) (2023-02-16)
+
+### [1.0.8](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.7...v1.0.8) (2023-02-14)
+
+
+### Bug Fixes
+
+* error thrown when MailAccountWizard is destroyed and configs are loaded ([b43cc78](https://github.com/conjoon/extjs-app-webmail/commit/b43cc783cd4e5d1bd85b9b0a71e07c2df2e8d122)), closes [conjoon/extjs-app-webmail#280](https://github.com/conjoon/extjs-app-webmail/issues/280)
+
+### [1.0.7](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.6...v1.0.7) (2023-02-12)
+
+
+### Bug Fixes
+
+* reading pane button enabled when MailAccountWizard is active ([c9d3d7b](https://github.com/conjoon/extjs-app-webmail/commit/c9d3d7bd5103237ce2e9565be949b5a0cb8aeb4a)), closes [conjoon/extjs-app-webmail#278](https://github.com/conjoon/extjs-app-webmail/issues/278)
+
+### [1.0.6](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.5...v1.0.6) (2023-02-12)
+
+
+### Bug Fixes
+
+* protocol handler for mailto does not consider instance's pathname ([bd4a8e9](https://github.com/conjoon/extjs-app-webmail/commit/bd4a8e987a253b1a872dcc01636a5d6ac94a9c6d)), closes [conjoon/extjs-app-webmail#268](https://github.com/conjoon/extjs-app-webmail/issues/268)
+
+### [1.0.5](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.4...v1.0.5) (2023-02-12)
+
+
+### Bug Fixes
+
+* button for toggling gridlist gets activated when MailAccountWizard is shown ([9c9748f](https://github.com/conjoon/extjs-app-webmail/commit/9c9748f9eb224ff3ac6b56f5c5d3eb9e30c88ac4)), closes [conjoon/extjs-app-webmail#277](https://github.com/conjoon/extjs-app-webmail/issues/277)
+
+### [1.0.4](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.3...v1.0.4) (2023-02-11)
+
+
+### Features
+
+* show MailAccountWizard when MailDesktopView is shown ([7ed305f](https://github.com/conjoon/extjs-app-webmail/commit/7ed305fc2b8a6ae71930375bc5dfc9c1e0b5e80b)), closes [conjoon/extjs-app-webmail#276](https://github.com/conjoon/extjs-app-webmail/issues/276)
+
+
+### Bug Fixes
+
+* accountsLoaded is not set to true if response for accounts was empty ([69c8ba8](https://github.com/conjoon/extjs-app-webmail/commit/69c8ba8d13a224629f21387e55833b47dcf8e2ed)), closes [conjoon/extjs-app-webmail#276](https://github.com/conjoon/extjs-app-webmail/issues/276)
+
+### [1.0.3](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.2...v1.0.3) (2023-02-08)
+
+
+### Bug Fixes
+
+* reply/forward a message applies wrong default account ([4c8f840](https://github.com/conjoon/extjs-app-webmail/commit/4c8f840fe0618135fd3d225d2e54f5173e4b592f)), closes [conjoon/extjs-app-webmail#273](https://github.com/conjoon/extjs-app-webmail/issues/273)
+* value of accountCombo not applied to messageDraft ([f0419d3](https://github.com/conjoon/extjs-app-webmail/commit/f0419d3ab5d37beea6415ac087b1f6674912d791)), closes [conjoon/extjs-app-webmail#273](https://github.com/conjoon/extjs-app-webmail/issues/273)
+
+### [1.0.2](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.1...v1.0.2) (2023-02-07)
+
+
+### Features
+
+* inbox_user and outbox_user default to email address of new account ([0f615da](https://github.com/conjoon/extjs-app-webmail/commit/0f615da75046fa43d50baec1a6f108a934672f33)), closes [conjoon/extjs-app-webmail#272](https://github.com/conjoon/extjs-app-webmail/issues/272)
+
+
+### Bug Fixes
+
+* inbox_type not available for "other" Mail Accounts ([b00c93d](https://github.com/conjoon/extjs-app-webmail/commit/b00c93deccf00b9f8a36ae68801e23103a65a74c)), closes [conjoon/extjs-app-localmailaccount#11](https://github.com/conjoon/extjs-app-localmailaccount/issues/11)
+
+### [1.0.1](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.0...v1.0.1) (2023-01-28)
+
+## [1.0.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.4.0...v1.0.0) (2023-01-28)
+
+
+### Features
+
+* add "activemailaccountavailable"-event ([f62bd8a](https://github.com/conjoon/extjs-app-webmail/commit/f62bd8a4954ef1c499b4d8731618b4c819fb9e52)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* add loadMailAccounts() for loading accounts nodes including mailboxes ([4c32d1c](https://github.com/conjoon/extjs-app-webmail/commit/4c32d1c93423d15c3a50913e929bebe08182cba4)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* add MailAccountWizard for registering new Mail Accounts ([4652db9](https://github.com/conjoon/extjs-app-webmail/commit/4652db99eec56cfe3599e5e2c49150f9872e4e4c)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* MailDesktopViewController considers multiple available MailAccounts ([636ebd7](https://github.com/conjoon/extjs-app-webmail/commit/636ebd7b3a492df101bb0f1f4c491ed06a009403)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* only active MailAccounts considered w/ new messages ([01c9263](https://github.com/conjoon/extjs-app-webmail/commit/01c9263a25560ec79a4957026b212aaf4e993ea3)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* package considers MailAccountHandler as injectable dependency ([579e3ad](https://github.com/conjoon/extjs-app-webmail/commit/579e3adc4b2fd6349765bcd5dc9a6baaa8859e44)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* subscriptions specified with MailAccounts sent with URL ([99cd371](https://github.com/conjoon/extjs-app-webmail/commit/99cd3713b90f355f509e992d2c77dc896c2172c0)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+
+
+### Bug Fixes
+
+* accountCombo requires default value to be NULL if mailAccountId is undefined ([7906a16](https://github.com/conjoon/extjs-app-webmail/commit/7906a167798a71058b685c3022dcabd8afd098af)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* active state of MailAccount not properly reflected on MessageEditor ([668ca35](https://github.com/conjoon/extjs-app-webmail/commit/668ca35828498013a3fe1d15dae18911a1e10f40)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* creating new message possible even if no active MailAccount exists ([612e084](https://github.com/conjoon/extjs-app-webmail/commit/612e0844bffa0e8f6d9de6dc3dc750d1eb7fce4f))
+* error thrown when view has MailAccount w/o address objects ([a485dff](https://github.com/conjoon/extjs-app-webmail/commit/a485dffd8445a68d8ceb8c7e0639e1227fe63fe4)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* filter for MessageEntityProxy cannot be purged ([c3f37bf](https://github.com/conjoon/extjs-app-webmail/commit/c3f37bfef0f50f4d96b4c997a2c8a1d1e9a975fc)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* first arg of accountavailable event is not the Wizard ([0dd74b1](https://github.com/conjoon/extjs-app-webmail/commit/0dd74b13383078d7814ecd463b72dcd1bba632f8)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* missing img in preset-config triggers error ([060b0e8](https://github.com/conjoon/extjs-app-webmail/commit/060b0e836078e54dd837437c745d3e09d322d1fe)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* no accounts queried when "active" disabled/enabled during runtime ([83abf4c](https://github.com/conjoon/extjs-app-webmail/commit/83abf4c0f48b6d223d495c101cde80074f904cb1)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* test does not remove subscription for MailboxRunner ([cb6a862](https://github.com/conjoon/extjs-app-webmail/commit/cb6a86227a2a9b09b7910f1f06458d0883a17c6b)), closes [conjoon/conjoon#23](https://github.com/conjoon/conjoon/issues/23)
+* **tests:** add missing tests ([4f52ef4](https://github.com/conjoon/extjs-app-webmail/commit/4f52ef466e16f8c8a43484f9c55f7c07f715748a))
+
+## [0.4.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.3.1...v0.4.0) (2022-12-15)
+
+
+### Features
+
+* add requestConfigurator as dependency< to BaseProxy ([6ec5f3b](https://github.com/conjoon/extjs-app-webmail/commit/6ec5f3bb5888a032256eddad6ef719d6997b67fc)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* add requestConfigurator as external dependency ([1ae72cd](https://github.com/conjoon/extjs-app-webmail/commit/1ae72cd5e29607b65a531cf03d4b49dd6990735d)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+
+
+### Bug Fixes
+
+* callParent() in async method throws runtime error after transpiling w/ babel ([a3af1dd](https://github.com/conjoon/extjs-app-webmail/commit/a3af1ddb469719218511055d1265d359c0a89836))
+* **tests:** tests not considering ioc bindings ([0b81c1f](https://github.com/conjoon/extjs-app-webmail/commit/0b81c1f3ec1bc8b55e9e6b3174e0cfb07aca1620)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* **tests:** when testing MessageEditor, tests fail if window has not focus ([9d79063](https://github.com/conjoon/extjs-app-webmail/commit/9d79063586f372c1bcce33c00a258922c7309340))
+* when loading attachments, additional options are not passed to request ([7812ccf](https://github.com/conjoon/extjs-app-webmail/commit/7812ccf0ae4a208011bfab165648ea64e3e575ab))
+
+### [0.3.1](https://github.com/conjoon/extjs-app-webmail/compare/v0.3.0...v0.3.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* plugin fails if application is not used in a secure context (https) ([07f38d0](https://github.com/conjoon/extjs-app-webmail/commit/07f38d0656e68528f33fa876e3d4c8fbc1149157))
+
+## [0.3.0](https://github.com/conjoon/extjs-app-webmail/compare/v0.2.1...v0.3.0) (2022-11-14)
+
+
+### Features
+
+* add protocol handler for mailto ([801da10](https://github.com/conjoon/extjs-app-webmail/commit/801da1098e65813b51260252a43101ff16533e4b)), closes [conjoon/extjs-app-webmail#250](https://github.com/conjoon/extjs-app-webmail/issues/250)
+
 ### [0.2.1](https://github.com/conjoon/extjs-app-webmail/compare/v0.2.0...v0.2.1) (2022-06-01)
 
 

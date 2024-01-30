@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -57,7 +57,20 @@ StartTest(t => {
         t.expect(columns.length).toBe(1);
         t.expect(columns[0] instanceof conjoon.cn_mail.view.mail.folder.MailFolderTreeColumn).toBe(true);
         t.expect(columns[0].dataIndex).toBe("name");
-
     });
 
+    t.it("should be configured stateful", t => {
+
+        tree = Ext.create(
+            "conjoon.cn_mail.view.mail.folder.MailFolderTree", treeConfig);
+
+        t.expect(tree.getStateId()).toBe("cn_mail-mailfoldertree");
+        t.expect(tree.stateEvents).toEqual(["resize", "hide", "show"]);
+
+        t.expect(tree.stateful.hidden).toBe(true);
+        t.expect(tree.stateful.visible).toBe(true);
+        t.expect(tree.stateful.width).toBe(true);
+
+    });
+    
 });

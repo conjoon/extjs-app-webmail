@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -44,11 +44,12 @@
         line-height: 32px;
     }
     .x-tree-elbow-img {
+        margin-left: 10px;
         height: 32px;
         line-height: 32px;
     }
     .x-grid-cell-inner-treecolumn {
-        padding: 7px 10px 6px 0px;
+        padding: 7px 10px 6px 0;
     }
     .x-grid-item {
         width:100%!important;
@@ -83,16 +84,21 @@
 
     .cn_account {
 
-
         .x-tree-icon {
-            background:none;
-            margin-left:22px;
+            display:none;
         }
+
+        .x-tree-expander {
+            width:24px;
+        }
+
         .x-grid-tree-loading {
-            .x-tree-icon {
+            .x-tree-expander {
                 line-height: 30px;
+                margin-right: 0;
                 animation : fa-spin 2s infinite linear;
                 &:before {
+                    color:var(--color);
                     content: "\f110";
                 }
             }
@@ -121,7 +127,7 @@
 
             .x-tree-node-text {
                 font-weight:bold;
-                padding-left:16px;
+                padding-left:14px;
             }
 
             &.first {
@@ -150,7 +156,7 @@
             }
 
             .x-grid-cell-inner {
-                padding-left:0px;
+                padding-left:0;
             }
 
             .x-tree-elbow-img {
@@ -165,10 +171,5 @@
            color:var(--base-color)!important;
        }
     }
-
-    .x-tree-elbow-img {
-        margin-left: 8px;
-    }
-
 
 }

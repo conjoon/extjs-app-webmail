@@ -47,8 +47,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         "conjoon.cn_mail.data.mail.message.CompoundKey",
         "coon.core.data.pageMap.PageMapUtil",
         "coon.core.data.pageMap.RecordPosition",
+        "coon.core.data.request.Configurator",
         "conjoon.cn_mail.model.mail.message.MessageBody"
     ],
+
+    statics: {
+        required: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
 
     /**
      * @type {Object} pendingLazies
@@ -57,6 +64,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
     /**
      * @type {Boolean} installed
+     * @private
+     */
+
+    /**
+     * @type {coon.core.data.request.Configurator} requestConfigurator
      * @private
      */
 
@@ -226,6 +238,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
     assembleUrls (urlGroups) {
 
         const
+            me = this,
             idsForUrl = Object.create(null),
             requestTemplate = Ext.create("Ext.data.Request", {
                 action: "read"
@@ -442,15 +455,30 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
 
         const
             me = this,
-            proxy = conjoon.cn_mail.model.mail.message.MessageBody.getProxy(),
-            filter = {
-                "in": {"id": idsToLoad}
-            };
+            grid = me.grid,
+            proxy = conjoon.cn_mail.model.mail.message.MessageBody.getProxy();
 
-        Ext.Ajax.request({
+        Ext.Ajax.request(me.requestConfigurator.configure(
+            me.getDefaultRequestCfg({
+                url,
+                idsToLoad
+            })
+        )).then(me.processLoadedPreviewText.bind(me));
+    },
+
+
+    /**
+     * @private
+     */
+    getDefaultRequestCfg ({url, idsToLoad}) {
+
+        const filter = {
+            "in": {"id": idsToLoad}
+        };
+
+        return {
             method: "get",
             url: url,
-            headers: proxy.headers,
             params: {
                 "include": "MailFolder",
                 "fields[MailFolder]": "",
@@ -459,7 +487,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
                 "options[textPlain][length]": 200,
                 filter: JSON.stringify(filter)
             }
-        }).then(me.processLoadedPreviewText.bind(me));
+        };
     }
 
 });

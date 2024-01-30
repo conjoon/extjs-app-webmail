@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,10 +45,20 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
         "conjoon.cn_mail.model.mail.message.MessageItem",
         "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
         "conjoon.cn_mail.view.mail.message.reader.MessageViewIframe",
-        "conjoon.cn_mail.view.mail.message.reader.MessageViewController"
+        "conjoon.cn_mail.view.mail.message.reader.MessageViewController",
+        "conjoon.cn_mail.view.mail.EmailAddressTip"
     ],
 
     alias: "widget.cn_mail-mailmessagereadermessageview",
+
+    statics: {
+        required: {
+            /**
+             * @type {conjoon.cn_mail.view.mail.EmailAddressLinkRenderer}
+             */
+            emailAddressLinkRenderer: "conjoon.cn_mail.view.mail.EmailAddressLinkRenderer"
+        }
+    },
 
     /**
      * @event cn_mail-messageitemread
@@ -62,6 +72,14 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * Fires when a MessageItem has been loaded into the view.
      * @param this
      * @param {conjoon.cn_mail.model.mail.message.MessageItem} item
+     */
+
+    /**
+     * @event cn_mail-messageviewitemchange
+     * Fires when the message item loaded to this view changes, that is when the
+     * MessageViewModel gets a new MesgsageItem assigned. This item can also be null
+     * @param this
+     * @param {conjoon.cn_mail.model.mail.message.MessageItem|null} item
      */
 
     config: {
@@ -120,13 +138,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * to the current record being loaded to be able to abort load operations
      * when needed.
      */
-    loadingItem: null,
+
 
     /**
      * @type {Ext.LoadMask}
      * @private
      */
-    loadingMask: null,
+
+    /**
+     * @param addressTip
+     * @type {conjoon.cn_mail.view.mail.EmailAddressTip}
+     * @private
+     */
+
 
     items: [{
         xtype: "container",
@@ -168,9 +192,28 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
                             displayFromAddress: "{getDisplayFromAddress}"
                         }
                     },
+                    listeners: {
+                        afterrender: {
+                            fn (cmp) {
+                                const view = cmp.up("cn_mail-mailmessagereadermessageview");
+                                this.tpl.emailAddressLinkRenderer = view.emailAddressLinkRenderer;
+                            },
+                            single: true
+                        }
+                    },
                     tpl: [
-                        "<div class=\"from\">{displayFromAddress}</div>",
-                        "<div class=\"to\">to {displayToAddress} on {date}</div>"
+                        "<div class=\"from\">",
+                        "<tpl if=\"displayFromAddress\">",
+                        "{[this.emailAddressLinkRenderer.render(values.displayFromAddress)]}",
+                        "</tpl>",
+                        "</div>",
+                        "<div class=\"to\">",
+                        "to ",
+                        "<tpl for=\"displayToAddress\">",
+                        "{[this.emailAddressLinkRenderer.render(values)]}",
+                        "</tpl>",
+                        " on {date}",
+                        "</div>"
                     ]
 
                 }, {
@@ -328,57 +371,51 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
     }],
 
 
-    /**
-     * @inheritdoc
-     */
-    initComponent: function () {
+    initTip () {
 
-        var me = this;
+        const
+            me = this;
 
-        me.on("afterrender", function () {
-            var me = this;
+        me.addressTip = Ext.create("conjoon.cn_mail.view.mail.EmailAddressTip", {
+            target: me.el,
+            delegate: "div.message-subject a.address",
+            queryAddress (node) {
 
+                const addrIndex = node.getAttribute("address-idx");
+                const type = node.parentNode.className;
+
+                const
+                    record = me.getViewModel().get("messageItem"),
+                    address = record.get(type);
+
+                /**
+                 * MessageViewModel uses index starting at 1
+                 */
+                return (address.length && address[addrIndex - 1]) ? address[addrIndex - 1] : address;
+            }
+        });
+    },
+
+
+    showLoadingMask () {
+        const me = this;
+
+        if (!me.loadingMask) {
             me.loadingMask = Ext.create("Ext.LoadMask", {
                 target: me,
                 bind: {
                     hidden: "{!isLoading}"
                 },
                 listeners: {
-                    hide: function (mask) {
+                    hide (mask) {
                         mask.destroy();
                         me.loadingMask = null;
                     }
                 }
             });
+        }
 
-            me.loadingMask.show();
-        }, me, {single: true});
-
-        me.on("beforedestroy", function () {
-            var me = this,
-                vm = me.getViewModel();
-
-            if (me.loadingMask) {
-                me.loadingMask.destroy();
-                me.loadingMask = null;
-            }
-
-            if (me.loadingFailedMask) {
-                me.loadingFailedMask.destroy();
-                me.loadingFailedMask = null;
-            }
-
-            if (me.loadingItem) {
-                me.loadingItem.abort();
-                me.loadingItem = null;
-            }
-
-            vm.abortMessageBodyLoad();
-            vm.abortMessageAttachmentsLoad();
-
-        }, me);
-
-        me.callParent(arguments);
+        me.loadingMask.show();
     },
 
 
@@ -389,7 +426,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @return {null|conjoon.cn_mail.model.mail.message.MessageItem}
      */
-    getMessageItem: function () {
+    getMessageItem () {
         const me = this;
 
         return me.getViewModel().get("messageItem");
@@ -402,9 +439,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * @throws exception if messageItem is neither null and not of type
      * {@link conjoon.cn_mail.model.mail.message.MessageItem}
      *
-     * @see {conjoon.cn_amil.view.mail.message.reader.MessageViewModel}
+     * @see {conjoon.cn_mqil.view.mail.message.reader.MessageViewModel}
      */
-    setMessageItem: function (messageItem) {
+    setMessageItem (messageItem) {
 
         var me = this;
 
@@ -416,6 +453,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
         me.getViewModel().setMessageItem(
             messageItem ? messageItem : null
         );
+
+        me.fireEvent("cn_mail-messageviewitemchange", me, messageItem);
+    },
+
+
+    /**
+     * Makes sure vm is updated so that loading masks are shown for this view.
+     */
+    busyWithLoading () {
+        const
+            me = this,
+            vm = me.getViewModel();
+        vm.set("isLoading", true);
     },
 
 
@@ -428,10 +478,9 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @throws if compoundKey is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
      */
-    loadMessageItem: function (compoundKey) {
+    loadMessageItem (compoundKey) {
 
-        var me = this,
-            vm = me.getViewModel();
+        const me = this;
 
         if (!(compoundKey instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
             Ext.raise({
@@ -440,17 +489,21 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
             });
         }
 
-        vm.set("isLoading", true);
+        me.busyWithLoading();
 
         if (me.loadingItem) {
             me.loadingItem.abort();
         }
 
-        me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
-            success: me.onMessageItemLoaded,
-            failure: me.onMessageItemLoadFailure,
-            scope: me
-        });
+        try {
+            me.loadingItem = conjoon.cn_mail.model.mail.message.MessageItem.loadEntity(compoundKey, {
+                success: me.onMessageItemLoaded,
+                failure: me.onMessageItemLoadFailure,
+                scope: me
+            });
+        } catch (e) {
+            me.onMessageItemLoadFailure();
+        }
     },
 
 
@@ -467,7 +520,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      * not a messageItem available, or if the id of the
      * MessageDraft does not equal to the id of the messageItem.
      */
-    updateMessageItem: function (messageDraft) {
+    updateMessageItem (messageDraft) {
         var me = this;
 
         me.getViewModel().updateMessageItem(messageDraft);
@@ -485,17 +538,18 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
          *
          * @return {coon.comp.component.MessageMask}
          */
-        onMessageItemLoadFailure: function (messageItem, operation) {
+        onMessageItemLoadFailure (messageItem, operation) {
 
-            const me               = this,
-                vm               = me.getViewModel();
+            const
+                me = this,
+                vm = me.getViewModel();
 
             vm.set("isLoading", false);
             vm.notify();
 
             // do not show dialog if status of error is -1, which
             // hints to a cancelled request
-            if (operation.error && operation.error.status === -1) {
+            if (operation?.error?.status === -1) {
                 return;
             }
 
@@ -509,7 +563,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
          * Callback for the load-event of a MessageItem, registered by #loadMessageItem
          * @param {conjoon.cn_mail.model.mail.message.MessageItem} messageItem
          */
-        onMessageItemLoaded: function (messageItem) {
+        onMessageItemLoaded (messageItem) {
 
             const me = this,
                 vm = me.getViewModel();
@@ -531,7 +585,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageView", {
      *
      * @private
      */
-    updateContextButtonsEnabled: function (value) {
+    updateContextButtonsEnabled (value) {
 
         const me = this;
 

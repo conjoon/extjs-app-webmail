@@ -47,6 +47,9 @@ and appearance of the email client:
     ],
     "controller": [
       {
+        "xclass": "conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin"
+      },
+      {
         "xclass": "conjoon.cn_mail.app.plugin.NewMessagesNotificationPlugin",
         "args": [
           {
@@ -72,7 +75,8 @@ and appearance of the email client:
         "editor": "resources/templates/html/editor.html.tpl",
         "reader": "resources/templates/html/reader.html.tpl"
       }
-    }
+    },
+    "mailServerPresets": "resources/mailserverpresets.conf.json"
   },
   "service": {
     "rest-api-email": {
@@ -93,6 +97,8 @@ appearance of the email client. The dot-notation for the configuration options i
 - `resources.sounds.notifications.newEmail` - a notification sound to play when new email messages are coming in.
 - `templates.html.editor` - an html-template to use with the message editor.
 - `templates.html.reader` - an html-template to use with the message reader.
+- `mailServerPresets` - a file containing json configuration for mail server presets used with the **MailAccountWizard**
+
 
 #### Plugins
 There are several plugins preconfigured for **extjs-app-webmail**. Please consult the documentation
@@ -105,6 +111,8 @@ for new messages. Plays notification sounds when new messages have been received
 desktop notifications are shown for new messages, too. The default interval
 for looking up new messages is set to 240000 ms. Additional resources for this plugin can be configured 
 with the [static resources](#staticResources).
+ - `conjoon.cn_mail.app.plugin.MailtoProtocolHandlerPlugin` - a plugin for registering **extjs-app-webmail**
+as a [protocol handler](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/registerProtocolHandler/Web-based_protocol_handlers) for `mailto`-links.
 
 #### Rest API
 - `service` - Endpoint configuration for this package. Used to create required URLs for outgoing

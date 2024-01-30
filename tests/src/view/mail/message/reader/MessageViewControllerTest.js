@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -61,6 +61,70 @@ StartTest(async t => {
             controller = createController();
 
             t.isInstanceOf(controller, "Ext.app.ViewController");
+
+
+            t.expect(controller.getControl()["cn_mail-mailmessagereadermessageview"]).toEqual({
+                resize: "onViewResize",
+                afterrender: "onMessageViewAfterrender",
+                beforedestroy: "onBeforeMessageViewDestroy"
+            });
+        });
+
+
+        t.it("methods called after render", t => {
+
+            controller = createController();
+
+            const FAKE_VIEW = {
+                showLoadingMask () {
+                },
+                initTip () {
+
+                }
+            };
+
+            controller.getView = () => FAKE_VIEW;
+
+            const view = controller.getView();
+
+            const loadMaskSpy = t.spyOn(view, "showLoadingMask");
+            const initTipSpy = t.spyOn(view, "initTip");
+
+            controller.onMessageViewAfterrender();
+
+            t.expect(loadMaskSpy.calls.count()).toBe(1);
+            t.expect(initTipSpy.calls.count()).toBe(1);
+
+            [initTipSpy, loadMaskSpy].map(spy => spy.remove());
+        });
+
+
+        t.it("tip destroyed when before destroy is called", t => {
+
+            controller = createController();
+
+            const FAKE_VIEW_MODEL = {
+                abortMessageBodyLoad () {
+                },
+                abortMessageAttachmentsLoad () {
+                }
+            };
+            const FAKE_VIEW = {
+                addressTip: {
+                    destroy () {
+                    }
+                }
+            };
+
+            controller.getViewModel = () => FAKE_VIEW_MODEL;
+
+            const destroyTipSpy = t.spyOn(FAKE_VIEW.addressTip, "destroy");
+
+            controller.onBeforeMessageViewDestroy(FAKE_VIEW);
+
+            t.expect(destroyTipSpy.calls.count()).toBe(1);
+
+            [destroyTipSpy].map(spy => spy.remove());
         });
 
 
@@ -129,10 +193,6 @@ StartTest(async t => {
         t.it("onViewResize()", t => {
 
             controller = createController();
-
-            t.expect(controller.getControl()["cn_mail-mailmessagereadermessageview"]).toEqual({
-                resize: "onViewResize"
-            });
 
             let CALLED = 0;
 
@@ -298,11 +358,13 @@ StartTest(async t => {
                 };
             };
 
-            t.isCalledNTimes("sanitizeLinks", controller, 3);
+            t.isCalledNTimes("sanitizeLinks", controller, 4);
             t.isCalledNTimes("sanitizeImages", controller, 1);
 
             IMAGESALLOWED = false;
             TAGS["img"] = [{setAttribute: function (){}, style: {}}];
+
+            let sanitizeCssImagesSpy = t.spyOn(controller, "sanitizeCssImages").and.callFake(() => false);
 
             controller.onIframeLoad(IFRAME);
 
@@ -325,7 +387,21 @@ StartTest(async t => {
             controller.onIframeLoad(IFRAME);
             t.expect(VM["hasImages"]).toBe(true);
 
+            sanitizeCssImagesSpy.remove();
+            sanitizeCssImagesSpy = t.spyOn(controller, "sanitizeCssImages").and.callFake(() => true);
 
+            IMAGESALLOWED = false;
+            TAGS["img"] = [];
+            t.expect(controller.cssImageCheck.finished).toBeUndefined();
+
+            t.expect(controller.onIframeLoad(IFRAME)).toBe(controller.cssImageCheck);
+            t.expect(controller.cssImageCheck.finished).toBe(true);
+            t.expect(controller.cssImageCheck.result).toBe(true);
+
+            t.expect(controller.onIframeLoad(IFRAME)).toBe(true);
+            t.expect(controller.cssImageCheck).toEqual({});
+
+            sanitizeCssImagesSpy.remove();
             Ext.getScrollbarSize = tmp;
         });
 
@@ -380,5 +456,40 @@ StartTest(async t => {
             t.expect(IMAGES[0].style.border).toBe("1px solid black");
             t.expect(IMAGES[1].style.border).toBe("1px solid black");
         });
+
+
+        t.it("sanitizeCssImages", t => {
+
+            controller = createController();
+
+            let CSSIMAGES = [
+                "A", "B"
+            ];
+
+            const FAKE_IFRAME = {
+                getSrcDoc: () => "A aa B B C",
+                setSrcDoc () {}
+            };
+
+            l8.chain("cn_iframeEl.dom.contentWindow", FAKE_IFRAME, {});
+            const
+                sanitizeSpy = t.spyOn(controller, "getCssImages").and.callFake(() => CSSIMAGES),
+                getIframeSpy = t.spyOn(controller, "getIframe").and.callFake(() => FAKE_IFRAME),
+                setSrcDocSpy = t.spyOn(FAKE_IFRAME, "setSrcDoc");
+
+            t.expect(controller.sanitizeCssImages()).toBe(true);
+            t.expect(setSrcDocSpy.calls.mostRecent().args).toEqual(
+                [
+                    [`${controller.getProxyImage()} `,
+                        `${controller.getProxyImage()}${controller.getProxyImage()} `,
+                        `${controller.getProxyImage()} ${controller.getProxyImage()} C`].join("")
+
+                    , false]
+            );
+
+            [sanitizeSpy, getIframeSpy, setSrcDocSpy].map(spy => spy.remove);
+
+        });
+
 
     });});

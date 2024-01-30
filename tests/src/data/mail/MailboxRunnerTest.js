@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.load(
+    await helper.registerIoC().load(
         "conjoon.cn_mail.data.mail.MailboxRunner",
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ).setupSimlets().mockUpMailTemplates().andRun((t) => {
@@ -36,8 +36,16 @@ StartTest(async t => {
         let mailboxRunner = null;
 
         const
-            createMailboxRunner = () => Ext.create("conjoon.cn_mail.data.mail.MailboxRunner"),
-            MailFolderTreeStore = () => conjoon.cn_mail.store.mail.folder.MailFolderTreeStore;
+            createMailboxRunner = cfg => {
+
+                cfg = cfg || {};
+
+                if (!cfg.requestConfigurator) {
+                    cfg.requestConfigurator = Ext.create("coon.core.data.request.Configurator");
+                }
+                return Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", cfg);
+            },
+            MailFolderTreeStore = () => conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
         t.beforeEach(() => {
 
@@ -48,15 +56,20 @@ StartTest(async t => {
                 mailboxRunner.destroy();
                 mailboxRunner = null;
             }
-            MailFolderTreeStore().getInstance().getRoot().removeAll();
+            MailFolderTreeStore().getRoot().removeAll();
+
+            Ext.StoreManager.unregister(MailFolderTreeStore());
         });
 
 
         t.it("constructor() - no arg", t => {
-
-            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner");
+            mailboxRunner = createMailboxRunner();
 
             t.expect(mailboxRunner.mixins["conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"]).toBeDefined();
+
+            t.expect(conjoon.cn_mail.data.mail.MailboxRunner.required.requestConfigurator).toBe(
+                "coon.core.data.request.Configurator"
+            );
 
             const spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
 
@@ -71,18 +84,19 @@ StartTest(async t => {
         t.it("constructor() - cfg", t => {
 
             let spy = t.spyOn(conjoon.cn_mail.data.mail.MailboxRunner.prototype, "init");
-            mailboxRunner = Ext.create("conjoon.cn_mail.data.mail.MailboxRunner", {
-                mailFolderTreeStore: MailFolderTreeStore().getInstance(),
+            mailboxRunner = createMailboxRunner({
+                mailFolderTreeStore: MailFolderTreeStore(),
                 interval: 1000
             });
 
             t.expect(mailboxRunner.interval).toBe(1000);
 
             t.expect(spy.calls.count()).toBe(1);
-            t.expect(spy.calls.mostRecent().args[0]).toBe(MailFolderTreeStore().getInstance());
+            t.expect(spy.calls.mostRecent().args[0]).toBe(MailFolderTreeStore());
 
             spy.remove();
         });
+
 
         t.it("init() - exception", t => {
 
@@ -105,11 +119,11 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             t.expect(mailboxRunner.mailFolderTreeStore).toBeUndefined();
-            mailboxRunner.mailFolderTreeStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
+            mailboxRunner.mailFolderTreeStore = MailFolderTreeStore();
 
             try {
                 mailboxRunner.init(
-                    conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+                    MailFolderTreeStore()
                 );
             } catch (e) {
                 exc = e;
@@ -124,9 +138,9 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
+                treeStore = MailFolderTreeStore(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad").and.callFake(() => {});
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
             mailboxRunner.init(treeStore);
 
@@ -143,9 +157,9 @@ StartTest(async t => {
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
+                treeStore = MailFolderTreeStore(),
                 subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad").and.callFake(() => {});
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
 
             treeStore.load();
 
@@ -162,24 +176,107 @@ StartTest(async t => {
         });
 
 
+        t.it("init() - no active nodes", t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const
+                treeStore = MailFolderTreeStore(),
+                subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(() => {}),
+                pauseSpy = t.spyOn(mailboxRunner, "pause").and.callFake(() => {}),
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd").and.callFake(() => {});
+
+            treeStore.load();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+                treeStore.getRoot().childNodes.forEach(node => node.set("active", false));
+
+                mailboxRunner.init(treeStore);
+
+                t.expect(subSpy.calls.count()).toBe(2);
+                t.expect(pauseSpy.calls.count()).toBe(2);
+                subSpy.remove();
+                loadSpy.remove();
+
+            });
+        });
+
+
         t.it("init() - treeStore about to get loaded", t => {
 
             mailboxRunner = createMailboxRunner();
 
             const
-                treeStore = MailFolderTreeStore().getInstance(),
-                subSpy = t.spyOn(mailboxRunner, "createSubscription"),
-                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreLoad");
+                treeStore = MailFolderTreeStore(),
+                subSpy = t.spyOn(mailboxRunner, "createSubscription").and.callFake(
+                    (node) => {node.childNodes = [];}
+                ),
+                loadSpy = t.spyOn(mailboxRunner, "onMailFolderTreeStoreAdd");
+
+
+            t.expect(treeStore.getRoot().childNodes.length).toBe(0);
+
+            const FAKE_ACCOUNT = {
+                get (key){return key === "active" ? true : "ACCOUNT";}
+            };
+
+            treeStore.getRoot().childNodes = [FAKE_ACCOUNT, FAKE_ACCOUNT];
+
 
             mailboxRunner.init(treeStore);
             treeStore.load();
 
             t.waitForMs(t.parent.TIMEOUT, () => {
-                t.expect(subSpy.calls.count()).toBe(2);
+
+                const ACCOUNTNODES = 2;
+                const CHILDNODES = 2;
+                const NODEHIERARCHYCOUNT = ACCOUNTNODES * CHILDNODES;
+
+                t.expect(subSpy.calls.count()).toBe(NODEHIERARCHYCOUNT);
+
+                [0,1].map(id => t.expect(subSpy.calls.all()[id].args[0]).toBe(FAKE_ACCOUNT));
+                [2,3].map(id => t.expect(subSpy.calls.all()[id].args[0]).not.toBe(FAKE_ACCOUNT));
+
                 t.expect(loadSpy.calls.count()).toBeGreaterThan(0);
 
                 subSpy.remove();
                 loadSpy.remove();
+            });
+        });
+
+
+        t.it("onMailFolderTreeStoreUpdate()", t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const
+                treeStore = MailFolderTreeStore(),
+                pauseSpy = t.spyOn(mailboxRunner, "pause"),
+                resumeSpy = t.spyOn(mailboxRunner, "resume");
+
+            mailboxRunner.init(treeStore);
+            treeStore.load();
+
+            t.waitForMs(t.parent.TIMEOUT, () => {
+
+                const accountNode = treeStore.getRoot().childNodes[0];
+                const INBOXNODE = treeStore.getRoot().childNodes[0].childNodes[0];
+
+                INBOXNODE.set("name", "foo");
+                t.expect(pauseSpy.calls.count()).toBe(0);
+                t.expect(resumeSpy.calls.count()).toBe(0);
+
+                accountNode.set("active", false);
+                t.expect(pauseSpy.calls.count()).toBe(1);
+                t.expect(resumeSpy.calls.count()).toBe(0);
+                accountNode.commit();
+
+                accountNode.set("active", true);
+                t.expect(pauseSpy.calls.count()).toBe(1);
+                t.expect(resumeSpy.calls.count()).toBe(1);
+
+                pauseSpy.remove();
+                resumeSpy.remove();
             });
         });
 
@@ -306,14 +403,30 @@ StartTest(async t => {
         });
 
 
+        t.it("getDefaultRequestCfg()", t => {
+
+            mailboxRunner = createMailboxRunner();
+
+            const parameters = {};
+
+            t.expect(mailboxRunner.getDefaultRequestCfg({url: "url", parameters})).toEqual({
+                method: "get",
+                action: "read",
+                url: "url",
+                params: parameters
+            });
+        });
+
+
         t.it("visitSubscription()", async t => {
 
             mailboxRunner = createMailboxRunner();
 
             const
-                proxy = conjoon.cn_mail.model.mail.message.MessageItem.getProxy(),
                 requestSpy = t.spyOn(Ext.Ajax, "request").and.callFake(() => Promise.resolve("response")),
-                responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {});
+                configureRequestSpy = t.spyOn(mailboxRunner.requestConfigurator, "configure").and.callThrough(),
+                responseSpy = t.spyOn(mailboxRunner, "onSubscriptionResponseAvailable").and.callFake(() => {}),
+                getDefaultRequestSpy = t.spyOn(mailboxRunner, "getDefaultRequestCfg").and.callThrough();
 
             const FOLDER = {
                 props: {
@@ -326,33 +439,37 @@ StartTest(async t => {
                 }
             };
 
-
             await mailboxRunner.visitSubscription(FOLDER);
 
-            const options = Object.assign(
-                proxy.getDefaultParameters("ListMessageItem"),
-                proxy.getDefaultParameters("MessageItem")
+            const MessageItem = conjoon.cn_mail.model.mail.message.MessageItem;
+
+            let
+                cfgArgs = getDefaultRequestSpy.calls.mostRecent().args[0],
+                options = MessageItem.getProxy().getDefaultParameters("ListMessageItem"),
+                params = Object.assign(options, {
+                    filter: JSON.stringify({
+                        "OR": [
+                            {">=": {
+                                    "id": 3
+                                }},
+                            {"=": {
+                                    "recent": true
+                                }}
+                        ]
+                    })
+                });
+
+            t.expect(cfgArgs.url).toBe( "cn_mail/MailAccounts/1/MailFolders/2/MessageItems");
+            t.expect(cfgArgs.parameters).toEqual(params);
+
+            t.expect(configureRequestSpy.calls.mostRecent().args[0]).toEqual(
+                configureRequestSpy.calls.mostRecent(
+                    getDefaultRequestSpy.calls.mostRecent().returnValue
+                ).args[0]
             );
 
-            let params = Object.assign(options, {
-                filter: JSON.stringify({
-                    "OR": [
-                        {">=": {
-                            "id": 3
-                        }},
-                        {"=": {
-                            "recent": true
-                        }}
-                    ]
-                })
-            });
-            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
-                method: "get",
-                action: "read",
-                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
-                headers: undefined,
-                params
-            });
+            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual(configureRequestSpy.calls.mostRecent().returnValue);
+
 
             t.expect(responseSpy.calls.count()).toBe(1);
             t.expect(responseSpy.calls.mostRecent().args[0]).toBe(FOLDER);
@@ -369,16 +486,10 @@ StartTest(async t => {
                 })
             });
 
-            t.expect(requestSpy.calls.mostRecent().args[0]).toEqual({
-                method: "get",
-                action: "read",
-                url: "cn_mail/MailAccounts/1/MailFolders/2/MessageItems",
-                headers: undefined,
-                params
-            });
+            cfgArgs = getDefaultRequestSpy.calls.mostRecent().args[0];
+            t.expect(cfgArgs.parameters).toEqual(params);
 
-            requestSpy.remove();
-            responseSpy.remove();
+            [requestSpy, responseSpy, configureRequestSpy, getDefaultRequestSpy].map(spy => spy.remove());
 
         });
 
@@ -428,10 +539,15 @@ StartTest(async t => {
         t.it("stop()", t => {
             mailboxRunner = createMailboxRunner();
 
+            let STOPSPYCALL = 0;
+
             const stopSpy = t.spyOn(Ext.TaskManager, "stop").and.callFake(
                 (task, remove) => {
                     t.expect(task).toBe(sub.extjsTask);
                     t.expect(remove).toBe(true);
+                    stopSpy.remove();
+                    STOPSPYCALL++;
+                    Ext.TaskManager.stop(task, remove);
                 }
             );
             const FOLDER = {};
@@ -451,8 +567,7 @@ StartTest(async t => {
             t.expect(extjsTask).toBeUndefined();
             t.expect(mailboxRunner.subscriptions["foo"]).toBeUndefined();
 
-            t.expect(stopSpy.calls.count()).toBe(1);
-            stopSpy.remove();
+            t.expect(STOPSPYCALL).toBe(1);
         });
 
 

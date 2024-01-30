@@ -39,7 +39,7 @@ export default class TestHelper {
      * @return {TestHelper}
      */
     static get (siestaTest, owningWindow) {
-        let stat = new TestHelper;
+        let stat = new TestHelper();
         stat.siestaTest = siestaTest;
         stat.owningWindow = owningWindow;
         return stat;
@@ -54,6 +54,28 @@ export default class TestHelper {
      */
     andRun (cb) {
         cb(this.siestaTest);
+
+        return this;
+    }
+
+
+    /**
+     *
+     * @returns {Promise<TestHelper>}
+     */
+    async registerIoC () {
+
+        const t = this.siestaTest;
+
+        await new Promise((resolve, reject) => {
+
+            t.requireOk("coon.core.ioc.Container", () => {
+                coon.core.ioc.Container.bind({});
+                resolve(" -> IoC");
+            });
+
+        });
+
         return this;
     }
 
@@ -256,7 +278,7 @@ export default class TestHelper {
             t.ENVIRONMENT_SPY.remove();
             t.CONFIG_SPY.remove();
             t.TPL_SPY.remove();
-            t.THEME_SPY.remove;
+            t.THEME_SPY.remove();
 
         });
 

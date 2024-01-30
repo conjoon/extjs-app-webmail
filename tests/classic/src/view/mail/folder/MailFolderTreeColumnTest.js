@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -60,6 +60,42 @@ StartTest(t => {
             }
             t.expect(treeColumn.getIconClsForMailFolderType(i)).toBe(mapping[i]);
         }
+    });
+
+
+    t.it("initTemplateRendererData()", t => {
+
+        let ret;
+
+        let records = [
+            "INBOX",
+            "DRAFT",
+            "JUNK",
+            "TRASH",
+            "SENT",
+            "FOLDER",
+            "hklhkl"
+        ];
+
+        records = records.map(type => Ext.create("conjoon.cn_mail.model.mail.folder.MailFolder", {folderType: type}));
+
+        let protSpy;
+        records.map(record => {
+
+            const RETS = [{
+                lines: []
+            }, {
+                lines: [1]
+            }];
+
+            RETS.map(PROTRET => {
+                protSpy = t.spyOn(Ext.tree.Column.prototype, "initTemplateRendererData").and.callFake(() => PROTRET);
+                ret = treeColumn.initTemplateRendererData("", {}, record);
+                t.expect(ret.iconCls).toBe(record.data.iconCls);
+            });
+        });
+
+        protSpy.remove();
     });
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -200,7 +200,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
          *
          * @param {Function} get
          *
-         * @return {String}
+         * @return {Array}
          */
         getDisplayToAddress: function (get) {
             const messageItem = get("messageItem"),
@@ -211,11 +211,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
             }
 
             let res = [];
-            for (let i = 0, len = to.length; i < len; i++) {
-                res.push(to[i].name);
-            }
+            to.forEach(({name, address}, index) => {
+                res.push({
+                    name,
+                    address,
+                    index: ++index
+                });
+            });
 
-            return res.join(", ");
+            return res;
         },
 
 
@@ -236,7 +240,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewModel", {
                 return "";
             }
 
-            return from ? from.name : "";
+            return from ? {
+                name: from.name,
+                address: from.address,
+                index: 1
+            } : "";
         },
 
 

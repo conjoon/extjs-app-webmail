@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,58 +23,63 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+import TestHelper from "/tests/lib/mail/TestHelper.js";
 
-    t.afterEach(() => {
-        Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+StartTest(async t => {
+
+    const helper =  l8.liquify(TestHelper.get(t, window));
+    await helper.registerIoC().andRun((t) => {
+
+        t.afterEach(() => {
+            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
         Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
-    });
-
-    t.it("Should create the ViewModel", t => {
-
-        let viewModel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
-
-        t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
-
-        t.expect(viewModel.alias).toContain("viewmodel.cn_mail-maildesktopviewmodel");
-
-    });
-
-    t.it("Should properly define the stores", t => {
-
-        let viewModel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
-
-        t.expect(viewModel.defaultConfig.stores).toEqual({
-            "cn_mail_mailfoldertreestore": {
-                type: "cn_mail-mailfoldertreestore",
-                autoLoad: true
-            }
         });
 
-    });
+        t.it("Should create the ViewModel", t => {
+
+            let viewModel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
+
+            t.expect(viewModel instanceof Ext.app.ViewModel).toBe(true);
+
+            t.expect(viewModel.alias).toContain("viewmodel.cn_mail-maildesktopviewmodel");
+
+        });
+
+        t.it("Should properly define the stores", t => {
+
+            let viewModel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
+
+            t.expect(viewModel.defaultConfig.stores).toEqual({
+                "cn_mail_mailfoldertreestore": {
+                    type: "cn_mail-mailfoldertreestore",
+                    autoLoad: true
+                }
+            });
+
+        });
 
 
-    t.it("Should properly return the stores", t => {
+        t.it("Should properly return the stores", t => {
 
-        let viewModel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
+            let viewModel = Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
 
-        t.expect(viewModel.get("cn_mail_mailfoldertreestore")).toBe(
-            conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
-        );
+            t.expect(viewModel.get("cn_mail_mailfoldertreestore")).toBe(
+                conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance()
+            );
 
-    });
+        });
 
 
-    t.it("Should properly autoload the MailFolderTreeStore", t => {
+        t.it("Should properly autoload the MailFolderTreeStore", t => {
 
-        const
-            loadSpy = t.spyOn(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(), "load");
+            const
+                loadMailAccountsSpy = t.spyOn(conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance(), "loadMailAccounts");
 
-        Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
+            Ext.create("conjoon.cn_mail.view.mail.MailDesktopViewModel");
 
-        t.expect(loadSpy.calls.count()).toBe(1);
+            t.expect(loadMailAccountsSpy.calls.count()).toBe(1);
 
-        loadSpy.remove();
-    });
+            loadMailAccountsSpy.remove();
+        });
 
-});
+    });});

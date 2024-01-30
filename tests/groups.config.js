@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-dev-webmailsim
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -51,9 +51,6 @@ export default [{
         }, {
             group: "fix",
             items: [{
-                name: "conjoon/extjs-app-webmail#157",
-                url: "src/_issues_/fix/extjs-app-webmail%23157.js"
-            }, {
                 name: "conjoon/extjs-app-webmail#196",
                 url: "src/_issues_/fix/extjs-app-webmail%23196.js"
             }, {
@@ -184,7 +181,8 @@ export default [{
                     "src/data/mail/service/MailboxServiceTest.js"
                     ]
                 },
-                "src/data/mail/BaseSchemaTest.js"
+                "src/data/mail/BaseSchemaTest.js",
+                "src/data/mail/BaseProxyTest.js"
             ]
         }]
     }, {
@@ -257,6 +255,7 @@ export default [{
                 ]
             }]
         },
+        "src/text/EmailAddressStringParserTest.js",
         "src/text/QueryStringParserTest.js"
         ]
     }, {
@@ -273,7 +272,8 @@ export default [{
                     group: "account",
                     items: [
                         "src/view/mail/account/MailAccountViewControllerTest.js",
-                        "src/view/mail/account/MailAccountViewModelTest.js"
+                        "src/view/mail/account/MailAccountViewModelTest.js",
+                        "src/view/mail/account/MailAccountWizardControllerTest.js"
                     ]
                 },
                 {
@@ -341,7 +341,8 @@ export default [{
                 group: "account",
                 items: [
                     "classic/src/view/mail/account/MailAccountViewTest.js",
-                    "classic/src/view/mail/folder/MailFolderTreeTest.js"
+                    "classic/src/view/mail/account/MailAccountWizardTest.js",
+                    "classic/src/view/mail/account/MailAccountHandlerTest.js"
                 ]
             }, {
                 group: "folder",
@@ -392,7 +393,9 @@ export default [{
                     "classic/src/view/mail/mixin/LoadingFailedDialogTest.js"
                 ]
             },
-            "classic/src/view/mail/MailDesktopViewTest.js"
+            "classic/src/view/mail/MailDesktopViewTest.js",
+            "classic/src/view/mail/EmailAddressLinkRendererTest.js",
+            "classic/src/view/mail/EmailAddressTipTest.js"
             ]
         }]
     }]

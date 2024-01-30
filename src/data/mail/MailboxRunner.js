@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2021-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,8 +43,15 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore",
         "conjoon.cn_mail.data.mail.folder.MailFolderTypes",
         "conjoon.cn_mail.model.mail.message.MessageItem",
-        "conjoon.cn_mail.data.mail.service.MailboxService"
+        "conjoon.cn_mail.data.mail.service.MailboxService",
+        "coon.core.data.request.Configurator"
     ],
+
+    statics: {
+        required: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
 
     mixins: [
         "conjoon.cn_mail.data.mail.MailboxSubscriptionMixin"
@@ -72,11 +79,15 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * @var {conjoon.cn_mail.data.mail.service.MailFolderHelper} mailFolderHelper
      */
 
+    /**
+     * @var {coon.core.data.request.Configurator} requestConfigurator
+     */
 
     /**
      * Constructor.
      *
-     * @param {Object} mailFolderTreeStore
+     * @param {Object} cfg
+     * @param {coon.core.data.request.Configurator} cfg.requestConfigurator} cfg
      *
      * @see init
      */
@@ -89,7 +100,6 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             mailFolderTreeStore = cfg.mailFolderTreeStore;
 
         delete cfg.mailFolderTreeStore;
-
         Object.assign(me, cfg);
 
         if (mailFolderTreeStore) {
@@ -123,11 +133,19 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
 
         me.mailFolderTreeStore = mailFolderTreeStore;
 
-        mailFolderTreeStore.on("load", me.onMailFolderTreeStoreLoad, me);
+        mailFolderTreeStore.on("add", me.onMailFolderTreeStoreAdd, me);
+        mailFolderTreeStore.on("update", me.onMailFolderTreeStoreUpdate, me);
 
         if (mailFolderTreeStore.isLoaded()) {
             const accountNodes = mailFolderTreeStore.getRoot().childNodes;
-            accountNodes && accountNodes.forEach(mailAccount => me.createSubscription(mailAccount));
+            if (accountNodes) {
+                accountNodes.forEach(mailAccount => {
+                    me.createSubscription(mailAccount);
+                    if (!mailAccount.get("active")) {
+                        me.pause(mailAccount);
+                    }
+                });
+            }
         }
     },
 
@@ -224,19 +242,32 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             }
         }));
 
-        const parameters = proxy.getDefaultParameters("ListMessageItem");
+        const
+            parameters = Object.assign(proxy.getDefaultParameters("ListMessageItem"), {
+                filter: JSON.stringify(latestFilter)
+            }),
+            defaultCfg = me.getDefaultRequestCfg({
+                url, parameters, latestFilter
+            }),
+            requestCfg = me.requestConfigurator.configure(defaultCfg);
 
-        Ext.Ajax.request({
+        Ext.Ajax.request(requestCfg)
+            .then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
+
+    },
+
+
+    /**
+     * @private
+     */
+    getDefaultRequestCfg ({url, parameters}) {
+        return {
             method: "get",
-            // required by the custom Reader used by the MessageEntityProxy
+            // required by the custom Reader used by the messageEntityProxy
             action: "read",
             url: url,
-            headers: proxy.headers,
-            params: Object.assign(parameters, proxy.getDefaultParameters("MessageItem"), {
-                filter: JSON.stringify(latestFilter)
-            })
-        }).then(me.onSubscriptionResponseAvailable.bind(me, mailFolder));
-
+            params: parameters
+        };
     },
 
 
@@ -296,6 +327,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         if (!sub) {
             return false;
         }
+
         if (sub.extjsTask) {
             Ext.TaskManager.stop(sub.extjsTask, true);
             delete sub.extjsTask;
@@ -352,6 +384,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             return false;
         }
 
+
         if (sub.extjsTask && sub.extjsTask.stopped) {
             Ext.TaskManager.start(sub.extjsTask, false);
         }
@@ -376,26 +409,53 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
      * @param {Array} records The records loaded with the store. Instances of
      * {conjoon.cn_mail.model.mail.account.MailAccount} will be found in the first index
      * of the passed records, if any.
-     * @param {Boolean} success
      *
      * @see createSubscription
      */
-    onMailFolderTreeStoreLoad (store, records, success) {
-        "use strict";
+    onMailFolderTreeStoreAdd (store, records) {
+        const me = this;
 
-        if (!success) {
+        const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
+
+        if (records[0].parentNode.get("folderType") !== TYPES.ACCOUNT) {
             return;
         }
+
+        const targetNode = records[0].parentNode;
+
+        me.createSubscription(targetNode);
+        if (!targetNode.get("active")) {
+            me.pause(targetNode);
+        }
+    },
+
+
+    /**
+     * Callback for the "update"-event of the mailFolderTreeStore this runner was
+     * initialized with. Checks if an account was edited and if that's the case, the subscription
+     * of it will be paused or resumed based on the "active" property.
+     *
+     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {conjoon.cn_mail.model.mail.account.MailAccount} record
+     *
+     * @see createSubscription
+     */
+    onMailFolderTreeStoreUpdate (store, record) {
 
         const me = this;
 
         const TYPES = conjoon.cn_mail.data.mail.folder.MailFolderTypes;
 
-        if (records[0].get("folderType") === TYPES.ACCOUNT) {
+        if (record.modified?.active === undefined || record.get("folderType") !== TYPES.ACCOUNT) {
             return;
         }
 
-        me.createSubscription(records[0].parentNode);
+        if (!record.get("active")) {
+            me.pause(record);
+            return;
+        }
+
+        me.resume(record);
     },
 
 
@@ -405,7 +465,8 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
     destroy () {
         const me = this;
         if (me.mailFolderTreeStore) {
-            me.mailFolderTreeStore.un("load", me.onMailFolderTreeStoreLoad, me);
+            me.mailFolderTreeStore.un("add", me.onMailFolderTreeStoreAdd, me);
+            me.mailFolderTreeStore.un("update", me.onMailFolderTreeStoreUpdate, me);
         }
 
         if (me.subscriptions) {

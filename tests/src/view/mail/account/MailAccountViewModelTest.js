@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
 
         let createModel = function (id) {
 
@@ -41,14 +41,17 @@ StartTest(async t => {
 
                     inbox_type: "inbox_type",
                     inbox_address: "inbox_address",
-                    inbox_port: "inbox_port",
+                    inbox_port: 8080,
                     inbox_ssl: true,
                     inbox_user: "inbox_user",
                     inbox_password: "inbox_password",
 
+                    active: false,
+                    subscriptions: ["INBOX"],
+
                     outbox_type: "outbox_type",
                     outbox_address: "outbox_address",
-                    outbox_port: "outbox_port",
+                    outbox_port: 8088,
                     outbox_secure: "ssl",
                     outbox_user: "outbox_user",
                     outbox_password: "outbox_password"
@@ -318,6 +321,9 @@ StartTest(async t => {
                 "inbox_user",
                 "inbox_password",
 
+                "subscriptions",
+                "active",
+
                 "outbox_type",
                 "outbox_address",
                 "outbox_port",
@@ -337,6 +343,16 @@ StartTest(async t => {
                 case "from":
                 case "replyTo":
                     record.data[fields[i]] = {name: Ext.id(), address: Ext.id()};
+                    break;
+                case "subscriptions":
+                    record.data[fields[i]] = ["INBOX"];
+                    break;
+                case "active":
+                    record.data[fields[i]] = true;
+                    break;
+                case "inbox_port":
+                case "outbox_port":
+                    record.data[fields[i]] = parseInt(Ext.id().split("-").pop());
                     break;
 
                 default:
@@ -364,25 +380,18 @@ StartTest(async t => {
 
                 switch (fields[i]) {
                 case "from":
-
-                    t.expect(record.data[fields[i]]).toEqual(
-                        viewModel.sourceMailAccounts[id].data[fields[i]]
-                    );
-                    break;
-
                 case "replyTo":
+                case "subscriptions":
                     t.expect(record.data[fields[i]]).toEqual(
                         viewModel.sourceMailAccounts[id].data[fields[i]]
                     );
                     break;
+
 
                 default:
                     t.expect(record.data[fields[i]]).toBe(viewModel.sourceMailAccounts[id].data[fields[i]]);
                     break;
-
                 }
-
-
             }
 
             t.expect(viewModel.sourceMailAccounts[id].modified).toBeFalsy();
@@ -438,6 +447,21 @@ StartTest(async t => {
         });
 
 
+        t.it("formulas - processReplyTo - replyTo not existing", t => {
+
+            viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
+            decorateViewModel(viewModel);
+
+            let getReplyToSpy = t.spyOn(viewModel, "get").and.callFake(() => {
+                return null;
+            });
+
+            t.expect(viewModel.getFormulas().processReplyTo.get.apply(viewModel, [viewModel.get])).toBe("");
+
+            getReplyToSpy.remove();
+        });
+
+
         t.it("formulas - processUserName", t => {
 
             viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
@@ -459,6 +483,29 @@ StartTest(async t => {
 
             t.expect(ma.get("replyTo")).not.toBe(oldReplyTo);
             t.expect(ma.get("from")).not.toBe(oldFrom);
+        });
+
+
+        t.it("formulas - processUserName - from and replyTo not existing", t => {
+
+            viewModel = Ext.create("conjoon.cn_mail.view.mail.account.MailAccountViewModel");
+            decorateViewModel(viewModel);
+            const ma = viewModel.get("mailAccount");
+
+
+            let mSpy = t.spyOn(viewModel, "get").and.callFake(function (arg) {
+                if (["mailAccount.from", "mailAccount.replyTo"].includes(arg)) {
+                    return null;
+                }
+                return ma;
+            });
+
+            viewModel.getFormulas().processUserName.set.apply(viewModel, ["someValue"]);
+
+            mSpy.remove();
+
+            t.expect(viewModel.get("mailAccount.from")).toEqual({name: "someValue"});
+            t.expect(viewModel.get("mailAccount.replyTo")).toEqual({name: "someValue"});
         });
 
     });});

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun(t => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun(t => {
 
         t.requireOk("coon.core.ServiceLocator", () => {
 
@@ -547,7 +547,9 @@ StartTest(async t => {
                             }
                         };
 
-                    t.expect(formulas.getDisplayToAddress(get)).toBe("a, c");
+                    t.expect(formulas.getDisplayToAddress(get)).toEqual(
+                        [{name: "a", address: "b", index: 1}, {name: "c", address: "d", index: 2}]
+                    );
 
                     messageItem = null;
 
@@ -577,7 +579,9 @@ StartTest(async t => {
                             }
                         };
 
-                    t.expect(formulas.getDisplayFromAddress(get)).toBe("a");
+                    t.expect(formulas.getDisplayFromAddress(get)).toEqual({
+                        name: "a", address: "b", index: 1
+                    });
 
                     from = null;
 

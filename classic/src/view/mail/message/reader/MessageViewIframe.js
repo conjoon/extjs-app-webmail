@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -93,7 +93,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewIframe", {
         me.publishState("imagesAllowed", me.imagesAllowed);
 
         if (!value) {
-            return me.callParent([value]);
+            return me.superclass.setSrcDoc.apply(me, [value]);
         }
 
         const
@@ -105,16 +105,19 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewIframe", {
             ),
             tpl = await coon.core.Template.load(tplPath);
 
-        value = tpl.render({theme: themeConfig ? themeConfig : {}, reader: {body: value, imagesAllowed: me.imagesAllowed}});
+        value = tpl.render({
+            theme: themeConfig ? themeConfig : {},
+            reader: {body: value, imagesAllowed: me.imagesAllowed}
+        });
 
-        return me.callParent([value]);
+        return me.superclass.setSrcDoc.apply(me, [value]);
     },
 
 
     /**
      * Returns this instance's value of imagesAllowed
      *
-     * @param {Boolen} value
+     * @param {Boolean} value
      */
     getImagesAllowed: function () {
         return this.imagesAllowed;

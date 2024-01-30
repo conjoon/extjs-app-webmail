@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,6 +34,15 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
 
     extend: "Ext.grid.Panel",
 
+    statics: {
+        required: {
+            /**
+             * @type {conjoon.cn_mail.view.mail.EmailAddressLinkRenderer}
+             */
+            emailAddressLinkRenderer: "conjoon.cn_mail.view.mail.EmailAddressLinkRenderer"
+        }
+    },
+
     requires: [
         // @see conjoon/extjs-app-webmail#178
         "Ext.grid.column.Date",
@@ -42,7 +51,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
         "conjoon.cn_mail.store.mail.message.MessageItemStore",
         "coon.comp.grid.feature.RowFlyMenu",
-        "coon.core.util.Date"
+        "coon.core.util.Date",
+        "conjoon.cn_mail.view.mail.EmailAddressTip"
     ],
 
     alias: "widget.cn_mail-mailmessagegrid",
@@ -68,6 +78,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      * @event cn_mail-mailmessagegridload
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
+
+    /**
+     * @param addressTip
+     * @type {conjoon.cn_mail.view.mail.EmailAddressTip}
+     * @private
+     */
+
 
     /**
      * "storeRelayers" was already taken
@@ -119,7 +136,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
          */
         emptySubjectText: "(No subject)",
         getPreviewTextRow: record => `<div class="previewText">${Ext.util.Format.nbsp(record.get("previewText"))}</div>`,
-        getAdditionalData: function (data, idx, record, orig) {
+        getAdditionalData (data, idx, record, orig) {
 
             const
                 me     = this,
@@ -181,7 +198,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
 
     viewConfig: {
         markDirty: false,
-        getRowClass: function (record, rowIndex, rowParams, store){
+        getRowClass (record, rowIndex, rowParams, store){
             let cls = record.get("recent") ? "recent" : "";
             cls  += record.get("seen") ? "" : " boldFont";
 
@@ -205,7 +222,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
          * record are specified in its arguments. might be an issue with the
          * needsUpdate computing and considering argument values?
          */
-        renderer: function (value, metaData, record) {
+        renderer (value, metaData, record) {
             return "<span class=\"" + (!value ? "fas" : "far")+ " fa-circle\"></span>";
         },
         menuDisabled: true,
@@ -214,7 +231,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         dataIndex: "hasAttachments",
         hideable: false,
         text: "<span class=\"x-fa fa-paperclip\"></span>",
-        renderer: function (value) {
+        renderer (value) {
             return value ? "<span class=\"x-fa fa-paperclip\"></span>" : "";
         },
         menuDisabled: true,
@@ -227,23 +244,16 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         dataIndex: "to",
         text: "To",
         width: 240,
-        renderer: function (value, meta, record, rowIndex, colIndex, store, view) {
-            return view.grid.stringifyTo(value);
+        renderer (value, meta, record, rowIndex, colIndex, store, view) {
+            return view.grid.renderAddress(value);
 
         }
     }, {
         dataIndex: "from",
         text: "From",
         width: 140,
-        renderer: function (value, meta, record, rowIndex, colIndex, store, view) {
-
-            var feature = view.getFeature("cn_mail-mailMessageFeature-messagePreview");
-
-            if (!feature.disabled) {
-                meta.tdCls += "previewLarge";
-            }
-
-            return value ? value.name : "";
+        renderer (value, meta, record, rowIndex, colIndex, store, view) {
+            return view.grid.renderAddress(value);
         }
     }, {
         dataIndex: "draftDisplayAddress",
@@ -277,7 +287,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      *
      * @protected
      */
-    setRepresentedFolderType: function (representedFolderType) {
+    setRepresentedFolderType (representedFolderType) {
 
         const me = this;
 
@@ -288,7 +298,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     /**
      * @inheritdoc
      */
-    initComponent: function () {
+    initComponent () {
 
         const me = this;
 
@@ -297,7 +307,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
         // apply Renderer to draftDisplayAddress columns
         for (let i = 0, len = me.columns.length; i < len; i++) {
             if (me.columns[i].dataIndex === "draftDisplayAddress") {
-                me.columns[i].renderer = me.renderDraftDisplayAddress;
+                me.columns[i].renderer = me.renderDisplayAddress;
             }
         }
 
@@ -311,8 +321,46 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
     },
 
 
+    initTip () {
+
+        const
+            me = this,
+            view = me.getView();
+
+        me.addressTip = Ext.create("conjoon.cn_mail.view.mail.EmailAddressTip", {
+            target: view.el,
+            delegate: view.itemSelector + " a.address",
+            queryAddress (node) {
+                const addrIndex = node.getAttribute("address-idx");
+
+                while (node && !node.getAttribute("data-recordId")) {
+                    node = node.parentNode;
+                }
+
+                if (!node) {
+                    return;
+                }
+
+                const
+                    record = view.getRecord(node),
+                    address = me.getAddressBasedOnCurrentInboxContext(record, me.representedFolderType);
+
+                return (address.length && address[addrIndex]) ? address[addrIndex] : address;
+            }
+        });
+    },
+
+
+    getAddressBasedOnCurrentInboxContext (record, representedFolderType) {
+        if (record.get("draft") || representedFolderType === "SENT") {
+            return record.get("to");
+        }
+        return record.get("from");
+    },
+
+
     /**
-     * Renderer for the draftDisplayAddress-column.
+     * Renderer for the from/draftDisplayAddress-column.
      *
      * @param value
      * @param meta
@@ -325,18 +373,24 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      *
      * @private
      */
-    renderDraftDisplayAddress: function (value, meta, record, rowIndex, colIndex, store, view) {
-        const me      = this,
+    renderDisplayAddress (value, meta, record, rowIndex, colIndex, store, view) {
+
+        const
+            me      = this,
             feature = view.getFeature("cn_mail-mailMessageFeature-messagePreview");
 
-        if (!feature.disabled) {
-            meta.tdCls += "previewLarge";
-            if (record.get("draft") || me.representedFolderType === "SENT") {
-                return view.grid.stringifyTo(record.get("to"));
-            }
+        if (feature.disabled) {
+            return record.get("from") ?  record.get("from").name : "";
         }
 
-        return record.get("from") ?  record.get("from").name : "";
+        meta.tdCls += " previewLarge";
+
+        return view.grid.renderAddress(
+            me.getAddressBasedOnCurrentInboxContext(
+                record, me.representedFolderType
+            )
+        );
+
     },
 
 
@@ -350,7 +404,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      * @param {Boolean} enable true to switch to the grid view, falsy to
      * switch to preview mode.
      */
-    enableRowPreview: function (enable) {
+    enableRowPreview (enable) {
 
         const me         = this,
             view       = me.getView(),
@@ -391,7 +445,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      *
      * @inheritdoc
      */
-    bindStore: function (store, initial) {
+    bindStore (store, initial) {
 
         const me  = this;
 
@@ -416,7 +470,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      *
      * @inheritdoc
      */
-    unbindStore: function (store) {
+    unbindStore (store) {
 
         const me = this;
 
@@ -437,7 +491,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      *
      * @param {conjoon.cn_mail.model.mail.message.reader.MessageItem} record
      */
-    updateRowFlyMenu: function (record) {
+    updateRowFlyMenu (record) {
 
         const me       = this,
             feature  = me.view.getFeature("cn_mail-mailMessageFeature-rowFlyMenu"),
@@ -469,18 +523,17 @@ Ext.define("conjoon.cn_mail.view.mail.message.MessageGrid", {
      * Helper function to return an array containing address-like objects (keyed
      * with "address" and "name") as a string.
      *
-     * @param {Array} toAddresses
+     * @param {Array} addresses
      *
      * @return {String}
      */
-    stringifyTo: function (toAddresses) {
-        const names = [];
+    renderAddress (addresses) {
+        const me = this;
 
-        for (var i = 0, len = toAddresses.length; i < len; i++) {
-            names.push(toAddresses[i].name);
-        }
-        return names.join(", ");
+        addresses = [].concat(addresses);
+        return addresses.map (
+            (item, index) => me.emailAddressLinkRenderer.render({...item, index})
+        ).join("");
     }
-
 
 });

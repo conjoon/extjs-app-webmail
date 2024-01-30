@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -49,6 +49,16 @@ Ext.define("conjoon.cn_mail.view.mail.folder.MailFolderTree", {
 
     selModel: {
         toggleOnClick: false
+    },
+
+    stateId: "cn_mail-mailfoldertree",
+
+    stateEvents: ["resize", "hide", "show"],
+
+    stateful: {
+        hidden: true,
+        visible: true,
+        width: true
     },
 
     viewConfig: {

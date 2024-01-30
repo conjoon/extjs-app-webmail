@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
 
 
         var panel;
@@ -139,6 +139,53 @@ StartTest(async t => {
                 delay: 1
             });
 
+
+            t.it("Should properly subscribe to events", t => {
+                let viewController = Ext.create(
+                    "conjoon.cn_mail.view.mail.inbox.InboxViewController"
+                );
+
+                t.expect(viewController.getControl()["cn_mail-mailmessagegrid"]).toEqual({
+                    "afterrender": "onGridAfterRender",
+                    "beforedestroy": "onBeforeGridDestroy",
+                    "cn_comp-rowflymenu-itemclick": "onRowFlyMenuItemClick",
+                    "cn_comp-rowflymenu-beforemenushow": "onRowFlyMenuBeforeShow"
+                });
+
+                viewController.destroy();
+                viewController = null;
+            });
+
+            t.it("onGridAfterRender() / onBeforeGridDestroy", t => {
+                let viewController = Ext.create(
+                    "conjoon.cn_mail.view.mail.inbox.InboxViewController"
+                );
+
+                const FAKE_GRID = {
+                    initTip (){
+
+                    },
+                    addressTip: {
+                        destroy () {
+
+                        }
+                    }
+                };
+
+                const initSpy = t.spyOn(FAKE_GRID, "initTip");
+                const destroySpy = t.spyOn(FAKE_GRID.addressTip, "destroy");
+
+                viewController.onGridAfterRender(FAKE_GRID);
+                viewController.onBeforeGridDestroy(FAKE_GRID);
+
+                t.expect(initSpy.calls.count()).toBe(1);
+                t.expect(destroySpy.calls.count()).toBe(1);
+
+                [initSpy, destroySpy].map(spy => spy.remove());
+
+                viewController.destroy();
+                viewController = null;
+            });
 
             t.it("Should create the ViewController", t => {
 

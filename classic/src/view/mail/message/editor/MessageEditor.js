@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -101,7 +101,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
         "coon.comp.component.MessageMask",
         "conjoon.cn_mail.data.mail.message.EditingModes",
         "conjoon.cn_mail.data.mail.message.editor.MessageDraftCopyRequest",
-        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
+        "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
+        "conjoon.cn_mail.view.mail.EmailAddressTip"
     ],
 
     alias: "widget.cn_mail-mailmessageeditor",
@@ -250,6 +251,12 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
      * @see showMessageDraftLoadingNotice
      */
     loadingMask: null,
+
+    /**
+     * @param addressTip
+     * @type {conjoon.cn_mail.view.mail.EmailAddressTip}
+     * @private
+     */
 
     dockedItems: [{
         xtype: "toolbar",
@@ -516,6 +523,51 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
         me.callParent(arguments);
     },
 
+    initTip () {
+
+        const
+            me = this;
+
+        me.addressTip = Ext.create("conjoon.cn_mail.view.mail.EmailAddressTip", {
+            target: me.el,
+            delegate: "div.cn_mail-mailmessageeditoraddressfield li.x-tagfield-item div.x-tagfield-item-text",
+            queryAddress (node) {
+
+                const li = node.parentNode;
+                const ul = li.parentNode;
+
+                let addrIndex = -1;
+
+                [].slice.call(ul.childNodes).some((child, index) => {
+                    if (child === li) {
+                        addrIndex = index;
+                        return true;
+                    }
+                });
+
+                const comps = {"#toField": "to", "#ccField": "cc", "#bccField": "bcc"};
+
+                let type = null;
+                Object.entries(comps).some(([comp, addrType]) => {
+                    if (me.down(comp)?.el.contains(node)) {
+                        type = addrType;
+                        return true;
+                    }
+                });
+
+                if (!type) {
+                    return {name: node.firstChild.textContent, address: node.firstChild.textContent};
+                }
+
+                const
+                    record = me.getViewModel().get("messageDraft"),
+                    address = record.get(type);
+
+                return (address.length && address[addrIndex]) ? address[addrIndex] : address;
+            }
+        });
+    },
+
 
     /**
      * Shows the CC / BCC fields or hides them depending on the passed argument.
@@ -755,6 +807,42 @@ Ext.define("conjoon.cn_mail.view.mail.message.editor.MessageEditor", {
         me.setClosable(false);
 
         myMask.show();
+    },
+
+
+    /**
+     * Shows a notice that the either an account is missing for the message being edited,
+     * or this account's state is invalid.
+     *
+     * @return {coon.comp.component.MessageMask}
+     */
+    showAccountInvalidNotice (closeEditor = false) {
+
+        closeEditor = !!closeEditor;
+
+        const
+            me = this,
+            mask = Ext.create("coon.comp.component.MessageMask", {
+                /**
+                 * @i18n
+                 */
+                title: `Valid Mail Account missing ${closeEditor ? " - Cannot open Message" : ""}`,
+                message: "Please make sure an active Mail Account is used for this message.",
+                buttons: coon.comp.component.MessageMask.OK,
+                target: me,
+                callback: function (btnAction, value) {
+                    mask.close();
+                    if (closeEditor === true) {
+                        me.close();
+                    }
+                },
+                icon: coon.comp.component.MessageMask.ERROR,
+                dialogStyle: true
+            });
+
+        mask.show();
+
+        return mask;
     },
 
 

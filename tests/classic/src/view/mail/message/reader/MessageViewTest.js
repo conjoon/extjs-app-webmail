@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,8 +28,8 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().andRun((t) => {
-        
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().andRun((t) => {
+
         t.requireOk("coon.core.util.Date", "coon.core.ServiceLocator", () => {
 
             const userImageService = Ext.create("coon.core.service.UserImageService");
@@ -196,13 +196,22 @@ StartTest(async t => {
 
                 let msgItem = createMessageItem();
 
+                const observer = {
+                    onMessageViewItemChange () {}
+                };
+                const observerSpy = t.spyOn(observer, "onMessageViewItemChange");
+                view.on("cn_mail-messageviewitemchange", observer.onMessageViewItemChange);
+
                 view.setMessageItem(msgItem);
+
+                t.expect(observerSpy.calls.mostRecent().args).toEqual([view, msgItem]);
 
                 view.getViewModel().notify();
 
                 t.waitForMs(t.parent.TIMEOUT, () => {
                     checkHtmlForValidData(t, view);
                     t.expect(view.callbackWasCalled[0].get("id")).toBe("1");
+                    observerSpy.remove();
                 });
             });
 
@@ -220,10 +229,18 @@ StartTest(async t => {
                     checkHtmlForValidData(t, view);
                     t.expect(view.callbackWasCalled[0].get("id")).toBe("1");
                     view.callbackWasCalled = false;
+                    const observer = {
+                        onMessageViewItemChange () {}
+                    };
+                    const observerSpy = t.spyOn(observer, "onMessageViewItemChange");
+                    view.on("cn_mail-messageviewitemchange", observer.onMessageViewItemChange);
                     view.setMessageItem(null);
+                    t.expect(observerSpy.calls.mostRecent().args).toEqual([view, null]);
+                    
                     t.waitForMs(t.parent.TIMEOUT, () => {
                         checkHtmlDataNotPresent(t, view);
                         t.expect(view.callbackWasCalled).toBe(false);
+                        observerSpy.remove();
                     });
                 });
             });
@@ -306,9 +323,26 @@ StartTest(async t => {
 
             });
 
+
+            t.it("busyWithLoading()", t => {
+
+                view = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.reader.MessageView", viewConfig);
+
+                t.expect(view.getViewModel().get("isLoading")).toBeFalsy();
+
+                view.busyWithLoading();
+
+                t.expect(view.getViewModel().get("isLoading")).toBe(true);
+
+            });
+
+
             t.it("loadMessageItem()", t => {
                 view = Ext.create(
                     "conjoon.cn_mail.view.mail.message.reader.MessageView", viewConfig);
+
+                const busyWithLoadingSpy = t.spyOn(view, "busyWithLoading");
 
                 t.expect(view.getTitle().toLowerCase()).toContain("loading");
 
@@ -323,7 +357,27 @@ StartTest(async t => {
                 t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(view.getTitle()).toBe(view.getViewModel().get("messageItem.subject"));
                     t.expect(view.getViewModel().get("messageItem")).toBeTruthy();
+                    t.expect(busyWithLoadingSpy.calls.count()).toBe(1);
+                    busyWithLoadingSpy.remove();
                 });
+            });
+
+
+            t.it("loadMessageItem() calls failure callback if loadEntity() triggers error", t => {
+
+                const loadEntitySpy = t.spyOn(
+                    conjoon.cn_mail.model.mail.message.MessageItem, "loadEntity"
+                ).and.callFake(() => {throw new Error();});
+
+                view = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.reader.MessageView", viewConfig);
+
+                const onMessageItemLoadFailureSpy = t.spyOn(view, "onMessageItemLoadFailure");
+
+                view.loadMessageItem(createKeyForExistingMessage(1));
+                t.expect(onMessageItemLoadFailureSpy.calls.count()).toBe(1);
+
+                [loadEntitySpy, onMessageItemLoadFailureSpy].map(spy => spy.remove());
             });
 
 
@@ -897,6 +951,40 @@ StartTest(async t => {
 
                     });
 
+                });
+            });
+
+
+            t.it("initTip()", t => {
+
+                view = Ext.create(
+                    "conjoon.cn_mail.view.mail.message.reader.MessageView", {
+                        height: 600,
+                        width: 800,
+                        renderTo: document.body
+                    });
+
+                const tip = view.addressTip;
+                t.isInstanceOf(tip, "conjoon.cn_mail.view.mail.EmailAddressTip");
+
+                t.expect(tip.target).toBe(view.el);
+                t.expect(tip.delegate).toBe( "div.message-subject a.address");
+
+                const address = "email@address.com";
+                const name = "firstname, lastname";
+
+                view.getViewModel().get = () => ({ get: () => [{name, address}]});
+
+                const FAKE_NODE = {
+                    parentNode: {
+                        className: "to"
+                    },
+                    getAttribute: () => 1
+                };
+
+
+                t.expect(tip.queryAddress(FAKE_NODE)).toEqual({
+                    address, name
                 });
             });
 

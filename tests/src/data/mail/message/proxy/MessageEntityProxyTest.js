@@ -30,7 +30,7 @@ StartTest(t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy");
 
-        t.isInstanceOf(proxy, "Ext.data.proxy.Rest");
+        t.isInstanceOf(proxy, "conjoon.cn_mail.data.mail.BaseProxy");
 
         t.expect(proxy.getIdParam()).toBe("localId");
 
@@ -555,27 +555,6 @@ StartTest(t => {
         });
     });
 
-
-    t.it("getMethod()", t => {
-
-        const
-            proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy"),
-            actions = {
-                create: "POST",
-                read: "GET",
-                update: "PATCH",
-                destroy: "DELETE"
-            },
-            request = new Ext.data.Request;
-
-        Object.entries(actions).forEach(([action, method]) => {
-            let spy = t.spyOn(request, "getAction").and.callFake(() => action);
-            t.expect(proxy.getMethod(request)).toBe(method);
-            spy.remove();
-        });
-    });
-
-
     t.it("getSendMessageDraftRequestConfig()", t => {
 
         const
@@ -622,5 +601,4 @@ StartTest(t => {
         Object.keys(result).forEach(key => t.expect(result[key]).toBe(result[key]));
 
     });
-
 });

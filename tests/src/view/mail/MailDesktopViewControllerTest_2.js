@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper = l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
+    await helper.registerIoC().setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
 
         const getChildAt = function (panel, rootId, index, shouldBe, t) {
 
@@ -872,57 +872,6 @@ StartTest(async t => {
 
                         });
                     });
-                });
-
-
-                t.it("onMailFolderTreeStoreLoad()", t => {
-
-                    let PROT = conjoon.cn_mail.view.mail.MailDesktopViewController.prototype,
-                        onMailFolderTreeStoreLoad = PROT.onMailFolderTreeStoreLoad;
-
-                    PROT.onMailFolderTreeStoreLoad = Ext.emptyFn;
-
-                    let panel  = createMailDesktopView(),
-                        ctrl   = panel.getController();
-
-
-                    t.waitForMs(t.parent.TIMEOUT, () => {
-
-                        PROT.onMailFolderTreeStoreLoad = onMailFolderTreeStoreLoad;
-
-                        let store = panel.down("cn_mail-mailfoldertree").getStore(),
-                            root  = store.getRoot();
-
-                        let records = [root.childNodes[0]];
-                        t.expect(ctrl.onMailFolderTreeStoreLoad(store, records, false)).toBe(null);
-                        t.expect(ctrl.onMailFolderTreeStoreLoad(store, records, true)).toBe(null);
-
-                        records = [root.childNodes[0].childNodes[0]];
-                        t.expect(ctrl.onMailFolderTreeStoreLoad(store, records, true)).not.toBe(null);
-
-                        t.expect(ctrl.onMailFolderTreeStoreLoad(store, records, true)).toBe(
-                            ctrl.defaultAccountInformations
-                        );
-
-                        ctrl.defaultAccountInformations = "TEST";
-                        // will return the same if called multiple times
-                        t.expect(ctrl.onMailFolderTreeStoreLoad(store, records, true)).toBe("TEST");
-
-                        // will throw if no draft node found
-                        ctrl.defaultAccountInformations = null;
-
-                        root.childNodes[0].childNodes[3].set("folderType", "foo");
-
-                        let exc;
-                        try{ctrl.onMailFolderTreeStoreLoad(store, records, true);}catch(e){exc = e;}
-                        t.expect(exc).toBeDefined();
-                        t.expect(exc.msg.toLowerCase()).toContain("no suitable");
-
-                        panel.destroy();
-                        panel = null;
-
-                    });
-
                 });
 
 

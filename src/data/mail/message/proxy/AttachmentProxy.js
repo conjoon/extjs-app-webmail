@@ -37,6 +37,12 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
         "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     ],
 
+    statics: {
+        required: {
+            requestConfigurator: "coon.core.data.request.Configurator"
+        }
+    },
+
     mixins: {
         utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
     },
@@ -163,6 +169,18 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
         return me.callParent([request]);
     },
 
+    /**
+     * @param request
+     * @returns {*}
+     */
+    sendRequest (request) {
+
+        const me = this;
+
+        request = me.requestConfigurator.configure(request);
+
+        return me.callParent([request]);
+    },
 
     /**
      * Overriden to consider filter syntax according to

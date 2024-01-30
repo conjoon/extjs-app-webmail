@@ -18,8 +18,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build --if-present
+
+      - uses: nick-fields/retry@v2
+        with:
+          max_attempts: 10
+          timeout_minutes: 10
+          command: |
+            npm config set @sencha:registry https://npm.sencha.com/
+            npm config set //npm.sencha.com/:_authToken=${{ secrets.SENCHA_ACCESS_TOKEN }}
+            npm ci --save-dev          
+            npm run build --if-present
 
   build:
     needs: test
@@ -32,7 +40,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RECUR }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}

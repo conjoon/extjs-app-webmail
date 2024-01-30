@@ -29,7 +29,7 @@
  */
 Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
-    extend: "Ext.data.proxy.Rest",
+    extend: "conjoon.cn_mail.data.mail.BaseProxy",
 
     requires: [
         // @define
@@ -41,9 +41,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         "conjoon.cn_mail.data.jsonApi.PnFilterEncoder"
     ],
 
-    mixins: {
-        utilityMixin: "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin"
-    },
 
     alias: "proxy.cn_mail-mailmessageentityproxy",
 
@@ -58,8 +55,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
     idParam: "localId",
 
-    appendId: false,
-
     validEntityNames: [
         "MessageDraft",
         "MessageItem",
@@ -67,17 +62,9 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
     ],
 
     /**
-     * The entity being used with this Proxy. Can be any of MessageItem,
-     * MessageDraft or MessageBody.
-     * @cfg {string}
-     */
-    entityName: null,
-
-    /**
      * Do not send the page parameter
      */
     pageParam: "",
-
 
     /**
      * @type {String}
@@ -88,8 +75,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
      * @type {String}
      */
     limitParam: "page[limit]",
-
-    simpleSort: true,
 
     /**
      * @type {coon.core.data.jsonApi.SorterEncoder} sorterEncoder
@@ -197,12 +182,12 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         case "update":
             delete finalParams.target;
             appendUrl = me.entityName;
-            break; 
+            break;
         case "read":
             if (["MessageBody", "MessageItem", "MessageDraft"].includes(target)) {
                 appendUrl = (hasId && target === "MessageBody" ? "MessageBody" : "");
                 finalParams = Object.assign({}, me.getDefaultParameters(target));
-            } 
+            }
             break;
         }
 
@@ -211,7 +196,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
             finalParams.action = "move";
         }
 
-        request.setParams(Ext.apply(request.getParams() || {}, finalParams));
+        request.setParams(Object.assign(request.getParams() || {}, finalParams));
 
         if (action !== "create" && hasId) {
             url += "/" + source.id + (appendUrl ? "/" + appendUrl : "");
@@ -257,7 +242,7 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         const defs = {
             MessageItem: {
-                "include": "MailFolder",
+                include: "MailFolder",
                 "fields[MailFolder]": "unreadMessages,totalMessages"
             },
             MessageDraft: {
@@ -269,27 +254,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         return l8.unchain(type, defs, {});
     },
-
-
-    /**
-     * https://jsonapi.org/faq/ - "Where's PUT?"
-     *
-     * @param {Ext.data.Request} request
-     *
-     * @return {String}
-     */
-    getMethod (request) {
-
-        const actionMethods = {
-            create: "POST",
-            read: "GET",
-            update: "PATCH",
-            destroy: "DELETE"
-        };
-
-        return actionMethods[request.getAction()];
-    },
-
 
     /**
      * @inheritdoc
@@ -304,7 +268,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
 
         return me.sorterEncoder.encode(sorters);
     },
-
 
     /**
      * Overriden to consider filter syntax according to

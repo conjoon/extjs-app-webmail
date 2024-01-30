@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2019-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,11 +24,7 @@
  */
 
 /**
- * This is the view controller for
- * {@link conjoon.cn_mail.view.mail.message.reader.MessageViewC}.
- * It takes care of resizing the view properly according to the contents of the
- * iframe.
- *
+ * This is the view controller for {@link conjoon.cn_mail.view.mail.message.reader.MessageView}. *
  */
 
 Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
@@ -53,8 +49,55 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
         },
 
         "cn_mail-mailmessagereadermessageview": {
-            resize: "onViewResize"
+            afterrender: "onMessageViewAfterrender",
+            resize: "onViewResize",
+            beforedestroy: "onBeforeMessageViewDestroy"
         }
+
+    },
+
+
+    onMessageViewAfterrender ()  {
+
+        const
+            me = this,
+            view = me.getView();
+
+
+        view.showLoadingMask();
+        view.initTip();
+    },
+
+
+    onBeforeMessageViewDestroy (view) {
+
+        const
+            me = this,
+            vm = me.getViewModel();
+
+        if (view.loadingMask) {
+            view.loadingMask.destroy();
+            view.loadingMask = null;
+        }
+
+        if (view.loadingFailedMask) {
+            view.loadingFailedMask.destroy();
+            view.loadingFailedMask = null;
+        }
+
+        if (view.loadingItem) {
+            view.loadingItem.abort();
+            view.loadingItem = null;
+        }
+
+        if (view.addressTip) {
+            view.addressTip.destroy();
+            view.addressTip = null;
+        }
+
+        vm.abortMessageBodyLoad();
+        vm.abortMessageAttachmentsLoad();
+
 
     },
 
@@ -98,7 +141,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
      * iframe is currently processing.
      *
      * @param {conjoon.cn_mail.view.mail.message.reader.MessageViewIframe} iframe
-     * @param {String} src
+     * @param {Object} src
+     * @param {String} src.srcDoc
      */
     onBeforeSrcDoc: function (iframe, src) {
         const me = this;
@@ -114,28 +158,50 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
      * sanitizeImages will only be called if the iframe's getImagesAllowed()-method returns
      * false.
      * Will set the viewodel's hasImages if any images where detected in the message's html.
+     * If the method requires check for css images, the srcDoc of the iframe will be updated.
      *
      * @param {conjoon.cn_mail.view.mail.message.reader.MessageViewIframe} iframe
      *
      * @see #sanitizeLinks
      * @see #sanitizeImages
      */
-    onIframeLoad: function (iframe) {
+    onIframeLoad (iframe) {
 
-        const me = this,
+        const me = this;
+
+        me.cssImageCheck = me.cssImageCheck || {};
+
+        // will only step into this method if the check was not finished,
+        // to prevent recursion because of setSrcDoc and the load-event
+        // associated with it, this method will return and be recalled
+        // once setSrcDoc was updated.
+        if (!me.cssImageCheck.finished && !iframe.getImagesAllowed()) {
+            let result =  me.sanitizeCssImages();
+            me.cssImageCheck.finished = true;
+            me.cssImageCheck.result = result;
+            if (result) {
+                return me.cssImageCheck;
+            }
+        }
+
+        const
             view = me.getView(),
             vm   = view.getViewModel(),
             body = iframe.getBody(),
             cnt  = view.down("#msgBodyContainer"),
-            bars = Ext.getScrollbarSize();
+            bars = Ext.getScrollbarSize(),
+            viewerWindow = iframe.cn_iframeEl.dom.contentWindow;
 
-        me.sanitizeLinks(iframe.cn_iframeEl.dom.contentWindow.document.getElementsByTagName("a"));
+        const imgs = viewerWindow.document.getElementsByTagName("img");
 
-        let imgs = iframe.cn_iframeEl.dom.contentWindow.document.getElementsByTagName("img");
-        vm.set("hasImages", imgs.length > 0);
+        vm.set("hasImages", me.cssImageCheck.result === true || imgs.length > 0);
+
+        me.cssImageCheck = {};
+
+        me.sanitizeLinks(viewerWindow.document.getElementsByTagName("a"));
 
         if (!iframe.getImagesAllowed()) {
-            me.sanitizeImages(imgs);
+            imgs.length && me.sanitizeImages(imgs);
         }
 
         cnt.setScrollY(0);
@@ -146,6 +212,8 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
 
         iframe.setSize(cnt.getWidth() - bars.width, cnt.getHeight() - bars.height);
         iframe.setSize(body.scrollWidth, body.scrollHeight);
+
+        return true;
     },
 
 
@@ -215,11 +283,13 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
      * - the images border ist set to 1px solid black
      * - the images src is set to img_block.png out of this package's resource path
      *
-     * @param {Array} an array of HTMLElements representing links (<a>).
+     * @param {Array} elements array of HTMLElements representing links (<a>).
      *
      * @private
      */
     sanitizeImages: function (elements) {
+
+        const me = this;
 
         let img, i, len = elements.length;
 
@@ -230,12 +300,40 @@ Ext.define("conjoon.cn_mail.view.mail.message.reader.MessageViewController", {
             // isolated tests will not have resources property set
             img.setAttribute(
                 "src",
-                coon.core.Environment.getPathForResource("resources/images/img_block.png","extjs-app-webmail")
+                me.getProxyImage()
             );
 
         }
     },
 
+
+    getCssImages (viewerWindow) {
+        return viewerWindow.performance.getEntriesByType("resource").filter(
+            resource => ["css"].includes(resource.initiatorType)
+        ).map(resource => resource.name);
+    },
+
+
+    sanitizeCssImages () {
+
+        const
+            me = this,
+            iframe = me.getIframe(),
+            cssImgs = me.getCssImages(iframe.cn_iframeEl.dom.contentWindow);
+
+        if (cssImgs.length) {
+            let srcDoc = iframe.getSrcDoc();
+            srcDoc = l8.replace(cssImgs,  me.getProxyImage(), srcDoc, "gmi");
+            iframe.setSrcDoc(srcDoc, false);
+            return true;
+        }
+
+        return false;
+    },
+
+    getProxyImage () {
+        return coon.core.Environment.getPathForResource("resources/images/img_block.png", "extjs-app-webmail");
+    },
 
     /**
      * @private

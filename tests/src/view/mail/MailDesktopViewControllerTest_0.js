@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,127 +28,144 @@ import TestHelper from "/tests/lib/mail/TestHelper.js";
 StartTest(async t => {
 
     const helper =  l8.liquify(TestHelper.get(t, window));
-    await helper.setupSimlets().mockUpMailTemplates().mockUpServices("coon.core.service.UserImageService").andRun((t) => {
+    await helper.registerIoC()
+        .setupSimlets()
+        .mockUpMailTemplates()
+        .load(
+            "conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController",
+            "conjoon.cn_mail.view.mail.MailDesktopViewController",
+            "conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey"
+        ).mockUpServices("coon.core.service.UserImageService")
+        .andRun((t) => {
 
-        const discardView = t => {
+            const discardView = t => {
 
-                t.waitForMs(1, () => {
-                    if (panel) {
+                    t.waitForMs(1, () => {
+                        if (panel) {
 
-                        panel.destroy();
-                        panel = null;
+                            panel.destroy();
+                            panel = null;
 
-                        t.waitForMs(1, () => {});
-                    }
-                });
-            },
-            createKey = function (id1, id2, id3) {
-                return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
-            },
-            getMessageItemAt = function (messageIndex) {
-                return conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(messageIndex);
-            },
-            createKeyForExistingMessage = function (messageIndex){
-                let item = getMessageItemAt(messageIndex);
-
-                let key = createKey(
-                    item.mailAccountId, item.mailFolderId, item.id
-                );
-
-                return key;
-            },
-            getChildAt = function (panel, rootId, index, shouldBe, t) {
-
-                let root = panel.down("cn_mail-mailfoldertree").getStore().getRoot().findChild("id", rootId),
-                    c    = root.getChildAt(index);
-
-                if (shouldBe && t) {
-                    t.expect(c.get("id")).toBe(shouldBe);
-                }
-
-                return c;
-            },
-            selectMailFolder = function (panel, storeAt, shouldBeId, t) {
-
-                let folder = storeAt instanceof Ext.data.TreeModel
-                    ? storeAt
-                    : panel.down("cn_mail-mailfoldertree").getStore().getAt(storeAt);
-
-                let p = folder.parentNode;
-
-                while (p) {
-                    p.expand();
-                    p = p.parentNode;
-                }
-
-                panel.down("cn_mail-mailfoldertree").getSelectionModel()
-                    .select(folder);
-
-                if (shouldBeId && t) {
-                    t.expect(folder.get("id")).toBe(shouldBeId);
-                }
-
-                return folder;
-
-            },
-            createMessageItem = function (index, mailFolderId) {
-
-                index = index === undefined ? 1 : index;
-
-                let mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(index);
-
-                if (mailFolderId) {
-                    let i = index >= 0 ? index : 0, upper = 10000;
-
-                    for (; i <= upper; i++) {
-                        mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
-                        if (mi.mailFolderId === mailFolderId) {
-                            break;
+                            t.waitForMs(1, () => {});
                         }
+                    });
+                },
+                createKey = function (id1, id2, id3) {
+                    return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(id1, id2, id3);
+                },
+                getMessageItemAt = function (messageIndex) {
+                    return conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(messageIndex);
+                },
+                createKeyForExistingMessage = function (messageIndex){
+                    let item = getMessageItemAt(messageIndex);
+
+                    let key = createKey(
+                        item.mailAccountId, item.mailFolderId, item.id
+                    );
+
+                    return key;
+                },
+                getChildAt = function (panel, rootId, index, shouldBe, t) {
+
+                    let root = panel.down("cn_mail-mailfoldertree").getStore().getRoot().findChild("id", rootId),
+                        c    = root.getChildAt(index);
+
+                    if (shouldBe && t) {
+                        t.expect(c.get("id")).toBe(shouldBe);
                     }
 
-                }
+                    return c;
+                },
+                selectMailFolder = function (panel, storeAt, shouldBeId, t) {
 
-                return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
-                    localId: [mi.mailAccountId, mi.mailFolderId, mi.id].join("-"),
-                    id: mi.id,
-                    mailAccountId: mi.mailAccountId,
-                    mailFolderId: mi.mailFolderId
+                    let folder = storeAt instanceof Ext.data.TreeModel
+                        ? storeAt
+                        : panel.down("cn_mail-mailfoldertree").getStore().getAt(storeAt);
+
+                    let p = folder.parentNode;
+
+                    while (p) {
+                        p.expand();
+                        p = p.parentNode;
+                    }
+
+                    panel.down("cn_mail-mailfoldertree").getSelectionModel()
+                        .select(folder);
+
+                    if (shouldBeId && t) {
+                        t.expect(folder.get("id")).toBe(shouldBeId);
+                    }
+
+                    return folder;
+
+                },
+                createMessageItem = function (index, mailFolderId) {
+
+                    index = index === undefined ? 1 : index;
+
+                    let mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(index);
+
+                    if (mailFolderId) {
+                        let i = index >= 0 ? index : 0, upper = 10000;
+
+                        for (; i <= upper; i++) {
+                            mi = conjoon.dev.cn_mailsim.data.table.MessageTable.getMessageItemAt(i);
+                            if (mi.mailFolderId === mailFolderId) {
+                                break;
+                            }
+                        }
+
+                    }
+
+                    return Ext.create("conjoon.cn_mail.model.mail.message.MessageItem", {
+                        localId: [mi.mailAccountId, mi.mailFolderId, mi.id].join("-"),
+                        id: mi.id,
+                        mailAccountId: mi.mailAccountId,
+                        mailFolderId: mi.mailFolderId
+                    });
+                },
+                getRecordCollection = function () {
+                    return [
+                        createMessageItem(1, "INBOX"),
+                        createMessageItem(2, "INBOX.Drafts"),
+                        createMessageItem(3, "INBOX.Sent Messages"),
+                        createMessageItem(4, "INBOX.Drafts"),
+                        createMessageItem(5, "INBOX.Drafts")
+                    ];
+                },
+                getDummyEditor = function () {
+                    return Ext.create({
+                        xtype: "cn_mail-mailmessageeditor",
+                        messageDraft: Ext.create(
+                            "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig")
+                    });
+                };
+
+            let panel;
+
+            let registerMailAccountRelatedFunctionalitySpy;
+
+            t.beforeEach(function () {
+                conjoon.dev.cn_mailsim.data.table.MessageTable.resetAll();
+
+                registerMailAccountRelatedFunctionalitySpy = t.spyOn(
+                    conjoon.cn_mail.view.mail.message.editor.MessageEditorViewController.prototype,
+                    "registerMailAccountRelatedFunctionality"
+                ).and.callFake(() => {});
+
+                Ext.ux.ajax.SimManager.init({
+                    delay: 1
                 });
-            },
-            getRecordCollection = function () {
-                return [
-                    createMessageItem(1, "INBOX"),
-                    createMessageItem(2, "INBOX.Drafts"),
-                    createMessageItem(3, "INBOX.Sent Messages"),
-                    createMessageItem(4, "INBOX.Drafts"),
-                    createMessageItem(5, "INBOX.Drafts")
-                ];
-            },
-            getDummyEditor = function () {
-                return Ext.create({
-                    xtype: "cn_mail-mailmessageeditor",
-                    messageDraft: Ext.create(
-                        "conjoon.cn_mail.data.mail.message.editor.MessageDraftConfig")
-                });
-            };
-
-        let panel;
-
-        t.beforeEach(function () {
-            conjoon.dev.cn_mailsim.data.table.MessageTable.resetAll();
-
-            Ext.ux.ajax.SimManager.init({
-                delay: 1
             });
-        });
 
-        t.afterEach(() => {
-            Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
+            t.afterEach(() => {
+                registerMailAccountRelatedFunctionalitySpy.remove();
+                registerMailAccountRelatedFunctionalitySpy = null;
+
+                Ext.data.StoreManager.lookup("cn_mail-mailfoldertreestore") &&
             Ext.data.StoreManager.unregister("cn_mail-mailfoldertreestore");
-        });
+            });
 
-        t.requireOk("conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey", () => {
 
             const MessageEntityCompoundKey = conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey;
 
@@ -174,6 +191,9 @@ StartTest(async t => {
                 }, {
                     value: "maito:",
                     expected: {seen: true, draft: true, recent: false, flagged: false, answered: false}
+                }, {
+                    value: `mailto%3A${encodeURIComponent("Peter Parker <test1@domain.tld>")}`,
+                    expected: {to: [{name: "Peter Parker", address: "test1@domain.tld"}], seen: true, draft: true, recent: false, flagged: false, answered: false}
                 },{
                     value: "mailto%3Atest1@domain.tld",
                     expected: {to: [{name: "test1@domain.tld", address: "test1@domain.tld"}], seen: true, draft: true, recent: false, flagged: false, answered: false}
@@ -1228,4 +1248,4 @@ StartTest(async t => {
             });
 
 
-        });});});
+        });});

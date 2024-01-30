@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,7 +48,11 @@ StartTest(t => {
                     t.expect(schema.getUrlPrefix()).toBe("cn_mail");
 
                     schema.setUrlPrefix("https:///LJlkhj/kjhkjhgb///");
-                    t.expect(schema.getUrlPrefix()).toBe("https://LJlkhj/kjhkjhgb/");
+
+                    /**
+                     * @see https://github.com/l8js/l8/commit/28c0febfd163d2187320f9aa21b4564fd47c7395
+                     */
+                    t.expect(schema.getUrlPrefix()).toBe("https:///LJlkhj/kjhkjhgb/");
                 });
 
 

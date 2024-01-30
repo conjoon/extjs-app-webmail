@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,7 +37,7 @@
  */
 Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
 
-    extend: "Ext.data.proxy.Rest",
+    extend: "conjoon.cn_mail.data.mail.BaseProxy",
 
     requires: [
         "conjoon.cn_mail.data.mail.account.reader.MailAccountJsonReader"
@@ -51,7 +51,6 @@ Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
 
     idParam: "id",
 
-    appendId: false,
 
     /**
      * @private
@@ -88,7 +87,7 @@ Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
             url += "/";
         }
 
-        if (action !== "read" && action !== "update") {
+        if (action !== "read" && action !== "update" && action !== "create") {
             Ext.raise("Unexpected error; any action other but \"read\" and \"update\" not supported.");
         }
 
@@ -103,7 +102,18 @@ Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
                     params.mailAccountId +
                     "/MailFolders";
             }
-        } else {
+
+            // add subscriptions based on node that is requested
+            const node = request.getOperation().node;
+            if (node?.id !== "root" && node?.get("subscriptions")?.length) {
+                params.filter = me.encodeFilters([Ext.create("Ext.util.Filter", {
+                    property: "id",
+                    operator: "IN",
+                    value: node.get("subscriptions")
+                })]);
+            }
+
+        } else if (action !== "create") {
             url += "/" + rec.getId();
         }
 
@@ -115,6 +125,25 @@ Ext.define("conjoon.cn_mail.data.mail.account.proxy.MailAccountProxy", {
         request.setUrl(url);
 
         return me.callParent([request]);
+    },
+
+
+    /**
+     * Overriden to consider filter syntax according to
+     * https://www.conjoon.org/docs/api/rest-api/@conjoon/rest-api-description/rest-api-email
+     *
+     * @return {String}
+     */
+    encodeFilters (filters) {
+
+        const me = this;
+
+        if (!me.filterEncoder) {
+            me.filterEncoder = Ext.create("conjoon.cn_mail.data.jsonApi.PnFilterEncoder");
+        }
+
+        return me.filterEncoder.encode(filters);
     }
+
 
 });

@@ -1,7 +1,7 @@
 /**
  * conjoon
  * extjs-app-webmail
- * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
+ * Copyright (C) 2017-2023 Thorsten Suckow-Homberg https://github.com/conjoon/extjs-app-webmail
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -66,6 +66,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         "conjoon.cn_mail.store.mail.folder.MailFolderTreeStore"
     ],
 
+
+    statics: {
+        required: {
+            mailAccountHandler: "conjoon.cn_mail.view.mail.account.MailAccountHandler"
+        }
+    },
 
     routes: {
 
@@ -158,6 +164,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     },
 
     control: {
+        "cn_mail-mailaccountwizard": {
+            "show": "onMailAccountWizardShownOrClosed"
+        },
         "cn_mail-maildesktopview": {
             tabchange: "onMailDesktopViewTabChange"
         },
@@ -173,6 +182,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             select: "onMailMessageGridSelect",
             "cn_mail-mailmessagegridbeforeload": "onMailMessageGridBeforeLoad",
             "cn_mail-mailmessagegridload": "onMailMessageGridLoad"
+        },
+        "cn_mail-maildesktopview > cn_mail-mailinboxview cn_mail-mailmessagereadermessageview": {
+            "cn_mail-messageviewitemchange": "onMailMessageViewItemChange"
         },
         "cn_navport-tbar > #cn_mail-nodeNavCreateMessage": {
             click: "onMessageComposeButtonClick"
@@ -200,6 +212,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         },
         "cn_navport-tbar > #cn_mail-nodeNavToggleFolder": {
             toggle: "onToggleFolderViewButtonClick"
+        },
+        "cn_navport-tbar > #cn_mail-addMailAccountBtn": {
+            click: "onAddMailAccountBtnClick"
         }
     },
 
@@ -209,6 +224,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     }, {
         ref: "mailInboxView",
         selector: "cn_mail-maildesktopview > cn_mail-mailinboxview"
+    }, {
+        ref: "mailInboxMessageView",
+        selector: "cn_mail-maildesktopview > cn_mail-mailinboxview cn_mail-mailmessagereadermessageview"
     }, {
         ref: "mailMessageGrid",
         selector: "cn_mail-maildesktopview > cn_mail-mailinboxview > panel > container > cn_mail-mailmessagegrid"
@@ -225,8 +243,14 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         ref: "toggleGridListButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavToggleList"
     }, {
+        ref: "toggleMailFolderButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavToggleFolder"
+    }, {
         ref: "switchReadingPaneButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReadingPane"
+    }, {
+        ref: "createMessageButton",
+        selector: "cn_navport-tbar > #cn_mail-nodeNavCreateMessage"
     }, {
         ref: "replyToButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavReplyTo"
@@ -242,6 +266,9 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     }, {
         ref: "deleteButton",
         selector: "cn_navport-tbar > #cn_mail-nodeNavDeleteMessage"
+    }, {
+        ref: "addMailAccountButton",
+        selector: "cn_navport-tbar > #cn_mail-addMailAccountBtn"
     }],
 
 
@@ -254,6 +281,11 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @private
      */
     observedMessageEditor: null,
+
+    /**
+     * @private
+     * @type bool mailAccountWizardShown
+     */
 
 
     /**
@@ -288,7 +320,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @return false if no action was initiated and the activatedPanel is the
      * MailInboxView, otherwise true
      */
-    onMailDesktopViewTabChange: function (panel, activatedPanel) {
+    onMailDesktopViewTabChange (panel, activatedPanel) {
 
         const me = this;
 
@@ -315,9 +347,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         // we have not an inbox view. By default, disable all buttons.
         // they will either be re-activated instantly or once any of the
         // view's or editor's item/draft was loaded
-        me.disableEmailActionButtons(true);
-        me.disableEmailEditButtons(true);
-
+        me.disableMessageItemContextButtons(true);
 
         if (activatedPanel.isCnMessageEditor) {
 
@@ -358,7 +388,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param {Boolean} deleteDis, optional. True to disable the delete-button,
      * false to enable it.
      */
-    disableEmailEditButtons: function (editDis, deleteDis) {
+    disableEmailEditButtons (editDis, deleteDis) {
 
         const me        = this,
             editBtn   = me.getEditButton(),
@@ -379,7 +409,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {Boolean} disable true to disable the buttons, false to enable them.
      */
-    disableEmailActionButtons: function (disable) {
+    disableEmailActionButtons (disable) {
         const me          = this,
             replyToBtn  = me.getReplyToButton(),
             replyAllBtn = me.getReplyAllButton(),
@@ -399,15 +429,14 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @see disableEmailActionButtons
      * @see disableEmailEditButtons
      */
-    activateButtonsForMessageGrid: function () {
+    activateButtonsForMessageGrid () {
         const me        = this,
             selection = me.getMailMessageGrid().getSelection();
 
         if (selection.length) {
             me.activateButtonsForMessageItem(selection[0]);
         } else {
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(true);
+            me.disableMessageItemContextButtons(true);
         }
     },
 
@@ -420,7 +449,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @see disableEmailActionButtons
      * @see disableEmailEditButtons
      */
-    activateButtonsForMessageItem: function (record) {
+    activateButtonsForMessageItem (record) {
 
         const me      = this,
             isDraft = record.get("draft");
@@ -446,7 +475,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
      */
-    onMailInboxViewActivate: function (view) {
+    onMailInboxViewActivate (view) {
 
         const me      = this,
             ACCOUNT = conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
@@ -462,8 +491,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             toggleDisabled = true;
 
             if (accountSelected) {
-                me.disableEmailActionButtons(true);
-                me.disableEmailEditButtons(true);
+                me.disableMessageItemContextButtons(true);
             }
         } else if (me.getMailMessageGrid().getStore().isLoading()) {
             toggleDisabled = true;
@@ -484,7 +512,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {conjoon.cn_mail.view.mail.inbox.InboxView} view
      */
-    onMailInboxViewDeactivate: function (inboxView) {
+    onMailInboxViewDeactivate (inboxView) {
         var me = this;
 
         me.getToggleGridListButton().setDisabled(true);
@@ -498,7 +526,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridBeforeLoad: function (store) {
+    onMailMessageGridBeforeLoad (store) {
         var me = this;
 
         me.getToggleGridListButton().setDisabled(true);
@@ -511,14 +539,16 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {conjoon.cn_mail.store.mail.message.MessageItemStore} store
      */
-    onMailMessageGridLoad: function (store) {
+    onMailMessageGridLoad () {
         var me = this;
 
         if (me.getMailDesktopView().getLayout().getActiveItem() !== me.getMailInboxView()) {
             return;
         }
 
-        me.getToggleGridListButton().setDisabled(false);
+        if (!me.mailAccountWizardShown) {
+            me.getToggleGridListButton().setDisabled(false);
+        }
     },
 
 
@@ -529,7 +559,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param {Ext.Button} btn
      * @param {Boolean}    pressed
      */
-    onToggleFolderViewButtonClick: function (btn, pressed) {
+    onToggleFolderViewButtonClick (btn, pressed) {
 
         var me         = this,
             mailFolder = me.getMailFolderTree();
@@ -550,7 +580,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param {Ext.Button} btn
      * @param {Boolean}    pressed
      */
-    onToggleListViewButtonClick: function (btn, pressed) {
+    onToggleListViewButtonClick (btn, pressed) {
 
         var me          = this,
             messageGrid = me.getMailMessageGrid();
@@ -566,7 +596,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param {Ext.menu.CheckItem} menuItem
      * @param {boolean}            checked
      */
-    onReadingPaneCheckChange: function (menuItem, checked) {
+    onReadingPaneCheckChange (menuItem, checked) {
 
         // exit if checked is set to false. There will
         // follow an immediate call to this method with the
@@ -604,7 +634,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @throws if this method was called with more than one record available
      * in records
      */
-    onMailFolderTreeSelectionChange: function (treeList, records) {
+    onMailFolderTreeSelectionChange (treeList, records) {
 
         const me = this;
 
@@ -615,15 +645,17 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             });
         }
 
-        let accountSelected = records.length <= 0
-                              || records[0].get("folderType") === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
+        let accountSelected = records.length <= 0 ||
+            records[0].get("folderType") === conjoon.cn_mail.data.mail.folder.MailFolderTypes.ACCOUNT;
 
-        me.getSwitchReadingPaneButton().setDisabled(accountSelected);
+        if (!me.mailAccountWizardShown) {
+            me.getSwitchReadingPaneButton().setDisabled(accountSelected);
+        }
+
         me.getToggleGridListButton().setDisabled(accountSelected);
 
         if (accountSelected) {
-            me.disableEmailActionButtons(true);
-            me.disableEmailEditButtons(true);
+            me.disableMessageItemContextButtons(true);
         } else {
             me.activateButtonsForMessageGrid();
         }
@@ -637,7 +669,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param selectionModel
      * @param record
      */
-    onMailMessageGridDeselect: function (selectionModel, record) {
+    onMailMessageGridDeselect (selectionModel, record) {
 
         const me = this;
 
@@ -645,8 +677,24 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
             return;
         }
 
-        me.disableEmailActionButtons(true);
-        me.disableEmailEditButtons(true);
+        me.disableMessageItemContextButtons(true);
+    },
+
+
+    onMailMessageViewItemChange (messageView, messageItem) {
+        const me = this;
+        // unloaded. disable context buttons, since this most likely means the
+        // selection in the sibling grid is lost
+        // (The vm of the MessageView is bound to the selection of the grid)
+        if (!messageItem) {
+            me.disableMessageItemContextButtons(true);
+        }
+    } ,
+
+    disableMessageItemContextButtons (disable) {
+        const me = this;
+        me.disableEmailActionButtons(disable);
+        me.disableEmailEditButtons(disable);
     },
 
 
@@ -657,7 +705,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      * @param selectionModel
      * @param record
      */
-    onMailMessageGridSelect: function (selectionModel, record) {
+    onMailMessageGridSelect (selectionModel, record) {
 
         const me = this;
 
@@ -669,7 +717,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
     /**
      * Action for cn_mail/home.
      */
-    onHomeTabRoute: function () {
+    onHomeTabRoute () {
         var me              = this,
             mailDesktopView = me.getMainPackageView();
 
@@ -686,7 +734,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailMessageViewFor}
      */
-    onReadMessageRoute: function (mailAccountId, mailFolderId, id) {
+    onReadMessageRoute (mailAccountId, mailFolderId, id) {
 
         const
             me              = this,
@@ -704,7 +752,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailAccountFor}
      */
-    onMailAccountRoute: function (mailAccountId) {
+    onMailAccountRoute (mailAccountId) {
         const me              = this,
             mailDesktopView = me.getMainPackageView();
 
@@ -720,7 +768,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @see {conjoon.cn_mail.view.mail.MailDesktopView#showMailFolderFor}
      */
-    onMailFolderRoute: function (mailAccountId, mailFolderId) {
+    onMailFolderRoute (mailAccountId, mailFolderId) {
         const me              = this,
             mailDesktopView = me.getMainPackageView();
 
@@ -735,7 +783,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {String} id the id to be able to track this MessageEditor instance
      */
-    onComposeMessageRoute: function (id) {
+    onComposeMessageRoute (id) {
         this.showMailEditor(id, "compose");
     },
 
@@ -745,7 +793,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {String} id the id to be able to track this MessageEditor instance
      */
-    onComposeMailtoMessageRoute: function (id) {
+    onComposeMailtoMessageRoute (id) {
         id = "mailto%3A"  + id;
         this.showMailEditor(id, "compose");
     },
@@ -756,7 +804,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {Ext.Button} btn
      */
-    onMessageComposeButtonClick: function (btn) {
+    onMessageComposeButtonClick (btn) {
         this.showMailEditor(Date.now(), "compose");
     },
 
@@ -766,7 +814,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {String} id the id of the message to edit
      */
-    onEditMessageRoute: function (mailAccountId, mailFolderId, id) {
+    onEditMessageRoute (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
@@ -781,7 +829,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {String} id the id of the message to edit
      */
-    onReplyToRoute: function (mailAccountId, mailFolderId, id) {
+    onReplyToRoute (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
@@ -796,7 +844,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {String} id the id of the message to edit
      */
-    onReplyAllRoute: function (mailAccountId, mailFolderId, id) {
+    onReplyAllRoute (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
@@ -811,7 +859,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {String} id the id of the message to edit
      */
-    onForwardRoute: function (mailAccountId, mailFolderId, id) {
+    onForwardRoute (mailAccountId, mailFolderId, id) {
         const me = this;
 
         me.showMailEditor(
@@ -826,7 +874,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {Ext.Button} btn
      */
-    onMessageEditButtonClick: function (btn) {
+    onMessageEditButtonClick (btn) {
         const me  = this,
             key = me.getCompoundKeyFromGridOrMessageView();
 
@@ -839,13 +887,22 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {Ext.Button} btn
      */
-    onMessageDeleteButtonClick: function (btn) {
+    onMessageDeleteButtonClick (btn) {
         const me   = this,
-            item = me.getItemOrDraftFromActiveView();
+            item = me.getDraftOrItemFromActiveView();
 
-        if (item === null) {
-            Ext.raise("Unexpected null-value for item.");
+        if (!item) {
+            console.error ("no item found that could be referenced");
+            return;
         }
+
+        me.moveOrDeleteMessage(item);
+
+        return true;
+    },
+
+    moveOrDeleteMessage (item) {
+        const me = this;
 
         me.getMailInboxView().getController().moveOrDeleteMessage(
             item,
@@ -854,13 +911,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
         );
     },
 
-
     /**
      * Callback for the node navigation's "replyTo message button".
      *
      * @param {Ext.Button} btn
      */
-    onReplyToButtonClick: function (btn) {
+    onReplyToButtonClick (btn) {
         const me  = this,
             key = me.getCompoundKeyFromGridOrMessageView();
 
@@ -873,7 +929,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {Ext.Button} btn
      */
-    onReplyAllButtonClick: function (btn) {
+    onReplyAllButtonClick (btn) {
         const me  = this,
             key = me.getCompoundKeyFromGridOrMessageView();
 
@@ -886,7 +942,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @param {Ext.Button} btn
      */
-    onForwardButtonClick: function (btn) {
+    onForwardButtonClick (btn) {
         const me  = this,
             key = me.getCompoundKeyFromGridOrMessageView();
 
@@ -895,13 +951,88 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
 
 
     /**
+     * Callback for the node navigation's "add mail account"-button.
+     *
+     * @return {Boolean}
+     */
+    onAddMailAccountBtnClick () {
+        const me = this;
+        me.getMainPackageView().showMailAccountWizard();
+    },
+
+
+    /**
+     * Callback for the show/close event of the MailAccountWizard.
+     * Will enable/disable toolbar buttons based on the visibiliyt state and the state
+     * of available MailAccounts.
+     *
+     * @param {conjoon.cn_mail.view.mail.account.MailAccountWizard} wizard
+     */
+    onMailAccountWizardShownOrClosed (wizard) {
+        const
+            me = this,
+            btn = me.getAddMailAccountButton(),
+            isVisible = wizard.isVisible(),
+            activeAccount = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().findFirstActiveMailAccount();
+
+        if (isVisible) {
+            wizard.on("close", me.onMailAccountWizardShownOrClosed, me, {single: true});
+        }
+
+        if (btn) {
+            btn.setDisabled(isVisible);
+        }
+        me.disableUiControlButtons(isVisible);
+
+        me.getCreateMessageButton().setDisabled(
+            isVisible || !activeAccount
+        );
+
+        me.mailAccountWizardShown = isVisible;
+        if (isVisible) {
+            me.disableMessageItemContextButtons(true);
+        } else {
+            me.activateButtonsForMessageGrid();
+        }
+    },
+
+
+    disableUiControlButtons (disable) {
+        const me = this;
+
+        me.getSwitchReadingPaneButton().setDisabled(disable);
+        me.getToggleGridListButton().setDisabled(disable);
+        me.getToggleMailFolderButton().setDisabled(disable);
+    },
+
+
+    /**
+     * Callback for the MailAccount-Store's activemailaccountavailable event.
+     * Will enable/disable the "createMessageButton" based on available.
+     *
+     * @param {conjoon.cn_mail.store.mail.folder.MailFolderTreeStore} store
+     * @param {Boolean} available
+     */
+    onActiveMailAccountAvailable (store, available) {
+        const me = this;
+
+        me.getCreateMessageButton().setDisabled(!available);
+    },
+
+    /**
      * @inheritdoc
      */
-    postLaunchHook: function () {
+    postLaunchHook () {
 
-        conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance().load();
+        const
+            me = this,
+            mailAccountStore = conjoon.cn_mail.store.mail.folder.MailFolderTreeStore.getInstance();
 
-        return {
+        mailAccountStore.on("activemailaccountavailable", me.onActiveMailAccountAvailable, me);
+        mailAccountStore.loadMailAccounts();
+
+
+        const data = {
             navigation: [{
                 text: "Email",
                 route: "cn_mail/home",
@@ -910,7 +1041,8 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                 nodeNav: [{
                     xtype: "button",
                     iconCls: "fas fa-plus",
-                    itemId: "cn_mail-nodeNavCreateMessage"
+                    itemId: "cn_mail-nodeNavCreateMessage",
+                    disabled: true
                 }, {
                     xtype: "tbseparator"
                 }, {
@@ -947,7 +1079,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                     cls: "toggleFolderViewBtn",
                     itemId: "cn_mail-nodeNavToggleFolder",
                     enableToggle: true,
-                    pressed: true
+                    pressed: true,
+                    stateId: "cn_mail-nodeNavToggleFolder",
+                    stateEvents: ["click"],
+                    stateful: {
+                        pressed: true
+                    }
                 }, {
                     xtype: "button",
                     iconCls: "fas fa-list",
@@ -983,6 +1120,20 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                 }]
             }]
         };
+
+
+        if (me.mailAccountHandler.enabled()) {
+            data.navigation[0].nodeNav.push({
+                xtype: "tbseparator"
+            });
+            data.navigation[0].nodeNav.push({
+                xtype: "button",
+                iconCls: "fas fa-at",
+                itemId: "cn_mail-addMailAccountBtn"
+            });
+        }
+
+        return data;
     },
 
 
@@ -992,7 +1143,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @return {conjoon.cn_mail.view.mail.MailDesktopView}
      */
-    getMainPackageView: function () {
+    getMainPackageView () {
         var me  = this,
             app = me.getApplication();
 
@@ -1021,44 +1172,51 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          *
          * @return {null|conjoon.cn_mail.model.mail.message.AbstractMessageItem}
          */
-        getItemOrDraftFromActiveView: function () {
+        getDraftOrItemFromActiveView () {
 
             const me  = this,
                 tab = me.getMailDesktopView().getActiveTab();
 
             if (tab instanceof conjoon.cn_mail.view.mail.message.editor.MessageEditor) {
                 return tab.getMessageDraft();
-            } else if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
-                return tab.getMessageItem();
-            } else if (tab === me.getMailInboxView()) {
-                return me.getMailMessageGrid().getSelection()[0];
             }
 
-            return null;
+            return me.getItemFromGridOrMessageView();
         },
 
 
+        getItemFromGridOrMessageView () {
+            const
+                me  = this,
+                tab = me.getMailDesktopView().getActiveTab();
+
+            if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
+                return  tab.getMessageItem();
+            } else if (tab === me.getMailInboxView()) {
+                if (me.getMailMessageGrid().getSelection()) {
+                    return me.getMailMessageGrid().getSelection()[0];
+                }
+                return me.getMailInboxMessageView().getMessageItem();
+            }
+        },
+
         /**
          * Helper function to retrieve the compound key of the selected record in
-         * the MessageGrid in the InboxView OR of the MessageItem of a MessageView,
+         * the InboxView's MessageGrid, MessageView OR of the MessageItem of a MailDesktopView's MessageView,
          * depending on which tab is currently active in the MailDesktopView.
+         * The method will first query the MailDesktopView, then the embedded InboxView.
          *
          * @return {conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey}
          *
          * @private
          */
-        getCompoundKeyFromGridOrMessageView: function () {
+        getCompoundKeyFromGridOrMessageView () {
 
-            const me  = this,
-                tab = me.getMailDesktopView().getActiveTab();
+            const
+                me  = this,
+                item = me.getItemFromGridOrMessageView ();
 
-            if (tab instanceof conjoon.cn_mail.view.mail.message.reader.MessageView) {
-                return  tab.getMessageItem().getCompoundKey();
-            } else if (tab === me.getMailInboxView()) {
-                return me.getMailMessageGrid().getSelection()[0].getCompoundKey();
-            }
-
-            return null;
+            return item?.getCompoundKey();
         },
 
 
@@ -1068,12 +1226,12 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          * information whether the MessageItem which is about to load is a message
          * flagged as "draft".
          *
-         * @param {cconjoon.cn_mail.view.mail.message.reader.MessageView} messageView
+         * @param {conjoon.cn_mail.view.mail.message.reader.MessageView} messageView
          * @param {conjoon.cn_mail.model.mail.message.MessageItem}} messageItem
          *
          * @private
          */
-        onMailMessageItemLoadForActivatedView: function (messageView, messageItem) {
+        onMailMessageItemLoadForActivatedView (messageView, messageItem) {
 
             const me = this;
 
@@ -1081,7 +1239,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
                 messageItem = messageView.getViewModel().get("messageItem");
             }
 
-            if (messageItem.get("draft")) {
+            if (messageItem?.get("draft")) {
                 me.disableEmailActionButtons(true);
                 me.disableEmailEditButtons(false, false);
             } else {
@@ -1097,29 +1255,29 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
          * Opens the MaiLEditor for the specified id and the specified action (
          * one of edit, compose, replyTo, replyAll, forward).
          *
-         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} compoundKey
-         *
-         * @param {String type
+         * @param {String|conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey} key
+         * @param {String} type
          *
          * @private
          *
          * @throws if type is not "compose" and key is not an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey
          */
-        showMailEditor: function (key, type) {
+        showMailEditor (key, type) {
 
             var me              = this,
                 mailDesktopView = me.getMainPackageView();
 
             if (type !== "compose" &&
                 !(key instanceof conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey)) {
-                Ext.raise({
+                console.error ({
                     msg: "anything but \"compose\" expects an instance of conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey",
                     key: key,
                     type: type
                 });
+                return;
             }
 
-            mailDesktopView.showMailEditor(key, type);
+            return mailDesktopView.showMailEditor(key, type);
         }
 
     },
@@ -1137,7 +1295,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @private
      */
-    createCompoundKeyFromUrlFragments: function (mailAccountId, mailFolderId, id) {
+    createCompoundKeyFromUrlFragments (mailAccountId, mailFolderId, id) {
 
         return conjoon.cn_mail.data.mail.message.compoundKey.MessageEntityCompoundKey.createFor(
             decodeURIComponent(mailAccountId),
@@ -1154,7 +1312,7 @@ Ext.define("conjoon.cn_mail.app.PackageController", {
      *
      * @private
      */
-    messageEditorIsActivatedTab: function () {
+    messageEditorIsActivatedTab () {
         const me = this;
 
         me.disableEmailActionButtons(true);

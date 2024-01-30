@@ -30,6 +30,10 @@ StartTest(t => {
 
         let proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy");
 
+        t.expect(conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy.required.requestConfigurator).toBe(
+            "coon.core.data.request.Configurator"
+        );
+
         t.isInstanceOf(proxy, "coon.core.data.proxy.RestForm");
 
         t.expect(proxy.getIdParam()).toBe("localId");
@@ -395,6 +399,27 @@ StartTest(t => {
             snafu: "YO!",
             filter: JSON.stringify({"=": {"foo": "bar"}})
         });
+
+    });
+
+
+    t.it("sendRequest()", t => {
+
+        const
+            requestConfigurator = Ext.create("coon.core.data.request.Configurator"),
+            proxy = Ext.create("conjoon.cn_mail.data.mail.BaseProxy", {
+                requestConfigurator
+            }),
+            fakeRequest = {},
+            parentSpy = t.spyOn(proxy, "callParent").and.callFake(() => {}),
+            cfgSpy = t.spyOn(requestConfigurator, "configure").and.callThrough();
+
+        proxy.sendRequest(fakeRequest);
+
+        t.expect(cfgSpy.calls.mostRecent().args[0]).toBe(fakeRequest);
+        t.expect(parentSpy.calls.mostRecent().args[0][0]).toBe(cfgSpy.calls.mostRecent().returnValue);
+
+        [cfgSpy, parentSpy].map(spy => spy.remove());
 
     });
 
