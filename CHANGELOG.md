@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.0](https://github.com/conjoon/extjs-app-webmail/compare/v1.1.1...v2.0.0-alpha.0) (2024-01-30)
+
+
+### Bug Fixes
+
+* PreviewTextLazyLoad does not consider recent data structure changes ([08d5bfc](https://github.com/conjoon/extjs-app-webmail/commit/08d5bfc03a48b39899591acf3116a2df93118674)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** add missing call to loadDraft ([ac19506](https://github.com/conjoon/extjs-app-webmail/commit/ac195068d0efb2a95e9a943d189b90c1fdacbe9b))
+* **tests:** adjust MessageItemStore page size to prevent prefetches ([076d0d3](https://github.com/conjoon/extjs-app-webmail/commit/076d0d3ea46110625f9199ac5ad3fb2afd0c856f)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** focus of input field is not determinable ([4a5618d](https://github.com/conjoon/extjs-app-webmail/commit/4a5618d159653da6cc77a061e3dc331b8e80c43a))
+* **tests:** new data structure from mocked data shares references where it shouldnt ([cfddfb2](https://github.com/conjoon/extjs-app-webmail/commit/cfddfb2dc45cfb9b8dabec6940f348db25f3e534))
+* **tests:** test with draft would fail if replyTo- and from-addresses are available ([296b539](https://github.com/conjoon/extjs-app-webmail/commit/296b539dc985b100079911d5c14cf0ac0a5d2bb1))
+* **tests:** tests do not consider updated behavior of MessageCompoundBatchVisitor ([7d8311b](https://github.com/conjoon/extjs-app-webmail/commit/7d8311b728e7f1e46083fcb1e88c1ed6a19e7e0d)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** tests does not work with changed order in batch ([e611c28](https://github.com/conjoon/extjs-app-webmail/commit/e611c289fe9687cb97e5876f480bbf8a008da3e8)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+* **tests:** tests fails if initial message was generated w/o attachments ([285ebea](https://github.com/conjoon/extjs-app-webmail/commit/285ebea289d1f55c3f69b9d2ce23054558a31a47))
+* wrong parameters passed to endpoint when visiting subscriptions ([dd92158](https://github.com/conjoon/extjs-app-webmail/commit/dd921589374ff19c5f3130502c3cd16778e1959a)), closes [conjoon/php-lib-conjoon#8](https://github.com/conjoon/php-lib-conjoon/issues/8)
+
 ### [1.1.1](https://github.com/conjoon/extjs-app-webmail/compare/v1.1.0...v1.1.1) (2023-05-02)
 
 ## [1.1.0](https://github.com/conjoon/extjs-app-webmail/compare/v1.0.16...v1.1.0) (2023-04-20)
