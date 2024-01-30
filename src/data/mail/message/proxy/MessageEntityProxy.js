@@ -35,7 +35,10 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
         // @define
         "l8",
         "conjoon.cn_mail.data.mail.message.reader.MessageEntityJsonReader",
-        "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter"
+        "conjoon.cn_mail.data.mail.message.proxy.UtilityMixin",
+        "conjoon.cn_mail.data.mail.message.writer.MessageEntityWriter",
+        "coon.core.data.jsonApi.SorterEncoder",
+        "conjoon.cn_mail.data.jsonApi.PnFilterEncoder"
     ],
 
 
@@ -63,7 +66,6 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
      */
     pageParam: "",
 
-
     /**
      * @type {String}
      */
@@ -74,7 +76,15 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
      */
     limitParam: "page[limit]",
 
-    simpleSort: true,
+    /**
+     * @type {coon.core.data.jsonApi.SorterEncoder} sorterEncoder
+     * @private
+     */
+
+    /**
+     * @type {conjoon.cn_mail.data.jsonApi.FilterEncoder} filterEncoder
+     * @private
+     */
 
     /**
      * Assembles the url in preparation for #buildUrl.
@@ -252,32 +262,36 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
     },
 
     /**
-     * Overrides the parent implementation by assembling a JSON:API compliant value for the sort parameter.
-     * The sort parameter will represent a comma-separated list of fields that should be sorted.
-     * First values appearing in the list are sorted first. A field prefixed with a "-" will be sorted in
-     * descending direction.
-     *
-     * @param sorters
-     * @param preventArray
-     *
-     * @return {String}
+     * @inheritdoc
      */
     encodeSorters (sorters, preventArray) {
 
-        const res = [];
-        let field, dir;
-        sorters.forEach(sorter => {
-            field = sorter.getProperty();
-            dir   = sorter.getDirection();
+        const me = this;
 
-            res.push(
-                (dir === "DESC" ? "-" : "") + field
-            );
-        });
+        if (!me.sorterEncoder) {
+            me.sorterEncoder = Ext.create("coon.core.data.jsonApi.SorterEncoder");
+        }
 
-
-        return res.join(",");
+        return me.sorterEncoder.encode(sorters);
     },
+
+    /**
+     * Overriden to consider filter syntax according to
+     * https://www.conjoon.org/docs/api/rest-api/@conjoon/rest-api-description/rest-api-email
+     *
+     * @return {String}
+     */
+    encodeFilters (filters) {
+
+        const me = this;
+
+        if (!me.filterEncoder) {
+            me.filterEncoder = Ext.create("conjoon.cn_mail.data.jsonApi.PnFilterEncoder");
+        }
+
+        return me.filterEncoder.encode(filters);
+    },
+
 
     /**
      * Returns the base configuration for a request for sending a POST to an

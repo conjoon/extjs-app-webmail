@@ -180,6 +180,23 @@ Ext.define("conjoon.cn_mail.data.mail.message.proxy.AttachmentProxy", {
         request = me.requestConfigurator.configure(request);
 
         return me.callParent([request]);
+    },
+
+    /**
+     * Overriden to consider filter syntax according to
+     * https://www.conjoon.org/docs/api/rest-api/@conjoon/rest-api-description/rest-api-email
+     *
+     * @return {String}
+     */
+    encodeFilters (filters) {
+
+        const me = this;
+
+        if (!me.filterEncoder) {
+            me.filterEncoder = Ext.create("conjoon.cn_mail.data.jsonApi.PnFilterEncoder");
+        }
+
+        return me.filterEncoder.encode(filters);
     }
 
 });

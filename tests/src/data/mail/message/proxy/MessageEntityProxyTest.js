@@ -456,22 +456,26 @@ StartTest(t => {
 
     t.it("buildUrl() - consider filter and attributes in params", t => {
 
-        let filters = [{
-                property: "mailAccountId",
-                value: "a"
-            }, {
-                property: "mailFolderId",
-                value: "b"
-            }, {
-                property: "id",
-                value: "c"
-            }],
-            params = {
-                filter: Ext.encode(filters)
-            },
-            proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
+        let proxy = Ext.create("conjoon.cn_mail.data.mail.message.proxy.MessageEntityProxy", {
                 entityName: "MessageItem"
             }),
+            filters = [
+                Ext.create("Ext.util.Filter", {
+                    property: "mailAccountId",
+                    value: "a"
+                }),
+                Ext.create("Ext.util.Filter", {
+                    property: "mailFolderId",
+                    value: "b"
+                }),
+                Ext.create("Ext.util.Filter", {
+                    property: "id",
+                    value: "c"
+                })
+            ],
+            params = {
+                filter: proxy.encodeFilters(filters)
+            },
             request = Ext.create("Ext.data.Request", {
                 action: "read",
                 params: params,
@@ -490,7 +494,7 @@ StartTest(t => {
         t.expect(request.getUrl()).toBe(targetUrl);
         t.expect(request.getParams().action).toBeUndefined();
         t.expect(request.getParams()).toEqual({
-            filter: "[{\"property\":\"id\",\"value\":\"c\"}]",
+            filter: JSON.stringify({"=": {id: "c"}}),
             "fields[MessageItem]": "*,previewText,replyTo,cc,bcc",
             "fields[MailFolder]": "unreadMessages,totalMessages",
             include: "MailFolder"

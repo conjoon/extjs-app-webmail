@@ -238,7 +238,7 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
         const url = proxy.assembleUrl(Ext.create("Ext.data.Request", {
             action: "read",
             params: {
-                filter: JSON.stringify(keyFilter)
+                filter: proxy.encodeFilters(keyFilter.map(filter => Ext.create("Ext.util.Filter", filter)))
             }
         }));
 
