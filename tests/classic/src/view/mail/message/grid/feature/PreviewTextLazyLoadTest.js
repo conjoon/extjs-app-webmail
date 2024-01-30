@@ -475,7 +475,7 @@ StartTest(t => {
                     request: {
                         url: "foo",
                         params: {
-                            filter: JSON.stringify([{property: "id", operator: "in", value: ["1", "2", "3", "4"]}])
+                            filter: JSON.stringify({"in": {"id": ["1", "2", "3", "4"]}})
                         }
                     }
                 });
@@ -513,7 +513,7 @@ StartTest(t => {
                     params: {
                         "fields[MessageItem]": "previewText",
                         options,
-                        filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
+                        filter: JSON.stringify({"in": {"id": [1, 2, 3, 4]}})
                     }
                 });
             });

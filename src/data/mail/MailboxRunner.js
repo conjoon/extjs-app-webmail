@@ -221,19 +221,18 @@ Ext.define("conjoon.cn_mail.data.mail.MailboxRunner", {
             }, {
                 property: "mailFolderId",
                 value: mailFolderId
-            }],
-            latestFilter = [{
-                property: "recent",
-                value: true,
-                operator: "="
             }];
 
+        let latestFilter = {
+            "=": {"recent": true}
+        };
+
         if (uidNext) {
-            latestFilter.push({
-                property: "id",
-                value: uidNext,
-                operator: ">="
-            });
+            latestFilter = {
+                "OR": [{
+                    ">=": {"id": uidNext}
+                }, latestFilter]
+            };
         }
 
         const url = proxy.assembleUrl(Ext.create("Ext.data.Request", {

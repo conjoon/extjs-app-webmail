@@ -447,7 +447,16 @@ StartTest(async t => {
                 cfgArgs = getDefaultRequestSpy.calls.mostRecent().args[0],
                 options = MessageItem.getProxy().getDefaultParameters("ListMessageItem"),
                 params = Object.assign(options, {
-                    filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"},{\"property\":\"id\",\"value\":3,\"operator\":\">=\"}]"
+                    filter: JSON.stringify({
+                        "OR": [
+                            {">=": {
+                                    "id": 3
+                                }},
+                            {"=": {
+                                    "recent": true
+                                }}
+                        ]
+                    })
                 });
 
             t.expect(cfgArgs.url).toBe( "cn_mail/MailAccounts/1/MailFolders/2/MessageItems");
@@ -470,7 +479,11 @@ StartTest(async t => {
             mailboxRunner.visitSubscription(FOLDER);
 
             params = Object.assign(options, {
-                filter: "[{\"property\":\"recent\",\"value\":true,\"operator\":\"=\"}]"
+                filter: JSON.stringify({
+                    "=": {
+                        "recent": true
+                    }
+                })
             });
 
             cfgArgs = getDefaultRequestSpy.calls.mostRecent().args[0];

@@ -410,7 +410,7 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             proxy = store.getProxy(),
             reader = proxy.getReader(),
             // filter[0] represents the id-IN filter
-            loadedIds = JSON.parse(response.request.params.filter)[0].value,
+            loadedIds = JSON.parse(response.request.params.filter).in.id,
             livegrid = grid.view.getFeature("cn_mail-mailMessageFeature-livegrid");
 
         me.pendingLazies[url] = l8.extract(me.pendingLazies[url].concat(loadedIds));
@@ -469,14 +469,11 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
             proxy = store.getProxy();
 
         Ext.Ajax.request(me.requestConfigurator.configure(
-
             me.getDefaultRequestCfg({
                 url,
                 idsToLoad,
                 options: proxy.getDefaultParameters("ListMessageItem.options")
             })
-
-
         )).then(me.processLoadedPreviewText.bind(me));
     },
 
@@ -485,13 +482,18 @@ Ext.define("conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
      * @private
      */
     getDefaultRequestCfg ({url, idsToLoad, options}) {
+
+        const filter = {
+            "in": {"id": idsToLoad}
+        };
+
         return {
             method: "get",
             url: url,
             params: {
                 "fields[MessageItem]": "previewText",
-                options: options,
-                filter: JSON.stringify([{"property": "id", "operator": "in", "value": idsToLoad}])
+                options,
+                filter: JSON.stringify(filter)
             }
         };
     }
